@@ -11,15 +11,30 @@ const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react() as PluginOption,
     tailwindcss(),
-    // DO NOT REMOVE
-    createIconImportProxy() as PluginOption,
-    sparkPlugin() as PluginOption,
+    sparkPlugin({
+      projectRoot,
+    }),
+    createIconImportProxy()
   ],
   resolve: {
     alias: {
       '@': resolve(projectRoot, 'src')
     }
   },
-});
+  // Optimize for GitHub Pages deployment
+  // base: '/snowday-forecast/', // Uncomment this line when deploying to GitHub Pages
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          weather: ['./src/lib/weatherApi.ts', './src/lib/weatherProcessing.ts']
+        }
+      }
+    }
+  }
+})

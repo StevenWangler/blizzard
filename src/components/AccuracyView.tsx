@@ -7,6 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Target, TrendUp, TrendDown, Trophy, ArrowsClockwise } from '@phosphor-icons/react'
 
 import { WeatherThemeDemo } from '@/components/WeatherThemeDemo'
+import { WeatherDebugPanel } from '@/components/WeatherDebugPanel'
 interface AccuracyRecord {
   date: string
   modelPrediction: number
@@ -290,6 +291,9 @@ export function AccuracyView() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Weather API Debug Panel */}
+      <WeatherDebugPanel />
     </div>
   )
 }
