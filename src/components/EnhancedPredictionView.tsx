@@ -26,6 +26,14 @@ import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { toast } from 'sonner'
 
+// Community vote interface
+interface CommunityVote {
+  type: 'probability' | 'thumbs'
+  value: number
+  timestamp: number
+  fingerprint?: string
+}
+
 // Updated interface to match agent predictions
 interface AgentPrediction {
   meteorology: {
@@ -149,9 +157,34 @@ export function EnhancedPredictionView() {
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
 
+  // Sync community votes with localStorage for persistence
   useEffect(() => {
     loadPredictionData()
+    
+    // Load existing votes from localStorage
+    try {
+      const stored = localStorage.getItem('blizzard-community-votes')
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        if (parsed.length > 0 && (!communityVotes || communityVotes.length === 0)) {
+          setCommunityVotes(parsed)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading community votes:', error)
+    }
   }, [])
+
+  // Save votes to localStorage whenever they change
+  useEffect(() => {
+    if (communityVotes && communityVotes.length > 0) {
+      try {
+        localStorage.setItem('blizzard-community-votes', JSON.stringify(communityVotes))
+      } catch (error) {
+        console.error('Error saving community votes:', error)
+      }
+    }
+  }, [communityVotes])
 
   const loadPredictionData = async () => {
     try {
@@ -191,10 +224,120 @@ export function EnhancedPredictionView() {
     }
   }
 
+  // Enhanced spam protection
+  const checkVoteEligibility = () => {
+    try {
+      const today = new Date().toDateString()
+      const lastVoteDate = localStorage.getItem('blizzard-last-vote-date')
+      const voteCount = parseInt(localStorage.getItem('blizzard-daily-vote-count') || '0')
+      
+      // Reset daily count if it's a new day
+      if (lastVoteDate !== today) {
+        localStorage.setItem('blizzard-daily-vote-count', '0')
+        localStorage.setItem('blizzard-last-vote-date', today)
+        return { canVote: true, votesToday: 0, timeUntilReset: null }
+      }
+      
+      const maxVotesPerDay = 3 // Allow 3 votes per day to account for changing opinions
+      const canVote = voteCount < maxVotesPerDay
+      
+      // Calculate time until reset (midnight)
+      const now = new Date()
+      const tomorrow = new Date(now)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      tomorrow.setHours(0, 0, 0, 0)
+      const timeUntilReset = tomorrow.getTime() - now.getTime()
+      
+      return { canVote, votesToday: voteCount, timeUntilReset, maxVotes: maxVotesPerDay }
+    } catch (error) {
+      console.error('Error checking vote eligibility:', error)
+      return { canVote: true, votesToday: 0, timeUntilReset: null }
+    }
+  }
+
   const handleVote = (vote: {type: 'probability' | 'thumbs', value: number}) => {
+    const eligibility = checkVoteEligibility()
+    
+    if (!eligibility.canVote) {
+      const hoursUntilReset = Math.ceil((eligibility.timeUntilReset || 0) / (1000 * 60 * 60))
+      toast.error(`Daily vote limit reached (${eligibility.votesToday}/${eligibility.maxVotes}). Try again in ${hoursUntilReset} hours.`)
+      return
+    }
+    
+    // Generate a browser fingerprint for additional spam protection
+    const fingerprint = generateBrowserFingerprint()
+    const recentVotes = JSON.parse(localStorage.getItem('blizzard-recent-fingerprints') || '[]')
+    const oneHourAgo = Date.now() - (60 * 60 * 1000)
+    
+    // Clean old fingerprints and check for recent duplicate
+    const cleanFingerprints = recentVotes.filter((fp: any) => fp.timestamp > oneHourAgo)
+    const recentSameFingerprint = cleanFingerprints.filter((fp: any) => fp.fingerprint === fingerprint)
+    
+    if (recentSameFingerprint.length >= 2) {
+      toast.error('Please wait before voting again to prevent spam.')
+      return
+    }
+    
+    // Update vote counts
+    const today = new Date().toDateString()
+    const currentCount = parseInt(localStorage.getItem('blizzard-daily-vote-count') || '0')
+    localStorage.setItem('blizzard-daily-vote-count', (currentCount + 1).toString())
+    localStorage.setItem('blizzard-last-vote-date', today)
+    
+    // Store fingerprint
+    cleanFingerprints.push({ fingerprint, timestamp: Date.now() })
+    localStorage.setItem('blizzard-recent-fingerprints', JSON.stringify(cleanFingerprints))
+    
+    // Process the vote
     setUserVote(vote)
-    setCommunityVotes(prev => [...(prev || []), { ...vote, timestamp: Date.now() }])
-    toast.success('Vote recorded!')
+    const newVote = { 
+      ...vote, 
+      timestamp: Date.now(),
+      fingerprint: fingerprint.substring(0, 8) // Store partial fingerprint for analysis
+    }
+    const updatedVotes = [...(communityVotes || []), newVote]
+    
+    setCommunityVotes(updatedVotes)
+    
+    const remaining = (eligibility.maxVotes || 3) - (currentCount + 1)
+    if (remaining > 0) {
+      toast.success(`Vote recorded! ${remaining} votes remaining today.`)
+    } else {
+      toast.success('Vote recorded! Daily limit reached.')
+    }
+  }
+
+  // Generate browser fingerprint for spam detection
+  const generateBrowserFingerprint = () => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    ctx!.textBaseline = 'top'
+    ctx!.font = '14px Arial'
+    ctx!.fillText('Browser fingerprint', 2, 2)
+    
+    const fingerprint = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset(),
+      canvas.toDataURL(),
+      navigator.hardwareConcurrency,
+      navigator.platform
+    ].join('|')
+    
+    // Simple hash function
+    let hash = 0
+    for (let i = 0; i < fingerprint.length; i++) {
+      const char = fingerprint.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash // Convert to 32bit integer
+    }
+    return hash.toString(36)
+  }
+
+  const getVoteStatus = () => {
+    const eligibility = checkVoteEligibility()
+    return eligibility
   }
 
   const getSnowDayVerdict = (probability: number) => {
@@ -676,6 +819,7 @@ export function EnhancedPredictionView() {
               onVote={handleVote} 
               userVote={userVote || null}
               disabled={!!userVote}
+              voteStatus={getVoteStatus()}
             />
           </div>
         </div>

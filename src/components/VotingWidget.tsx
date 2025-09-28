@@ -14,26 +14,34 @@ interface VotingWidgetProps {
   onVote: (vote: Vote) => void
   userVote: Vote | null
   disabled: boolean
+  voteStatus?: {
+    canVote: boolean
+    votesToday: number
+    maxVotes?: number
+    timeUntilReset?: number | null
+  }
 }
 
-export function VotingWidget({ onVote, userVote, disabled }: VotingWidgetProps) {
+export function VotingWidget({ onVote, userVote, disabled, voteStatus }: VotingWidgetProps) {
   const [voteMode, setVoteMode] = useState<'quick' | 'advanced'>('quick')
   const [probability, setProbability] = useState('')
 
   const handleQuickVote = (likely: boolean) => {
-    onVote({
-      type: 'thumbs',
+    const vote = {
+      type: 'thumbs' as const,
       value: likely ? 75 : 25
-    })
+    }
+    onVote(vote)
   }
 
   const handleProbabilityVote = () => {
     const value = parseInt(probability)
     if (value >= 0 && value <= 100) {
-      onVote({
-        type: 'probability',
+      const vote = {
+        type: 'probability' as const,
         value
-      })
+      }
+      onVote(vote)
     }
   }
 
@@ -54,6 +62,14 @@ export function VotingWidget({ onVote, userVote, disabled }: VotingWidgetProps) 
                 : 'Your probability estimate'
               }
             </p>
+            {voteStatus && (
+              <div className="text-xs text-muted-foreground border-t pt-2">
+                <p>Daily votes: {voteStatus.votesToday}/{voteStatus.maxVotes || 3}</p>
+                {!voteStatus.canVote && voteStatus.timeUntilReset && (
+                  <p>Resets in {Math.ceil(voteStatus.timeUntilReset / (1000 * 60 * 60))} hours</p>
+                )}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -69,6 +85,15 @@ export function VotingWidget({ onVote, userVote, disabled }: VotingWidgetProps) 
         </p>
       </CardHeader>
       <CardContent className="space-y-3 sm:space-y-4">
+        {voteStatus && (
+          <div className="text-center text-xs text-muted-foreground mb-4">
+            Daily votes: {voteStatus.votesToday}/{voteStatus.maxVotes || 3}
+            {!voteStatus.canVote && voteStatus.timeUntilReset && (
+              <> • Resets in {Math.ceil(voteStatus.timeUntilReset / (1000 * 60 * 60))} hours</>
+            )}
+          </div>
+        )}
+        
         <div className="flex gap-2">
           <Button 
             variant={voteMode === 'quick' ? 'default' : 'outline'}
@@ -99,7 +124,7 @@ export function VotingWidget({ onVote, userVote, disabled }: VotingWidgetProps) 
               <Button 
                 onClick={() => handleQuickVote(true)}
                 className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 h-12 sm:h-16 bg-accent hover:bg-accent/80 text-xs sm:text-sm"
-                disabled={disabled}
+                disabled={disabled || (voteStatus && !voteStatus.canVote)}
               >
                 <ThumbsUp size={18} className="sm:w-6 sm:h-6" />
                 Likely
@@ -108,7 +133,7 @@ export function VotingWidget({ onVote, userVote, disabled }: VotingWidgetProps) 
                 onClick={() => handleQuickVote(false)}
                 variant="outline"
                 className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 h-12 sm:h-16 text-xs sm:text-sm"
-                disabled={disabled}
+                disabled={disabled || (voteStatus && !voteStatus.canVote)}
               >
                 <ThumbsDown size={18} className="sm:w-6 sm:h-6" />
                 Unlikely
@@ -129,12 +154,12 @@ export function VotingWidget({ onVote, userVote, disabled }: VotingWidgetProps) 
                   value={probability}
                   onChange={(e) => setProbability(e.target.value)}
                   placeholder="50"
-                  disabled={disabled}
+                  disabled={disabled || (voteStatus && !voteStatus.canVote)}
                   className="text-sm"
                 />
                 <Button 
                   onClick={handleProbabilityVote}
-                  disabled={disabled || !probability || parseInt(probability) < 0 || parseInt(probability) > 100}
+                  disabled={disabled || !probability || parseInt(probability) < 0 || parseInt(probability) > 100 || (voteStatus && !voteStatus.canVote)}
                   size="sm"
                   className="text-xs sm:text-sm"
                 >
