@@ -18,7 +18,7 @@ import type {
   ProcessedWeatherData,
   WeatherAlert,
   HourlyWeather 
-} from './weatherTypes'
+} from "@/types/weatherTypes"
 import { weatherApi } from './weatherApi'
 import { getRelevantWeatherInformation } from './weatherProcessing'
 

@@ -21,7 +21,7 @@ import {
   ChartBar
 } from '@phosphor-icons/react'
 import { VotingWidget } from '@/components/VotingWidget'
-import { WeatherService } from '@/lib/weather'
+import { WeatherService } from '@/services/weather'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { toast } from 'sonner'

@@ -1,6 +1,6 @@
 import { WeatherAPI } from './weatherApi'
 import { getRelevantWeatherInformation, categorizeSnowDayProbability } from './weatherProcessing'
-import { WeatherApiError } from './weatherTypes'
+import { WeatherApiError } from "@/types/weatherTypes"
 
 interface WeatherData {
   temperature: number

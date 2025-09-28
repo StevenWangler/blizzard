@@ -9,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { testWeatherAPI, getDetailedWeatherAnalysis } from '@/lib/weatherTest'
-import { WeatherConfigValidator } from '@/lib/weatherErrorHandling'
+import { testWeatherAPI, getDetailedWeatherAnalysis } from '@/services/weatherTest'
+import { WeatherConfigValidator } from '@/services/weatherErrorHandling'
 
 export function WeatherDebugPanel() {
   const [isLoading, setIsLoading] = useState(false)

@@ -6,7 +6,7 @@ import sparkPlugin from "@github/spark/spark-vite-plugin";
 import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
 import { resolve } from 'path'
 
-const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
+const projectRoot = resolve(import.meta.dirname, '..')
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -26,13 +26,13 @@ export default defineConfig({
   // Optimize for GitHub Pages deployment
   // base: '/snowday-forecast/', // Uncomment this line when deploying to GitHub Pages
   build: {
-    outDir: 'dist',
+    outDir: resolve(projectRoot, 'dist'),
     sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          weather: ['./src/lib/weatherApi.ts', './src/lib/weatherProcessing.ts']
+          weather: ['./src/services/weatherApi.ts', './src/services/weatherProcessing.ts']
         }
       }
     }

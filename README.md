@@ -91,21 +91,56 @@ Complete project documentation is available in the [docs folder](./docs/):
 
 ## 🛠️ Development
 
-### Project Structure
+## 📁 Project Structure
 
 ```
-src/
-├── components/           # React components
-│   ├── ui/              # Reusable UI primitives
-│   ├── PredictionView.tsx
-│   ├── CrowdView.tsx
+snowday-forecast/
+├── build-tools/              # Build and deployment scripts
+│   ├── setup-deployment.mjs
+│   ├── setup-keys.mjs
+│   ├── validate-deployment.mjs
+│   ├── create-test-data.mjs
+│   └── generate-prediction.mjs
+├── config/                   # Configuration files
+│   ├── tsconfig.json
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   ├── components.json
+│   ├── theme.json
+│   └── runtime.config.json
+├── docs/                     # Documentation
+│   ├── README.md
+│   ├── API_KEYS_SETUP.md
+│   ├── DEPLOYMENT_GUIDE.md
+│   ├── WEATHER_API_README.md
 │   └── ...
-├── hooks/               # Custom React hooks
-├── lib/                 # Utility functions and services
-│   ├── weather.ts       # Weather service integration
-│   ├── weatherApi.ts    # WeatherAPI.com client
-│   └── ...
-└── styles/             # CSS and theme files
+├── public/                   # Static assets
+├── src/                      # Source code
+│   ├── components/           # React components
+│   │   ├── ui/              # Reusable UI primitives
+│   │   ├── PredictionView.tsx
+│   │   ├── CrowdView.tsx
+│   │   └── ...
+│   ├── services/            # Business logic services
+│   │   ├── weather.ts       # Main weather service
+│   │   ├── weatherApi.ts    # WeatherAPI.com client
+│   │   ├── weatherProcessing.ts
+│   │   ├── weatherErrorHandling.ts
+│   │   └── index.ts         # Service exports
+│   ├── types/               # TypeScript type definitions
+│   │   ├── weatherTypes.ts
+│   │   └── index.ts
+│   ├── utils/               # Utility functions
+│   │   ├── utils.ts
+│   │   └── index.ts
+│   ├── styles/              # CSS and theme files
+│   ├── hooks/               # Custom React hooks
+│   ├── App.tsx
+│   └── main.tsx
+├── .env.example             # Environment variables template
+├── .gitignore
+├── package.json
+└── README.md
 ```
 
 ### Available Scripts

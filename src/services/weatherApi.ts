@@ -12,7 +12,7 @@ import {
   WeatherApiError,
   Location,
   WeatherAlert
-} from './weatherTypes'
+} from "@/types/weatherTypes"
 
 export class WeatherAPI {
   private config: WeatherApiConfig

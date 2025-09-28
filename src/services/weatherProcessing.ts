@@ -18,7 +18,7 @@ import {
   TimePeriod,
   DEFAULT_TIME_PERIODS,
   WeatherAlert
-} from './weatherTypes'
+} from "@/types/weatherTypes"
 
 /**
  * Extract relevant weather metrics for specific hours.

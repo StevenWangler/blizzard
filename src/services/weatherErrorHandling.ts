@@ -5,7 +5,7 @@
  * and network error management for the weather API implementation.
  */
 
-import { WeatherApiError, WeatherApiConfig } from './weatherTypes'
+import { WeatherApiError, WeatherApiConfig } from "@/types/weatherTypes"
 
 export class WeatherErrorHandler {
   /**
