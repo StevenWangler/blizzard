@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
 import { CloudSnow, Users, Target, Clock } from '@phosphor-icons/react'
-import { PredictionView } from '@/components/PredictionView'
+import { EnhancedPredictionView } from '@/components/EnhancedPredictionView'
 import { CrowdView } from '@/components/CrowdView'
 import { AccuracyView } from '@/components/AccuracyView'
 import { HistoryView } from '@/components/HistoryView'
@@ -52,7 +52,7 @@ function App() {
           </TabsList>
 
           <TabsContent value="prediction">
-            <PredictionView />
+            <EnhancedPredictionView />
           </TabsContent>
           
           <TabsContent value="crowd">
