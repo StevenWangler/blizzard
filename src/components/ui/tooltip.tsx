@@ -1,7 +1,7 @@
 import { ComponentProps } from "react"
 import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/utils/utils"
 
 function TooltipProvider({
   delayDuration = 0,

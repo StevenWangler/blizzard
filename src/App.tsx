@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
 import { CloudSnow, Users, Target, Clock } from '@phosphor-icons/react'
-import { PredictionView } from '@/components/PredictionView'
+import { EnhancedPredictionView } from '@/components/EnhancedPredictionView'
 import { CrowdView } from '@/components/CrowdView'
 import { AccuracyView } from '@/components/AccuracyView'
 import { HistoryView } from '@/components/HistoryView'
@@ -22,7 +22,7 @@ function App() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <CloudSnow size={40} className="text-primary sm:w-12 sm:h-12" weight="duotone" />
-            <h1 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">Snow Day Predictor</h1>
+            <h1 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">Blizzard</h1>
           </div>
           <p className="text-muted-foreground text-base sm:text-lg px-4">
             Community-powered snow day forecasting for Rockford, Michigan
@@ -52,7 +52,7 @@ function App() {
           </TabsList>
 
           <TabsContent value="prediction">
-            <PredictionView />
+            <EnhancedPredictionView />
           </TabsContent>
           
           <TabsContent value="crowd">

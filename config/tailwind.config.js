@@ -1,10 +1,15 @@
 import fs from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /** @type {import('tailwindcss').Config} */
 
 let theme = {};
 try {
-  const themePath = "./theme.json";
+  const themePath = resolve(__dirname, "theme.json");
 
   if (fs.existsSync(themePath)) {
     theme = JSON.parse(fs.readFileSync(themePath, "utf-8"));
@@ -142,6 +147,9 @@ const defaultTheme = {
 }
 
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    resolve(__dirname, "../index.html"), 
+    resolve(__dirname, "../src/**/*.{js,ts,jsx,tsx}")
+  ],
   theme: { ...defaultTheme, ...theme },
 };
