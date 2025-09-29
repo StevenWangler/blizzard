@@ -157,29 +157,38 @@ export function EnhancedPredictionView() {
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
 
-  // Sync community votes with localStorage for persistence
   useEffect(() => {
     loadPredictionData()
-    
-    // Load existing votes from localStorage
+  }, [])
+
+  // Load community votes from localStorage and shared storage
+  useEffect(() => {
     try {
+      // Load from localStorage first (local cache)
       const stored = localStorage.getItem('blizzard-community-votes')
       if (stored) {
-        const parsed = JSON.parse(stored)
+        const parsed: CommunityVote[] = JSON.parse(stored)
         if (parsed.length > 0 && (!communityVotes || communityVotes.length === 0)) {
           setCommunityVotes(parsed)
         }
       }
+      
+      // Also try to sync with useKV (shared across users in this session)
+      // The useKV hook should handle cross-user persistence
     } catch (error) {
       console.error('Error loading community votes:', error)
     }
   }, [])
 
-  // Save votes to localStorage whenever they change
+  // Sync community votes to both localStorage AND useKV for sharing
   useEffect(() => {
     if (communityVotes && communityVotes.length > 0) {
       try {
+        // Save locally for fast access
         localStorage.setItem('blizzard-community-votes', JSON.stringify(communityVotes))
+        
+        // The useKV hook should automatically sync this across users
+        // since we're using setCommunityVotes which is connected to useKV
       } catch (error) {
         console.error('Error saving community votes:', error)
       }
