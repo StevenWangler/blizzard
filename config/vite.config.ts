@@ -7,6 +7,7 @@ import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
 import { resolve } from 'path'
 
 const projectRoot = resolve(import.meta.dirname, '..')
+const basePath = process.env.VITE_BASE_PATH ?? process.env.BASE_PATH ?? '/'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -23,8 +24,8 @@ export default defineConfig({
       '@': resolve(projectRoot, 'src')
     }
   },
-  // Optimize for GitHub Pages deployment (project page lives at /blizzard/)
-  base: '/blizzard/',
+  // Allow deployments to override the base path (default to root)
+  base: basePath,
   build: {
     outDir: resolve(projectRoot, 'dist'),
     sourcemap: false,
