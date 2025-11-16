@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { createContext, createElement, useContext, useEffect, useState, type ReactNode } from 'react'
 import { useKV } from '@github/spark/hooks'
 
 export interface WeatherTheme {
@@ -121,7 +121,18 @@ export function getWeatherThemeFromConditions(snowfall: number, windSpeed: numbe
   }
 }
 
-export function useWeatherTheme() {
+interface WeatherThemeContextValue {
+  currentTheme: string
+  getCurrentTheme: () => WeatherTheme | undefined
+  updateWeatherConditions: (snowfall: number, windSpeed: number, visibility: number) => void
+  isDarkMode: boolean
+  toggleDarkMode: () => void
+  weatherConditions: { snowfall: number, windSpeed: number, visibility: number } | null
+}
+
+const WeatherThemeContext = createContext<WeatherThemeContextValue | null>(null)
+
+function useProvideWeatherTheme(): WeatherThemeContextValue {
   const [weatherConditions, setWeatherConditions] = useKV<{snowfall: number, windSpeed: number, visibility: number} | null>('weather-conditions', null)
   const [isDarkMode, setIsDarkMode] = useKV<boolean>('dark-mode', false)
   const [currentTheme, setCurrentTheme] = useState<string>('clear')
@@ -188,4 +199,17 @@ export function useWeatherTheme() {
     toggleDarkMode,
     weatherConditions
   }
+}
+
+export function WeatherThemeProvider({ children }: { children: ReactNode }) {
+  const value = useProvideWeatherTheme()
+  return createElement(WeatherThemeContext.Provider, { value }, children)
+}
+
+export function useWeatherTheme() {
+  const context = useContext(WeatherThemeContext)
+  if (!context) {
+    throw new Error('useWeatherTheme must be used within a WeatherThemeProvider')
+  }
+  return context
 }

@@ -18,7 +18,7 @@ on:
   push:
     branches: [ main ]
     paths: 
-      - 'scripts/generate-prediction.mjs'
+      - 'build-tools/generate-prediction.mjs'
       - '.github/workflows/snow-day-prediction.yml'
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         VITE_WEATHER_API_KEY: ${{ secrets.VITE_WEATHER_API_KEY }}
         VITE_ZIP_CODE: ${{ github.event.inputs.zip_code || '49341' }}
-      run: node scripts/generate-prediction.mjs
+      run: node build-tools/generate-prediction.mjs
     
     - name: Commit and push prediction updates
       run: |

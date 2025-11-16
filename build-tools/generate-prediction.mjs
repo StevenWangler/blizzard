@@ -7,7 +7,7 @@
  * Designed to be executed by GitHub Actions on a schedule.
  * 
  * Usage:
- *   node scripts/generate-prediction.mjs
+ *   node build-tools/generate-prediction.mjs
  * 
  * Environment Variables:
  *   - OPENAI_API_KEY: Required for agent system

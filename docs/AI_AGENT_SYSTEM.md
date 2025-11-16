@@ -43,7 +43,7 @@ The agents produce comprehensive, structured JSON predictions including:
 ### Backend Components
 
 - **`src/lib/agentSystem.ts`** - Core multi-agent orchestration system
-- **`scripts/generate-prediction.mjs`** - Node.js script for prediction generation
+- **`build-tools/generate-prediction.mjs`** - Node.js script for prediction generation
 - **`.github/workflows/snow-day-prediction.yml`** - Automated GitHub Action
 
 ### Frontend Components  
@@ -89,7 +89,7 @@ VITE_ZIP_CODE=49341  # Default: Rockford, MI
 npm install
 
 # Create test data for development
-node scripts/create-test-data.mjs  
+node build-tools/create-test-data.mjs  
 
 # Start development server
 npm run dev
@@ -107,10 +107,10 @@ The system automatically runs via GitHub Actions:
 
 ```bash
 # Generate test prediction data
-node scripts/create-test-data.mjs
+node build-tools/create-test-data.mjs
 
 # Run actual prediction (requires API keys)
-node scripts/generate-prediction.mjs
+node build-tools/generate-prediction.mjs
 ```
 
 ## Features
