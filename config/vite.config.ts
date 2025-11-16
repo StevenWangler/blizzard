@@ -23,8 +23,8 @@ export default defineConfig({
       '@': resolve(projectRoot, 'src')
     }
   },
-  // Optimize for GitHub Pages deployment
-  // base: '/snowday-forecast/', // Uncomment this line when deploying to GitHub Pages
+  // Optimize for GitHub Pages deployment (project page lives at /blizzard/)
+  base: '/blizzard/',
   build: {
     outDir: resolve(projectRoot, 'dist'),
     sourcemap: false,
