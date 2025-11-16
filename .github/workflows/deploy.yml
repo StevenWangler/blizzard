@@ -8,9 +8,9 @@ on:
   # Allow manual trigger
   workflow_dispatch:
   
-  # Deploy on pushes to main branch
+  # Deploy on pushes to main or development branch
   push:
-    branches: [ main ]
+    branches: [ main, development ]
   
   # Deploy on pull requests to main
   pull_request:
