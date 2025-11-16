@@ -26,7 +26,7 @@ const safeParse = async (response: Response) => {
   try {
     return JSON.parse(text)
   } catch (error) {
-    throw new Error('Unable to parse outcomes.json')
+    throw new Error(`Unable to parse outcomes.json: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 
