@@ -42,6 +42,7 @@ jobs:
       run: |
         echo "VITE_WEATHER_API_KEY=${{ secrets.WEATHER_API_KEY }}" >> .env
         echo "VITE_ZIP_CODE=${{ secrets.ZIP_CODE || '49341' }}" >> .env
+        echo "VITE_OUTCOME_ADMIN_SECRET=${{ secrets.VITE_OUTCOME_ADMIN_SECRET }}" >> .env
         echo "VITE_BLIZZARD_ENV=production" >> .env
         echo "VITE_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .env
     
