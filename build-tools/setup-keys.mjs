@@ -53,7 +53,7 @@ try {
   if (hasOpenAI && hasWeather) {
     console.log('\n🎉 All API keys are configured!')
     console.log('\n🚀 You can now run real AI predictions:')
-    console.log('   node scripts/generate-prediction.mjs')
+    console.log('   node build-tools/generate-prediction.mjs')
   } else {
     console.log('\n⚠️  Add your API keys to the .env file to enable real predictions.')
   }
@@ -63,7 +63,7 @@ try {
 }
 
 console.log('\n🧪 Testing without API keys:')
-console.log('   node scripts/create-test-data.mjs  # Creates mock data')
+console.log('   node build-tools/create-test-data.mjs  # Creates mock data')
 console.log('   npm run dev                        # View in browser\n')
 
 console.log('💡 The system works great with test data - try that first!')
