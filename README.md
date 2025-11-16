@@ -1,12 +1,11 @@
 # ❄️ Snow Day Predictor
 
-A React + Vite web application for forecasting snow days, using real-time weather data and community-driven predictions. Built for rapid prototyping and experimentation with a focus on UI/UX and predictive modeling.
+A React + Vite web application for forecasting snow days, using real-time weather data and AI-driven predictions. Built for rapid prototyping and experimentation with a focus on UI/UX and predictive modeling.
 
 ## 🌨️ Features
 
 - **Real-time Weather Data**: Integration with WeatherAPI.com for accurate forecasting
 - **Snow Day Predictions**: AI-powered probability calculations based on weather conditions
-- **Community Voting**: Crowdsourced predictions from the community
 - **Weather-Responsive Themes**: Dynamic UI themes that change based on weather conditions
 - **Historical Analysis**: Track prediction accuracy over time
 - **Weather Alerts**: Integration with government weather alerts
@@ -58,7 +57,6 @@ npm run preview
 
 - **App.tsx**: Main application layout with tab navigation
 - **PredictionView**: Today's forecast and snow day probability
-- **CrowdView**: Community voting and predictions
 - **AccuracyView**: Historical accuracy tracking and debug panel
 - **HistoryView**: Past weather events and outcomes
 
@@ -119,7 +117,6 @@ snowday-forecast/
 │   ├── components/           # React components
 │   │   ├── ui/              # Reusable UI primitives
 │   │   ├── PredictionView.tsx
-│   │   ├── CrowdView.tsx
 │   │   └── ...
 │   ├── services/            # Business logic services
 │   │   ├── weather.ts       # Main weather service
@@ -217,12 +214,12 @@ const weights = {
 }
 ```
 
-## 📊 Community Features
+## 📊 Forecast Insights
 
-- **Voting System**: Users can submit their own predictions
-- **Crowd Wisdom**: Aggregate community predictions
-- **Historical Tracking**: Compare model vs. community accuracy
-- **Voting Widgets**: Multiple input methods (slider, thumbs up/down)
+- **Accuracy Tracking**: Compare daily model calls against actual outcomes
+- **Historical Context**: Review past storms and how the model performed
+- **Calibration Tools**: Visualize Brier scores and probability bins
+- **Manual Outcome Logging**: Capture real results until backend automation is available
 
 ## � Security & Privacy
 

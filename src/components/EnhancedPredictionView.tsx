@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useKV } from '@github/spark/hooks'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
@@ -20,19 +18,10 @@ import {
   ShieldCheck,
   ChartBar
 } from '@phosphor-icons/react'
-import { VotingWidget } from '@/components/VotingWidget'
 import { WeatherService } from '@/services/weather'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { toast } from 'sonner'
-
-// Community vote interface
-interface CommunityVote {
-  type: 'probability' | 'thumbs'
-  value: number
-  timestamp: number
-  fingerprint?: string
-}
 
 // Updated interface to match agent predictions
 interface AgentPrediction {
@@ -148,52 +137,18 @@ interface WeatherData {
   lastUpdated: string
 }
 
+const STALE_THRESHOLD_MS = 3 * 60 * 60 * 1000 // three hours
+
 export function EnhancedPredictionView() {
   const [prediction, setPrediction] = useState<AgentPrediction | null>(null)
   const [fallbackWeather, setFallbackWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [userVote, setUserVote] = useKV<{type: 'probability' | 'thumbs', value: number} | null>('today-vote', null)
-  const [communityVotes, setCommunityVotes] = useKV<Array<{type: 'probability' | 'thumbs', value: number, timestamp: number}>>('community-votes', [])
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
 
   useEffect(() => {
     loadPredictionData()
   }, [])
-
-  // Load community votes from localStorage and shared storage
-  useEffect(() => {
-    try {
-      // Load from localStorage first (local cache)
-      const stored = localStorage.getItem('blizzard-community-votes')
-      if (stored) {
-        const parsed: CommunityVote[] = JSON.parse(stored)
-        if (parsed.length > 0 && (!communityVotes || communityVotes.length === 0)) {
-          setCommunityVotes(parsed)
-        }
-      }
-      
-      // Also try to sync with useKV (shared across users in this session)
-      // The useKV hook should handle cross-user persistence
-    } catch (error) {
-      console.error('Error loading community votes:', error)
-    }
-  }, [])
-
-  // Sync community votes to both localStorage AND useKV for sharing
-  useEffect(() => {
-    if (communityVotes && communityVotes.length > 0) {
-      try {
-        // Save locally for fast access
-        localStorage.setItem('blizzard-community-votes', JSON.stringify(communityVotes))
-        
-        // The useKV hook should automatically sync this across users
-        // since we're using setCommunityVotes which is connected to useKV
-      } catch (error) {
-        console.error('Error saving community votes:', error)
-      }
-    }
-  }, [communityVotes])
 
   const loadPredictionData = async () => {
     try {
@@ -233,122 +188,6 @@ export function EnhancedPredictionView() {
     }
   }
 
-  // Enhanced spam protection
-  const checkVoteEligibility = () => {
-    try {
-      const today = new Date().toDateString()
-      const lastVoteDate = localStorage.getItem('blizzard-last-vote-date')
-      const voteCount = parseInt(localStorage.getItem('blizzard-daily-vote-count') || '0')
-      
-      // Reset daily count if it's a new day
-      if (lastVoteDate !== today) {
-        localStorage.setItem('blizzard-daily-vote-count', '0')
-        localStorage.setItem('blizzard-last-vote-date', today)
-        return { canVote: true, votesToday: 0, timeUntilReset: null }
-      }
-      
-      const maxVotesPerDay = 3 // Allow 3 votes per day to account for changing opinions
-      const canVote = voteCount < maxVotesPerDay
-      
-      // Calculate time until reset (midnight)
-      const now = new Date()
-      const tomorrow = new Date(now)
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      tomorrow.setHours(0, 0, 0, 0)
-      const timeUntilReset = tomorrow.getTime() - now.getTime()
-      
-      return { canVote, votesToday: voteCount, timeUntilReset, maxVotes: maxVotesPerDay }
-    } catch (error) {
-      console.error('Error checking vote eligibility:', error)
-      return { canVote: true, votesToday: 0, timeUntilReset: null }
-    }
-  }
-
-  const handleVote = (vote: {type: 'probability' | 'thumbs', value: number}) => {
-    const eligibility = checkVoteEligibility()
-    
-    if (!eligibility.canVote) {
-      const hoursUntilReset = Math.ceil((eligibility.timeUntilReset || 0) / (1000 * 60 * 60))
-      toast.error(`Daily vote limit reached (${eligibility.votesToday}/${eligibility.maxVotes}). Try again in ${hoursUntilReset} hours.`)
-      return
-    }
-    
-    // Generate a browser fingerprint for additional spam protection
-    const fingerprint = generateBrowserFingerprint()
-    const recentVotes = JSON.parse(localStorage.getItem('blizzard-recent-fingerprints') || '[]')
-    const oneHourAgo = Date.now() - (60 * 60 * 1000)
-    
-    // Clean old fingerprints and check for recent duplicate
-    const cleanFingerprints = recentVotes.filter((fp: any) => fp.timestamp > oneHourAgo)
-    const recentSameFingerprint = cleanFingerprints.filter((fp: any) => fp.fingerprint === fingerprint)
-    
-    if (recentSameFingerprint.length >= 2) {
-      toast.error('Please wait before voting again to prevent spam.')
-      return
-    }
-    
-    // Update vote counts
-    const today = new Date().toDateString()
-    const currentCount = parseInt(localStorage.getItem('blizzard-daily-vote-count') || '0')
-    localStorage.setItem('blizzard-daily-vote-count', (currentCount + 1).toString())
-    localStorage.setItem('blizzard-last-vote-date', today)
-    
-    // Store fingerprint
-    cleanFingerprints.push({ fingerprint, timestamp: Date.now() })
-    localStorage.setItem('blizzard-recent-fingerprints', JSON.stringify(cleanFingerprints))
-    
-    // Process the vote
-    setUserVote(vote)
-    const newVote = { 
-      ...vote, 
-      timestamp: Date.now(),
-      fingerprint: fingerprint.substring(0, 8) // Store partial fingerprint for analysis
-    }
-    const updatedVotes = [...(communityVotes || []), newVote]
-    
-    setCommunityVotes(updatedVotes)
-    
-    const remaining = (eligibility.maxVotes || 3) - (currentCount + 1)
-    if (remaining > 0) {
-      toast.success(`Vote recorded! ${remaining} votes remaining today.`)
-    } else {
-      toast.success('Vote recorded! Daily limit reached.')
-    }
-  }
-
-  // Generate browser fingerprint for spam detection
-  const generateBrowserFingerprint = () => {
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    ctx!.textBaseline = 'top'
-    ctx!.font = '14px Arial'
-    ctx!.fillText('Browser fingerprint', 2, 2)
-    
-    const fingerprint = [
-      navigator.userAgent,
-      navigator.language,
-      screen.width + 'x' + screen.height,
-      new Date().getTimezoneOffset(),
-      canvas.toDataURL(),
-      navigator.hardwareConcurrency,
-      navigator.platform
-    ].join('|')
-    
-    // Simple hash function
-    let hash = 0
-    for (let i = 0; i < fingerprint.length; i++) {
-      const char = fingerprint.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
-      hash = hash & hash // Convert to 32bit integer
-    }
-    return hash.toString(36)
-  }
-
-  const getVoteStatus = () => {
-    const eligibility = checkVoteEligibility()
-    return eligibility
-  }
-
   const getSnowDayVerdict = (probability: number) => {
     if (probability >= 70) return { text: 'Very Likely', color: 'bg-destructive' }
     if (probability >= 50) return { text: 'Likely', color: 'bg-accent' }
@@ -375,12 +214,6 @@ export function EnhancedPredictionView() {
       'severe': 'text-red-600'
     }
     return colors[risk as keyof typeof colors] || 'text-gray-600'
-  }
-
-  const getCommunityAverage = () => {
-    if (!communityVotes || communityVotes.length === 0) return null
-    const total = communityVotes.reduce((sum, vote) => sum + vote.value, 0)
-    return Math.round(total / communityVotes.length)
   }
 
   if (loading) {
@@ -410,13 +243,35 @@ export function EnhancedPredictionView() {
   // If we have agent prediction, use it; otherwise use fallback
   const probability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability ?? 0
   const verdict = getSnowDayVerdict(probability)
-  const communityAvg = getCommunityAverage()
+  const lastUpdateInfo = prediction
+    ? { label: 'AI analysis generated', date: new Date(prediction.timestamp) }
+    : fallbackWeather
+      ? { label: 'Last updated', date: new Date(fallbackWeather.lastUpdated) }
+      : null
+  const formattedLastUpdate = lastUpdateInfo ? lastUpdateInfo.date.toLocaleString() : ''
+  const isStale = lastUpdateInfo
+    ? Date.now() - lastUpdateInfo.date.getTime() > STALE_THRESHOLD_MS
+    : false
+  const staleWarning = isStale ? 'This update is over 3 hours old — refresh for the latest conditions.' : null
 
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Weather theme indicator */}
-      <div className="text-center">
+      <div className="text-center space-y-1">
         <WeatherThemeIndicator />
+        {lastUpdateInfo && (
+          <>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              {lastUpdateInfo.label}: {formattedLastUpdate}
+            </p>
+            {staleWarning && (
+              <p className="text-xs sm:text-sm text-amber-600 flex items-center justify-center gap-1">
+                <Warning size={12} />
+                {staleWarning}
+              </p>
+            )}
+          </>
+        )}
       </div>
       
       {/* Main prediction card */}
@@ -455,21 +310,16 @@ export function EnhancedPredictionView() {
               <p className="text-sm text-muted-foreground">{prediction.final.decision_rationale}</p>
             </div>
           )}
-
-          {communityAvg !== null && (
-            <>
-              <Separator />
-              <div className="space-y-2">
-                <h3 className="text-base sm:text-lg font-semibold">Community Consensus</h3>
-                <div className="text-2xl sm:text-3xl font-bold text-accent">{communityAvg}%</div>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  Based on {communityVotes?.length || 0} community votes
-                </p>
-              </div>
-            </>
-          )}
         </CardContent>
       </Card>
+
+      <Alert>
+        <Warning size={16} />
+        <AlertDescription>
+          Crowd voting, leaderboards, and other community features are disabled until we have server-side infrastructure. 
+          The probabilities shown here come directly from the AI agents and weather models.
+        </AlertDescription>
+      </Alert>
 
       {/* Detailed analysis tabs (only show if we have agent prediction) */}
       {prediction && (
@@ -806,31 +656,11 @@ export function EnhancedPredictionView() {
                 </div>
               )}
 
-              <p className="text-xs text-muted-foreground mt-3 sm:mt-4">
-                Last updated: {new Date(fallbackWeather.lastUpdated).toLocaleString()}
-              </p>
-            </CardContent>
-          </Card>
-
-          <VotingWidget 
-            onVote={handleVote} 
-            userVote={userVote || null}
-            disabled={!!userVote}
-          />
-        </div>
-      )}
-
-      {/* Always show voting widget */}
-      {prediction && (
-        <div className="flex justify-center">
-          <div className="w-full max-w-md">
-            <VotingWidget 
-              onVote={handleVote} 
-              userVote={userVote || null}
-              disabled={!!userVote}
-              voteStatus={getVoteStatus()}
-            />
-          </div>
+            <p className="text-xs text-muted-foreground mt-3 sm:mt-4">
+              Last updated: {new Date(fallbackWeather.lastUpdated).toLocaleString()}
+            </p>
+          </CardContent>
+        </Card>
         </div>
       )}
 
@@ -889,19 +719,24 @@ export function EnhancedPredictionView() {
       )}
 
       {/* Last update info */}
-      <div className="text-center text-xs text-muted-foreground">
-        {prediction ? (
-          <>
-            AI analysis generated: {new Date(prediction.timestamp).toLocaleString()}
-            {prediction.final.updates_needed && (
-              <div className="mt-1 text-yellow-600">
-                ⚠️ Conditions changing - next update: {prediction.final.next_evaluation_time}
-              </div>
-            )}
-          </>
-        ) : fallbackWeather ? (
-          `Last updated: ${new Date(fallbackWeather.lastUpdated).toLocaleString()}`
-        ) : null}
+      <div className="text-center text-xs text-muted-foreground space-y-1">
+        {lastUpdateInfo && (
+          <span>
+            {lastUpdateInfo.label}: {formattedLastUpdate}
+          </span>
+        )}
+        {staleWarning && (
+          <span className="text-amber-600 font-medium flex items-center justify-center gap-1">
+            <Warning size={12} />
+            {staleWarning}
+          </span>
+        )}
+        {prediction?.final.updates_needed && (
+          <div className="text-yellow-600 flex items-center justify-center gap-1">
+            <Warning size={12} />
+            Conditions changing - next update: {prediction.final.next_evaluation_time}
+          </div>
+        )}
       </div>
     </div>
   )
