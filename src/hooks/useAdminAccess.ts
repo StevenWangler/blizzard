@@ -24,13 +24,7 @@ export function useAdminAccess() {
   const unlock = useCallback((passphrase: string): UnlockResult => {
     const secret = (import.meta.env.VITE_OUTCOME_ADMIN_SECRET || '').trim()
 
-    // Debug logging
-    console.log('🔐 Admin unlock attempt:', {
-      envSecret: import.meta.env.VITE_OUTCOME_ADMIN_SECRET,
-      secretTrimmed: secret,
-      passphraseTrimmed: passphrase.trim(),
-      match: passphrase.trim() === secret
-    })
+    // Debug logging removed to avoid exposing sensitive information
 
     if (!secret) {
       return {
