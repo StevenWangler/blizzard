@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -159,6 +159,10 @@ export function EnhancedPredictionView() {
   const [recentAverage, setRecentAverage] = useState<number | null>(null)
   const [trendError, setTrendError] = useState<string | null>(null)
   const [trendLoading, setTrendLoading] = useState(true)
+  const [lastUpdateMeta, setLastUpdateMeta] = useState<{ formatted: string; stale: boolean }>({
+    formatted: '',
+    stale: false
+  })
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
   const { checkAndNotify } = useNotifications()
@@ -353,16 +357,39 @@ export function EnhancedPredictionView() {
   // If we have agent prediction, use it; otherwise use fallback
   const probability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability ?? 0
   const verdict = getSnowDayVerdict(probability)
-  const lastUpdateInfo = prediction
-    ? { label: 'AI analysis generated', date: new Date(prediction.timestamp) }
-    : fallbackWeather
-      ? { label: 'Last updated', date: new Date(fallbackWeather.lastUpdated) }
-      : null
-  const formattedLastUpdate = lastUpdateInfo ? lastUpdateInfo.date.toLocaleString() : ''
-  const isStale = lastUpdateInfo
-    ? Date.now() - lastUpdateInfo.date.getTime() > STALE_THRESHOLD_MS
-    : false
-  const staleWarning = isStale ? 'This update is over 3 hours old — refresh for the latest conditions.' : null
+  const lastUpdateInfo = useMemo(() => {
+    if (prediction) {
+      return { label: 'AI analysis generated', date: new Date(prediction.timestamp) }
+    }
+    if (fallbackWeather) {
+      return { label: 'Last updated', date: new Date(fallbackWeather.lastUpdated) }
+    }
+    return null
+  }, [prediction, fallbackWeather])
+  const lastUpdateTime = lastUpdateInfo ? lastUpdateInfo.date.getTime() : null
+
+  useEffect(() => {
+    if (!lastUpdateTime) {
+      setLastUpdateMeta({ formatted: '', stale: false })
+      return
+    }
+
+    const updateMeta = () => {
+      setLastUpdateMeta({
+        formatted: new Date(lastUpdateTime).toLocaleString(),
+        stale: Date.now() - lastUpdateTime > STALE_THRESHOLD_MS
+      })
+    }
+
+    updateMeta()
+    const interval = setInterval(updateMeta, 60_000)
+    return () => clearInterval(interval)
+  }, [lastUpdateTime])
+
+  const timestampToShow = lastUpdateMeta.formatted || (lastUpdateInfo ? lastUpdateInfo.date.toLocaleString() : '')
+  const staleWarning = lastUpdateInfo && lastUpdateMeta.stale
+    ? 'This update is over 3 hours old — refresh for the latest conditions.'
+    : null
 
   // Get snowfall data for canvas animation
   const snowfallIntensity = prediction?.meteorology?.precipitation_analysis?.total_snowfall_inches 
@@ -395,7 +422,7 @@ export function EnhancedPredictionView() {
         {lastUpdateInfo && (
           <>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              {lastUpdateInfo.label}: {formattedLastUpdate}
+              {lastUpdateInfo.label}: {timestampToShow}
             </p>
             {staleWarning && (
               <p className="text-xs sm:text-sm text-amber-600 flex items-center justify-center gap-1">
@@ -461,7 +488,7 @@ export function EnhancedPredictionView() {
       {prediction && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-primary/0 to-primary/10">
-            <CardHeader className="space-y-2">
+            <CardHeader className="space-y-3 p-6 pb-1">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Sparkle size={18} className="text-primary" />
                 AI Spotlight
@@ -472,7 +499,7 @@ export function EnhancedPredictionView() {
                 </p>
               )}
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5 px-6 pb-6 pt-0">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Top drivers</p>
                 <ul className="mt-2 space-y-1.5">
