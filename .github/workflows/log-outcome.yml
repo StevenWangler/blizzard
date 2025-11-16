@@ -1,0 +1,61 @@
+name: Log Snow Day Outcome
+
+on:
+  workflow_dispatch:
+    inputs:
+      event_date:
+        description: 'Prediction date (YYYY-MM-DD)'
+        required: true
+        type: string
+      actual_outcome:
+        description: 'Select the actual result'
+        required: true
+        type: choice
+        options:
+          - snow-day
+          - school-open
+      notes:
+        description: 'Optional notes or context'
+        required: false
+        type: string
+      manual_probability:
+        description: 'Override probability (0-100) if summary data is unavailable'
+        required: false
+        type: string
+
+jobs:
+  append-record:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Update outcomes ledger
+        env:
+          EVENT_DATE: ${{ inputs.event_date }}
+          OUTCOME: ${{ inputs.actual_outcome }}
+          NOTES: ${{ inputs.notes }}
+          MANUAL_PROBABILITY: ${{ inputs.manual_probability }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: node build-tools/update-outcomes-ledger.mjs
+
+      - name: Commit outcome entry
+        env:
+          EVENT_DATE: ${{ inputs.event_date }}
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected"
+            exit 0
+          fi
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add public/data/outcomes.json
+          git commit -m "Log outcome for ${EVENT_DATE:-${{ inputs.event_date }}}"
+          git push

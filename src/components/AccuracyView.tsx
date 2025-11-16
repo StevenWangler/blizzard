@@ -1,315 +1,171 @@
-import { useKV } from '@github/spark/hooks'
+import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { Target, TrendUp, TrendDown, Trophy, ArrowsClockwise, Calendar, Warning } from '@phosphor-icons/react'
-import { useState, useEffect } from 'react'
-import { toast } from 'sonner'
+import { Target, Clock, Database, Warning, ArrowsClockwise, Calendar } from '@phosphor-icons/react'
+import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome } from '@/services/outcomes'
+import { useAdminAccess } from '@/hooks/useAdminAccess'
 
-interface AccuracyRecord {
+interface PredictionMeta {
   date: string
   modelPrediction: number
-  communityPrediction: number
-  actualOutcome: number | null // null = outcome not yet determined
-  modelBrier: number | null
-  communityBrier: number | null
-  communityVoteCount: number
-  dataSource: 'real' | 'demo'
+  confidence?: string | null
 }
 
-interface CommunityVote {
-  type: 'probability' | 'thumbs'
-  value: number
-  timestamp: number
-  fingerprint?: string
+const todayISO = () => new Date().toISOString().split('T')[0]
+
+const normalizeProbability = (value: unknown) => {
+  const num = Number(value)
+  if (Number.isNaN(num)) return 0
+  return Math.max(0, Math.min(100, Math.round(num)))
 }
 
 export function AccuracyView() {
-  const [accuracyHistory, setAccuracyHistory] = useKV<AccuracyRecord[]>('accuracy-history', [])
-  const [communityVotes] = useKV<CommunityVote[]>('community-votes', [])
-  const [pendingOutcomes, setPendingOutcomes] = useKV<string[]>('pending-outcomes', [])
+  const [outcomes, setOutcomes] = useState<SnowDayOutcome[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [predictionMeta, setPredictionMeta] = useState<PredictionMeta | null>(null)
+  const { isAdmin } = useAdminAccess()
 
-  // Generate real accuracy record from current day's data
-  const generateTodaysRecord = async (): Promise<AccuracyRecord | null> => {
-    try {
-      const today = new Date().toISOString().split('T')[0]
-      
-      // Check if we already have today's record
-      const existingRecord = accuracyHistory?.find(record => record.date === today)
-      if (existingRecord) return existingRecord
-
-      // Get community prediction from actual votes
-      let communityPrediction = 0
-      let communityVoteCount = 0
-      
-      if (communityVotes && communityVotes.length > 0) {
-        // Get votes from the last 24 hours for "today's" prediction
-        const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000)
-        const recentVotes = communityVotes.filter(vote => vote.timestamp > oneDayAgo)
-        
-        if (recentVotes.length > 0) {
-          communityPrediction = Math.round(
-            recentVotes.reduce((sum, vote) => sum + vote.value, 0) / recentVotes.length
-          )
-          communityVoteCount = recentVotes.length
-        }
-      }
-
-      // Get model prediction from weather service or AI prediction
-      let modelPrediction = 0
-      try {
-        // Try to get from AI prediction first
-        const response = await fetch('/data/prediction.json')
-        if (response.ok) {
-          const data = await response.json()
-          modelPrediction = data.final?.snow_day_probability || 0
-        } else {
-          // Fallback to weather service calculation
-          const { WeatherService } = await import('@/services/weather')
-          const weatherData = await WeatherService.getCurrentForecast()
-          modelPrediction = weatherData.modelProbability || 0
-        }
-      } catch (error) {
-        console.warn('Could not fetch model prediction, using fallback:', error)
-        // Use a simple heuristic as fallback
-        modelPrediction = Math.round(30 + Math.random() * 40) // 30-70% range
-      }
-
-      // Create record with null outcome (to be filled later)
-      const record: AccuracyRecord = {
-        date: today,
-        modelPrediction,
-        communityPrediction,
-        communityVoteCount,
-        actualOutcome: null,
-        modelBrier: null,
-        communityBrier: null,
-        dataSource: 'real'
-      }
-
-      return record
-    } catch (error) {
-      console.error('Error generating today\'s record:', error)
-      return null
-    }
-  }
-
-  // Calculate Brier score: (prediction - outcome)²
-  const calculateBrierScore = (prediction: number, outcome: number): number => {
-    const p = prediction / 100 // Convert percentage to probability
-    return Math.pow(p - outcome, 2)
-  }
-
-  // Update record with actual outcome
-  const recordOutcome = async (date: string, outcome: number) => {
-    if (!accuracyHistory) return
-
-    const updatedHistory = accuracyHistory.map(record => {
-      if (record.date === date) {
-        const modelBrier = calculateBrierScore(record.modelPrediction, outcome)
-        const communityBrier = calculateBrierScore(record.communityPrediction, outcome)
-        
-        return {
-          ...record,
-          actualOutcome: outcome,
-          modelBrier,
-          communityBrier
-        }
-      }
-      return record
-    })
-
-    setAccuracyHistory(updatedHistory)
-    
-    // Remove from pending outcomes
-    const updatedPending = pendingOutcomes?.filter(d => d !== date) || []
-    setPendingOutcomes(updatedPending)
-    
-    toast.success(`Outcome recorded for ${date}`)
-  }
-
-  // Initialize today's record if it doesn't exist or update if community votes changed
   useEffect(() => {
-    const initTodaysRecord = async () => {
+    const loadLedger = async () => {
       setLoading(true)
+      setError(null)
       try {
-        const today = new Date().toISOString().split('T')[0]
-        const todaysRecord = await generateTodaysRecord()
-        
-        if (todaysRecord) {
-          const existingRecordIndex = accuracyHistory?.findIndex(r => r.date === todaysRecord.date) ?? -1
-          
-          if (existingRecordIndex >= 0) {
-            // Update existing record with latest community prediction
-            const updatedHistory = [...(accuracyHistory || [])]
-            updatedHistory[existingRecordIndex] = {
-              ...updatedHistory[existingRecordIndex],
-              communityPrediction: todaysRecord.communityPrediction,
-              communityVoteCount: todaysRecord.communityVoteCount
-            }
-            setAccuracyHistory(updatedHistory)
-          } else {
-            // Add new record
-            const updatedHistory = [...(accuracyHistory || []), todaysRecord]
-            setAccuracyHistory(updatedHistory)
-            
-            // Add to pending outcomes if outcome is null
-            if (todaysRecord.actualOutcome === null) {
-              const updatedPending = [...(pendingOutcomes || []), todaysRecord.date]
-              setPendingOutcomes(updatedPending)
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error initializing today\'s record:', error)
+        const ledger = await fetchOutcomeLedger({ bustCache: true })
+        setOutcomes(ledger)
+      } catch (err) {
+        setError('Unable to load outcome ledger. Refresh to try again.')
       } finally {
         setLoading(false)
       }
     }
 
-    initTodaysRecord()
-  }, [communityVotes]) // Re-run when community votes change
-
-  // Add some demo data if we have no real data yet
-  useEffect(() => {
-    if (!accuracyHistory || accuracyHistory.length === 0) {
-      const demoData: AccuracyRecord[] = [
-        {
-          date: '2024-01-15',
-          modelPrediction: 85,
-          communityPrediction: 78,
-          communityVoteCount: 23,
-          actualOutcome: 1,
-          modelBrier: calculateBrierScore(85, 1),
-          communityBrier: calculateBrierScore(78, 1),
-          dataSource: 'demo'
-        },
-        {
-          date: '2024-01-16', 
-          modelPrediction: 35,
-          communityPrediction: 42,
-          communityVoteCount: 31,
-          actualOutcome: 0,
-          modelBrier: calculateBrierScore(35, 0),
-          communityBrier: calculateBrierScore(42, 0),
-          dataSource: 'demo'
-        },
-        {
-          date: '2024-01-17',
-          modelPrediction: 65,
-          communityPrediction: 58,
-          communityVoteCount: 18,
-          actualOutcome: 1,
-          modelBrier: calculateBrierScore(65, 1),
-          communityBrier: calculateBrierScore(58, 1),
-          dataSource: 'demo'
-        }
-      ]
-      setAccuracyHistory(demoData)
-    }
+    loadLedger()
   }, [])
 
-  const calculateOverallStats = () => {
-    if (!accuracyHistory || accuracyHistory.length === 0) {
-      return {
-        modelBrier: 0,
-        communityBrier: 0,
-        modelAccuracy: 0,
-        communityAccuracy: 0,
-        totalPredictions: 0,
-        completedPredictions: 0,
-        pendingPredictions: 0,
-        realDataCount: 0,
-        demoDataCount: 0
+  useEffect(() => {
+    const fetchSummary = async () => {
+      const hydrateFromSummary = async () => {
+        const response = await fetch('/data/summary.json', { cache: 'no-store' })
+        if (!response.ok) return false
+        const summary = await response.json()
+        const date = summary.timestamp ? summary.timestamp.split('T')[0] : todayISO()
+        setPredictionMeta({
+          date,
+          modelPrediction: normalizeProbability(summary.probability ?? summary.final?.snow_day_probability ?? 0),
+          confidence: summary.confidence ?? summary.final?.confidence_level ?? null
+        })
+        return true
+      }
+
+      const hydrateFromPrediction = async () => {
+        const response = await fetch('/data/prediction.json', { cache: 'no-store' })
+        if (!response.ok) return
+        const prediction = await response.json()
+        const date = prediction.timestamp ? prediction.timestamp.split('T')[0] : todayISO()
+        setPredictionMeta({
+          date,
+          modelPrediction: normalizeProbability(prediction.final?.snow_day_probability ?? 0),
+          confidence: prediction.final?.confidence_level ?? null
+        })
+      }
+
+      try {
+        const success = await hydrateFromSummary()
+        if (!success) {
+          await hydrateFromPrediction()
+        }
+      } catch (err) {
+        await hydrateFromPrediction()
       }
     }
 
-    // Only use completed predictions for accuracy calculations
-    const completedRecords = accuracyHistory.filter(record => 
-      record.actualOutcome !== null && 
-      record.modelBrier !== null && 
-      record.communityBrier !== null
-    )
-    
-    const pendingRecords = accuracyHistory.filter(record => record.actualOutcome === null)
-    const realRecords = accuracyHistory.filter(record => record.dataSource === 'real')
-    const demoRecords = accuracyHistory.filter(record => record.dataSource === 'demo')
+    fetchSummary()
+  }, [])
 
-    if (completedRecords.length === 0) {
-      return {
-        modelBrier: 0,
-        communityBrier: 0,
-        modelAccuracy: 0,
-        communityAccuracy: 0,
-        totalPredictions: accuracyHistory.length,
-        completedPredictions: 0,
-        pendingPredictions: pendingRecords.length,
-        realDataCount: realRecords.length,
-        demoDataCount: demoRecords.length
-      }
-    }
+  const pendingRecords = useMemo(() => {
+    if (!predictionMeta) return []
+    const alreadyLogged = outcomes.some(entry => entry.date === predictionMeta.date)
+    if (alreadyLogged) return []
+    return [predictionMeta]
+  }, [predictionMeta, outcomes])
 
-    const totalCompleted = completedRecords.length
-    const modelBrier = completedRecords.reduce((sum, record) => sum + (record.modelBrier || 0), 0) / totalCompleted
-    const communityBrier = completedRecords.reduce((sum, record) => sum + (record.communityBrier || 0), 0) / totalCompleted
-
-    const modelCorrect = completedRecords.filter(record => {
-      const predicted = record.modelPrediction > 50 ? 1 : 0
-      return predicted === record.actualOutcome
-    }).length
-
-    const communityCorrect = completedRecords.filter(record => {
-      const predicted = record.communityPrediction > 50 ? 1 : 0
-      return predicted === record.actualOutcome
-    }).length
-
+  const stats = useMemo(() => {
+    const baseStats = buildOutcomeStats(outcomes)
+    const demoDataCount = outcomes.filter(entry => entry.source === 'seed').length
+    const realDataCount = baseStats.totalRecords - demoDataCount
     return {
-      modelBrier,
-      communityBrier,
-      modelAccuracy: Math.round((modelCorrect / totalCompleted) * 100),
-      communityAccuracy: Math.round((communityCorrect / totalCompleted) * 100),
-      totalPredictions: accuracyHistory.length,
-      completedPredictions: totalCompleted,
+      modelBrier: baseStats.avgBrierScore ?? 0,
+      modelAccuracy: baseStats.directionalAccuracy,
+      totalPredictions: baseStats.totalRecords + pendingRecords.length,
+      completedPredictions: baseStats.totalRecords,
       pendingPredictions: pendingRecords.length,
-      realDataCount: realRecords.length,
-      demoDataCount: demoRecords.length
+      snowDays: baseStats.snowDays,
+      realDataCount,
+      demoDataCount
     }
-  }
+  }, [outcomes, pendingRecords])
 
-  const getCalibrationData = () => {
-    if (!accuracyHistory || accuracyHistory.length === 0) return []
-
-    // Only use completed records for calibration
-    const completedRecords = accuracyHistory.filter(record => record.actualOutcome !== null)
-    if (completedRecords.length === 0) return []
+  const calibrationData = useMemo(() => {
+    if (!outcomes || outcomes.length === 0) return []
+    const completed = outcomes.filter(entry => typeof entry.modelProbability === 'number')
+    if (completed.length === 0) return []
 
     const buckets = Array(10).fill(0).map(() => ({ predictions: 0, outcomes: 0 }))
-    
-    completedRecords.forEach(record => {
-      const bucket = Math.min(Math.floor(record.communityPrediction / 10), 9)
+
+    completed.forEach(entry => {
+      const bucket = Math.min(Math.floor((entry.modelProbability || 0) / 10), 9)
       buckets[bucket].predictions++
-      buckets[bucket].outcomes += record.actualOutcome || 0
+      buckets[bucket].outcomes += entry.actualSnowDay ? 1 : 0
     })
 
-    return buckets.map((bucket, index) => ({
-      range: `${index * 10}-${(index + 1) * 10}%`,
-      predicted: (index * 10 + 5),
-      observed: bucket.predictions > 0 ? Math.round((bucket.outcomes / bucket.predictions) * 100) : 0,
-      count: bucket.predictions
-    })).filter(item => item.count > 0)
-  }
+    return buckets
+      .map((bucket, index) => ({
+        range: `${index * 10}-${(index + 1) * 10}%`,
+        predicted: index * 10 + 5,
+        observed: bucket.predictions > 0 ? Math.round((bucket.outcomes / bucket.predictions) * 100) : 0,
+        count: bucket.predictions
+      }))
+      .filter(bucket => bucket.count > 0)
+  }, [outcomes])
 
-  const stats = calculateOverallStats()
-  const calibrationData = getCalibrationData()
-  const recentTrend = accuracyHistory?.filter(r => r.actualOutcome !== null).slice(-7) || []
-  const pendingRecords = accuracyHistory?.filter(r => r.actualOutcome === null) || []
+  const recentTrend = useMemo(() => {
+    const trendSource = outcomes
+      .filter(entry => typeof entry.modelProbability === 'number')
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(-7)
+
+    return trendSource.map(entry => {
+      const prob = typeof entry.modelProbability === 'number' ? entry.modelProbability : 0
+      const actual = entry.actualSnowDay ? 1 : 0
+      const brier = Math.pow(prob / 100 - actual, 2)
+      return {
+        date: entry.date,
+        modelBrier: brier,
+        modelPrediction: prob,
+        actualOutcome: actual
+      }
+    })
+  }, [outcomes])
+
+  const completedOutcomes = useMemo(() => {
+    return outcomes.map(entry => {
+      const prob = typeof entry.modelProbability === 'number' ? entry.modelProbability : null
+      const brier = typeof prob === 'number' ? Math.pow(prob / 100 - (entry.actualSnowDay ? 1 : 0), 2) : null
+      return { ...entry, modelPrediction: prob, modelBrier: brier }
+    })
+  }, [outcomes])
+
+  const openRecorderTab = () => {
+    if (!isAdmin) return
+    const trigger = document.querySelector('[data-value="outcomes"]') as HTMLButtonElement | null
+    trigger?.click()
+  }
 
   return (
     <div className="space-y-6">
-      {/* Data Status Banner */}
       <Card className={`${stats.realDataCount > 0 ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200'}`}>
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
@@ -323,12 +179,12 @@ export function AccuracyView() {
               </div>
               <div>
                 <h3 className="font-semibold text-sm">
-                  {stats.realDataCount > 0 ? 'Real Data Connected!' : 'Demo Data Active'}
+                  {stats.realDataCount > 0 ? 'Real Data Connected' : 'Demo Data Active'}
                 </h3>
                 <p className="text-xs text-muted-foreground">
                   {stats.realDataCount > 0 
-                    ? `${stats.realDataCount} real prediction${stats.realDataCount > 1 ? 's' : ''}, ${stats.demoDataCount} demo records`
-                    : `Using ${stats.demoDataCount} demo records - cast votes to generate real accuracy data`
+                    ? `${stats.realDataCount} real prediction${stats.realDataCount !== 1 ? 's' : ''}, ${stats.demoDataCount} demo record${stats.demoDataCount !== 1 ? 's' : ''}`
+                    : 'Using demo history until we have server-side results logging'
                   }
                 </p>
               </div>
@@ -340,10 +196,12 @@ export function AccuracyView() {
               </div>
             )}
           </div>
+          {error && (
+            <p className="text-xs text-destructive mt-2">{error}</p>
+          )}
         </CardContent>
       </Card>
 
-      {/* Pending Outcomes Alert */}
       {pendingRecords.length > 0 && (
         <Card className="bg-yellow-50 border-yellow-200">
           <CardContent className="p-4">
@@ -354,36 +212,45 @@ export function AccuracyView() {
                   Pending Outcomes ({pendingRecords.length})
                 </h3>
                 <p className="text-xs text-yellow-700 mb-3">
-                  These predictions need actual snow day outcomes to calculate accuracy
+                  These predictions need real-world outcomes logged via GitHub Actions.
                 </p>
                 <div className="space-y-2">
                   {pendingRecords.map(record => (
                     <div key={record.date} className="flex items-center justify-between p-2 bg-white rounded border">
                       <div className="text-sm">
-                        <span className="font-medium">{record.date}</span>
-                        <span className="text-muted-foreground ml-2">
-                          Model: {record.modelPrediction}% • Community: {record.communityPrediction}% 
-                          ({record.communityVoteCount} votes)
-                        </span>
+                        <span className="font-medium mr-2">{new Date(record.date).toLocaleDateString()}</span>
+                        <span className="text-muted-foreground">Model: {record.modelPrediction}%</span>
                       </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => recordOutcome(record.date, 1)}
-                          className="text-xs bg-red-50 hover:bg-red-100 border-red-200"
-                        >
-                          Snow Day
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => recordOutcome(record.date, 0)}
-                          className="text-xs bg-green-50 hover:bg-green-100 border-green-200"
-                        >
-                          School Open
-                        </Button>
-                      </div>
+                      {isAdmin ? (
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={openRecorderTab}
+                            className="text-xs bg-yellow-100 hover:bg-yellow-200 border-yellow-300"
+                          >
+                            Open Recorder
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            asChild
+                          >
+                            <a
+                              href="https://github.com/StevenWangler/snowday-forecast/actions/workflows/log-outcome.yml"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs"
+                            >
+                              Workflow
+                            </a>
+                          </Button>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">
+                          Outcome logging restricted to admins.
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -408,12 +275,12 @@ export function AccuracyView() {
                 <span className="font-bold">{stats.modelBrier.toFixed(3)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Accuracy</span>
+                <span className="text-sm text-muted-foreground">Directional Accuracy</span>
                 <span className="font-bold">{stats.modelAccuracy}%</span>
               </div>
             </div>
             <Badge variant={stats.modelBrier < 0.15 ? 'default' : 'secondary'} className="w-full justify-center">
-              {stats.modelBrier < 0.15 ? 'Excellent' : stats.modelBrier < 0.25 ? 'Good' : 'Needs Improvement'}
+              {stats.modelBrier < 0.15 ? 'Excellent' : stats.modelBrier < 0.25 ? 'Good' : 'Needs Tuning'}
             </Badge>
           </CardContent>
         </Card>
@@ -421,49 +288,49 @@ export function AccuracyView() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Trophy size={20} />
-              Community Performance
+              <Clock size={20} />
+              Prediction Volume
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Brier Score</span>
-                <span className="font-bold">{stats.communityBrier.toFixed(3)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Accuracy</span>
-                <span className="font-bold">{stats.communityAccuracy}%</span>
-              </div>
+          <CardContent className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Total</span>
+              <span className="font-semibold">{stats.totalPredictions}</span>
             </div>
-            <Badge variant={stats.communityBrier < 0.15 ? 'default' : 'secondary'} className="w-full justify-center">
-              {stats.communityBrier < 0.15 ? 'Excellent' : stats.communityBrier < 0.25 ? 'Good' : 'Needs Improvement'}
-            </Badge>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Completed</span>
+              <span className="font-semibold">{stats.completedPredictions}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Pending</span>
+              <span className="font-semibold">{stats.pendingPredictions}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Snow Days Logged</span>
+              <span className="font-semibold">{stats.snowDays}</span>
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              {stats.communityBrier < stats.modelBrier ? <TrendUp size={20} /> : <TrendDown size={20} />}
-              Winner
+              <Database size={20} />
+              Data Mix
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
-                {stats.communityBrier < stats.modelBrier ? 'Community' : 'Model'}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Better Brier score by {Math.abs(stats.communityBrier - stats.modelBrier).toFixed(3)}
-              </p>
+          <CardContent className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Real Records</span>
+              <span className="font-semibold">{stats.realDataCount}</span>
             </div>
-            <div className="text-xs text-muted-foreground text-center">
-              Based on {stats.completedPredictions} completed prediction{stats.completedPredictions !== 1 ? 's' : ''}
-              {stats.pendingPredictions > 0 && (
-                <> • {stats.pendingPredictions} pending</>
-              )}
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Demo Records</span>
+              <span className="font-semibold">{stats.demoDataCount}</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Demo entries keep the dashboard populated until live outcomes replace them.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -489,21 +356,13 @@ export function AccuracyView() {
                   <YAxis tick={{ fontSize: 12 }} domain={[0, 0.5]} />
                   <Tooltip 
                     labelFormatter={(date) => new Date(date).toLocaleDateString()}
-                    formatter={(value: number, name: string) => [value.toFixed(3), name === 'modelBrier' ? 'Model' : 'Community']}
+                    formatter={(value: number) => [value.toFixed(3), 'Brier']}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="modelBrier" 
                     stroke="hsl(var(--primary))" 
                     strokeWidth={2}
-                    name="modelBrier"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="communityBrier" 
-                    stroke="hsl(var(--accent))" 
-                    strokeWidth={2}
-                    name="communityBrier"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -515,7 +374,7 @@ export function AccuracyView() {
           <CardHeader>
             <CardTitle>Calibration Chart</CardTitle>
             <p className="text-sm text-muted-foreground">
-              How well predictions match reality • {calibrationData.length} probability ranges
+              How well probabilities match outcomes • {calibrationData.length} bins
             </p>
           </CardHeader>
           <CardContent>
@@ -531,7 +390,7 @@ export function AccuracyView() {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Perfect calibration would show bars matching their x-axis position
+              Perfect calibration lands each bar near the midpoint of its range.
             </p>
           </CardContent>
         </Card>
@@ -541,14 +400,14 @@ export function AccuracyView() {
         <CardHeader>
           <CardTitle>Recent Predictions</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Latest forecasting performance • {accuracyHistory?.length || 0} total records
+            Latest forecasting performance • {completedOutcomes.length} total records
           </p>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {accuracyHistory && accuracyHistory.length > 0 ? (
-              accuracyHistory.slice().reverse().map((record) => (
-                <div key={record.date} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            {completedOutcomes.length > 0 ? (
+              completedOutcomes.map((record) => (
+                <div key={`${record.date}-${record.recordedAt}`} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-4">
                     <div className="text-sm font-medium">
                       {new Date(record.date).toLocaleDateString(undefined, { 
@@ -557,33 +416,21 @@ export function AccuracyView() {
                         day: 'numeric' 
                       })}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">Model: {record.modelPrediction}%</span>
-                      <span className="text-sm">
-                        Community: {record.communityPrediction}% 
-                        <span className="text-xs text-muted-foreground ml-1">
-                          ({record.communityVoteCount} votes)
-                        </span>
-                      </span>
+                    <div className="text-sm">
+                      Model: {typeof record.modelPrediction === 'number' ? `${record.modelPrediction}%` : '—'}
+                      {record.source === 'seed' && (
+                        <Badge variant="secondary" className="ml-2 text-xs">Demo</Badge>
+                      )}
                     </div>
-                    {record.dataSource === 'demo' && (
-                      <Badge variant="secondary" className="text-xs">Demo</Badge>
-                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {record.actualOutcome !== null ? (
-                      <>
-                        <Badge variant={record.actualOutcome === 1 ? 'destructive' : 'secondary'}>
-                          {record.actualOutcome === 1 ? 'Snow Day' : 'School Open'}
-                        </Badge>
-                        <div className="text-sm text-muted-foreground">
-                          M: {record.modelBrier?.toFixed(3)} | C: {record.communityBrier?.toFixed(3)}
-                        </div>
-                      </>
-                    ) : (
-                      <Badge variant="outline" className="text-yellow-600 border-yellow-300">
-                        Pending
-                      </Badge>
+                    <Badge variant={record.actualSnowDay ? 'destructive' : 'secondary'}>
+                      {record.actualSnowDay ? 'Snow Day' : 'School Open'}
+                    </Badge>
+                    {typeof record.modelBrier === 'number' && (
+                      <div className="text-sm text-muted-foreground">
+                        Brier: {record.modelBrier.toFixed(3)}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -592,13 +439,12 @@ export function AccuracyView() {
               <div className="text-center py-8 text-muted-foreground">
                 <Target size={48} className="mx-auto mb-4 opacity-50" />
                 <p className="text-sm">No prediction data yet</p>
-                <p className="text-xs">Cast some votes to start generating accuracy records!</p>
+                <p className="text-xs">Record some outcomes to build the accuracy dashboard.</p>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
-
     </div>
   )
 }

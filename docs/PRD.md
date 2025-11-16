@@ -1,14 +1,14 @@
 # Snow Day Predictor - Product Requirements Document
 
-A community-driven snow day prediction platform that combines AI forecasting with crowd wisdom to predict school closures for Rockford, Michigan.
+An AI-focused snow day prediction platform that combines forecasting models with transparent analysis to predict school closures for Rockford, Michigan.
 
 **Experience Qualities**:
 1. **Trustworthy** - Clear methodology and transparent scoring builds confidence in predictions
-2. **Engaging** - Gamified voting and leaderboards encourage daily participation  
+2. **Engaging** - Visual storytelling, weather-driven theming, and live model diagnostics reward curiosity  
 3. **Informative** - Weather drivers and calibration data educate users about forecasting
 
 **Complexity Level**: Light Application (multiple features with basic state)
-The app handles predictions, community voting, scoring, and leaderboards but doesn't require complex user accounts or extensive data management.
+The app handles predictions, manual outcome logging, scoring, and dashboards but doesn't require complex user accounts or extensive data management.
 
 ## Essential Features
 
@@ -16,15 +16,15 @@ The app handles predictions, community voting, scoring, and leaderboards but doe
 - **Functionality**: Shows today's snow day probability with visual confidence indicator
 - **Purpose**: Primary value - gives users the prediction they came for
 - **Trigger**: User visits homepage
-- **Progression**: Load → Display probability → Show weather drivers → Enable voting
+- **Progression**: Load → Display probability → Show weather drivers → Explain confidence
 - **Success criteria**: Probability loads within 2 seconds, weather data is current
 
-### Community Voting System  
-- **Functionality**: Users vote thumbs up/down or enter probability (0-100%)
-- **Purpose**: Harnesses crowd wisdom to improve prediction accuracy
-- **Trigger**: User sees today's prediction and wants to contribute
-- **Progression**: View prediction → Choose voting method → Submit vote → See aggregate
-- **Success criteria**: Vote persists, aggregate updates, user sees confirmation
+### Manual Outcome Logging  
+- **Functionality**: Admins can record whether school closed to finalize each prediction
+- **Purpose**: Allows the accuracy dashboard to function without backend automation
+- **Trigger**: Outcome becomes known for a tracked date
+- **Progression**: View pending record → Select outcome → Update accuracy metrics
+- **Success criteria**: Entry is stored locally, dashboard recalculates immediately
 
 ### Accuracy Tracking & Scoring
 - **Functionality**: Tracks predictions vs outcomes using Brier scores
@@ -40,18 +40,18 @@ The app handles predictions, community voting, scoring, and leaderboards but doe
 - **Progression**: API call → Parse relevant fields → Generate prediction → Display drivers
 - **Success criteria**: Data is current, relevant fields extracted, prediction logic is sound
 
-### Leaderboards & Reputation
-- **Functionality**: Ranks users by Brier score performance with badges/streaks
-- **Purpose**: Gamifies participation and highlights skilled forecasters
-- **Trigger**: User navigates to crowd/leaderboard view
-- **Progression**: Load scores → Calculate rankings → Display with badges → Show calibration
-- **Success criteria**: Rankings reflect actual performance, badges are earned correctly
+### Accuracy Dashboard
+- **Functionality**: Highlights model calibration, recent results, and dataset health
+- **Purpose**: Communicates how reliable the AI forecast has been
+- **Trigger**: User opens Accuracy tab or records new outcome
+- **Progression**: Display stats → Show Brier trend → List recent predictions
+- **Success criteria**: Metrics update instantly, charts remain legible on mobile
 
 ## Edge Case Handling
 - **No weather data**: Show last known data with timestamp and refresh option
 - **School closure ambiguity**: Admin override capability for unusual circumstances  
-- **New user voting**: Equal initial weight, Elo updates after sufficient prediction history
-- **Tied predictions**: Show uncertainty range, emphasize probabilistic nature
+- **Manual outcome backlog**: Highlight pending records that still need a result
+- **Confidence communication**: Show uncertainty range, emphasize probabilistic nature
 - **API rate limits**: Cache data appropriately, graceful degradation messaging
 
 ## Design Direction
@@ -81,12 +81,12 @@ Modern, clean sans-serif that balances scientific precision with approachable co
 Subtle, weather-inspired transitions that reinforce the forecasting theme - gentle fades and slides that feel like shifting weather patterns rather than jarring interface changes.
 
 - **Purposeful Meaning**: Snow-like gentle transitions convey the gradual nature of weather changes and prediction updates
-- **Hierarchy of Movement**: Probability updates get prominent animation, voting provides satisfying feedback, data loads smoothly
+- **Hierarchy of Movement**: Probability updates get prominent animation, manual actions feel responsive, data loads smoothly
 
 ## Component Selection
-- **Components**: Card for prediction display, Progress for probability bars, Badge for accuracy indicators, Tabs for navigation between views, Button variants for voting options, Table for leaderboards, Alert for weather warnings
+- **Components**: Card for prediction display, Progress for probability bars, Badge for accuracy indicators, Tabs for navigation between views, Buttons for manual outcome entry, Charts for calibration, Alert for weather warnings
 - **Customizations**: Weather-themed progress bars, probability visualization components, calibration chart containers
-- **States**: Voting buttons show clear selected states, prediction cards indicate confidence levels, disabled states for past predictions  
-- **Icon Selection**: Phosphor weather icons (Cloud, Sun, Thermometer), voting (ThumbsUp/Down), accuracy (Target, TrendUp)
+- **States**: Outcome buttons show clear selected states, prediction cards indicate confidence levels, disabled states for past predictions  
+- **Icon Selection**: Phosphor weather icons (Cloud, Sun, Thermometer) plus accuracy cues (Target, TrendUp)
 - **Spacing**: Generous padding (p-6/p-8) for main content, tight spacing (gap-2) for related data points
-- **Mobile**: Stack prediction data vertically, collapse detailed weather drivers to expandable sections, simplified voting interface
+- **Mobile**: Stack prediction data vertically, collapse detailed weather drivers to expandable sections, keep manual controls large
