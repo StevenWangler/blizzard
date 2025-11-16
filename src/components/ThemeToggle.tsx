@@ -19,9 +19,9 @@ export function ThemeToggle() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="h-8 w-8 sm:h-9 sm:w-9 p-0">
           {isDarkMode ? (
-            <Moon className="h-4 w-4 transition-all" />
-          ) : (
             <Sun className="h-4 w-4 transition-all" />
+          ) : (
+            <Moon className="h-4 w-4 transition-all" />
           )}
           <span className="sr-only">Toggle theme</span>
         </Button>
@@ -38,8 +38,8 @@ export function ThemeToggle() {
         <DropdownMenuItem onClick={toggleDarkMode} className="flex items-center gap-2">
           {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          {!isDarkMode && <span className="ml-auto text-xs">🌙</span>}
           {isDarkMode && <span className="ml-auto text-xs">☀️</span>}
+          {!isDarkMode && <span className="ml-auto text-xs">🌙</span>}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled className="text-xs text-muted-foreground justify-center">

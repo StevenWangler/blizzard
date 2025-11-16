@@ -221,8 +221,7 @@ export function OutcomeRecorder() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Date</TableHead>
-                      <TableHead>AI Prediction</TableHead>
-                      <TableHead>Student Prediction</TableHead>
+                      <TableHead>Prediction</TableHead>
                       <TableHead>Outcome</TableHead>
                       <TableHead>Recorded By</TableHead>
                       <TableHead>Notes</TableHead>
@@ -239,9 +238,6 @@ export function OutcomeRecorder() {
                           {entry.confidence && (
                             <span className="ml-2 text-xs text-muted-foreground">{entry.confidence}</span>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          {typeof entry.studentPrediction === 'number' ? `${entry.studentPrediction}%` : '—'}
                         </TableCell>
                         <TableCell>
                           <Badge variant={entry.actualSnowDay ? 'destructive' : 'secondary'}>

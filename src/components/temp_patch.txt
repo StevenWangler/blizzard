@@ -1,0 +1,24 @@
+--- a/OutcomeRecorder.tsx
++++ b/OutcomeRecorder.tsx
+@@ -221,9 +221,10 @@
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+-                      <TableHead>Prediction</TableHead>
++                      <TableHead>AI Prediction</TableHead>
++                      <TableHead>Student Prediction</TableHead>
+                      <TableHead>Outcome</TableHead>
+                      <TableHead>Recorded By</TableHead>
+                      <TableHead>Notes</TableHead>
+                    </TableRow>
+                  </TableHeader>
+@@ -237,6 +238,9 @@
+                            {entry.confidence && (
+                              <span className="ml-2 text-xs text-muted-foreground">{entry.confidence}</span>
+                            )}
++                          </TableCell>
++                          <TableCell>
++                            {typeof entry.studentPrediction === 'number' ? `${entry.studentPrediction}%` : '—'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={entry.actualSnowDay ? 'destructive' : 'secondary'}>

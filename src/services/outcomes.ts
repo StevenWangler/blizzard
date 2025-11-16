@@ -1,6 +1,7 @@
 export interface SnowDayOutcome {
   date: string
   modelProbability?: number | null
+  studentPrediction?: number | null
   confidence?: string | null
   predictionTimestamp?: string | null
   actualSnowDay: boolean
