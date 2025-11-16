@@ -134,7 +134,7 @@ const WeatherThemeContext = createContext<WeatherThemeContextValue | null>(null)
 
 function useProvideWeatherTheme(): WeatherThemeContextValue {
   const [weatherConditions, setWeatherConditions] = useKV<{snowfall: number, windSpeed: number, visibility: number} | null>('weather-conditions', null)
-  const [isDarkMode, setIsDarkMode] = useKV<boolean>('dark-mode', false)
+  const [isDarkMode, setIsDarkMode] = useKV<boolean>('dark-mode', true)
   const [currentTheme, setCurrentTheme] = useState<string>('clear')
 
   useEffect(() => {

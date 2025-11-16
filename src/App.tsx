@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
-import { CloudSnow, Target, Clock, ListChecks } from '@phosphor-icons/react'
+import { CloudSnow, Target, Clock, ListChecks, LockSimple } from '@phosphor-icons/react'
 import { EnhancedPredictionView } from '@/components/EnhancedPredictionView'
 import { AccuracyView } from '@/components/AccuracyView'
 import { HistoryView } from '@/components/HistoryView'
@@ -18,7 +18,7 @@ function App() {
   const [unlockOpen, setUnlockOpen] = useState(false)
   const [passphrase, setPassphrase] = useState('')
   const [unlockError, setUnlockError] = useState<string | null>(null)
-  const { isAdmin, unlock } = useAdminAccess()
+  const { isAdmin, unlock, lock } = useAdminAccess()
 
   useEffect(() => {
     if (!isAdmin && activeTab === 'outcomes') {
@@ -62,6 +62,12 @@ function App() {
     }
   }
 
+  const handleLock = () => {
+    lock()
+    setActiveTab('prediction')
+    toast.success('Admin tools locked')
+  }
+
   const tabGridCols = isAdmin ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'
 
   return (
@@ -69,7 +75,17 @@ function App() {
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl">
         <header className="text-center mb-6 sm:mb-8 relative">
           {/* Weather theme toggle positioned in top right */}
-          <div className="absolute top-0 right-0">
+          <div className="absolute top-0 right-0 flex gap-2">
+            {isAdmin && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleLock}
+                title="Lock admin tools"
+              >
+                <LockSimple size={18} weight="duotone" />
+              </Button>
+            )}
             <ThemeToggle />
           </div>
           
