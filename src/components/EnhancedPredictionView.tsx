@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SnowfallCanvas } from '@/components/SnowfallCanvas'
 import { AnimatedProbability } from '@/components/AnimatedProbability'
 import { NarrativeSummary } from '@/components/NarrativeSummary'
+import { ConditionPulse } from '@/components/ConditionPulse'
 import { 
   CloudSnow, 
   Thermometer, 
@@ -20,13 +21,19 @@ import {
   Brain,
   TrendUp,
   ShieldCheck,
-  ChartBar
+  ChartBar,
+  Sparkle,
+  Info,
+  ArrowUpRight,
+  ArrowDownRight
 } from '@phosphor-icons/react'
 import { WeatherService } from '@/services/weather'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { useNotifications } from '@/hooks/useNotifications'
 import { toast } from 'sonner'
+import { buildOutcomeStats, fetchOutcomeLedger } from '@/services/outcomes'
+import type { OutcomeStats, SnowDayOutcome } from '@/services/outcomes'
 
 // Updated interface to match agent predictions
 interface AgentPrediction {
@@ -148,6 +155,10 @@ export function EnhancedPredictionView() {
   const [prediction, setPrediction] = useState<AgentPrediction | null>(null)
   const [fallbackWeather, setFallbackWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [outcomeStats, setOutcomeStats] = useState<OutcomeStats | null>(null)
+  const [recentAverage, setRecentAverage] = useState<number | null>(null)
+  const [trendError, setTrendError] = useState<string | null>(null)
+  const [trendLoading, setTrendLoading] = useState(true)
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
   const { checkAndNotify } = useNotifications()
@@ -155,6 +166,10 @@ export function EnhancedPredictionView() {
   useEffect(() => {
     loadPredictionData()
   }, [])
+
+  useEffect(() => {
+    loadOutcomeInsights()
+  }, [prediction]) // Reload insights when prediction changes
 
   const loadPredictionData = async () => {
     try {
@@ -205,11 +220,89 @@ export function EnhancedPredictionView() {
     }
   }
 
+  const loadOutcomeInsights = async () => {
+    try {
+      setTrendLoading(true)
+      setTrendError(null)
+      const ledger: SnowDayOutcome[] = await fetchOutcomeLedger()
+      if (ledger.length) {
+        setOutcomeStats(buildOutcomeStats(ledger))
+        const recent = ledger
+          .filter(entry => typeof entry.modelProbability === 'number')
+          .slice(-7)
+
+        if (recent.length) {
+          const avg = Math.round(
+            recent.reduce((sum, entry) => sum + (entry.modelProbability || 0), 0) / recent.length
+          )
+          setRecentAverage(avg)
+        } else {
+          setRecentAverage(null)
+        }
+      } else {
+        setOutcomeStats(null)
+        setRecentAverage(null)
+      }
+    } catch (error) {
+      console.error('Failed to load outcome ledger', error)
+      setTrendError('Historical trend temporarily unavailable')
+    } finally {
+      setTrendLoading(false)
+    }
+  }
+
   const getSnowDayVerdict = (probability: number) => {
     if (probability >= 70) return { text: 'Very Likely', color: 'bg-destructive' }
     if (probability >= 50) return { text: 'Likely', color: 'bg-accent' }
     if (probability >= 30) return { text: 'Possible', color: 'bg-muted' }
     return { text: 'Unlikely', color: 'bg-secondary' }
+  }
+
+  const generateFallbackRationale = (weather: WeatherData): string => {
+    const parts: string[] = []
+    
+    if (weather.snowfall >= 6) {
+      parts.push(`Heavy snowfall of ${weather.snowfall}" expected`)
+    } else if (weather.snowfall >= 3) {
+      parts.push(`Moderate snowfall of ${weather.snowfall}" forecasted`)
+    } else if (weather.snowfall > 0) {
+      parts.push(`Light snow accumulation of ${weather.snowfall}" expected`)
+    } else {
+      parts.push('No significant snowfall forecasted')
+    }
+
+    if (weather.windSpeed >= 25) {
+      parts.push(`high winds up to ${weather.windSpeed} mph`)
+    } else if (weather.windSpeed >= 15) {
+      parts.push(`moderate winds around ${weather.windSpeed} mph`)
+    }
+
+    if (weather.visibility <= 0.25) {
+      parts.push('extremely poor visibility')
+    } else if (weather.visibility <= 0.5) {
+      parts.push('very limited visibility')
+    } else if (weather.visibility <= 1) {
+      parts.push('reduced visibility conditions')
+    }
+
+    if (weather.temperature <= 20) {
+      parts.push('dangerously cold temperatures')
+    } else if (weather.temperature <= 28) {
+      parts.push('freezing conditions ideal for ice formation')
+    }
+
+    if (weather.alerts.length > 0) {
+      parts.push(`${weather.alerts.length} active weather alert${weather.alerts.length > 1 ? 's' : ''}`)
+    }
+
+    const verdict = getSnowDayVerdict(weather.modelProbability)
+    const conclusion = weather.modelProbability >= 50 
+      ? 'These conditions significantly increase the likelihood of school closures'
+      : weather.modelProbability >= 30
+        ? 'Conditions may warrant monitoring for potential delays or closures'
+        : 'Current conditions suggest normal school operations'
+
+    return `${parts.join(', ')}. ${conclusion}.`
   }
 
   const getConfidenceBadge = (confidence: string) => {
@@ -278,6 +371,8 @@ export function EnhancedPredictionView() {
   const windSpeed = prediction?.meteorology?.wind_analysis?.max_wind_speed_mph 
     ?? fallbackWeather?.windSpeed 
     ?? 0
+  const baselineProbability = recentAverage ?? outcomeStats?.avgProbability ?? null
+  const probabilityDelta = baselineProbability !== null ? probability - baselineProbability : null
 
   return (
     <>
@@ -344,26 +439,161 @@ export function EnhancedPredictionView() {
             <Progress value={probability} className="h-2 sm:h-3" />
           </div>
 
-          {prediction && (
-            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg p-4 text-left border border-primary/20">
-              <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                <Brain size={16} className="text-primary" />
-                AI Decision Rationale
-              </h4>
-              <p className="text-sm text-muted-foreground">{prediction.final.decision_rationale}</p>
-            </div>
-          )}
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg p-4 text-left border border-primary/20 mt-4">
+            <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+              <Brain size={16} className="text-primary" />
+              {prediction ? 'AI Decision Rationale' : 'Weather Analysis'}
+            </h4>
+            <p className="text-sm text-muted-foreground">
+              {prediction 
+                ? prediction.final.decision_rationale 
+                : fallbackWeather 
+                  ? generateFallbackRationale(fallbackWeather)
+                  : 'No rationale available'}
+            </p>
+          </div>
         </CardContent>
       </Card>
       </motion.div>
 
-      <Alert>
-        <Warning size={16} />
-        <AlertDescription>
-          Crowd voting, leaderboards, and other community features are disabled until we have server-side infrastructure. 
-          The probabilities shown here come directly from the AI agents and weather models.
-        </AlertDescription>
-      </Alert>
+      <ConditionPulse />
+
+      {prediction && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-primary/0 to-primary/10">
+            <CardHeader className="space-y-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Sparkle size={18} className="text-primary" />
+                AI Spotlight
+              </CardTitle>
+              {prediction.meteorology?.overall_conditions_summary && (
+                <p className="text-sm text-muted-foreground">
+                  {prediction.meteorology.overall_conditions_summary}
+                </p>
+              )}
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Top drivers</p>
+                <ul className="mt-2 space-y-1.5">
+                  {prediction.final.primary_factors.slice(0, 3).map((factor, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span>{factor}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="rounded-xl border border-primary/20 p-3">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Season shift</p>
+                  <p className="text-2xl font-semibold">
+                    {prediction.history.seasonal_context.seasonal_probability_adjustment >= 0 ? '+' : ''}
+                    {prediction.history.seasonal_context.seasonal_probability_adjustment}
+                    <span className="text-sm font-medium ml-1">pts</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground">vs typical mid-season odds</p>
+                </div>
+                <div className="rounded-xl border border-primary/20 p-3">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Confidence</p>
+                  <p className="text-lg font-semibold capitalize">{prediction.final.confidence_level.replace('_', ' ')}</p>
+                  <p className="text-xs text-muted-foreground">Next update by {prediction.final.next_evaluation_time}</p>
+                </div>
+              </div>
+
+              {prediction.history.seasonal_context.unusual_factors.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {prediction.history.seasonal_context.unusual_factors.slice(0, 3).map((factor, index) => (
+                    <span
+                      key={index}
+                      className="rounded-full bg-primary/10 text-primary text-xs px-3 py-1"
+                    >
+                      {factor}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/10">
+            <CardHeader className="space-y-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <TrendUp size={18} />
+                Today vs Season Trend
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                How today's call stacks against the ledger
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {trendLoading ? (
+                <div className="space-y-3">
+                  <div className="h-4 bg-muted rounded animate-pulse" />
+                  <div className="h-8 bg-muted rounded animate-pulse" />
+                  <div className="h-3 bg-muted rounded animate-pulse" />
+                </div>
+              ) : trendError ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Info size={16} />
+                  {trendError}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">Today</p>
+                      <p className="text-3xl font-semibold">{probability}%</p>
+                    </div>
+                    {baselineProbability !== null && (
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">Baseline</p>
+                        <p className="text-xl font-semibold">{baselineProbability}%</p>
+                        {probabilityDelta !== null && (
+                          <p className={`text-xs flex items-center gap-1 ${probabilityDelta >= 0 ? 'text-emerald-500' : 'text-orange-500'}`}>
+                            {probabilityDelta >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                            {Math.abs(probabilityDelta)} pts vs recent trend
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>0%</span>
+                      <span>100%</span>
+                    </div>
+                    <Progress value={probability} className="h-2" />
+                    {baselineProbability !== null && (
+                      <div className="text-xs text-muted-foreground flex items-center gap-2">
+                        <span className="inline-flex h-2 w-2 rounded-full bg-primary" />
+                        Today vs <span className="font-medium">{recentAverage ? '7-day mean' : 'season mean'}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {outcomeStats && (
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="rounded-lg border border-border/60 p-3">
+                        <p className="text-xs uppercase text-muted-foreground">Directional accuracy</p>
+                        <p className="text-xl font-semibold">{outcomeStats.directionalAccuracy}%</p>
+                        <p className="text-xs text-muted-foreground">Based on ledgered days</p>
+                      </div>
+                      <div className="rounded-lg border border-border/60 p-3">
+                        <p className="text-xs uppercase text-muted-foreground">Avg probability</p>
+                        <p className="text-xl font-semibold">{outcomeStats.avgProbability}%</p>
+                        <p className="text-xs text-muted-foreground">Season-to-date</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* AI-generated narrative summary */}
       {prediction && <NarrativeSummary prediction={prediction} />}
@@ -646,71 +876,6 @@ export function EnhancedPredictionView() {
         </Card>
       )}
 
-      {/* Legacy weather conditions card (fallback or simplified view) */}
-      {!prediction && fallbackWeather && (
-        <div className="flex flex-col gap-4 sm:gap-6 lg:grid lg:grid-cols-2">
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                <CloudSnow size={18} className="sm:w-5 sm:h-5" />
-                Weather Drivers
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="flex items-center gap-3">
-                  <CloudSnow size={20} className="text-primary sm:w-6 sm:h-6" />
-                  <div>
-                    <p className="font-medium text-sm sm:text-base">{fallbackWeather.snowfall}"</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Expected snow</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Thermometer size={20} className="text-blue-500 sm:w-6 sm:h-6" />
-                  <div>
-                    <p className="font-medium text-sm sm:text-base">{fallbackWeather.temperature}°F</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Temperature</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Wind size={20} className="text-slate-500 sm:w-6 sm:h-6" />
-                  <div>
-                    <p className="font-medium text-sm sm:text-base">{fallbackWeather.windSpeed} mph</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Wind speed</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Eye size={20} className="text-gray-500 sm:w-6 sm:h-6" />
-                  <div>
-                    <p className="font-medium text-sm sm:text-base">{fallbackWeather.visibility} mi</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Visibility</p>
-                  </div>
-                </div>
-              </div>
-
-              {fallbackWeather.alerts.length > 0 && (
-                <div className="mt-4">
-                  <Alert>
-                    <Warning size={16} />
-                    <AlertDescription>
-                      <div className="space-y-1">
-                        {fallbackWeather.alerts.map((alert, index) => (
-                          <p key={index} className="text-sm">{alert}</p>
-                        ))}
-                      </div>
-                    </AlertDescription>
-                  </Alert>
-                </div>
-              )}
-
-            <p className="text-xs text-muted-foreground mt-3 sm:mt-4">
-              Last updated: {new Date(fallbackWeather.lastUpdated).toLocaleString()}
-            </p>
-          </CardContent>
-        </Card>
-        </div>
-      )}
-
       {/* Recommendations section */}
       {prediction && (
         <Card>
@@ -765,26 +930,6 @@ export function EnhancedPredictionView() {
         </Card>
       )}
 
-      {/* Last update info */}
-      <div className="text-center text-xs text-muted-foreground space-y-1">
-        {lastUpdateInfo && (
-          <span>
-            {lastUpdateInfo.label}: {formattedLastUpdate}
-          </span>
-        )}
-        {staleWarning && (
-          <span className="text-amber-600 font-medium flex items-center justify-center gap-1">
-            <Warning size={12} />
-            {staleWarning}
-          </span>
-        )}
-        {prediction?.final.updates_needed && (
-          <div className="text-yellow-600 flex items-center justify-center gap-1">
-            <Warning size={12} />
-            Conditions changing - next update: {prediction.final.next_evaluation_time}
-          </div>
-        )})
-      </div>
       </motion.div>
     </>
   )

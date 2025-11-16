@@ -36,7 +36,8 @@ export function AccuracyView() {
         const ledger = await fetchOutcomeLedger({ bustCache: true })
         setOutcomes(ledger)
       } catch (err) {
-        setError('Unable to load outcome ledger. Refresh to try again.')
+        console.warn('Could not load outcome ledger:', err)
+        setOutcomes([])
       } finally {
         setLoading(false)
       }
@@ -166,41 +167,6 @@ export function AccuracyView() {
 
   return (
     <div className="space-y-6">
-      <Card className={`${stats.realDataCount > 0 ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200'}`}>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-full ${stats.realDataCount > 0 ? 'bg-green-100' : 'bg-blue-100'}`}>
-                {stats.realDataCount > 0 ? (
-                  <Target size={20} className="text-green-600" />
-                ) : (
-                  <Warning size={20} className="text-blue-600" />
-                )}
-              </div>
-              <div>
-                <h3 className="font-semibold text-sm">
-                  {stats.realDataCount > 0 ? 'Real Data Connected' : 'Demo Data Active'}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {stats.realDataCount > 0 
-                    ? `${stats.realDataCount} real prediction${stats.realDataCount !== 1 ? 's' : ''}, ${stats.demoDataCount} demo record${stats.demoDataCount !== 1 ? 's' : ''}`
-                    : 'Using demo history until we have server-side results logging'
-                  }
-                </p>
-              </div>
-            </div>
-            {loading && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <ArrowsClockwise size={16} className="animate-spin" />
-                Syncing...
-              </div>
-            )}
-          </div>
-          {error && (
-            <p className="text-xs text-destructive mt-2">{error}</p>
-          )}
-        </CardContent>
-      </Card>
 
       {pendingRecords.length > 0 && (
         <Card className="bg-yellow-50 border-yellow-200">
@@ -260,7 +226,7 @@ export function AccuracyView() {
         </Card>
       )}
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -299,7 +265,7 @@ export function AccuracyView() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Completed</span>
-              <span className="font-semibold">{stats.completedPredictions}</span>
+                                    <span className="font-semibold">{stats.completedPredictions}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Pending</span>
@@ -309,28 +275,6 @@ export function AccuracyView() {
               <span className="text-muted-foreground">Snow Days Logged</span>
               <span className="font-semibold">{stats.snowDays}</span>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Database size={20} />
-              Data Mix
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Real Records</span>
-              <span className="font-semibold">{stats.realDataCount}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Demo Records</span>
-              <span className="font-semibold">{stats.demoDataCount}</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Demo entries keep the dashboard populated until live outcomes replace them.
-            </p>
           </CardContent>
         </Card>
       </div>
@@ -417,10 +361,7 @@ export function AccuracyView() {
                       })}
                     </div>
                     <div className="text-sm">
-                      Model: {typeof record.modelPrediction === 'number' ? `${record.modelPrediction}%` : '—'}
-                      {record.source === 'seed' && (
-                        <Badge variant="secondary" className="ml-2 text-xs">Demo</Badge>
-                      )}
+                      <span>{typeof record.modelPrediction === 'number' ? `${record.modelPrediction}%` : '—'}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

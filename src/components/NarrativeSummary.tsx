@@ -1,7 +1,14 @@
+import { type ComponentType, useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Sparkle } from '@phosphor-icons/react'
+import { CloudSnow, Clock, ShieldCheck, Sparkle, TrendUp } from '@phosphor-icons/react'
 import { generateFullSummary } from '@/lib/narrativeGenerator'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+
+interface HighlightItem {
+  title: string
+  text: string
+  icon: ComponentType<{ size?: number }>
+}
 
 interface NarrativeSummaryProps {
   prediction: any // Using any for now, should match AgentPrediction type
@@ -12,7 +19,42 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
     return null
   }
 
-  const narrative = generateFullSummary(prediction)
+  const narrative = useMemo(() => generateFullSummary(prediction), [prediction])
+  const highlights = useMemo<HighlightItem[]>(() => [
+    {
+      title: 'Weather setup',
+      text: narrative.weatherSummary,
+      icon: CloudSnow
+    },
+    {
+      title: 'Impact outlook',
+      text: narrative.impactStatement,
+      icon: TrendUp
+    },
+    {
+      title: 'Timeline beats',
+      text: narrative.timelineNarrative,
+      icon: Clock
+    },
+    {
+      title: 'Safety pulse',
+      text: narrative.safetyAdvisory,
+      icon: ShieldCheck
+    }
+  ], [narrative])
+  const [activeHighlight, setActiveHighlight] = useState(0)
+
+  useEffect(() => {
+    setActiveHighlight(0)
+  }, [prediction])
+
+  useEffect(() => {
+    if (highlights.length <= 1) return
+    const timer = setInterval(() => {
+      setActiveHighlight((prev) => (prev + 1) % highlights.length)
+    }, 7000)
+    return () => clearInterval(timer)
+  }, [highlights.length])
 
   return (
     <motion.div
@@ -28,26 +70,46 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div>
-            <h4 className="text-sm font-semibold mb-1 text-primary">Conditions</h4>
-            <p className="text-sm text-muted-foreground">{narrative.weatherSummary}</p>
+          <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-primary/80 font-semibold">
+            {highlights.map((highlight, index) => (
+              <button
+                key={highlight.title}
+                type="button"
+                onClick={() => setActiveHighlight(index)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-full transition-colors ${
+                  index === activeHighlight ? 'bg-primary/10 text-primary' : 'text-primary/50 hover:text-primary'
+                }`}
+              >
+                <highlight.icon size={14} />
+                {highlight.title}
+              </button>
+            ))}
           </div>
-          
-          <div>
-            <h4 className="text-sm font-semibold mb-1 text-primary">Impact</h4>
-            <p className="text-sm text-muted-foreground">{narrative.impactStatement}</p>
+
+          <div className="relative min-h-[120px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={highlights[activeHighlight]?.title}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4 }}
+                className="space-y-2"
+              >
+                <p className="text-sm font-semibold text-primary flex items-center gap-2">
+                  {(() => {
+                    const Icon = highlights[activeHighlight].icon
+                    return <Icon size={16} />
+                  })()}
+                  {highlights[activeHighlight].title}
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {highlights[activeHighlight].text}
+                </p>
+              </motion.div>
+            </AnimatePresence>
           </div>
-          
-          <div>
-            <h4 className="text-sm font-semibold mb-1 text-primary">Timeline</h4>
-            <p className="text-sm text-muted-foreground">{narrative.timelineNarrative}</p>
-          </div>
-          
-          <div>
-            <h4 className="text-sm font-semibold mb-1 text-primary">Safety</h4>
-            <p className="text-sm text-muted-foreground">{narrative.safetyAdvisory}</p>
-          </div>
-          
+
           {narrative.residentRecommendations.length > 0 && (
             <div>
               <h4 className="text-sm font-semibold mb-1 text-primary">Quick Tips</h4>

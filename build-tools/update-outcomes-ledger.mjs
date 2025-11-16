@@ -50,11 +50,12 @@ const buildEntry = async () => {
   const summary = await loadJsonIfExists(summaryPath)
   const prediction = await loadJsonIfExists(predictionPath)
 
-  let probability = sanitizeProbability(manualProbability)
+  const studentProb = sanitizeProbability(manualProbability)
+  let probability = null
   let confidence = null
   let predictionTimestamp = null
 
-  if (!probability && summary) {
+  if (summary) {
     probability = sanitizeProbability(summary.probability)
     confidence = summary.confidence || null
     predictionTimestamp = summary.timestamp || null
@@ -69,6 +70,7 @@ const buildEntry = async () => {
   return {
     date: eventDate,
     modelProbability: probability,
+    studentPrediction: studentProb,
     confidence: confidence || null,
     predictionTimestamp,
     actualSnowDay: outcome === 'snow-day',
@@ -97,6 +99,7 @@ const writeLedger = async () => {
     if (!clone.confidence) delete clone.confidence
     if (!clone.predictionTimestamp) delete clone.predictionTimestamp
     if (clone.modelProbability === null || clone.modelProbability === undefined) delete clone.modelProbability
+    if (clone.studentPrediction === null || clone.studentPrediction === undefined) delete clone.studentPrediction
     return clone
   })
 

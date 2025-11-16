@@ -102,7 +102,8 @@ export function HistoryView() {
         const ledger = await fetchOutcomeLedger({ bustCache: true })
         setEvents(toHistoricalEvents(ledger))
       } catch (err) {
-        setError('Unable to load history. Please refresh.')
+        console.warn('Could not load history:', err)
+        setEvents([])
       } finally {
         setLoading(false)
       }
@@ -149,41 +150,6 @@ export function HistoryView() {
 
   return (
     <div className="space-y-6">
-      <Card className={`${seasonStats.realEvents ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200'}`}>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-full ${seasonStats.realEvents ? 'bg-green-100' : 'bg-blue-100'}`}>
-                {seasonStats.realEvents ? (
-                  <Database size={20} className="text-green-600" />
-                ) : (
-                  <Sparkle size={20} className="text-blue-600" />
-                )}
-              </div>
-              <div>
-                <h3 className="font-semibold text-sm">
-                  {seasonStats.realEvents ? 'Live Historical Data' : 'Demo Historical Data'}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {seasonStats.realEvents 
-                    ? `${seasonStats.realEvents} real event${seasonStats.realEvents !== 1 ? 's' : ''}, ${seasonStats.demoEvents} demo record${seasonStats.demoEvents !== 1 ? 's' : ''}`
-                    : 'Populate outcomes via the new workflow to replace demo entries.'
-                  }
-                </p>
-              </div>
-            </div>
-            {loading && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock size={16} className="animate-spin" />
-                Syncing...
-              </div>
-            )}
-          </div>
-          {error && (
-            <p className="text-xs text-destructive mt-2">{error}</p>
-          )}
-        </CardContent>
-      </Card>
 
       {seasonStats.totalEvents > 0 && (
         <div className="grid md:grid-cols-4 gap-4">
@@ -270,9 +236,7 @@ export function HistoryView() {
                               month: 'long', 
                               day: 'numeric' 
                             })}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {event.source === 'seed' ? '🟡 Demo' : '🔴 Live'}
-                            </Badge>
+      
                           </div>
                         </div>
                         <div className="text-right">
