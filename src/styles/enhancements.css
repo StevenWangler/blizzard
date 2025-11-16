@@ -1,0 +1,193 @@
+/* Enhanced visual styles for improved UI/UX */
+
+/* Card enhancements with subtle gradients and depth */
+[data-slot="card"] {
+  @apply transition-all duration-300;
+  @apply hover:shadow-lg;
+  background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card) / 0.98) 100%);
+}
+
+/* Enhanced buttons with hover effects */
+button:not(:disabled) {
+  @apply transition-all duration-200;
+}
+
+button:not(:disabled):hover {
+  @apply scale-[1.02];
+}
+
+button:not(:disabled):active {
+  @apply scale-[0.98];
+}
+
+/* Progress bar glow effect */
+[role="progressbar"] {
+  @apply transition-all duration-500;
+}
+
+[role="progressbar"] > div {
+  @apply shadow-lg;
+  box-shadow: 0 0 15px hsl(var(--primary) / 0.4);
+}
+
+/* Tab enhancements */
+[role="tab"] {
+  @apply transition-all duration-200;
+}
+
+[role="tab"]:hover:not([data-state="active"]) {
+  @apply bg-primary/10;
+}
+
+[data-state="active"][role="tab"] {
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.2) 0%, hsl(var(--primary) / 0.1) 100%);
+  @apply shadow-md border-primary/30;
+}
+
+/* Badge glow effects */
+[data-slot="badge"] {
+  @apply transition-all duration-300;
+}
+
+[data-slot="badge"]:has(.bg-destructive) {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px hsl(var(--destructive) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px hsl(var(--destructive) / 0.6);
+  }
+}
+
+/* Alert enhancements */
+[role="alert"] {
+  @apply border-l-4;
+  background: linear-gradient(90deg, hsl(var(--accent) / 0.1) 0%, transparent 100%);
+}
+
+/* Smooth focus rings */
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+  transition: box-shadow 0.2s ease;
+}
+
+/* Input field enhancements */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  @apply transition-all duration-200;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  @apply border-primary/50;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+/* Dropdown menu animations */
+[data-radix-popper-content-wrapper] {
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tooltip enhancements */
+[role="tooltip"] {
+  @apply shadow-xl;
+  animation: tooltipFade 0.15s ease;
+}
+
+@keyframes tooltipFade {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Icon animations on hover */
+svg {
+  @apply transition-transform duration-200;
+}
+
+button:hover svg,
+[role="tab"]:hover svg {
+  @apply scale-110;
+}
+
+/* Gradient text for headings */
+.gradient-text {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Loading state shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Card section dividers */
+[data-slot="card-content"] > div:not(:last-child) {
+  @apply border-b border-border/50 pb-4 mb-4;
+}
+
+/* Enhanced shadows for depth */
+.depth-sm {
+  box-shadow: 
+    0 1px 2px hsl(var(--foreground) / 0.05),
+    0 1px 4px hsl(var(--foreground) / 0.05);
+}
+
+.depth-md {
+  box-shadow: 
+    0 2px 4px hsl(var(--foreground) / 0.05),
+    0 4px 12px hsl(var(--foreground) / 0.1);
+}
+
+.depth-lg {
+  box-shadow: 
+    0 4px 8px hsl(var(--foreground) / 0.05),
+    0 8px 24px hsl(var(--foreground) / 0.15);
+}
+
+/* Glassmorphism effect */
+.glass {
+  background: hsl(var(--background) / 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border) / 0.2);
+}

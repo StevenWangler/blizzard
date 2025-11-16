@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { SnowfallCanvas } from '@/components/SnowfallCanvas'
+import { AnimatedProbability } from '@/components/AnimatedProbability'
+import { NarrativeSummary } from '@/components/NarrativeSummary'
 import { 
   CloudSnow, 
   Thermometer, 
@@ -21,6 +25,7 @@ import {
 import { WeatherService } from '@/services/weather'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
+import { useNotifications } from '@/hooks/useNotifications'
 import { toast } from 'sonner'
 
 // Updated interface to match agent predictions
@@ -145,6 +150,7 @@ export function EnhancedPredictionView() {
   const [loading, setLoading] = useState(true)
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
+  const { checkAndNotify } = useNotifications()
 
   useEffect(() => {
     loadPredictionData()
@@ -169,6 +175,12 @@ export function EnhancedPredictionView() {
               data.meteorology.visibility_analysis.minimum_visibility_miles
             )
           }
+          
+          // Check if we should send notification
+          if (data.final?.snow_day_probability) {
+            checkAndNotify(data.final.snow_day_probability, data.location)
+          }
+          
           return
         }
       } catch (error) {
@@ -179,6 +191,11 @@ export function EnhancedPredictionView() {
       const data = await WeatherService.getCurrentForecast()
       setFallbackWeather(data)
       updateWeatherConditions(data.snowfall, data.windSpeed, data.visibility)
+      
+      // Check if we should send notification
+      if (data.modelProbability) {
+        checkAndNotify(data.modelProbability)
+      }
       
     } catch (error) {
       toast.error('Failed to load prediction data')
@@ -254,10 +271,31 @@ export function EnhancedPredictionView() {
     : false
   const staleWarning = isStale ? 'This update is over 3 hours old — refresh for the latest conditions.' : null
 
+  // Get snowfall data for canvas animation
+  const snowfallIntensity = prediction?.meteorology?.precipitation_analysis?.total_snowfall_inches 
+    ?? fallbackWeather?.snowfall 
+    ?? 0
+  const windSpeed = prediction?.meteorology?.wind_analysis?.max_wind_speed_mph 
+    ?? fallbackWeather?.windSpeed 
+    ?? 0
+
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Weather theme indicator */}
-      <div className="text-center space-y-1">
+    <>
+      {/* Snowfall animation overlay */}
+      <SnowfallCanvas 
+        intensity={snowfallIntensity} 
+        windSpeed={windSpeed}
+        respectReducedMotion={true}
+      />
+      
+      <motion.div 
+        className="space-y-4 sm:space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        {/* Weather theme indicator */}
+        <div className="text-center space-y-1">
         <WeatherThemeIndicator />
         {lastUpdateInfo && (
           <>
@@ -275,19 +313,24 @@ export function EnhancedPredictionView() {
       </div>
       
       {/* Main prediction card */}
-      <Card className="text-center">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-xl sm:text-2xl flex items-center justify-center gap-2">
-            {prediction ? <Brain size={24} /> : <CloudSnow size={24} />}
-            Tomorrow's Snow Day Probability
-          </CardTitle>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            {prediction ? `AI Analysis for ${prediction.location}` : 'Based on weather conditions for Rockford, MI'}
-          </p>
-        </CardHeader>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Card className="text-center border-2 shadow-xl hover:shadow-2xl transition-shadow duration-300 bg-gradient-to-br from-card via-card to-primary/5">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl sm:text-2xl flex items-center justify-center gap-2">
+              {prediction ? <Brain size={24} className="text-primary" /> : <CloudSnow size={24} className="text-primary" />}
+              Tomorrow's Snow Day Probability
+            </CardTitle>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              {prediction ? `AI Analysis for ${prediction.location}` : 'Based on weather conditions for Rockford, MI'}
+            </p>
+          </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">
           <div className="space-y-3 sm:space-y-4">
-            <div className="text-4xl sm:text-6xl font-bold text-primary">{probability}%</div>
+            <AnimatedProbability value={probability} />
             <div className="flex items-center justify-center gap-2">
               <Badge className={`${verdict.color} text-white text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2`}>
                 {verdict.text}
@@ -302,9 +345,9 @@ export function EnhancedPredictionView() {
           </div>
 
           {prediction && (
-            <div className="bg-muted/50 rounded-lg p-4 text-left">
+            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg p-4 text-left border border-primary/20">
               <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                <Brain size={16} />
+                <Brain size={16} className="text-primary" />
                 AI Decision Rationale
               </h4>
               <p className="text-sm text-muted-foreground">{prediction.final.decision_rationale}</p>
@@ -312,6 +355,7 @@ export function EnhancedPredictionView() {
           )}
         </CardContent>
       </Card>
+      </motion.div>
 
       <Alert>
         <Warning size={16} />
@@ -320,6 +364,9 @@ export function EnhancedPredictionView() {
           The probabilities shown here come directly from the AI agents and weather models.
         </AlertDescription>
       </Alert>
+
+      {/* AI-generated narrative summary */}
+      {prediction && <NarrativeSummary prediction={prediction} />}
 
       {/* Detailed analysis tabs (only show if we have agent prediction) */}
       {prediction && (
@@ -736,8 +783,9 @@ export function EnhancedPredictionView() {
             <Warning size={12} />
             Conditions changing - next update: {prediction.final.next_evaluation_time}
           </div>
-        )}
+        )})
       </div>
-    </div>
+      </motion.div>
+    </>
   )
 }

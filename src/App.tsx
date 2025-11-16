@@ -7,6 +7,8 @@ import { AccuracyView } from '@/components/AccuracyView'
 import { HistoryView } from '@/components/HistoryView'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { OutcomeRecorder } from '@/components/OutcomeRecorder'
+import { NotificationSettings } from '@/components/NotificationSettings'
+import { EnhancedHeader } from '@/components/EnhancedHeader'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -71,35 +73,35 @@ function App() {
   const tabGridCols = isAdmin ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background transition-colors">
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl">
-        <header className="text-center mb-6 sm:mb-8 relative">
-          {/* Weather theme toggle positioned in top right */}
-          <div className="absolute top-0 right-0 flex gap-2">
-            {isAdmin && (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleLock}
-                title="Lock admin tools"
-              >
-                <LockSimple size={18} weight="duotone" />
-              </Button>
-            )}
-            <ThemeToggle />
-          </div>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <CloudSnow size={40} className="text-primary sm:w-12 sm:h-12" weight="duotone" />
-            <h1 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">Blizzard</h1>
-          </div>
-          <p className="text-muted-foreground text-base sm:text-lg px-4">
-            AI-powered snow day forecasting for Rockford, Michigan
-          </p>
-        </header>
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background transition-colors relative overflow-hidden">
+      {/* Animated background blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-cyan-300/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
+      
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl relative z-10">
+        <EnhancedHeader />
+        
+        {/* Settings positioned in top right */}
+        <div className="absolute top-4 sm:top-8 right-3 sm:right-4 flex gap-2 z-20">
+          {isAdmin && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleLock}
+              title="Lock admin tools"
+            >
+              <LockSimple size={18} weight="duotone" />
+            </Button>
+          )}
+          <NotificationSettings />
+          <ThemeToggle />
+        </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full ${tabGridCols} mb-6 sm:mb-8 h-auto p-1`}>
+          <TabsList className={`grid w-full ${tabGridCols} mb-6 sm:mb-8 h-auto p-1 bg-background/50 backdrop-blur-sm`}>
             <TabsTrigger value="prediction" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
               <CloudSnow size={16} className="sm:w-[18px] sm:h-[18px]" />
               <span className="hidden sm:inline">Today's Forecast</span>
