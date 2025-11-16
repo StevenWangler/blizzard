@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { CloudSnow, CalendarBlank, Target, Clock, Database, Sparkle } from '@phosphor-icons/react'
+import { CloudSnow, CalendarBlank, Clock, Database, Sparkle } from '@phosphor-icons/react'
 import { fetchOutcomeLedger, SnowDayOutcome } from '@/services/outcomes'
 
 interface HistoricalEvent {
