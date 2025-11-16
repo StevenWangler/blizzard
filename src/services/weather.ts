@@ -1,4 +1,4 @@
-import { WeatherAPI } from './weatherApi'
+import { WeatherAPI, isWeatherApiKeyConfigured } from './weatherApi'
 import { getRelevantWeatherInformation, categorizeSnowDayProbability } from './weatherProcessing'
 import { WeatherApiError } from "@/types/weatherTypes"
 
@@ -22,8 +22,7 @@ export class WeatherService {
   static async getCurrentForecast(): Promise<WeatherData> {
     try {
       // Check if API key is configured
-      const apiKey = import.meta.env.VITE_WEATHER_API_KEY
-      if (!apiKey || apiKey === 'your_weatherapi_key_here') {
+      if (!isWeatherApiKeyConfigured()) {
         console.warn('Weather API key not configured, using mock data')
         return this.getMockWeatherData()
       }
@@ -139,8 +138,7 @@ export class WeatherService {
     message: string
   }> {
     try {
-      const apiKey = import.meta.env.VITE_WEATHER_API_KEY
-      if (!apiKey || apiKey === 'your_weatherapi_key_here') {
+      if (!isWeatherApiKeyConfigured()) {
         return {
           isValid: false,
           message: 'Weather API key not configured. Please set VITE_WEATHER_API_KEY in your .env file.'

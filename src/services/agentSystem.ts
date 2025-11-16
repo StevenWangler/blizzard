@@ -19,8 +19,16 @@ import type {
   WeatherAlert,
   HourlyWeather 
 } from "@/types/weatherTypes"
-import { weatherApi } from './weatherApi'
+import { weatherApi, isWeatherApiKeyConfigured } from './weatherApi'
 import { getRelevantWeatherInformation } from './weatherProcessing'
+
+const WEATHER_API_KEY_MISSING_MESSAGE = 'Weather API key is not configured. Please set VITE_WEATHER_API_KEY to run the snow day prediction agents.'
+
+function ensureWeatherApiConfigured(): void {
+  if (!isWeatherApiKeyConfigured()) {
+    throw new Error(WEATHER_API_KEY_MISSING_MESSAGE)
+  }
+}
 
 // Structured output schemas for agent responses
 const WeatherAnalysisSchema = z.object({
@@ -133,6 +141,8 @@ const weatherDataTool = tool({
     focus_period: z.enum(['next_12_hours', 'next_24_hours', 'morning_commute']).default('next_24_hours')
   }),
   execute: async ({ include_raw_data, focus_period }) => {
+    ensureWeatherApiConfigured()
+
     try {
       const rawWeather = await weatherApi.getForecast()
       const processedData = getRelevantWeatherInformation(rawWeather)
@@ -144,7 +154,8 @@ const weatherDataTool = tool({
         timestamp: new Date().toISOString()
       }
     } catch (error) {
-      throw new Error(`Failed to fetch weather data: ${error}`)
+      const message = error instanceof Error ? error.message : String(error)
+      throw new Error(`Failed to fetch weather data: ${message}`)
     }
   }
 })
@@ -286,6 +297,7 @@ export async function runSnowDayPrediction(): Promise<{
   location: string
 }> {
   try {
+    ensureWeatherApiConfigured()
     console.log('🌨️ Starting multi-agent snow day analysis...')
     
     // Get initial weather data for location context
