@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -34,109 +34,8 @@ import { useNotifications } from '@/hooks/useNotifications'
 import { toast } from 'sonner'
 import { buildOutcomeStats, fetchOutcomeLedger } from '@/services/outcomes'
 import type { OutcomeStats, SnowDayOutcome } from '@/services/outcomes'
+import type { AgentPrediction } from '@/types/agentPrediction'
 
-// Updated interface to match agent predictions
-interface AgentPrediction {
-  meteorology: {
-    temperature_analysis: {
-      current_temp_f: number
-      overnight_low_f: number
-      morning_high_f: number
-      freezing_hours: number
-      temperature_trend: 'rising' | 'falling' | 'steady'
-      windchill_factor: number
-    }
-    precipitation_analysis: {
-      snow_probability_overnight: number
-      snow_probability_morning: number
-      total_snowfall_inches: number
-      snowfall_rate_peak: number
-      precipitation_type: 'snow' | 'freezing_rain' | 'sleet' | 'rain' | 'mixed'
-    }
-    wind_analysis: {
-      max_wind_speed_mph: number
-      wind_direction: string
-      sustained_winds_mph: number
-      wind_chill_impact: boolean
-    }
-    visibility_analysis: {
-      minimum_visibility_miles: number
-      avg_visibility_miles: number
-      visibility_factors: string[]
-    }
-    alert_summary: Array<{
-      type: string
-      severity: string
-      description: string
-    }>
-    overall_conditions_summary: string
-  }
-  history: {
-    similar_weather_patterns: Array<{
-      pattern_description: string
-      historical_snow_day_rate: number
-      confidence_level: 'high' | 'medium' | 'low'
-    }>
-    seasonal_context: {
-      typical_conditions_for_date: string
-      unusual_factors: string[]
-      seasonal_probability_adjustment: number
-    }
-    location_specific_factors: {
-      local_microclimates: string[]
-      infrastructure_considerations: string[]
-      elevation_impact: string
-    }
-    confidence_assessment: string
-  }
-  safety: {
-    road_conditions: {
-      primary_roads_score: number
-      secondary_roads_score: number
-      parking_lots_score: number
-      ice_formation_risk: 'low' | 'moderate' | 'high' | 'severe'
-    }
-    travel_safety: {
-      walking_conditions_score: number
-      driving_conditions_score: number
-      public_transport_impact: 'minimal' | 'moderate' | 'significant' | 'severe'
-      emergency_access_concern: boolean
-    }
-    timing_analysis: {
-      worst_conditions_start_time: string
-      worst_conditions_end_time: string
-      morning_commute_impact: 'minimal' | 'moderate' | 'significant' | 'severe'
-      afternoon_impact: 'minimal' | 'moderate' | 'significant' | 'severe'
-    }
-    safety_recommendations: string[]
-    risk_level: 'low' | 'moderate' | 'high' | 'severe'
-  }
-  final: {
-    snow_day_probability: number
-    confidence_level: 'very_low' | 'low' | 'moderate' | 'high' | 'very_high'
-    primary_factors: string[]
-    timeline: {
-      conditions_start: string
-      peak_impact_time: string
-      conditions_improve: string
-    }
-    decision_rationale: string
-    alternative_scenarios: Array<{
-      scenario: string
-      probability: number
-      impact: string
-    }>
-    recommendations: {
-      for_schools: string[]
-      for_residents: string[]
-      for_authorities: string[]
-    }
-    updates_needed: boolean
-    next_evaluation_time: string
-  }
-  timestamp: string
-  location: string
-}
 
 // Fallback weather data interface for compatibility
 interface WeatherData {
@@ -159,6 +58,10 @@ export function EnhancedPredictionView() {
   const [recentAverage, setRecentAverage] = useState<number | null>(null)
   const [trendError, setTrendError] = useState<string | null>(null)
   const [trendLoading, setTrendLoading] = useState(true)
+  const [lastUpdateMeta, setLastUpdateMeta] = useState<{ formatted: string; stale: boolean }>({
+    formatted: '',
+    stale: false
+  })
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
   const { checkAndNotify } = useNotifications()
@@ -326,6 +229,53 @@ export function EnhancedPredictionView() {
     return colors[risk as keyof typeof colors] || 'text-gray-600'
   }
 
+  // Derive timeline + probability metadata up front so hooks stay stable
+  const probability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability ?? 0
+  const verdict = getSnowDayVerdict(probability)
+  const lastUpdateInfo = useMemo(() => {
+    if (prediction) {
+      return { label: 'AI analysis generated', date: new Date(prediction.timestamp) }
+    }
+    if (fallbackWeather) {
+      return { label: 'Last updated', date: new Date(fallbackWeather.lastUpdated) }
+    }
+    return null
+  }, [prediction, fallbackWeather])
+  const lastUpdateTime = lastUpdateInfo ? lastUpdateInfo.date.getTime() : null
+
+  useEffect(() => {
+    if (!lastUpdateTime) {
+      setLastUpdateMeta({ formatted: '', stale: false })
+      return
+    }
+
+    const updateMeta = () => {
+      setLastUpdateMeta({
+        formatted: new Date(lastUpdateTime).toLocaleString(),
+        stale: Date.now() - lastUpdateTime > STALE_THRESHOLD_MS
+      })
+    }
+
+    updateMeta()
+    const interval = setInterval(updateMeta, 60_000)
+    return () => clearInterval(interval)
+  }, [lastUpdateTime])
+
+  const timestampToShow = lastUpdateMeta.formatted || (lastUpdateInfo ? lastUpdateInfo.date.toLocaleString() : '')
+  const staleWarning = lastUpdateInfo && lastUpdateMeta.stale
+    ? 'This update is over 3 hours old — refresh for the latest conditions.'
+    : null
+
+  // Get snowfall data for canvas animation
+  const snowfallIntensity = prediction?.meteorology?.precipitation_analysis?.total_snowfall_inches 
+    ?? fallbackWeather?.snowfall 
+    ?? 0
+  const windSpeed = prediction?.meteorology?.wind_analysis?.max_wind_speed_mph 
+    ?? fallbackWeather?.windSpeed 
+    ?? 0
+  const baselineProbability = recentAverage ?? outcomeStats?.avgProbability ?? null
+  const probabilityDelta = baselineProbability !== null ? probability - baselineProbability : null
+
   if (loading) {
     return (
       <Card>
@@ -350,30 +300,6 @@ export function EnhancedPredictionView() {
     )
   }
 
-  // If we have agent prediction, use it; otherwise use fallback
-  const probability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability ?? 0
-  const verdict = getSnowDayVerdict(probability)
-  const lastUpdateInfo = prediction
-    ? { label: 'AI analysis generated', date: new Date(prediction.timestamp) }
-    : fallbackWeather
-      ? { label: 'Last updated', date: new Date(fallbackWeather.lastUpdated) }
-      : null
-  const formattedLastUpdate = lastUpdateInfo ? lastUpdateInfo.date.toLocaleString() : ''
-  const isStale = lastUpdateInfo
-    ? Date.now() - lastUpdateInfo.date.getTime() > STALE_THRESHOLD_MS
-    : false
-  const staleWarning = isStale ? 'This update is over 3 hours old — refresh for the latest conditions.' : null
-
-  // Get snowfall data for canvas animation
-  const snowfallIntensity = prediction?.meteorology?.precipitation_analysis?.total_snowfall_inches 
-    ?? fallbackWeather?.snowfall 
-    ?? 0
-  const windSpeed = prediction?.meteorology?.wind_analysis?.max_wind_speed_mph 
-    ?? fallbackWeather?.windSpeed 
-    ?? 0
-  const baselineProbability = recentAverage ?? outcomeStats?.avgProbability ?? null
-  const probabilityDelta = baselineProbability !== null ? probability - baselineProbability : null
-
   return (
     <>
       {/* Snowfall animation overlay */}
@@ -395,7 +321,7 @@ export function EnhancedPredictionView() {
         {lastUpdateInfo && (
           <>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              {lastUpdateInfo.label}: {formattedLastUpdate}
+              {lastUpdateInfo.label}: {timestampToShow}
             </p>
             {staleWarning && (
               <p className="text-xs sm:text-sm text-amber-600 flex items-center justify-center gap-1">
@@ -461,7 +387,7 @@ export function EnhancedPredictionView() {
       {prediction && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-primary/0 to-primary/10">
-            <CardHeader className="space-y-2">
+            <CardHeader className="space-y-3 p-6 pb-1">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Sparkle size={18} className="text-primary" />
                 AI Spotlight
@@ -472,7 +398,7 @@ export function EnhancedPredictionView() {
                 </p>
               )}
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5 px-6 pb-6 pt-0">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Top drivers</p>
                 <ul className="mt-2 space-y-1.5">

@@ -63,13 +63,13 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
       transition={{ duration: 0.5, delay: 0.3 }}
     >
       <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-        <CardHeader className="pb-3">
+        <CardHeader className="px-6 pt-6 pb-2">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Sparkle size={20} weight="duotone" className="text-primary" />
             AI Summary
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-6 px-6 pb-6 pt-0">
           <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-primary/80 font-semibold">
             {highlights.map((highlight, index) => (
               <button
@@ -86,7 +86,7 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
             ))}
           </div>
 
-          <div className="relative min-h-[120px]">
+          <div className="relative min-h-[120px] pt-2">
             <AnimatePresence mode="wait">
               <motion.div
                 key={highlights[activeHighlight]?.title}

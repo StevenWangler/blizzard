@@ -178,7 +178,7 @@ export function AccuracyView() {
                   Pending Outcomes ({pendingRecords.length})
                 </h3>
                 <p className="text-xs text-yellow-700 mb-3">
-                  These predictions need real-world outcomes logged via GitHub Actions.
+                  These predictions need real-world outcomes logged.
                 </p>
                 <div className="space-y-2">
                   {pendingRecords.map(record => (

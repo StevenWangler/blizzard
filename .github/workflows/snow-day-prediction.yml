@@ -1,4 +1,4 @@
-name: Generate Snow Day Prediction
+name: Generate Blizzard Prediction
 
 on:
   # Run every day at 6 PM EST (23:00 UTC) to analyze tomorrow's conditions
@@ -46,7 +46,7 @@ jobs:
     - name: Generate snow day prediction
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        VITE_WEATHER_API_KEY: ${{ secrets.VITE_WEATHER_API_KEY }}
+        VITE_WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
         VITE_ZIP_CODE: ${{ github.event.inputs.zip_code || '49341' }}
       run: node build-tools/generate-prediction.mjs
     

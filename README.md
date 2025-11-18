@@ -1,262 +1,312 @@
-# ❄️ Snow Day Predictor
+<div align="center">
 
-A React + Vite web application for forecasting snow days, using real-time weather data and AI-driven predictions. Built for rapid prototyping and experimentation with a focus on UI/UX and predictive modeling.
+# ❄️ Blizzard
 
-## 🌨️ Features
+### *Know Before It Snows*
 
-- **Real-time Weather Data**: Integration with WeatherAPI.com for accurate forecasting
-- **Snow Day Predictions**: AI-powered probability calculations based on weather conditions
-- **Weather-Responsive Themes**: Dynamic UI themes that change based on weather conditions
-- **Historical Analysis**: Track prediction accuracy over time
-- **Weather Alerts**: Integration with government weather alerts
-- **Mobile-Responsive**: Optimized for all device sizes
+**AI-Powered Snow Day Predictions for Rockford, MI**
 
-## 🚀 Quick Start
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-### 1. Installation
+[Live Demo](#) • [Features](#-what-it-does) • [Quick Start](#-quick-start) • [Docs](./docs/)
+
+---
+
+</div>
+
+## 🌨️ What It Does
+
+Blizzard combines real-time weather data with intelligent prediction algorithms to forecast snow days with unprecedented accuracy. Built for the Rockford, MI community, it tracks weather patterns, analyzes historical outcomes, and delivers beautiful, weather-responsive predictions.
+
+### ✨ Core Features
+
+🎯 **Smart Predictions**  
+Multi-factor AI analysis weighing snow accumulation, temperature, wind, visibility, and ground conditions
+
+🌡️ **Real-Time Data**  
+Live weather integration via WeatherAPI.com with 48-hour forecasting and government alerts
+
+🎨 **Dynamic Theming**  
+UI morphs with weather conditions—from sunny brightness to blizzard darkness
+
+📊 **Accuracy Tracking**  
+Historical analysis with Brier scores, probability calibration, and outcome logging
+
+🔔 **Weather Alerts**  
+Government-issued warnings and advisories integrated directly into the UI
+
+📱 **Mobile-First**  
+Responsive design optimized for phones, tablets, and desktops
+
+## ⚡ Quick Start
+
+### Installation
 
 ```bash
+# Clone the repo
 git clone <repository-url>
-cd snowday-forecast
+cd blizzard
+
+# Install dependencies
 npm install
 ```
 
-### 2. Configuration
+### Configuration
 
-Create a `.env` file in the project root:
+Create `.env` in the project root:
 
 ```bash
-# Required: Get your free API key from https://www.weatherapi.com/signup.aspx
-VITE_WEATHER_API_KEY=your_weatherapi_key_here
+# Get your free key: https://www.weatherapi.com/signup.aspx
+VITE_WEATHER_API_KEY=your_api_key_here
 
-# Optional: Your location (ZIP code for US, postal code for others)
+# Your location (default: Rockford, MI)
 VITE_ZIP_CODE=49341
 
-# Optional: Environment setting  
+# Environment
 VITE_BLIZZARD_ENV=development
 ```
 
-### 3. Development
+### Run It
 
 ```bash
+# Start dev server (localhost:5000)
 npm run dev
-```
 
-Open [http://localhost:5000](http://localhost:5000) to view the application.
-
-### 4. Production Build
-
-```bash
+# Build for production
 npm run build
+
+# Preview production build
 npm run preview
 ```
 
-## 📋 Architecture
+## 🏗️ How It's Built
 
-### Core Components
+### Tech Stack
 
-- **App.tsx**: Main application layout with tab navigation
-- **PredictionView**: Today's forecast and snow day probability
-- **AccuracyView**: Historical accuracy tracking and debug panel
-- **HistoryView**: Past weather events and outcomes
+```typescript
+{
+  "frontend": ["React 19", "TypeScript 5.7", "Vite 6"],
+  "styling": ["Tailwind CSS 4", "Radix UI", "Framer Motion"],
+  "data": ["WeatherAPI.com", "TanStack Query"],
+  "icons": ["Phosphor Icons", "Heroicons"],
+  "deployment": ["GitHub Pages", "GitHub Actions"]
+}
+```
 
-### Weather API System
+### Architecture
 
-The application includes a comprehensive weather API integration:
+**Component-Driven Design**
+```
+src/
+├── components/
+│   ├── PredictionView.tsx    # Main forecast interface
+│   ├── AccuracyView.tsx       # Historical tracking
+│   ├── HistoryView.tsx        # Past outcomes
+│   ├── AgentsView.tsx         # AI prediction agents
+│   └── ui/                    # Radix primitives
+├── services/
+│   ├── weather.ts             # Core weather logic
+│   ├── weatherApi.ts          # API client
+│   └── weatherProcessing.ts   # Data transformation
+├── hooks/
+│   ├── useWeatherTheme.ts     # Dynamic theming
+│   └── useNotifications.ts    # Alert system
+└── types/
+    └── weatherTypes.ts        # TypeScript definitions
+```
 
-- **Real-time Data**: Live weather forecasts from WeatherAPI.com
-- **Probability Calculations**: Sophisticated algorithms for snow day prediction
-- **Error Handling**: Robust fallback systems and user-friendly error messages
-- **Mock Data**: Realistic test data for development without API keys
+**Smart Features**
+- 🧠 Multi-agent AI prediction system
+- 📈 Real-time accuracy calibration
+- 🎭 Weather-reactive UI themes
+- 🔄 Automatic GitHub Actions workflows
+- 💾 Client-side data persistence
 
 ## 📚 Documentation
 
-Complete project documentation is available in the [docs folder](./docs/):
+| Resource | Description |
+|----------|-------------|
+| [📖 **Docs Index**](./docs/README.md) | Complete documentation hub |
+| [🌡️ **Weather API**](./docs/WEATHER_API_README.md) | Integration guide & API details |
+| [🚀 **Deployment**](./docs/DEPLOYMENT_GUIDE.md) | Deploy to GitHub Pages & more |
+| [📋 **PRD**](./docs/PRD.md) | Product requirements & goals |
+| [🤖 **AI Agents**](./docs/AI_AGENT_SYSTEM.md) | Multi-agent prediction system |
 
-- **[📖 Documentation Index](./docs/README.md)** - Complete documentation overview
-- **[🌡️ Weather API Integration](./docs/WEATHER_API_README.md)** - Weather system documentation
-- **[🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)** - Hosting and deployment instructions
-- **[⚡ Quick Setup](./docs/PAGES_SETUP.md)** - Fast GitHub Pages deployment
-- **[📋 Project Requirements](./docs/PRD.md)** - Product specifications and goals
-- **[✅ Project Complete](./docs/PROJECT_COMPLETE.md)** - Implementation summary
+## 🎯 The Prediction Algorithm
 
-### Styling & Theming
+Blizzard uses a sophisticated multi-factor weighting system:
 
-- **Tailwind CSS**: Utility-first CSS framework
-- **Dynamic Themes**: Weather-responsive color schemes
-- **Component Library**: Radix UI primitives with custom styling
-- **Responsive Design**: Mobile-first approach
+```typescript
+const predictionFactors = {
+  snow: 0.35,              // Probability & accumulation
+  temperature: 0.20,       // Temperature & wind chill
+  wind: 0.20,              // Wind speed & gusts
+  visibility: 0.15,        // Visibility conditions
+  ground_conditions: 0.10  // Humidity, pressure, etc.
+}
+```
+
+**Decision Thresholds**
+- 🟢 **0-30%**: Low probability—pack your backpack
+- 🟡 **31-60%**: Moderate—keep an eye on updates
+- 🟠 **61-80%**: High—start planning that day off
+- 🔴 **81-100%**: Very high—it's happening!
+
+### AI Agent System
+
+Multiple specialized agents analyze weather data:
+- **Conservative Agent**: Risk-averse predictions
+- **Balanced Agent**: Moderate approach
+- **Aggressive Agent**: Optimistic forecasts
+- **Ensemble**: Weighted combination of all agents
 
 ## 🛠️ Development
 
-## 📁 Project Structure
+### Available Commands
 
-```
-snowday-forecast/
-├── build-tools/              # Build and deployment scripts
-│   ├── setup-deployment.mjs
-│   ├── setup-keys.mjs
-│   ├── validate-deployment.mjs
-│   ├── create-test-data.mjs
-│   └── generate-prediction.mjs
-├── config/                   # Configuration files
-│   ├── tsconfig.json
-│   ├── vite.config.ts
-│   ├── tailwind.config.js
-│   ├── components.json
-│   ├── theme.json
-│   └── runtime.config.json
-├── docs/                     # Documentation
-│   ├── README.md
-│   ├── API_KEYS_SETUP.md
-│   ├── DEPLOYMENT_GUIDE.md
-│   ├── WEATHER_API_README.md
-│   └── ...
-├── public/                   # Static assets
-├── src/                      # Source code
-│   ├── components/           # React components
-│   │   ├── ui/              # Reusable UI primitives
-│   │   ├── PredictionView.tsx
-│   │   └── ...
-│   ├── services/            # Business logic services
-│   │   ├── weather.ts       # Main weather service
-│   │   ├── weatherApi.ts    # WeatherAPI.com client
-│   │   ├── weatherProcessing.ts
-│   │   ├── weatherErrorHandling.ts
-│   │   └── index.ts         # Service exports
-│   ├── types/               # TypeScript type definitions
-│   │   ├── weatherTypes.ts
-│   │   └── index.ts
-│   ├── utils/               # Utility functions
-│   │   ├── utils.ts
-│   │   └── index.ts
-│   ├── styles/              # CSS and theme files
-│   ├── hooks/               # Custom React hooks
-│   ├── App.tsx
-│   └── main.tsx
-├── .env.example             # Environment variables template
-├── .gitignore
-├── package.json
-└── README.md
-```
-
-### Available Scripts
-
-- `npm run dev`: Start development server
-- `npm run build`: Build for production
-- `npm run preview`: Preview production build
-- `npm run lint`: Run ESLint
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server on port 5000 |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm run deploy:github` | Deploy to GitHub Pages |
+| `npm run generate-prediction` | Run AI prediction workflow |
 
 ### Environment Variables
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `VITE_WEATHER_API_KEY` | Yes | - | WeatherAPI.com API key |
-| `VITE_ZIP_CODE` | No | `49341` | Location for weather data |
-| `VITE_BLIZZARD_ENV` | No | `production` | Environment setting |
+| `VITE_WEATHER_API_KEY` | ✅ Yes | - | WeatherAPI.com API key |
+| `VITE_ZIP_CODE` | ⚪ Optional | `49341` | Location (ZIP/postal code) |
+| `VITE_BLIZZARD_ENV` | ⚪ Optional | `production` | Environment setting |
 
-## 🧪 Testing
+### Debug Tools
 
-### Debug Panel
+**Built-in Debug Panel** (Accuracy tab)
+- ✅ API configuration validator
+- 🧪 Integration test runner
+- 📊 Detailed weather analysis viewer
+- 🔄 Mock data toggle for offline dev
 
-The application includes a built-in debug panel for testing weather API integration:
+## 🎨 Weather-Reactive Themes
 
-1. Navigate to the "Accuracy" tab
-2. Use the Weather Debug Panel to:
-   - Check API configuration
-   - Run integration tests
-   - View detailed weather analysis
-   - Test error handling scenarios
+The UI dynamically responds to current weather conditions:
 
-### Mock Data
+| Condition | Theme Colors | Vibe |
+|-----------|--------------|------|
+| ☀️ **Clear** | Bright blues & yellows | Optimistic, energetic |
+| 🌨️ **Light Snow** | Cool blues & whites | Calm, anticipatory |
+| ❄️ **Heavy Snow** | Deep blues & grays | Serious, focused |
+| 🌬️ **Blizzard** | Dark purples & blacks | Dramatic, intense |
 
-When no API key is configured, the system automatically uses realistic mock data for development and testing.
+Themes affect backgrounds, cards, buttons, and even animation speeds!
 
-## 🌐 Weather API Integration
+## 📊 Accuracy & Insights
 
-### Getting Started with Real Data
+**Track Everything**
+- 📈 Historical prediction accuracy
+- 🎯 Brier score calculations
+- 📉 Calibration curve visualization
+- 📝 Manual outcome logging
+- 🔍 Per-agent performance metrics
 
-1. **Sign up** at [WeatherAPI.com](https://www.weatherapi.com/signup.aspx) (free tier available)
-2. **Get your API key** from the dashboard
-3. **Update** your `.env` file with the API key
-4. **Restart** the development server
+**Automated Workflows**
+- Daily prediction generation via GitHub Actions
+- Automatic outcome recording
+- Historical data aggregation
+- Performance trend analysis
 
-### Features
+## 🔒 Security & Privacy
 
-- **48-hour Forecasts**: Detailed hourly weather data
-- **Weather Alerts**: Government-issued warnings and advisories
-- **Location Services**: Support for ZIP codes and coordinates
-- **Error Handling**: Comprehensive error management with fallbacks
-- **Rate Limiting**: Efficient API usage with retry logic
+✅ **What We Do**
+- Store API keys in environment variables
+- Use HTTPS for all API calls
+- Process data client-side only
+- No user tracking or analytics
 
-## 🎨 Customization
+❌ **What We Don't Do**
+- Store personal information
+- Share data with third parties
+- Require authentication
+- Track user behavior
 
-### Weather Themes
+## 🚀 Deployment Options
 
-The application automatically adjusts its theme based on weather conditions:
+Deploy Blizzard anywhere static sites are hosted:
 
-- **Clear**: Bright, sunny colors
-- **Light Snow**: Cool blues and whites
-- **Heavy Snow**: Deeper blues and grays
-- **Blizzard**: Dark, dramatic colors
-
-### Probability Calculations
-
-Snow day probabilities are calculated using weighted factors:
-
-```typescript
-const weights = {
-  snow: 0.35,           // Snow probability and accumulation
-  temperature: 0.20,    // Temperature and wind chill
-  wind: 0.20,          // Wind speed and gusts
-  visibility: 0.15,    // Visibility conditions
-  ground_conditions: 0.10  // Humidity, pressure, etc.
-}
+### GitHub Pages (Recommended)
+```bash
+npm run deploy:github
 ```
+Includes automated workflows for daily predictions!
 
-## 📊 Forecast Insights
+### Other Platforms
+- **Vercel**: One-click import from GitHub
+- **Netlify**: Drag & drop `dist/` folder
+- **Cloudflare Pages**: Connect repo & deploy
+- **AWS S3 + CloudFront**: Upload build artifacts
 
-- **Accuracy Tracking**: Compare daily model calls against actual outcomes
-- **Historical Context**: Review past storms and how the model performed
-- **Calibration Tools**: Visualize Brier scores and probability bins
-- **Manual Outcome Logging**: Capture real results until backend automation is available
-
-## � Security & Privacy
-
-- **API Keys**: Securely handled through environment variables
-- **No Personal Data**: Only location-based weather data is used
-- **HTTPS**: All API communications use secure connections
-- **Client-Side**: No sensitive data stored on servers
-
-## 🚀 Deployment
-
-The application is built with Vite and can be deployed to any static hosting service:
-
-- **Vercel**: `vercel --prod`
-- **Netlify**: Drag and drop the `dist` folder
-- **GitHub Pages**: Use GitHub Actions for automated deployment
-- **AWS S3**: Upload build files to S3 bucket
+See the [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) for detailed instructions.
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions from the community! Here's how:
 
-## 📄 License
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/epic-addition`
+3. **Commit** your changes: `git commit -m '✨ Add epic feature'`
+4. **Push** to your fork: `git push origin feature/epic-addition`
+5. **Submit** a pull request
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Contribution Ideas
+- 🎨 New weather themes
+- 🤖 Additional AI prediction agents
+- 📊 Enhanced data visualizations
+- 🌍 Multi-location support
+- 🔔 Push notification system
+- 🧪 Comprehensive test suite
 
-## 🙏 Acknowledgments
+## 📜 License
 
-- **WeatherAPI.com**: Weather data provider
-- **Radix UI**: Component primitives
-- **Tailwind CSS**: Styling framework
-- **Phosphor Icons**: Icon library
-- **Vite**: Build tool and development server
+MIT License - see [LICENSE](LICENSE) for details.
+
+Feel free to use, modify, and distribute this project. Just keep it open source!
+
+## 🙏 Built With
+
+<div align="center">
+
+| Tool | Purpose |
+|------|---------|
+| [React](https://react.dev/) | UI framework |
+| [TypeScript](https://www.typescriptlang.org/) | Type safety |
+| [Vite](https://vitejs.dev/) | Build tool |
+| [Tailwind CSS](https://tailwindcss.com/) | Styling |
+| [Radix UI](https://www.radix-ui.com/) | Component primitives |
+| [Framer Motion](https://www.framer.com/motion/) | Animations |
+| [WeatherAPI.com](https://www.weatherapi.com/) | Weather data |
+| [Phosphor Icons](https://phosphoricons.com/) | Icon system |
+
+</div>
+
+## 💬 Questions?
+
+- 📖 Check the [docs](./docs/)
+- 🐛 [Open an issue](../../issues)
+- 💡 [Start a discussion](../../discussions)
 
 ---
 
-**Built with ❄️ for accurate snow day predictions**
+<div align="center">
+
+### ❄️ *Built with passion for snow days in Rockford, MI* ❄️
+
+**Stay warm. Stay informed. Stay ready for that perfect snow day.**
+
+[⬆ Back to Top](#-blizzard)
+
+</div>

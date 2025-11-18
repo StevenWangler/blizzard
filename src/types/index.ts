@@ -5,3 +5,4 @@
  */
 
 export * from './weatherTypes'
+export * from './agentPrediction'
