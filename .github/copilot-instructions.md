@@ -1,7 +1,7 @@
-# Copilot Instructions for snowday-forecast
+# Copilot Instructions for Blizzard
 
 ## Project Overview
-This is a React + Vite web application for forecasting snow days, using a modular component architecture. The project is designed for rapid prototyping and experimentation, with a focus on UI/UX and community-driven prediction features.
+This is a React + Vite web application called Blizzard for forecasting snow days, using a modular component architecture. The project is designed for rapid prototyping and experimentation, with a focus on UI/UX and community-driven prediction features.
 
 ## Architecture & Key Patterns
 - **Entry Point:** `src/main.tsx` bootstraps the app, loading `App.tsx` as the root component.

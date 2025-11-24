@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
-import { CloudSnow, Target, Clock, ListChecks, LockSimple } from '@phosphor-icons/react'
+import { CloudSnow, Target, Clock, ListChecks, LockSimple, UsersThree } from '@phosphor-icons/react'
 import { EnhancedPredictionView } from '@/components/EnhancedPredictionView'
 import { AccuracyView } from '@/components/AccuracyView'
 import { HistoryView } from '@/components/HistoryView'
+import { AgentsView } from '@/components/AgentsView'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { OutcomeRecorder } from '@/components/OutcomeRecorder'
 import { NotificationSettings } from '@/components/NotificationSettings'
@@ -70,7 +71,7 @@ function App() {
     toast.success('Admin tools locked')
   }
 
-  const tabGridCols = isAdmin ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'
+  const tabGridCols = isAdmin ? 'grid-cols-2 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background transition-colors relative overflow-hidden">
@@ -115,6 +116,10 @@ function App() {
               <Clock size={16} className="sm:w-[18px] sm:h-[18px]" />
               <span className="text-center leading-tight">History</span>
             </TabsTrigger>
+            <TabsTrigger value="agents" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
+              <UsersThree size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-center leading-tight">Meet the Agents</span>
+            </TabsTrigger>
             {isAdmin && (
               <TabsTrigger value="outcomes" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
                 <ListChecks size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -133,6 +138,10 @@ function App() {
           
           <TabsContent value="history">
             <HistoryView />
+          </TabsContent>
+
+          <TabsContent value="agents">
+            <AgentsView />
           </TabsContent>
 
           {isAdmin && (
