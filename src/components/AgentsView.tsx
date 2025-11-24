@@ -144,11 +144,6 @@ function formatDegrees(value?: number | null): string {
   return `${Math.round(value)}°F`
 }
 
-function formatHours(value?: number | null): string {
-  if (typeof value !== 'number') return '—'
-  return `${value} hrs`
-}
-
 function formatConfidence(value?: AgentPrediction['final']['confidence_level'] | null): string {
   if (!value) return 'Awaiting update'
   return CONFIDENCE_LABELS[value]
