@@ -288,8 +288,8 @@ export function AgentsView() {
   const timestampLabel = formatTimestamp(prediction?.timestamp)
 
   return (
-    <div className="space-y-8">
-      <Card className="border-primary/30 bg-primary/5 gap-8">
+    <div className="space-y-12">
+      <Card className="border-primary/30 bg-primary/5 gap-12">
         <CardHeader className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-primary">Meet the automation crew</p>
@@ -336,7 +336,7 @@ export function AgentsView() {
         </Alert>
       )}
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-12 lg:grid-cols-2">
         {agentProfiles.map((agent) => {
           const insight = insights[agent.id]
           const Icon = agent.icon
@@ -365,8 +365,8 @@ export function AgentsView() {
                     <Badge variant="outline">{agent.tone}</Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-1 space-y-8 sm:space-y-10 pt-2">
-                  <div className="space-y-4">
+                <CardContent className="flex-1 flex flex-col gap-12 pt-2">
+                  <div className="space-y-5">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">Focus lanes</p>
                     <div className="flex flex-wrap gap-3">
                       {agent.focusAreas.map((area) => (
@@ -384,8 +384,8 @@ export function AgentsView() {
                       <Skeleton className="h-16" />
                     </div>
                   ) : insight ? (
-                    <div className="rounded-2xl border border-border/70 bg-muted/30 p-5 space-y-4">
-                      <div className="space-y-2">
+                    <div className="rounded-2xl border border-border/70 bg-muted/30 p-6 space-y-6">
+                      <div className="space-y-3">
                         <p className="text-xs uppercase tracking-wide text-muted-foreground">Latest dispatch</p>
                         <p className="text-sm font-medium text-primary">{insight.headline}</p>
                         <p className="text-sm text-muted-foreground">{insight.summary}</p>
@@ -437,7 +437,7 @@ export function AgentsView() {
         })}
       </div>
 
-      <Card className="bg-background/80 gap-8">
+      <Card className="bg-background/80 gap-12">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Sparkle size={20} className="text-primary" />
