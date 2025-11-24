@@ -224,7 +224,7 @@ export function AgentsView() {
       const seasonalAdjustment = history.seasonal_context?.seasonal_probability_adjustment
       result.history = {
         headline: primaryPattern
-          ? `${primaryPattern.historical_snow_day_rate}% snow days in similar setups`
+          ? `${Math.round(primaryPattern.historical_snow_day_rate)}% snow days in similar setups`
           : 'No close analog located',
         summary: history.confidence_assessment,
         callouts: [
