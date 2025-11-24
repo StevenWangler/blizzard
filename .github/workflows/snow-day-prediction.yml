@@ -56,7 +56,7 @@ jobs:
         git config --local user.name "GitHub Action"
         
         # Add the generated prediction files
-        git add public/data/prediction.json public/data/summary.json
+        git add public/data/prediction.json public/data/summary.json public/data/outcomes.json
         
         # Check if there are changes to commit
         if git diff --staged --quiet; then
@@ -115,4 +115,5 @@ jobs:
         path: |
           public/data/prediction.json
           public/data/summary.json
+          public/data/outcomes.json
         retention-days: 30
