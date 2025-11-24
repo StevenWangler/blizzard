@@ -111,7 +111,11 @@ export function AccuracyView() {
 
   const calibrationData = useMemo(() => {
     if (!outcomes || outcomes.length === 0) return []
-    const completed = outcomes.filter(entry => typeof entry.modelProbability === 'number')
+    const completed = outcomes.filter(entry => 
+      typeof entry.modelProbability === 'number' && 
+      entry.actualSnowDay !== null && 
+      entry.actualSnowDay !== undefined
+    )
     if (completed.length === 0) return []
 
     const buckets = Array(10).fill(0).map(() => ({ predictions: 0, outcomes: 0 }))
@@ -134,7 +138,11 @@ export function AccuracyView() {
 
   const recentTrend = useMemo(() => {
     const trendSource = outcomes
-      .filter(entry => typeof entry.modelProbability === 'number')
+      .filter(entry => 
+        typeof entry.modelProbability === 'number' && 
+        entry.actualSnowDay !== null && 
+        entry.actualSnowDay !== undefined
+      )
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(-7)
 
@@ -154,7 +162,10 @@ export function AccuracyView() {
   const completedOutcomes = useMemo(() => {
     return outcomes.map(entry => {
       const prob = typeof entry.modelProbability === 'number' ? entry.modelProbability : null
-      const brier = typeof prob === 'number' ? Math.pow(prob / 100 - (entry.actualSnowDay ? 1 : 0), 2) : null
+      const hasOutcome = entry.actualSnowDay !== null && entry.actualSnowDay !== undefined
+      const brier = (typeof prob === 'number' && hasOutcome) 
+        ? Math.pow(prob / 100 - (entry.actualSnowDay ? 1 : 0), 2) 
+        : null
       return { ...entry, modelPrediction: prob, modelBrier: brier }
     })
   }, [outcomes])
@@ -365,8 +376,8 @@ export function AccuracyView() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={record.actualSnowDay ? 'destructive' : 'secondary'}>
-                      {record.actualSnowDay ? 'Snow Day' : 'School Open'}
+                    <Badge variant={record.actualSnowDay === true ? 'destructive' : record.actualSnowDay === false ? 'secondary' : 'outline'}>
+                      {record.actualSnowDay === true ? 'Snow Day' : record.actualSnowDay === false ? 'School Open' : 'Pending'}
                     </Badge>
                     {typeof record.modelBrier === 'number' && (
                       <div className="text-sm text-muted-foreground">

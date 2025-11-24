@@ -244,8 +244,8 @@ export function OutcomeRecorder() {
                           {typeof entry.studentPrediction === 'number' ? `${entry.studentPrediction}%` : '—'}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={entry.actualSnowDay ? 'destructive' : 'secondary'}>
-                            {entry.actualSnowDay ? 'Snow Day' : 'School Open'}
+                          <Badge variant={entry.actualSnowDay === true ? 'destructive' : entry.actualSnowDay === false ? 'secondary' : 'outline'}>
+                            {entry.actualSnowDay === true ? 'Snow Day' : entry.actualSnowDay === false ? 'School Open' : 'Pending'}
                           </Badge>
                         </TableCell>
                         <TableCell>
