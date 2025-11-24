@@ -15,7 +15,7 @@
  *   - VITE_ZIP_CODE: Location for weather forecast (default: 49341)
  */
 
-import { writeFileSync, existsSync, mkdirSync } from 'fs'
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { config as loadEnv } from 'dotenv'
@@ -359,6 +359,55 @@ async function main() {
     )
 
     console.log('📊 Summary also saved to summary.json')
+
+    // Update outcomes.json with pending prediction
+    const outcomesPath = join(appConfig.outputDir, 'outcomes.json')
+    let outcomes = []
+    if (existsSync(outcomesPath)) {
+      try {
+        outcomes = JSON.parse(readFileSync(outcomesPath, 'utf8'))
+      } catch (e) {
+        console.warn('⚠️ Could not parse outcomes.json, starting fresh')
+      }
+    }
+
+    // Use the date from the prediction timestamp (or today)
+    // The prediction timestamp is ISO string. We want YYYY-MM-DD.
+    // Note: prediction.timestamp is generated as new Date().toISOString()
+    const predictionDate = prediction.timestamp.split('T')[0]
+    
+    // Check if we already have an entry for this date
+    const existingIndex = outcomes.findIndex(o => o.date === predictionDate)
+    
+    const newEntry = {
+      date: predictionDate,
+      modelProbability: prediction.final.snow_day_probability,
+      confidence: prediction.final.confidence_level,
+      predictionTimestamp: prediction.timestamp,
+      actualSnowDay: null, // Pending
+      recordedAt: new Date().toISOString(),
+      recordedBy: 'system',
+      source: 'prediction'
+    }
+
+    if (existingIndex >= 0) {
+      // Only update if actualSnowDay is null/undefined (pending)
+      if (outcomes[existingIndex].actualSnowDay === null || outcomes[existingIndex].actualSnowDay === undefined) {
+         outcomes[existingIndex] = { ...outcomes[existingIndex], ...newEntry }
+         console.log('📝 Updated pending outcome in outcomes.json')
+      } else {
+         console.log('ℹ️ Outcome already finalized for today, skipping update to outcomes.json')
+      }
+    } else {
+      outcomes.push(newEntry)
+      console.log('➕ Added pending outcome to outcomes.json')
+    }
+    
+    // Sort by date descending
+    outcomes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+    writeFileSync(outcomesPath, JSON.stringify(outcomes, null, 2))
+    console.log('📚 History updated in outcomes.json')
 
   } catch (error) {
     console.error('❌ Prediction generation failed:', error.message)

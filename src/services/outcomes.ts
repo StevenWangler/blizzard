@@ -4,7 +4,7 @@ export interface SnowDayOutcome {
   studentPrediction?: number | null
   confidence?: string | null
   predictionTimestamp?: string | null
-  actualSnowDay: boolean
+  actualSnowDay?: boolean | null
   recordedAt: string
   recordedBy: string
   notes?: string

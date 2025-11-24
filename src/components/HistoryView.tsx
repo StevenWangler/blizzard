@@ -10,7 +10,7 @@ interface HistoricalEvent {
   date: string
   eventName: string
   modelPrediction: number | null
-  actualOutcome: boolean
+  actualOutcome: boolean | null
   notes: string
   recordedBy: string
   recordedAt: string
@@ -34,26 +34,38 @@ const generateEventName = (entry: SnowDayOutcome): string => {
 
   const date = new Date(entry.date)
   const monthName = date.toLocaleDateString('en-US', { month: 'long' })
-  if (entry.actualSnowDay) {
+  
+  if (entry.actualSnowDay === true) {
     const confident = typeof entry.modelProbability === 'number' && entry.modelProbability >= 70
     return confident ? `${monthName} Storm (Predicted)` : `${monthName} Surprise Storm`
   }
-  const expectedClosure = typeof entry.modelProbability === 'number' && entry.modelProbability >= 50
-  if (expectedClosure) return `${monthName} False Alarm`
-  if ((entry.modelProbability ?? 0) >= 30) return `${monthName} Close Call`
-  return `${monthName} Light Snow`
+  
+  if (entry.actualSnowDay === false) {
+    const expectedClosure = typeof entry.modelProbability === 'number' && entry.modelProbability >= 50
+    if (expectedClosure) return `${monthName} False Alarm`
+    if ((entry.modelProbability ?? 0) >= 30) return `${monthName} Close Call`
+    return `${monthName} Light Snow`
+  }
+
+  return `${monthName} Forecast`
 }
 
 const generateNotes = (entry: SnowDayOutcome): string => {
   if (entry.notes) return entry.notes
-  if (entry.actualSnowDay) {
+  
+  if (entry.actualSnowDay === true) {
     return entry.modelProbability && entry.modelProbability >= 50
       ? 'Model called the closure correctly and confidence tracked well.'
       : 'Closure arrived despite low modeled probability. Capture context in notes next time.'
   }
-  return entry.modelProbability && entry.modelProbability >= 50
-    ? 'Model leaned toward closure but schools stayed open.'
-    : 'Routine day with manageable conditions.'
+  
+  if (entry.actualSnowDay === false) {
+    return entry.modelProbability && entry.modelProbability >= 50
+      ? 'Model leaned toward closure but schools stayed open.'
+      : 'Routine day with manageable conditions.'
+  }
+
+  return 'Outcome pending verification.'
 }
 
 const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
@@ -61,7 +73,7 @@ const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
     date: entry.date,
     eventName: generateEventName(entry),
     modelPrediction: typeof entry.modelProbability === 'number' ? entry.modelProbability : null,
-    actualOutcome: !!entry.actualSnowDay,
+    actualOutcome: entry.actualSnowDay ?? null,
     notes: generateNotes(entry),
     recordedBy: entry.recordedBy,
     recordedAt: entry.recordedAt,
@@ -70,7 +82,8 @@ const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
   })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
-const getAccuracyBadge = (prediction: number | null, outcome: boolean) => {
+const getAccuracyBadge = (prediction: number | null, outcome: boolean | null) => {
+  if (outcome === null) return { text: 'Pending', variant: 'outline' as const }
   if (prediction === null) return { text: 'Unknown', variant: 'outline' as const }
   const predictedClosure = prediction >= 50
   if (predictedClosure === outcome) {
@@ -82,8 +95,8 @@ const getAccuracyBadge = (prediction: number | null, outcome: boolean) => {
   return { text: 'Miss', variant: 'destructive' as const }
 }
 
-const calculateBrierScore = (prediction: number | null, outcome: boolean) => {
-  if (prediction === null) return null
+const calculateBrierScore = (prediction: number | null, outcome: boolean | null) => {
+  if (prediction === null || outcome === null) return null
   const prob = prediction / 100
   return Math.pow(prob - (outcome ? 1 : 0), 2)
 }
@@ -123,10 +136,11 @@ export function HistoryView() {
       }
     }
 
-    const snowDays = events.filter(e => e.actualOutcome).length
-    const realEvents = events.filter(e => e.source !== 'seed').length
-    const demoEvents = events.length - realEvents
-    const withProb = events.filter(e => e.modelPrediction !== null)
+    const completedEvents = events.filter(e => e.actualOutcome !== null)
+    const snowDays = completedEvents.filter(e => e.actualOutcome === true).length
+    const realEvents = completedEvents.filter(e => e.source !== 'seed').length
+    const demoEvents = completedEvents.length - realEvents
+    const withProb = completedEvents.filter(e => e.modelPrediction !== null)
     const modelCorrect = withProb.filter(e => (e.modelPrediction ?? 0) >= 50 === e.actualOutcome).length
 
     return {
@@ -240,8 +254,8 @@ export function HistoryView() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <Badge variant={event.actualOutcome ? 'destructive' : 'secondary'}>
-                            {event.actualOutcome ? 'Snow Day' : 'School Open'}
+                          <Badge variant={event.actualOutcome === true ? 'destructive' : event.actualOutcome === false ? 'secondary' : 'outline'}>
+                            {event.actualOutcome === true ? 'Snow Day' : event.actualOutcome === false ? 'School Open' : 'Pending'}
                           </Badge>
                           {brier !== null && (
                             <p className="text-xs text-muted-foreground mt-1">Brier {brier.toFixed(3)}</p>
