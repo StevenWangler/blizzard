@@ -1,9 +1,11 @@
 name: Generate Blizzard Prediction
 
 on:
-  # Run every day at 6 PM EST (23:00 UTC) to analyze tomorrow's conditions
+  # Run 3 times daily to keep predictions fresh
   schedule:
-    - cron: '0 23 * * *'
+    - cron: '0 12 * * *'  # 7 AM EST (12:00 UTC)
+    - cron: '0 17 * * *'  # 12 PM EST (17:00 UTC)
+    - cron: '0 23 * * *'  # 6 PM EST (23:00 UTC)
   
   # Allow manual triggering
   workflow_dispatch:
@@ -13,6 +15,11 @@ on:
         required: false
         default: '49341'
         type: string
+      deploy_after:
+        description: 'Deploy site after generating prediction?'
+        required: false
+        default: true
+        type: boolean
       
   # Run on pushes to main branch (for testing)
   push:
@@ -27,6 +34,9 @@ jobs:
     
     permissions:
       contents: write  # Allow pushing updated prediction files
+    
+    outputs:
+      prediction_updated: ${{ steps.commit-changes.outputs.updated }}
     
     steps:
     - name: Checkout repository
@@ -51,6 +61,7 @@ jobs:
       run: node build-tools/generate-prediction.mjs
     
     - name: Commit and push prediction updates
+      id: commit-changes
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
@@ -61,6 +72,7 @@ jobs:
         # Check if there are changes to commit
         if git diff --staged --quiet; then
           echo "No changes to prediction files"
+          echo "updated=false" >> $GITHUB_OUTPUT
         else
           # Commit with timestamp and prediction info
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
@@ -71,6 +83,7 @@ jobs:
           
           echo "✅ Prediction updated and committed"
           echo "🎯 Snow day probability: ${PROBABILITY}%"
+          echo "updated=true" >> $GITHUB_OUTPUT
         fi
     
     - name: Create deployment comment (if PR)
@@ -117,3 +130,67 @@ jobs:
           public/data/summary.json
           public/data/outcomes.json
         retention-days: 30
+
+  # Deploy site after prediction is generated
+  deploy-site:
+    needs: generate-prediction
+    if: |
+      always() && 
+      needs.generate-prediction.result == 'success' &&
+      (github.event_name == 'schedule' || github.event.inputs.deploy_after == 'true' || github.event.inputs.deploy_after == true)
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: main  # Ensure we get the latest commit with prediction updates
+    
+    - name: Pull latest changes
+      run: git pull origin main
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Setup environment variables
+      run: |
+        echo "VITE_WEATHER_API_KEY=${{ secrets.WEATHER_API_KEY }}" >> .env
+        echo "VITE_ZIP_CODE=${{ secrets.ZIP_CODE || '49341' }}" >> .env
+        echo "VITE_OUTCOME_ADMIN_SECRET=${{ secrets.VITE_OUTCOME_ADMIN_SECRET }}" >> .env
+        echo "VITE_BLIZZARD_ENV=production" >> .env
+        echo "VITE_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .env
+    
+    - name: Build application
+      run: npm run build
+      
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist'
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+    
+    - name: Deployment summary
+      run: |
+        echo "✅ Site deployed successfully!"
+        echo "🌐 URL: ${{ steps.deployment.outputs.page_url }}"
