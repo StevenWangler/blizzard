@@ -61,7 +61,7 @@ const agentProfiles: AgentProfile[] = [
     focusAreas: ['Temperature structure', 'Precip type & timing', 'Wind + visibility'],
     tools: ['get_weather_data', 'search_weather_context'],
     deliverables: ['Quantitative weather analysis', 'Alert digest', 'Overnight vs. morning breakdowns'],
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.1',
     tone: 'Technical + precise',
     icon: CloudSnow,
     gradient: 'from-sky-500/30 via-blue-400/15 to-transparent'
@@ -74,7 +74,7 @@ const agentProfiles: AgentProfile[] = [
     focusAreas: ['Analog events', 'Seasonal norms', 'Microclimate flags'],
     tools: ['search_weather_context'],
     deliverables: ['Historical hit rate', 'Seasonal adjustment', 'Confidence commentary'],
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.1',
     tone: 'Story-driven + data-backed',
     icon: Books,
     gradient: 'from-amber-500/30 via-orange-400/15 to-transparent'
@@ -87,7 +87,7 @@ const agentProfiles: AgentProfile[] = [
     focusAreas: ['Road surface risk', 'Commute timing', 'Emergency access'],
     tools: ['get_weather_data'],
     deliverables: ['Roadway scorecard', 'Safety recommendations', 'Impact timeline'],
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.1',
     tone: 'Direct + pragmatic',
     icon: ShieldCheck,
     gradient: 'from-emerald-500/30 via-teal-400/15 to-transparent'
@@ -100,7 +100,7 @@ const agentProfiles: AgentProfile[] = [
     focusAreas: ['Probability modeling', 'Stakeholder guidance', 'Scenario planning'],
     tools: ['Structured agent briefs'],
     deliverables: ['Snow day probability', 'Decision rationale', 'Next evaluation timing'],
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.1',
     tone: 'Calm + actionable',
     icon: CirclesThreePlus,
     gradient: 'from-purple-500/30 via-fuchsia-400/15 to-transparent'

@@ -99,7 +99,7 @@ class NodeAgentSystem {
     this.baseUrl = 'https://api.openai.com/v1/chat/completions'
   }
 
-  async runAgent(name, instructions, weatherData, model = 'gpt-4o-mini') {
+  async runAgent(name, instructions, weatherData, model = 'gpt-5.1') {
     console.log(`🤖 Running ${name}...`)
 
     const messages = [
