@@ -151,9 +151,9 @@ export function ConditionPulse() {
   }
 
   return (
-    <section className="mb-6">
-      <div className="rounded-2xl border border-primary/10 bg-background/80 px-4 py-4 shadow-lg shadow-primary/5 backdrop-blur">
-        <div className="flex items-center justify-between gap-3 mb-4">
+    <section className="mb-8">
+      <div className="rounded-2xl border border-primary/10 bg-background/80 px-5 sm:px-6 py-5 sm:py-6 shadow-lg shadow-primary/5 backdrop-blur">
+        <div className="flex items-center justify-between gap-3 mb-5">
           <div>
             <p className="text-xs uppercase tracking-wide text-primary font-semibold">Condition Pulse</p>
             <p className="text-sm text-muted-foreground">Live signals from today's model run</p>
@@ -164,9 +164,9 @@ export function ConditionPulse() {
         </div>
 
         {loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="rounded-xl border border-border/50 p-3 animate-pulse">
+              <div key={index} className="rounded-xl border border-border/50 p-4 animate-pulse">
                 <div className="h-3 w-20 bg-muted rounded mb-2" />
                 <div className="h-5 w-16 bg-muted rounded" />
               </div>
@@ -182,24 +182,24 @@ export function ConditionPulse() {
         )}
 
         {!loading && !error && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {pulseItems.map((item, index) => (
               <motion.div
                 key={item.label}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="rounded-xl border border-border/60 bg-card/80 p-3 shadow-sm"
+                className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm"
               >
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   <item.icon size={16} />
                   {item.label}
                 </div>
-                <p className="text-xl font-semibold mt-1">
+                <p className="text-xl font-semibold mt-1.5">
                   {item.value}
                 </p>
                 {item.hint && (
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                  <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">
                     {item.hint}
                   </p>
                 )}

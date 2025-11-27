@@ -34,8 +34,8 @@ on:
         description: 'Optional notes or context'
         required: false
         type: string
-      manual_probability:
-        description: 'Student prediction probability (0-100) - who we are competing against'
+      rhs_prediction:
+        description: 'Rockford High School prediction (0-100) - competition tracking'
         required: false
         type: string
 
@@ -59,7 +59,7 @@ jobs:
           OUTCOME: ${{ inputs.actual_outcome }}
           NO_SCHOOL_REASON: ${{ inputs.no_school_reason }}
           NOTES: ${{ inputs.notes }}
-          MANUAL_PROBABILITY: ${{ inputs.manual_probability }}
+          RHS_PREDICTION: ${{ inputs.rhs_prediction }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: node build-tools/update-outcomes-ledger.mjs
 

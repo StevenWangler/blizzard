@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
-import { CloudSnow, Target, Clock, ListChecks, LockSimple, UsersThree } from '@phosphor-icons/react'
+import { CloudSnow, Target, Clock, ListChecks, LockSimple, UsersThree, Trophy } from '@phosphor-icons/react'
 import { EnhancedPredictionView } from '@/components/EnhancedPredictionView'
 import { AccuracyView } from '@/components/AccuracyView'
 import { HistoryView } from '@/components/HistoryView'
 import { AgentsView } from '@/components/AgentsView'
+import { CompetitionView } from '@/components/CompetitionView'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { OutcomeRecorder } from '@/components/OutcomeRecorder'
 import { NotificationSettings } from '@/components/NotificationSettings'
@@ -71,7 +72,7 @@ function App() {
     toast.success('Admin tools locked')
   }
 
-  const tabGridCols = isAdmin ? 'grid-cols-2 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'
+  const tabGridCols = isAdmin ? 'grid-cols-3 sm:grid-cols-6' : 'grid-cols-3 sm:grid-cols-5'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background transition-colors relative overflow-hidden">
@@ -82,11 +83,11 @@ function App() {
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob delay-4000"></div>
       </div>
       
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 max-w-6xl relative z-10">
         <EnhancedHeader />
         
         {/* Settings positioned in top right */}
-        <div className="absolute top-4 sm:top-8 right-3 sm:right-4 flex gap-2 z-20">
+        <div className="absolute top-6 sm:top-10 right-4 sm:right-6 lg:right-8 flex gap-2 z-20">
           {isAdmin && (
             <Button
               variant="outline"
@@ -102,7 +103,7 @@ function App() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full ${tabGridCols} mb-6 sm:mb-8 h-auto p-1 bg-background/50 backdrop-blur-sm`}>
+          <TabsList className={`grid w-full ${tabGridCols} mb-8 sm:mb-10 h-auto p-1.5 bg-background/50 backdrop-blur-sm`}>
             <TabsTrigger value="prediction" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
               <CloudSnow size={16} className="sm:w-[18px] sm:h-[18px]" />
               <span className="hidden sm:inline">Today's Forecast</span>
@@ -118,7 +119,11 @@ function App() {
             </TabsTrigger>
             <TabsTrigger value="agents" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
               <UsersThree size={16} className="sm:w-[18px] sm:h-[18px]" />
-              <span className="text-center leading-tight">Meet the Agents</span>
+              <span className="text-center leading-tight">Agents</span>
+            </TabsTrigger>
+            <TabsTrigger value="competition" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
+              <Trophy size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-center leading-tight">Competition</span>
             </TabsTrigger>
             {isAdmin && (
               <TabsTrigger value="outcomes" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
@@ -142,6 +147,10 @@ function App() {
 
           <TabsContent value="agents">
             <AgentsView />
+          </TabsContent>
+
+          <TabsContent value="competition">
+            <CompetitionView />
           </TabsContent>
 
           {isAdmin && (

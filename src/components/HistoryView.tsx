@@ -206,18 +206,18 @@ export function HistoryView() {
   })
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
 
       {seasonStats.totalEvents > 0 && (
-        <div className="grid md:grid-cols-5 gap-4">
+        <div className="grid md:grid-cols-5 gap-5">
           <Card>
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-primary">{seasonStats.totalEvents}</div>
               <p className="text-sm text-muted-foreground">Total Events</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-destructive">{seasonStats.snowDays}</div>
               <p className="text-sm text-muted-foreground">Snow Days</p>
               {seasonStats.totalEvents > 0 && (
@@ -228,20 +228,20 @@ export function HistoryView() {
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-muted-foreground">{seasonStats.noSchoolDays}</div>
               <p className="text-sm text-muted-foreground">Holidays/Weekends</p>
               <p className="text-xs text-muted-foreground">Excluded from stats</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-accent">{seasonStats.modelAccuracy}%</div>
               <p className="text-sm text-muted-foreground">Model Accuracy</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-muted-foreground">{seasonStats.realEvents}</div>
               <p className="text-sm text-muted-foreground">Live Records</p>
             </CardContent>
@@ -280,20 +280,20 @@ export function HistoryView() {
               <p className="text-xs">Record more outcomes to grow this view.</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {filteredEvents.map(event => {
                 const badge = getAccuracyBadge(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
                 const brier = calculateBrierScore(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
                 return (
-                  <Card key={`${event.date}-${event.recordedAt}`} className="p-4">
-                    <div className="space-y-4">
+                  <Card key={`${event.date}-${event.recordedAt}`} className="p-5 sm:p-6">
+                    <div className="space-y-5">
                       <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="font-semibold text-lg flex items-center gap-2">
+                          <h3 className="font-semibold text-lg flex items-center gap-2.5">
                             <CloudSnow size={20} className={event.actualOutcome ? 'text-destructive' : 'text-muted-foreground'} />
                             {event.eventName}
                           </h3>
-                          <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
                             <span>{new Date(event.date).toLocaleDateString(undefined, { 
                               weekday: 'long', 
                               year: 'numeric', 
@@ -314,31 +314,31 @@ export function HistoryView() {
                             </Badge>
                           )}
                           {brier !== null && (
-                            <p className="text-xs text-muted-foreground mt-1">Brier {brier.toFixed(3)}</p>
+                            <p className="text-xs text-muted-foreground mt-1.5">Brier {brier.toFixed(3)}</p>
                           )}
                         </div>
                       </div>
 
-                      <div className="grid sm:grid-cols-3 gap-3 text-sm">
+                      <div className="grid sm:grid-cols-3 gap-5 text-sm">
                         <div>
-                          <p className="text-muted-foreground text-xs uppercase tracking-wide">Model</p>
+                          <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Model</p>
                           <p className="font-medium">{event.modelPrediction !== null ? `${event.modelPrediction}%` : '—'}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs uppercase tracking-wide">Confidence</p>
+                          <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Confidence</p>
                           <p className="font-medium">{event.confidence || '—'}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground text-xs uppercase tracking-wide">Accuracy</p>
+                          <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Accuracy</p>
                           <Badge variant={badge.variant}>{badge.text}</Badge>
                         </div>
                       </div>
 
                       <Separator />
 
-                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">{event.notes}</p>
+                      <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{event.notes}</p>
 
-                      <div className="text-xs text-muted-foreground flex flex-wrap gap-3">
+                      <div className="text-xs text-muted-foreground flex flex-wrap gap-4">
                         <span>Logged by <strong>{event.recordedBy}</strong></span>
                         <span>at {new Date(event.recordedAt).toLocaleString()}</span>
                       </div>

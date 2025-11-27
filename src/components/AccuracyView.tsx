@@ -177,7 +177,7 @@ export function AccuracyView() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
 
       {pendingRecords.length > 0 && (
         <Card className="bg-yellow-50 border-yellow-200">
@@ -290,7 +290,7 @@ export function AccuracyView() {
         </Card>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
             <CardTitle>Brier Score Trend</CardTitle>
@@ -333,7 +333,7 @@ export function AccuracyView() {
             </p>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
+            <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={calibrationData}>
                   <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
@@ -362,7 +362,7 @@ export function AccuracyView() {
           <div className="space-y-3">
             {completedOutcomes.length > 0 ? (
               completedOutcomes.map((record) => (
-                <div key={`${record.date}-${record.recordedAt}`} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <div key={`${record.date}-${record.recordedAt}`} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
                   <div className="flex items-center gap-4">
                     <div className="text-sm font-medium">
                       {new Date(record.date).toLocaleDateString(undefined, { 

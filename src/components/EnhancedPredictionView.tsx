@@ -310,13 +310,13 @@ export function EnhancedPredictionView() {
       />
       
       <motion.div 
-        className="space-y-4 sm:space-y-6"
+        className="space-y-6 sm:space-y-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         {/* Weather theme indicator */}
-        <div className="text-center space-y-1">
+        <div className="text-center space-y-2">
         <WeatherThemeIndicator />
         {lastUpdateInfo && (
           <>
@@ -340,8 +340,8 @@ export function EnhancedPredictionView() {
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         <Card className="text-center border-2 shadow-xl hover:shadow-2xl transition-shadow duration-300 bg-gradient-to-br from-card via-card to-primary/5">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl sm:text-2xl flex items-center justify-center gap-2">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-xl sm:text-2xl flex items-center justify-center gap-3">
               {prediction ? <Brain size={24} className="text-primary" /> : <CloudSnow size={24} className="text-primary" />}
               Tomorrow's Snow Day Probability
             </CardTitle>
@@ -349,14 +349,14 @@ export function EnhancedPredictionView() {
               {prediction ? `AI Analysis for ${prediction.location}` : 'Based on weather conditions for Rockford, MI'}
             </p>
           </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
-          <div className="space-y-3 sm:space-y-4">
+        <CardContent className="space-y-6 sm:space-y-8">
+          <div className="space-y-4 sm:space-y-5">
             <AnimatedProbability value={probability} />
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-3">
               <Badge className={`${verdict.color} text-white text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2`}>
                 {verdict.text}
               </Badge>
-              {prediction && (
+              {prediction?.final?.confidence_level && (
                 <Badge className={`${getConfidenceBadge(prediction.final.confidence_level)} text-white px-2 py-1`}>
                   {prediction.final.confidence_level.replace('_', ' ')} confidence
                 </Badge>
@@ -365,14 +365,14 @@ export function EnhancedPredictionView() {
             <Progress value={probability} className="h-2 sm:h-3" />
           </div>
 
-          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg p-4 text-left border border-primary/20 mt-4">
-            <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg p-5 sm:p-6 text-left border border-primary/20 mt-6">
+            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
               <Brain size={16} className="text-primary" />
               {prediction ? 'AI Decision Rationale' : 'Weather Analysis'}
             </h4>
             <p className="text-sm text-muted-foreground">
               {prediction 
-                ? prediction.final.decision_rationale 
+                ? (prediction.final?.decision_rationale ?? 'No rationale available')
                 : fallbackWeather 
                   ? generateFallbackRationale(fallbackWeather)
                   : 'No rationale available'}
@@ -385,9 +385,9 @@ export function EnhancedPredictionView() {
       <ConditionPulse />
 
       {prediction && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-primary/0 to-primary/10">
-            <CardHeader className="space-y-3 p-6 pb-1">
+            <CardHeader className="space-y-3 p-6 sm:p-8 pb-2">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Sparkle size={18} className="text-primary" />
                 AI Spotlight
@@ -398,12 +398,12 @@ export function EnhancedPredictionView() {
                 </p>
               )}
             </CardHeader>
-            <CardContent className="space-y-5 px-6 pb-6 pt-0">
+            <CardContent className="space-y-6 px-6 sm:px-8 pb-6 sm:pb-8 pt-0">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Top drivers</p>
-                <ul className="mt-2 space-y-1.5">
-                  {prediction.final.primary_factors.slice(0, 3).map((factor, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
+                <ul className="mt-3 space-y-2">
+                  {prediction.final?.primary_factors?.slice(0, 3).map((factor, index) => (
+                    <li key={index} className="flex items-start gap-2.5 text-sm">
                       <span className="text-primary mt-0.5">•</span>
                       <span>{factor}</span>
                     </li>
@@ -411,29 +411,29 @@ export function EnhancedPredictionView() {
                 </ul>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-xl border border-primary/20 p-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="rounded-xl border border-primary/20 p-4">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Season shift</p>
                   <p className="text-2xl font-semibold">
-                    {prediction.history.seasonal_context.seasonal_probability_adjustment >= 0 ? '+' : ''}
-                    {prediction.history.seasonal_context.seasonal_probability_adjustment}
+                    {(prediction.history?.seasonal_context?.seasonal_probability_adjustment ?? 0) >= 0 ? '+' : ''}
+                    {prediction.history?.seasonal_context?.seasonal_probability_adjustment ?? 0}
                     <span className="text-sm font-medium ml-1">pts</span>
                   </p>
                   <p className="text-xs text-muted-foreground">vs typical mid-season odds</p>
                 </div>
-                <div className="rounded-xl border border-primary/20 p-3">
+                <div className="rounded-xl border border-primary/20 p-4">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Confidence</p>
-                  <p className="text-lg font-semibold capitalize">{prediction.final.confidence_level.replace('_', ' ')}</p>
-                  <p className="text-xs text-muted-foreground">Next update by {prediction.final.next_evaluation_time}</p>
+                  <p className="text-lg font-semibold capitalize">{prediction.final?.confidence_level?.replace('_', ' ') ?? 'Unknown'}</p>
+                  <p className="text-xs text-muted-foreground">Next update by {prediction.final?.next_evaluation_time ?? 'TBD'}</p>
                 </div>
               </div>
 
-              {prediction.history.seasonal_context.unusual_factors.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {prediction.history.seasonal_context.unusual_factors.slice(0, 3).map((factor, index) => (
+              {(prediction.history?.seasonal_context?.unusual_factors?.length ?? 0) > 0 && (
+                <div className="flex flex-wrap gap-2.5">
+                  {prediction.history?.seasonal_context?.unusual_factors?.slice(0, 3).map((factor, index) => (
                     <span
                       key={index}
-                      className="rounded-full bg-primary/10 text-primary text-xs px-3 py-1"
+                      className="rounded-full bg-primary/10 text-primary text-xs px-3.5 py-1.5"
                     >
                       {factor}
                     </span>
@@ -501,16 +501,16 @@ export function EnhancedPredictionView() {
                   </div>
 
                   {outcomeStats && (
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="rounded-lg border border-border/60 p-3">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="rounded-lg border border-border/60 p-4">
                         <p className="text-xs uppercase text-muted-foreground">Directional accuracy</p>
-                        <p className="text-xl font-semibold">{outcomeStats.directionalAccuracy}%</p>
-                        <p className="text-xs text-muted-foreground">Based on ledgered days</p>
+                        <p className="text-xl font-semibold mt-1">{outcomeStats.directionalAccuracy}%</p>
+                        <p className="text-xs text-muted-foreground mt-1">Based on ledgered days</p>
                       </div>
-                      <div className="rounded-lg border border-border/60 p-3">
+                      <div className="rounded-lg border border-border/60 p-4">
                         <p className="text-xs uppercase text-muted-foreground">Avg probability</p>
-                        <p className="text-xl font-semibold">{outcomeStats.avgProbability}%</p>
-                        <p className="text-xs text-muted-foreground">Season-to-date</p>
+                        <p className="text-xl font-semibold mt-1">{outcomeStats.avgProbability}%</p>
+                        <p className="text-xs text-muted-foreground mt-1">Season-to-date</p>
                       </div>
                     </div>
                   )}
@@ -535,21 +535,21 @@ export function EnhancedPredictionView() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="weather" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-4 mb-2">
                 <TabsTrigger value="weather">Weather</TabsTrigger>
                 <TabsTrigger value="history">History</TabsTrigger>
                 <TabsTrigger value="safety">Safety</TabsTrigger>
                 <TabsTrigger value="timeline">Timeline</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="weather" className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <h4 className="font-semibold flex items-center gap-2">
+              <TabsContent value="weather" className="space-y-5 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="space-y-3.5">
+                    <h4 className="font-semibold flex items-center gap-2.5.5">
                       <Thermometer size={16} />
                       Temperature Analysis
                     </h4>
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-2.5 text-sm">
                       <div className="flex justify-between">
                         <span>Current:</span>
                         <span>{prediction.meteorology.temperature_analysis.current_temp_f}°F</span>
@@ -569,12 +569,12 @@ export function EnhancedPredictionView() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <h4 className="font-semibold flex items-center gap-2">
+                  <div className="space-y-3.5">
+                    <h4 className="font-semibold flex items-center gap-2.5">
                       <CloudSnow size={16} />
                       Precipitation
                     </h4>
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-2.5 text-sm">
                       <div className="flex justify-between">
                         <span>Total Snow:</span>
                         <span>{prediction.meteorology.precipitation_analysis.total_snowfall_inches}"</span>
@@ -590,12 +590,12 @@ export function EnhancedPredictionView() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <h4 className="font-semibold flex items-center gap-2">
+                  <div className="space-y-3.5">
+                    <h4 className="font-semibold flex items-center gap-2.5">
                       <Wind size={16} />
                       Wind Conditions
                     </h4>
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-2.5 text-sm">
                       <div className="flex justify-between">
                         <span>Max Speed:</span>
                         <span>{prediction.meteorology.wind_analysis.max_wind_speed_mph} mph</span>
@@ -646,99 +646,113 @@ export function EnhancedPredictionView() {
               </TabsContent>
               
               <TabsContent value="history" className="space-y-4">
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold mb-2">Similar Weather Patterns</h4>
-                    <div className="space-y-2">
-                      {prediction.history.similar_weather_patterns.map((pattern, index) => (
-                        <div key={index} className="border rounded-lg p-3">
-                          <div className="flex justify-between items-start mb-1">
-                            <p className="text-sm font-medium">{pattern.pattern_description}</p>
-                            <Badge variant="outline" className={pattern.confidence_level === 'high' ? 'border-green-500' : pattern.confidence_level === 'medium' ? 'border-yellow-500' : 'border-red-500'}>
-                              {pattern.confidence_level}
-                            </Badge>
+                {prediction.history?.error ? (
+                  <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
+                    Historical analysis temporarily unavailable: {prediction.history.error}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Similar Weather Patterns</h4>
+                      <div className="space-y-2">
+                        {prediction.history?.similar_weather_patterns?.map((pattern, index) => (
+                          <div key={index} className="border rounded-lg p-3">
+                            <div className="flex justify-between items-start mb-1">
+                              <p className="text-sm font-medium">{pattern.pattern_description}</p>
+                              <Badge variant="outline" className={pattern.confidence_level === 'high' ? 'border-green-500' : pattern.confidence_level === 'medium' ? 'border-yellow-500' : 'border-red-500'}>
+                                {pattern.confidence_level}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">Historical snow day rate: {pattern.historical_snow_day_rate}%</p>
                           </div>
-                          <p className="text-xs text-muted-foreground">Historical snow day rate: {pattern.historical_snow_day_rate}%</p>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Seasonal Context</h4>
+                      <p className="text-sm mb-2">{prediction.history?.seasonal_context?.typical_conditions_for_date ?? 'No seasonal context available'}</p>
+                      {(prediction.history?.seasonal_context?.unusual_factors?.length ?? 0) > 0 && (
+                        <div>
+                          <p className="text-sm font-medium mb-1">Unusual factors:</p>
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            {prediction.history?.seasonal_context?.unusual_factors?.map((factor, index) => (
+                              <li key={index}>• {factor}</li>
+                            ))}
+                          </ul>
                         </div>
-                      ))}
+                      )}
                     </div>
                   </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="safety" className="space-y-4">
+                {prediction.safety?.error ? (
+                  <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
+                    Safety analysis temporarily unavailable: {prediction.safety.error}
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <h4 className="font-semibold flex items-center gap-2">
+                          <ShieldCheck size={16} />
+                          Road Conditions
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>Primary Roads:</span>
+                            <span>{prediction.safety?.road_conditions?.primary_roads_score ?? '—'}/10</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Secondary Roads:</span>
+                            <span>{prediction.safety?.road_conditions?.secondary_roads_score ?? '—'}/10</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Ice Risk:</span>
+                            <span className={getRiskColor(prediction.safety?.road_conditions?.ice_formation_risk ?? '')}>
+                              {prediction.safety?.road_conditions?.ice_formation_risk ?? '—'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-                  <div>
-                    <h4 className="font-semibold mb-2">Seasonal Context</h4>
-                    <p className="text-sm mb-2">{prediction.history.seasonal_context.typical_conditions_for_date}</p>
-                    {prediction.history.seasonal_context.unusual_factors.length > 0 && (
+                      <div className="space-y-3">
+                        <h4 className="font-semibold">Travel Safety</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>Walking:</span>
+                            <span>{prediction.safety?.travel_safety?.walking_conditions_score ?? '—'}/10</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Driving:</span>
+                            <span>{prediction.safety?.travel_safety?.driving_conditions_score ?? '—'}/10</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Overall Risk:</span>
+                            <span className={getRiskColor(prediction.safety?.risk_level ?? '')}>
+                              {prediction.safety?.risk_level ?? '—'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {(prediction.safety?.safety_recommendations?.length ?? 0) > 0 && (
                       <div>
-                        <p className="text-sm font-medium mb-1">Unusual factors:</p>
-                        <ul className="text-sm text-muted-foreground space-y-1">
-                          {prediction.history.seasonal_context.unusual_factors.map((factor, index) => (
-                            <li key={index}>• {factor}</li>
+                        <h4 className="font-semibold mb-2">Safety Recommendations</h4>
+                        <ul className="text-sm space-y-1">
+                          {prediction.safety?.safety_recommendations?.map((rec, index) => (
+                            <li key={index} className="flex items-start gap-2">
+                              <span className="text-primary">•</span>
+                              <span>{rec}</span>
+                            </li>
                           ))}
                         </ul>
                       </div>
                     )}
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="safety" className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <h4 className="font-semibold flex items-center gap-2">
-                      <ShieldCheck size={16} />
-                      Road Conditions
-                    </h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Primary Roads:</span>
-                        <span>{prediction.safety.road_conditions.primary_roads_score}/10</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Secondary Roads:</span>
-                        <span>{prediction.safety.road_conditions.secondary_roads_score}/10</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Ice Risk:</span>
-                        <span className={getRiskColor(prediction.safety.road_conditions.ice_formation_risk)}>
-                          {prediction.safety.road_conditions.ice_formation_risk}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h4 className="font-semibold">Travel Safety</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Walking:</span>
-                        <span>{prediction.safety.travel_safety.walking_conditions_score}/10</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Driving:</span>
-                        <span>{prediction.safety.travel_safety.driving_conditions_score}/10</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Overall Risk:</span>
-                        <span className={getRiskColor(prediction.safety.risk_level)}>
-                          {prediction.safety.risk_level}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {prediction.safety.safety_recommendations.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold mb-2">Safety Recommendations</h4>
-                    <ul className="text-sm space-y-1">
-                      {prediction.safety.safety_recommendations.map((rec, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <span className="text-primary">•</span>
-                          <span>{rec}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  </>
                 )}
               </TabsContent>
               
@@ -752,38 +766,40 @@ export function EnhancedPredictionView() {
                   <div className="space-y-3">
                     <div className="flex justify-between p-3 bg-muted/50 rounded-lg">
                       <span className="font-medium">Conditions Start:</span>
-                      <span>{prediction.final.timeline.conditions_start}</span>
+                      <span>{prediction.final?.timeline?.conditions_start ?? '—'}</span>
                     </div>
                     <div className="flex justify-between p-3 bg-muted/50 rounded-lg">
                       <span className="font-medium">Peak Impact:</span>
-                      <span>{prediction.final.timeline.peak_impact_time}</span>
+                      <span>{prediction.final?.timeline?.peak_impact_time ?? '—'}</span>
                     </div>
                     <div className="flex justify-between p-3 bg-muted/50 rounded-lg">
                       <span className="font-medium">Conditions Improve:</span>
-                      <span>{prediction.final.timeline.conditions_improve}</span>
+                      <span>{prediction.final?.timeline?.conditions_improve ?? '—'}</span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                    <div>
-                      <h5 className="font-semibold mb-2">Morning Commute Impact</h5>
-                      <Badge className={getRiskColor(prediction.safety.timing_analysis.morning_commute_impact)}>
-                        {prediction.safety.timing_analysis.morning_commute_impact}
-                      </Badge>
+                  {!prediction.safety?.error && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                      <div>
+                        <h5 className="font-semibold mb-2">Morning Commute Impact</h5>
+                        <Badge className={getRiskColor(prediction.safety?.timing_analysis?.morning_commute_impact ?? '')}>
+                          {prediction.safety?.timing_analysis?.morning_commute_impact ?? '—'}
+                        </Badge>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold mb-2">Afternoon Impact</h5>
+                        <Badge className={getRiskColor(prediction.safety?.timing_analysis?.afternoon_impact ?? '')}>
+                          {prediction.safety?.timing_analysis?.afternoon_impact ?? '—'}
+                        </Badge>
+                      </div>
                     </div>
-                    <div>
-                      <h5 className="font-semibold mb-2">Afternoon Impact</h5>
-                      <Badge className={getRiskColor(prediction.safety.timing_analysis.afternoon_impact)}>
-                        {prediction.safety.timing_analysis.afternoon_impact}
-                      </Badge>
-                    </div>
-                  </div>
+                  )}
 
-                  {prediction.final.alternative_scenarios.length > 0 && (
+                  {(prediction.final?.alternative_scenarios?.length ?? 0) > 0 && (
                     <div className="mt-6">
                       <h5 className="font-semibold mb-2">Alternative Scenarios</h5>
                       <div className="space-y-2">
-                        {prediction.final.alternative_scenarios.map((scenario, index) => (
+                        {prediction.final?.alternative_scenarios?.map((scenario, index) => (
                           <div key={index} className="border rounded-lg p-3">
                             <div className="flex justify-between items-start mb-1">
                               <p className="text-sm font-medium">{scenario.scenario}</p>
@@ -803,7 +819,7 @@ export function EnhancedPredictionView() {
       )}
 
       {/* Recommendations section */}
-      {prediction && (
+      {prediction && prediction.final?.recommendations && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -819,9 +835,9 @@ export function EnhancedPredictionView() {
                 <TabsTrigger value="authorities">Authorities</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="schools" className="mt-4">
-                <ul className="space-y-2">
-                  {prediction.final.recommendations.for_schools.map((rec, index) => (
+              <TabsContent value="schools" className="mt-5">
+                <ul className="space-y-2.5">
+                  {prediction.final?.recommendations?.for_schools?.map((rec, index) => (
                     <li key={index} className="flex items-start gap-2 text-sm">
                       <span className="text-primary">•</span>
                       <span>{rec}</span>
@@ -830,10 +846,10 @@ export function EnhancedPredictionView() {
                 </ul>
               </TabsContent>
               
-              <TabsContent value="residents" className="mt-4">
-                <ul className="space-y-2">
-                  {prediction.final.recommendations.for_residents.map((rec, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
+              <TabsContent value="residents" className="mt-5">
+                <ul className="space-y-2.5">
+                  {prediction.final?.recommendations?.for_residents?.map((rec, index) => (
+                    <li key={index} className="flex items-start gap-2.5 text-sm">
                       <span className="text-primary">•</span>
                       <span>{rec}</span>
                     </li>
@@ -841,10 +857,10 @@ export function EnhancedPredictionView() {
                 </ul>
               </TabsContent>
               
-              <TabsContent value="authorities" className="mt-4">
-                <ul className="space-y-2">
-                  {prediction.final.recommendations.for_authorities.map((rec, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
+              <TabsContent value="authorities" className="mt-5">
+                <ul className="space-y-2.5">
+                  {prediction.final?.recommendations?.for_authorities?.map((rec, index) => (
+                    <li key={index} className="flex items-start gap-2.5 text-sm">
                       <span className="text-primary">•</span>
                       <span>{rec}</span>
                     </li>

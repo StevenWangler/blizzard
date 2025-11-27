@@ -1,7 +1,8 @@
 export interface SnowDayOutcome {
   date: string
   modelProbability?: number | null
-  studentPrediction?: number | null
+  /** Rockford High School student prediction (0-100) - our competition */
+  rhsPrediction?: number | null
   confidence?: string | null
   predictionTimestamp?: string | null
   actualSnowDay?: boolean | null

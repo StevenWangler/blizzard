@@ -207,7 +207,11 @@ export function AgentsView() {
 
     const { meteorology, history, safety, final } = prediction
 
-    if (meteorology) {
+    // Check if agent data has an error (API failure) vs actual data
+    const hasError = (data: unknown): data is { error: string; agent: string } =>
+      typeof data === 'object' && data !== null && 'error' in data
+
+    if (meteorology && !hasError(meteorology)) {
       result.meteorology = {
         headline: `${formatPercent(meteorology.precipitation_analysis.snow_probability_morning)} chance for morning snow`,
         summary: meteorology.overall_conditions_summary,
@@ -217,9 +221,15 @@ export function AgentsView() {
           { label: 'Wind Gusts', value: `${Math.round(meteorology.wind_analysis.max_wind_speed_mph)} mph` }
         ]
       }
+    } else if (meteorology && hasError(meteorology)) {
+      result.meteorology = {
+        headline: 'Data temporarily unavailable',
+        summary: 'The meteorology agent encountered an issue. Will retry on next run.',
+        callouts: []
+      }
     }
 
-    if (history) {
+    if (history && !hasError(history)) {
       const primaryPattern = history.similar_weather_patterns?.[0]
       const seasonalAdjustment = history.seasonal_context?.seasonal_probability_adjustment
       result.history = {
@@ -241,9 +251,15 @@ export function AgentsView() {
           }
         ]
       }
+    } else if (history && hasError(history)) {
+      result.history = {
+        headline: 'Data temporarily unavailable',
+        summary: 'The history agent encountered an issue. Will retry on next run.',
+        callouts: []
+      }
     }
 
-    if (safety) {
+    if (safety && !hasError(safety)) {
       result.safety = {
         headline: `Risk level: ${safety.risk_level.toUpperCase()}`,
         summary: safety.safety_recommendations?.slice(0, 2).join(' ') || 'Assessing travel impacts... ',
@@ -260,6 +276,12 @@ export function AgentsView() {
               : 'Pending'
           }
         ]
+      }
+    } else if (safety && hasError(safety)) {
+      result.safety = {
+        headline: 'Data temporarily unavailable',
+        summary: 'The safety agent encountered an issue. Will retry on next run.',
+        callouts: []
       }
     }
 
@@ -283,9 +305,9 @@ export function AgentsView() {
   const timestampLabel = formatTimestamp(prediction?.timestamp)
 
   return (
-    <div className="space-y-12">
-      <Card className="border-primary/30 bg-primary/5 gap-12">
-        <CardHeader className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+    <div className="space-y-14">
+      <Card className="border-primary/30 bg-primary/5 gap-10">
+        <CardHeader className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-primary">Meet the automation crew</p>
             <CardTitle className="mt-2 text-2xl sm:text-3xl">Four specialists, one crystal-clear call</CardTitle>
@@ -303,7 +325,7 @@ export function AgentsView() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
               <p className="text-xs text-muted-foreground uppercase">Location</p>
               <p className="text-lg font-semibold">{location}</p>
@@ -331,7 +353,7 @@ export function AgentsView() {
         </Alert>
       )}
 
-      <div className="grid gap-12 lg:grid-cols-2">
+      <div className="grid gap-8 lg:gap-10 lg:grid-cols-2">
         {agentProfiles.map((agent) => {
           const insight = insights[agent.id]
           const Icon = agent.icon
@@ -343,9 +365,9 @@ export function AgentsView() {
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               className="h-full"
             >
-              <Card className="h-full flex flex-col border-border/70 bg-background/80 gap-8">
-                <CardHeader className="space-y-5">
-                  <div className="flex items-center gap-3">
+              <Card className="h-full flex flex-col border-border/70 bg-background/80 gap-6">
+                <CardHeader className="space-y-4">
+                  <div className="flex items-center gap-3.5">
                     <div className={`rounded-2xl bg-gradient-to-br ${agent.gradient} p-3 text-primary`}>
                       <Icon size={28} weight="duotone" />
                     </div>
@@ -360,7 +382,7 @@ export function AgentsView() {
                     <Badge variant="outline">{agent.tone}</Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col gap-12 pt-2">
+                <CardContent className="flex-1 flex flex-col gap-8 pt-2">
                   <div className="space-y-5">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">Focus lanes</p>
                     <div className="flex flex-wrap gap-3">

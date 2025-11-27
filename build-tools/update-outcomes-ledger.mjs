@@ -12,7 +12,7 @@ const eventDate = process.env.EVENT_DATE
 const outcome = process.env.OUTCOME
 const noSchoolReason = process.env.NO_SCHOOL_REASON || ''
 const notes = process.env.NOTES || ''
-const manualProbability = process.env.MANUAL_PROBABILITY
+const rhsPrediction = process.env.RHS_PREDICTION
 const actor = process.env.GITHUB_ACTOR || 'unknown'
 
 if (!eventDate) {
@@ -53,7 +53,7 @@ const buildEntry = async () => {
   const summary = await loadJsonIfExists(summaryPath)
   const prediction = await loadJsonIfExists(predictionPath)
 
-  const studentProb = sanitizeProbability(manualProbability)
+  const rhsProb = sanitizeProbability(rhsPrediction)
   let probability = null
   let confidence = null
   let predictionTimestamp = null
@@ -73,7 +73,7 @@ const buildEntry = async () => {
   const entry = {
     date: eventDate,
     modelProbability: probability,
-    studentPrediction: studentProb,
+    rhsPrediction: rhsProb,
     confidence: confidence || null,
     predictionTimestamp,
     actualSnowDay: isNoSchool ? null : outcome === 'snow-day',
@@ -112,7 +112,9 @@ const writeLedger = async () => {
     if (!clone.confidence) delete clone.confidence
     if (!clone.predictionTimestamp) delete clone.predictionTimestamp
     if (clone.modelProbability === null || clone.modelProbability === undefined) delete clone.modelProbability
-    if (clone.studentPrediction === null || clone.studentPrediction === undefined) delete clone.studentPrediction
+    if (clone.rhsPrediction === null || clone.rhsPrediction === undefined) delete clone.rhsPrediction
+    // Clean up legacy studentPrediction field if present
+    delete clone.studentPrediction
     return clone
   })
 

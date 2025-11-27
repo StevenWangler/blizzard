@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,6 +17,7 @@ import {
   ListChecks, 
   Snowflake,
   Sun,
+  Trash,
   TreePalm,
   Warning
 } from '@phosphor-icons/react'
@@ -86,8 +87,8 @@ const ghCommandFromForm = (form: OutcomeFormState) => {
     parts.push(`-f notes="${sanitized}"`)
   }
 
-  if (form.manualProbability.trim()) {
-    parts.push(`-f manual_probability=${form.manualProbability.trim()}`)
+  if (form.rhsPrediction.trim()) {
+    parts.push(`-f rhs_prediction=${form.rhsPrediction.trim()}`)
   }
 
   return parts.join(' ')
@@ -98,7 +99,7 @@ interface OutcomeFormState {
   outcome: 'snow-day' | 'school-open' | 'no-school' | null
   noSchoolReason: string
   notes: string
-  manualProbability: string
+  rhsPrediction: string
 }
 
 type QuickOutcome = 'snow-day' | 'school-open' | 'no-school'
@@ -111,12 +112,14 @@ export function OutcomeRecorder() {
     outcome: null,
     noSchoolReason: '',
     notes: '',
-    manualProbability: ''
+    rhsPrediction: ''
   })
   const [error, setError] = useState<string | null>(null)
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showNoSchoolOptions, setShowNoSchoolOptions] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [deleteCopied, setDeleteCopied] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -170,6 +173,21 @@ export function OutcomeRecorder() {
     }
   }
 
+  const getDeleteCommand = (date: string) => {
+    return `gh workflow run delete-outcome.yml --ref development -f event_date=${date} -f confirm=yes`
+  }
+
+  const copyDeleteCommand = async (date: string) => {
+    try {
+      await navigator.clipboard.writeText(getDeleteCommand(date))
+      setDeleteCopied(true)
+      toast.success('Delete command copied! Paste in terminal to delete.')
+      setTimeout(() => setDeleteCopied(false), 2000)
+    } catch (err) {
+      toast.error('Unable to copy command. Copy manually instead.')
+    }
+  }
+
   const handleQuickOutcome = (outcome: QuickOutcome) => {
     if (outcome === 'no-school') {
       setShowNoSchoolOptions(true)
@@ -189,7 +207,7 @@ export function OutcomeRecorder() {
   }
 
   const handlePendingDateClick = (date: string) => {
-    setForm(prev => ({ ...prev, date, outcome: null, noSchoolReason: '', notes: '', manualProbability: '' }))
+    setForm(prev => ({ ...prev, date, outcome: null, noSchoolReason: '', notes: '', rhsPrediction: '' }))
     setShowNoSchoolOptions(false)
   }
 
@@ -199,7 +217,7 @@ export function OutcomeRecorder() {
       outcome: null,
       noSchoolReason: '',
       notes: '',
-      manualProbability: ''
+      rhsPrediction: ''
     })
     setShowNoSchoolOptions(false)
     setCopied(false)
@@ -315,17 +333,17 @@ export function OutcomeRecorder() {
             <CollapsibleContent className="space-y-4 pt-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium">Student Prediction (optional)</label>
+                  <label className="text-sm font-medium">RHS Prediction (optional)</label>
                   <Input
                     type="number"
                     inputMode="numeric"
                     placeholder="0-100"
-                    value={form.manualProbability}
-                    onChange={(e) => setForm(prev => ({ ...prev, manualProbability: e.target.value }))}
+                    value={form.rhsPrediction}
+                    onChange={(e) => setForm(prev => ({ ...prev, rhsPrediction: e.target.value }))}
                     min={0}
                     max={100}
                   />
-                  <p className="text-xs text-muted-foreground mt-1">Compare against AI prediction</p>
+                  <p className="text-xs text-muted-foreground mt-1">Rockford High School's prediction</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium">Notes (optional)</label>
@@ -368,8 +386,8 @@ export function OutcomeRecorder() {
                   {form.notes && (
                     <div><span className="text-muted-foreground">notes:</span> <code className="font-semibold">{form.notes}</code></div>
                   )}
-                  {form.manualProbability && (
-                    <div><span className="text-muted-foreground">manual_probability:</span> <code className="font-semibold">{form.manualProbability}</code></div>
+                  {form.rhsPrediction && (
+                    <div><span className="text-muted-foreground">rhs_prediction:</span> <code className="font-semibold">{form.rhsPrediction}</code></div>
                   )}
                 </div>
                 <Button asChild className="w-full">
@@ -513,15 +531,17 @@ export function OutcomeRecorder() {
                     <TableRow>
                       <TableHead>Date</TableHead>
                       <TableHead>AI Prediction</TableHead>
-                      <TableHead>Student</TableHead>
+                      <TableHead>RHS</TableHead>
                       <TableHead>Outcome</TableHead>
                       <TableHead>Recorded</TableHead>
                       <TableHead className="hidden md:table-cell">Notes</TableHead>
+                      <TableHead className="w-10"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {outcomes.slice().reverse().map(entry => (
-                      <TableRow key={`${entry.date}-${entry.recordedAt}`}>
+                      <React.Fragment key={`${entry.date}-${entry.recordedAt}`}>
+                      <TableRow>
                         <TableCell className="whitespace-nowrap font-medium">
                           {formatDate(entry.date)}
                         </TableCell>
@@ -536,7 +556,7 @@ export function OutcomeRecorder() {
                           ) : '—'}
                         </TableCell>
                         <TableCell>
-                          {typeof entry.studentPrediction === 'number' ? `${entry.studentPrediction}%` : '—'}
+                          {typeof entry.rhsPrediction === 'number' ? `${entry.rhsPrediction}%` : '—'}
                         </TableCell>
                         <TableCell>
                           {entry.noSchoolScheduled ? (
@@ -568,7 +588,95 @@ export function OutcomeRecorder() {
                         <TableCell className="hidden md:table-cell max-w-xs truncate text-sm text-muted-foreground">
                           {entry.notes || '—'}
                         </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                            onClick={() => setDeleteTarget(deleteTarget === entry.date ? null : entry.date)}
+                            title="Delete this outcome"
+                          >
+                            <Trash size={16} />
+                          </Button>
+                        </TableCell>
                       </TableRow>
+                      {deleteTarget === entry.date && (
+                        <TableRow className="bg-destructive/5 border-destructive/20">
+                          <TableCell colSpan={7} className="py-3">
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 text-sm">
+                                <Warning size={16} className="text-destructive" />
+                                <span>Delete outcome for <strong>{formatDate(entry.date)}</strong>?</span>
+                              </div>
+                              
+                              {/* GitHub Web UI option */}
+                              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <GithubLogo size={16} className="text-destructive" />
+                                  <span className="text-sm font-medium">Use GitHub's Web Interface</span>
+                                </div>
+                                <div className="text-xs bg-muted rounded p-2 space-y-1">
+                                  <div><span className="text-muted-foreground">event_date:</span> <code className="font-semibold">{entry.date}</code></div>
+                                  <div><span className="text-muted-foreground">confirm:</span> <code className="font-semibold">yes</code></div>
+                                </div>
+                                <Button asChild size="sm" variant="destructive" className="w-full">
+                                  <a
+                                    href="https://github.com/StevenWangler/snowday-forecast/actions/workflows/delete-outcome.yml"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    <GithubLogo size={14} className="mr-2" />
+                                    Open Delete Workflow
+                                  </a>
+                                </Button>
+                              </div>
+
+                              {/* CLI option */}
+                              <Collapsible>
+                                <CollapsibleTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="w-full justify-between text-muted-foreground text-xs">
+                                    <span className="flex items-center gap-2">
+                                      <ClipboardText size={14} />
+                                      Alternative: Terminal command
+                                    </span>
+                                    <CaretDown size={14} />
+                                  </Button>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent className="pt-2">
+                                  <div className="bg-muted rounded-md p-2">
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-xs font-medium text-muted-foreground">Command</span>
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        onClick={() => copyDeleteCommand(entry.date)}
+                                        className="h-6 text-xs"
+                                      >
+                                        {deleteCopied ? (
+                                          <><CheckCircle size={12} className="mr-1" /> Copied!</>
+                                        ) : (
+                                          <><ClipboardText size={12} className="mr-1" /> Copy</>
+                                        )}
+                                      </Button>
+                                    </div>
+                                    <code className="text-xs font-mono break-all block">{getDeleteCommand(entry.date)}</code>
+                                  </div>
+                                </CollapsibleContent>
+                              </Collapsible>
+
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setDeleteTarget(null)}
+                                className="w-full"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      </React.Fragment>
                     ))}
                   </TableBody>
                 </Table>
