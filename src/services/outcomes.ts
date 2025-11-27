@@ -1,10 +1,15 @@
 export interface SnowDayOutcome {
   date: string
   modelProbability?: number | null
-  studentPrediction?: number | null
+  /** Rockford High School student prediction (0-100) - our competition */
+  rhsPrediction?: number | null
   confidence?: string | null
   predictionTimestamp?: string | null
   actualSnowDay?: boolean | null
+  /** When true, indicates no school was scheduled (weekend, holiday, etc.) - excludes from accuracy stats */
+  noSchoolScheduled?: boolean
+  /** Reason for no school (e.g., 'weekend', 'thanksgiving', 'winter-break', 'teacher-day') */
+  noSchoolReason?: string
   recordedAt: string
   recordedBy: string
   notes?: string
@@ -62,7 +67,8 @@ export function buildOutcomeStats(outcomes: SnowDayOutcome[]): OutcomeStats {
     }
   }
 
-  const completed = outcomes.filter(entry => typeof entry.actualSnowDay === 'boolean')
+  // Exclude days where no school was scheduled (weekends, holidays) from accuracy stats
+  const completed = outcomes.filter(entry => typeof entry.actualSnowDay === 'boolean' && !entry.noSchoolScheduled)
   const snowDays = completed.filter(entry => entry.actualSnowDay).length
   const openDays = completed.length - snowDays
 

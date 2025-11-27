@@ -1,17 +1,24 @@
 /**
- * Multi-Agent Snow Day Prediction System
+ * Multi-Agent Snow Day Prediction System - MICHIGAN CALIBRATED
  * 
  * This system uses multiple specialized AI agents to analyze weather data
  * and collaboratively predict the probability of snow days with detailed reasoning.
  * 
+ * MICHIGAN-SPECIFIC CALIBRATION:
+ * - Higher snow thresholds than national averages (Michigan handles 4-6" easily)
+ * - Plow timing analysis (hours between snow ending and 7:40 AM school start)
+ * - Ice is the "great equalizer" - even Michigan closes for ice storms
+ * - Wind/drifting considerations for blowing snow
+ * - Experienced winter drivers and robust infrastructure factored in
+ * 
  * Architecture:
- * 1. Meteorologist Agent - Analyzes current weather conditions and forecasts
- * 2. Historian Agent - Provides historical context and patterns
- * 3. Safety Analyst Agent - Evaluates travel conditions and safety risks
- * 4. Decision Coordinator Agent - Synthesizes all inputs into final prediction
+ * 1. Meteorologist Agent - Analyzes current weather conditions and forecasts (Michigan-calibrated)
+ * 2. Historian Agent - Provides historical context and patterns (Michigan closure rates)
+ * 3. Safety Analyst Agent - Evaluates travel conditions and safety risks (Michigan road infrastructure)
+ * 4. Decision Coordinator Agent - Synthesizes all inputs into final prediction (Michigan thresholds)
  */
 
-import { Agent, tool, run } from '@openai/agents'
+import { Agent, tool, run, handoff, setTracingDisabled, webSearchTool, codeInterpreterTool } from '@openai/agents'
 import { z } from 'zod'
 import type { 
   WeatherApiResponse, 
@@ -19,8 +26,17 @@ import type {
   WeatherAlert,
   HourlyWeather 
 } from "@/types/weatherTypes"
+
+// Enable tracing for debugging and monitoring agent workflows (false = tracing ON)
+setTracingDisabled(false)
 import { weatherApi, isWeatherApiKeyConfigured } from './weatherApi'
 import { getRelevantWeatherInformation } from './weatherProcessing'
+
+// Import agent prompts from external files
+import meteorologistPrompt from './prompts/meteorologist.txt?raw'
+import historianPrompt from './prompts/historian.txt?raw'
+import safetyAnalystPrompt from './prompts/safety-analyst.txt?raw'
+import decisionCoordinatorPrompt from './prompts/decision-coordinator.txt?raw'
 
 const WEATHER_API_KEY_MISSING_MESSAGE = 'Weather API key is not configured. Please set VITE_WEATHER_API_KEY to run the snow day prediction agents.'
 
@@ -160,131 +176,52 @@ const weatherDataTool = tool({
   }
 })
 
-const webSearchTool = tool({
-  name: 'search_weather_context',
-  description: 'Search for current weather conditions, patterns, and relevant information online',
-  parameters: z.object({
-    query: z.string(),
-    location: z.string().optional()
-  }),
-  execute: async ({ query, location }) => {
-    // Note: In a real implementation, this would use a web search API
-    // For now, return a placeholder that indicates web search capability
-    return {
-      query,
-      location,
-      results: `Searched for: ${query}${location ? ` in ${location}` : ''}`,
-      timestamp: new Date().toISOString(),
-      note: "Web search tool - would integrate with real search API in production"
-    }
-  }
-})
-
-// Agent definitions
+// Agent definitions with handoffDescription for inter-agent communication
 export const meteorologistAgent = new Agent({
   name: 'Chief Meteorologist',
-  instructions: `You are an expert meteorologist specializing in winter weather analysis and snow day predictions.
-
-Your role is to:
-1. Analyze current weather conditions, forecasts, and meteorological data
-2. Interpret weather patterns, trends, and atmospheric conditions
-3. Assess precipitation type, timing, intensity, and accumulation
-4. Evaluate temperature profiles, wind patterns, and visibility factors
-5. Provide technical weather analysis with confidence levels
-
-Focus on:
-- Temperature trends and freezing level analysis
-- Precipitation type determination (snow vs. mixed precipitation)
-- Wind impact on snow accumulation and drifting
-- Visibility concerns from falling snow or blowing snow
-- Timing of weather onset and peak intensity
-- Weather alerts and their implications
-
-Always provide quantitative analysis with uncertainty ranges where appropriate.
-Be precise about timing, amounts, and meteorological reasoning.`,
-  model: 'gpt-4o-mini',
-  tools: [weatherDataTool, webSearchTool],
-  outputType: WeatherAnalysisSchema
+  instructions: meteorologistPrompt,
+  model: 'gpt-5.1',
+  tools: [weatherDataTool, webSearchTool(), codeInterpreterTool()],  // Weather API + web search + code for calculations
+  outputType: WeatherAnalysisSchema,
+  handoffDescription: 'Expert in weather analysis including temperature trends, precipitation forecasts, wind conditions, and visibility. Consult for detailed meteorological data interpretation.'
 })
 
 export const historianAgent = new Agent({
   name: 'Weather Pattern Historian',
-  instructions: `You are a weather pattern analyst with expertise in historical weather data and climatological patterns.
-
-Your role is to:
-1. Identify similar historical weather patterns and their outcomes
-2. Provide seasonal and climatological context
-3. Analyze location-specific factors and microclimates
-4. Assess how current conditions compare to historical norms
-5. Identify unusual or noteworthy aspects of the current weather pattern
-
-Focus on:
-- Historical precedents for similar weather setups
-- Seasonal timing and typical conditions for the current date
-- Local geographical factors that influence weather outcomes
-- Pattern recognition and analogous situations
-- Statistical context and probability adjustments based on history
-- Regional climate characteristics and trends
-
-Provide confidence levels for your historical comparisons and pattern matching.
-Consider both recent patterns (last 5-10 years) and longer climatological records.`,
-  model: 'gpt-4o-mini',
-  tools: [webSearchTool],
-  outputType: HistoricalAnalysisSchema
+  instructions: historianPrompt,
+  model: 'gpt-5.1',
+  tools: [webSearchTool(), codeInterpreterTool()],  // Web search + code for statistical pattern analysis
+  outputType: HistoricalAnalysisSchema,
+  handoffDescription: 'Expert in historical weather patterns and climatological context. Consult for pattern matching with past events and seasonal probability adjustments.'
 })
 
 export const safetyAnalystAgent = new Agent({
   name: 'Transportation Safety Analyst',
-  instructions: `You are a transportation safety expert specializing in winter weather impact assessment.
-
-Your role is to:
-1. Evaluate road and travel conditions during winter weather events
-2. Assess safety risks for different transportation modes
-3. Analyze timing impacts on commuting and daily activities
-4. Provide safety recommendations and risk assessments
-5. Consider infrastructure and emergency preparedness factors
-
-Focus on:
-- Road surface conditions and ice formation potential
-- Driving safety and vehicle operation challenges
-- Walking conditions and pedestrian safety
-- Public transportation impacts and disruptions
-- Emergency services accessibility
-- Timing of worst conditions relative to peak travel times
-- School transportation and campus safety considerations
-
-Rate conditions on safety scales and provide clear risk categorizations.
-Consider both immediate safety concerns and longer-term impact scenarios.`,
-  model: 'gpt-4o-mini',
-  tools: [weatherDataTool],
-  outputType: SafetyAnalysisSchema
+  instructions: safetyAnalystPrompt,
+  model: 'gpt-5.1',
+  tools: [weatherDataTool, webSearchTool(), codeInterpreterTool()],  // Weather + search + code for plow timing calculations
+  outputType: SafetyAnalysisSchema,
+  handoffDescription: 'Expert in transportation safety and travel risk assessment. Consult for road conditions, commute impact analysis, and safety recommendations.'
 })
 
-export const decisionCoordinatorAgent = new Agent({
+// Decision Coordinator with handoffs to specialist agents for follow-up queries
+export const decisionCoordinatorAgent = Agent.create({
   name: 'Snow Day Decision Coordinator',
-  instructions: `You are the final decision coordinator responsible for synthesizing all expert analysis into actionable snow day predictions.
-
-Your role is to:
-1. Integrate meteorological, historical, and safety analyses
-2. Weigh different factors and expert opinions appropriately
-3. Provide clear, confident predictions with supporting rationale
-4. Consider multiple scenarios and contingencies
-5. Make recommendations for different stakeholders
-6. Determine if additional monitoring or updates are needed
-
-Focus on:
-- Balancing technical weather analysis with practical safety concerns
-- Weighing expert opinions and resolving any conflicting assessments
-- Providing clear probability ranges with confidence levels
-- Explaining the decision-making rationale in accessible terms
-- Considering the consequences of both closing and not closing schools
-- Recommending appropriate timing for decisions and communications
-- Identifying key factors to monitor for potential forecast changes
-
-Your final output should be decisive yet acknowledge uncertainties appropriately.
-Provide actionable guidance for school administrators, parents, and community officials.`,
-  model: 'gpt-4o-mini',
-  outputType: FinalPredictionSchema
+  instructions: decisionCoordinatorPrompt,
+  model: 'gpt-5.1',
+  outputType: FinalPredictionSchema,
+  // Handoffs allow the coordinator to delegate back to specialists if more info needed
+  handoffs: [
+    handoff(meteorologistAgent, {
+      toolDescriptionOverride: 'Request additional meteorological analysis or clarification on weather conditions'
+    }),
+    handoff(historianAgent, {
+      toolDescriptionOverride: 'Request additional historical context or pattern analysis'
+    }),
+    handoff(safetyAnalystAgent, {
+      toolDescriptionOverride: 'Request additional safety assessment or transportation risk analysis'
+    })
+  ]
 })
 
 // Multi-agent orchestration function

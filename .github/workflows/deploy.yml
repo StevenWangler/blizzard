@@ -1,20 +1,23 @@
-name: Daily Weather Update & Deploy
+name: Deploy Site
 
 on:
-  # Run daily at 5 AM EST (9 AM UTC)
-  schedule:
-    - cron: '0 9 * * *'
-  
-  # Allow manual trigger
+  # Allow manual trigger for ad-hoc deployments
   workflow_dispatch:
   
-  # Deploy on pushes to main or development branch
+  # Deploy on pushes to main branch (excluding prediction data updates)
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'public/data/prediction.json'
+      - 'public/data/summary.json'
+      - 'public/data/outcomes.json'
   
   # Deploy on pull requests to main
   pull_request:
     branches: [ main ]
+
+# Note: Scheduled prediction + deploy is handled by snow-day-prediction.yml
+# This workflow handles manual deploys and code changes
 
 jobs:
   build-and-deploy:
@@ -24,6 +27,10 @@ jobs:
       contents: read
       pages: write
       id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
     - name: Checkout

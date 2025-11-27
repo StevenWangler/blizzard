@@ -2,18 +2,26 @@
 
 ## Overview
 
-This project now features an advanced multi-agent AI system that analyzes weather data and collaboratively predicts snow day probabilities with detailed reasoning and expert analysis.
+This project features an advanced multi-agent AI system using the **OpenAI Agents SDK v0.3+** that analyzes weather data and collaboratively predicts snow day probabilities with detailed reasoning and expert analysis.
 
 ## System Architecture
 
 ### Multi-Agent Design
 
-The system employs four specialized AI agents that work together:
+The system employs four specialized AI agents that work together using the latest SDK patterns:
 
 1. **Chief Meteorologist Agent** - Analyzes weather conditions, forecasts, and meteorological data
 2. **Weather Pattern Historian Agent** - Provides historical context and climatological patterns  
 3. **Transportation Safety Analyst Agent** - Evaluates travel conditions and safety risks
-4. **Decision Coordinator Agent** - Synthesizes all expert input into final predictions
+4. **Decision Coordinator Agent** - Synthesizes all expert input into final predictions (with handoffs to specialists)
+
+### Key SDK Features Used
+
+- **Handoffs**: Decision Coordinator can delegate back to specialists for clarification
+- **Structured Outputs**: Zod schemas ensure type-safe, validated JSON responses
+- **Parallel Execution**: Specialist agents run concurrently via `Promise.all()`
+- **Tracing**: Built-in debugging and monitoring of agent workflows
+- **handoffDescription**: Each agent describes when to be consulted
 
 ### Agent Workflow
 
@@ -22,7 +30,7 @@ Weather API → Agent Analysis (Parallel) → Decision Coordination → Structur
      ↓              ↓                            ↓                        ↓
 1. Fetch Data   2. Expert Analysis         3. Synthesis          4. JSON Output
    - Current      - Meteorology              - Weigh factors       - Probability
-   - Forecast     - Historical patterns      - Resolve conflicts   - Confidence  
+   - Forecast     - Historical patterns      - Handoffs if needed  - Confidence  
    - Alerts       - Safety assessment        - Final decision      - Reasoning
 ```
 
@@ -76,9 +84,11 @@ VITE_ZIP_CODE=49341  # Default: Rockford, MI
 
 ### Agent Models
 
-- **Primary model**: GPT-4o for complex reasoning and analysis
+- **Primary model**: `gpt-5.1` - OpenAI's flagship model for coding and agentic tasks
 - **Structured outputs**: Zod schemas ensure consistent JSON format
 - **Parallel execution**: Agents run simultaneously for efficiency
+- **Handoffs enabled**: Decision Coordinator can delegate to specialists
+- **Tracing**: Built-in monitoring via `setTracingEnabled(true)`
 
 ## Usage
 

@@ -292,24 +292,32 @@ export interface TimePeriod {
   description: string
 }
 
+// Michigan school schedule - 7:40 AM start time
+// Critical window for plow operations is overnight through early morning
 export const DEFAULT_TIME_PERIODS: TimePeriod[] = [
   {
     name: 'evening',
-    start_hour: 19,
+    start_hour: 18,
     end_hour: 24,
-    description: 'Evening commute and early evening hours'
+    description: 'Evening hours - when overnight snow typically begins'
   },
   {
-    name: 'morning',
+    name: 'overnight_plow_window',
     start_hour: 0,
+    end_hour: 5,
+    description: 'Critical plow operations window - plows working to clear roads'
+  },
+  {
+    name: 'morning_commute',
+    start_hour: 5,
     end_hour: 8,
-    description: 'Overnight and morning commute hours'
+    description: 'Morning commute window - buses start routes ~6:30 AM for 7:40 AM school start'
   },
   {
     name: 'school_hours',
-    start_hour: 6,
+    start_hour: 8,
     end_hour: 16,
-    description: 'School day hours'
+    description: 'School day hours - relevant for early dismissal decisions'
   }
 ]
 
@@ -321,21 +329,23 @@ export const DEFAULT_PROBABILITY_WEIGHTS: ProbabilityWeights = {
   ground_conditions: 0.10
 }
 
+// Michigan-calibrated thresholds - higher than national averages
+// Michigan is tough on winter weather and has robust plow infrastructure
 export const DEFAULT_THRESHOLDS: ThresholdValues = {
   temperature: {
-    critical: 20,
-    cold: 32
+    critical: 10,   // Michigan: Below 10°F is concerning (not 20°F)
+    cold: 25        // Michigan: Below 25°F affects conditions (not 32°F)
   },
   wind: {
-    high: 35,
-    moderate: 20
+    high: 40,       // Michigan: 40+ mph is high (not 35)
+    moderate: 25    // Michigan: 25+ mph causes drifting (not 20)
   },
   visibility: {
-    poor: 1,
-    moderate: 5
+    poor: 0.5,      // Michigan: <0.5 miles is poor (not 1 mile)
+    moderate: 3     // Michigan: <3 miles is moderate (not 5)
   },
   snow: {
-    heavy: 4,
-    moderate: 1
+    heavy: 8,       // Michigan: 8+ inches is heavy (not 4)
+    moderate: 4     // Michigan: 4+ inches is moderate (not 1)
   }
 }

@@ -226,6 +226,9 @@ export function generateFullSummary(prediction: {
   safetyAdvisory: string
   residentRecommendations: string[]
 } {
+  // Handle cases where safety data may have an error or be incomplete
+  const hasSafetyData = prediction.safety?.road_conditions && prediction.safety?.travel_safety
+  
   return {
     weatherSummary: generateWeatherSummary(
       prediction.meteorology.temperature_analysis,
@@ -239,16 +242,18 @@ export function generateFullSummary(prediction: {
       prediction.final.primary_factors
     ),
     timelineNarrative: generateTimelineNarrative(prediction.final.timeline),
-    safetyAdvisory: generateSafetyAdvisory(
-      prediction.safety.risk_level,
-      prediction.safety.road_conditions.primary_roads_score,
-      prediction.safety.travel_safety.driving_conditions_score,
-      prediction.safety.road_conditions.ice_formation_risk
-    ),
+    safetyAdvisory: hasSafetyData 
+      ? generateSafetyAdvisory(
+          prediction.safety.risk_level,
+          prediction.safety.road_conditions.primary_roads_score,
+          prediction.safety.travel_safety.driving_conditions_score,
+          prediction.safety.road_conditions.ice_formation_risk
+        )
+      : 'Safety analysis is currently unavailable. Please check local conditions and exercise caution.',
     residentRecommendations: generateResidentRecommendations(
       prediction.final.snow_day_probability,
       prediction.final.timeline,
-      prediction.safety.risk_level
+      hasSafetyData ? prediction.safety.risk_level : 'moderate'
     )
   }
 }

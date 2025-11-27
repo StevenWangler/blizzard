@@ -4,6 +4,7 @@
  * Snow Day Prediction Generator
  * 
  * Node.js script that runs the multi-agent system to generate snow day predictions.
+ * Uses the @openai/agents SDK for proper agent orchestration with handoffs and tracing.
  * Designed to be executed by GitHub Actions on a schedule.
  * 
  * Usage:
@@ -19,13 +20,16 @@ import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { config as loadEnv } from 'dotenv'
+import { Agent, run, tool, handoff, setTracingDisabled, webSearchTool, codeInterpreterTool } from '@openai/agents'
+import { z } from 'zod'
 
 // Load environment variables from .env file
 loadEnv()
 
-// Import our agent system (note: this requires the built files)
-// We'll need to adapt this for Node.js execution
-console.log('🚀 Starting Snow Day Prediction Generator...')
+// Enable SDK tracing for debugging and monitoring (false = tracing ON)
+setTracingDisabled(false)
+
+console.log('🚀 Starting Snow Day Prediction Generator (OpenAI Agents SDK)...')
 
 // Check required environment variables
 const requiredEnvVars = ['OPENAI_API_KEY', 'VITE_WEATHER_API_KEY']
@@ -46,7 +50,6 @@ const projectRoot = join(__dirname, '..')
 
 // Configuration
 const appConfig = {
-  openaiApiKey: process.env.OPENAI_API_KEY,
   weatherApiKey: process.env.VITE_WEATHER_API_KEY,
   zipCode: process.env.VITE_ZIP_CODE || '49341',
   outputDir: join(projectRoot, 'public', 'data'),
@@ -56,7 +59,7 @@ const appConfig = {
 console.log(`📍 Location: ${appConfig.zipCode}`)
 console.log(`📂 Output: ${join(appConfig.outputDir, appConfig.outputFile)}`)
 
-// Simplified weather API client for Node.js
+// Weather API client for Node.js
 class NodeWeatherAPI {
   constructor(apiKey, zipCode) {
     this.apiKey = apiKey
@@ -92,240 +95,292 @@ class NodeWeatherAPI {
   }
 }
 
-// Simplified agent system using OpenAI API directly
-class NodeAgentSystem {
-  constructor(apiKey) {
-    this.apiKey = apiKey
-    this.baseUrl = 'https://api.openai.com/v1/chat/completions'
-  }
+// ============================================================================
+// STRUCTURED OUTPUT SCHEMAS (Zod)
+// ============================================================================
 
-  async runAgent(name, instructions, weatherData, model = 'gpt-4o-mini') {
-    console.log(`🤖 Running ${name}...`)
+const WeatherAnalysisSchema = z.object({
+  temperature_analysis: z.object({
+    current_temp_f: z.number(),
+    overnight_low_f: z.number(),
+    morning_high_f: z.number(),
+    freezing_hours: z.number(),
+    temperature_trend: z.enum(['rising', 'falling', 'steady']),
+    windchill_factor: z.number()
+  }),
+  precipitation_analysis: z.object({
+    snow_probability_overnight: z.number().min(0).max(100),
+    snow_probability_morning: z.number().min(0).max(100),
+    total_snowfall_inches: z.number(),
+    snowfall_rate_peak: z.number(),
+    precipitation_type: z.enum(['snow', 'freezing_rain', 'sleet', 'rain', 'mixed'])
+  }),
+  wind_analysis: z.object({
+    max_wind_speed_mph: z.number(),
+    wind_direction: z.string(),
+    sustained_winds_mph: z.number(),
+    wind_chill_impact: z.boolean()
+  }),
+  visibility_analysis: z.object({
+    minimum_visibility_miles: z.number(),
+    avg_visibility_miles: z.number(),
+    visibility_factors: z.array(z.string())
+  }),
+  alert_summary: z.array(z.object({
+    type: z.string(),
+    severity: z.string(),
+    description: z.string()
+  })),
+  overall_conditions_summary: z.string()
+})
 
-    const messages = [
-      {
-        role: 'system',
-        content: instructions
-      },
-      {
-        role: 'user',
-        content: `Analyze the following weather data and provide your expert assessment:
+const HistoricalAnalysisSchema = z.object({
+  similar_weather_patterns: z.array(z.object({
+    pattern_description: z.string(),
+    historical_snow_day_rate: z.number().min(0).max(100),
+    confidence_level: z.enum(['high', 'medium', 'low'])
+  })),
+  seasonal_context: z.object({
+    typical_conditions_for_date: z.string(),
+    unusual_factors: z.array(z.string()),
+    seasonal_probability_adjustment: z.number().min(-20).max(20)
+  }),
+  location_specific_factors: z.object({
+    local_microclimates: z.array(z.string()),
+    infrastructure_considerations: z.array(z.string()),
+    elevation_impact: z.string()
+  }),
+  confidence_assessment: z.string()
+})
 
-WEATHER DATA:
+const SafetyAnalysisSchema = z.object({
+  road_conditions: z.object({
+    primary_roads_score: z.number().min(1).max(10),
+    secondary_roads_score: z.number().min(1).max(10),
+    parking_lots_score: z.number().min(1).max(10),
+    ice_formation_risk: z.enum(['low', 'moderate', 'high', 'severe'])
+  }),
+  travel_safety: z.object({
+    walking_conditions_score: z.number().min(1).max(10),
+    driving_conditions_score: z.number().min(1).max(10),
+    public_transport_impact: z.enum(['minimal', 'moderate', 'significant', 'severe']),
+    emergency_access_concern: z.boolean()
+  }),
+  timing_analysis: z.object({
+    worst_conditions_start_time: z.string(),
+    worst_conditions_end_time: z.string(),
+    morning_commute_impact: z.enum(['minimal', 'moderate', 'significant', 'severe']),
+    afternoon_impact: z.enum(['minimal', 'moderate', 'significant', 'severe'])
+  }),
+  safety_recommendations: z.array(z.string()),
+  risk_level: z.enum(['low', 'moderate', 'high', 'severe'])
+})
+
+const FinalPredictionSchema = z.object({
+  snow_day_probability: z.number().min(0).max(100),
+  confidence_level: z.enum(['very_low', 'low', 'moderate', 'high', 'very_high']),
+  primary_factors: z.array(z.string()),
+  timeline: z.object({
+    conditions_start: z.string(),
+    peak_impact_time: z.string(),
+    conditions_improve: z.string()
+  }),
+  decision_rationale: z.string(),
+  alternative_scenarios: z.array(z.object({
+    scenario: z.string(),
+    probability: z.number().min(0).max(100),
+    impact: z.string()
+  })),
+  recommendations: z.object({
+    for_schools: z.array(z.string()),
+    for_residents: z.array(z.string()),
+    for_authorities: z.array(z.string())
+  }),
+  updates_needed: z.boolean(),
+  next_evaluation_time: z.string()
+})
+
+// ============================================================================
+// AGENT PROMPTS (Michigan-calibrated)
+// ============================================================================
+
+const meteorologistPrompt = `You are an expert meteorologist analyzing weather for snow day predictions in MICHIGAN.
+
+MICHIGAN CONTEXT:
+- Michigan averages 40-80+ inches of snow per year
+- Schools have high tolerance for snow (4-6" is routine)
+- Ice is the "great equalizer" - even Michigan closes for ice storms
+- Timing matters: snow ending before 4 AM allows plows to clear roads
+
+Analyze the weather data and return your assessment as a JSON object matching the expected schema.
+Focus on temperature trends, precipitation type/amounts, wind conditions, and visibility.`
+
+const historianPrompt = `You are a weather pattern analyst providing historical context for MICHIGAN snow day decisions.
+
+MICHIGAN CONTEXT:
+- Michigan schools rarely close for just snow amount alone
+- Historical closure triggers: ice storms, blizzards, extreme cold (<-15°F wind chill)
+- 8-10+ inches with bad timing is needed for closures
+- Compare current patterns to similar historical events
+
+Return your analysis as a JSON object matching the expected schema.`
+
+const safetyAnalystPrompt = `You are a transportation safety expert evaluating winter weather risks for MICHIGAN schools.
+
+MICHIGAN CONTEXT:
+- Robust plow infrastructure works overnight
+- Experienced winter drivers and bus operators
+- School starts ~7:40 AM, giving plows time after overnight snow
+- Primary concern: road conditions during morning commute (6-8 AM)
+
+Evaluate road conditions, travel safety, and timing. Return JSON matching the expected schema.`
+
+const coordinatorPrompt = `You are the final decision coordinator for MICHIGAN snow day predictions.
+
+CRITICAL: You are competing against Rockford High School statistics students for accuracy.
+Accuracy is measured using Brier Score: (predicted_probability - actual_outcome)²
+Lower score = better. Be decisive, not wishy-washy.
+
+MICHIGAN THRESHOLDS (higher than national averages):
+- <4" snow = 5-15% probability (routine for Michigan)
+- 4-6" snow = 15-35% probability  
+- 6-8" with good timing = 35-50% probability
+- 8+ inches OR ice = 60-85% probability
+- Blizzard/ice storm = 80-95% probability
+
+Synthesize the expert analyses and return your final prediction as JSON matching the expected schema.
+Be DECISIVE - avoid 40-60% range unless genuinely uncertain.`
+
+// ============================================================================
+// AGENT DEFINITIONS (using @openai/agents SDK)
+// ============================================================================
+
+// Create agents with proper SDK patterns
+const meteorologistAgent = new Agent({
+  name: 'Chief Meteorologist',
+  instructions: meteorologistPrompt,
+  model: 'gpt-5.1',
+  tools: [webSearchTool(), codeInterpreterTool()],  // Web search + code for wind chill calcs, trend analysis
+  outputType: WeatherAnalysisSchema,
+  handoffDescription: 'Expert in weather analysis including temperature, precipitation, wind, and visibility.'
+})
+
+const historianAgent = new Agent({
+  name: 'Weather Pattern Historian',
+  instructions: historianPrompt,
+  model: 'gpt-5.1',
+  tools: [webSearchTool(), codeInterpreterTool()],  // Web search + code for statistical pattern analysis
+  outputType: HistoricalAnalysisSchema,
+  handoffDescription: 'Expert in historical weather patterns and climatological context for Michigan.'
+})
+
+const safetyAnalystAgent = new Agent({
+  name: 'Transportation Safety Analyst',
+  instructions: safetyAnalystPrompt,
+  model: 'gpt-5.1',
+  tools: [webSearchTool(), codeInterpreterTool()],  // Web search + code for timing/plow window calculations
+  outputType: SafetyAnalysisSchema,
+  handoffDescription: 'Expert in transportation safety and travel risk assessment.'
+})
+
+// Decision Coordinator with handoffs to specialists
+const decisionCoordinatorAgent = Agent.create({
+  name: 'Snow Day Decision Coordinator',
+  instructions: coordinatorPrompt,
+  model: 'gpt-5.1',
+  outputType: FinalPredictionSchema,
+  handoffs: [
+    handoff(meteorologistAgent, {
+      toolDescriptionOverride: 'Request additional meteorological analysis'
+    }),
+    handoff(historianAgent, {
+      toolDescriptionOverride: 'Request additional historical context'
+    }),
+    handoff(safetyAnalystAgent, {
+      toolDescriptionOverride: 'Request additional safety assessment'
+    })
+  ]
+})
+
+// ============================================================================
+// MULTI-AGENT ORCHESTRATION
+// ============================================================================
+
+async function runAgentPrediction(weatherData) {
+  const location = `${weatherData.location.name}, ${weatherData.location.region}`
+  console.log(`📍 Analyzing conditions for ${location}`)
+  
+  const weatherContext = `
+WEATHER DATA FOR ${location}:
 ${JSON.stringify(weatherData, null, 2)}
 
-Please provide a detailed analysis according to your expertise.`
-      }
-    ]
+Analyze these conditions for snow day prediction.`
 
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: messages,
-        temperature: 0.3,
-        response_format: { type: 'json_object' }
-      })
-    })
+  // Run specialist agents in parallel for efficiency
+  console.log('🔄 Running expert analysis agents in parallel...')
+  const [meteorologyResult, historyResult, safetyResult] = await Promise.all([
+    run(meteorologistAgent, weatherContext),
+    run(historianAgent, `${weatherContext}\n\nProvide historical context for this location and time of year.`),
+    run(safetyAnalystAgent, weatherContext)
+  ])
+  
+  console.log('✅ Expert analyses complete')
+  
+  // Prepare context for decision coordinator
+  const expertAnalyses = `
+METEOROLOGICAL ANALYSIS:
+${JSON.stringify(meteorologyResult.finalOutput, null, 2)}
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      throw new Error(`OpenAI API error for ${name}: ${response.status} - ${errorData.error?.message || response.statusText}`)
-    }
+HISTORICAL PATTERN ANALYSIS:
+${JSON.stringify(historyResult.finalOutput, null, 2)}
 
-    const data = await response.json()
-    const content = data.choices[0]?.message?.content
+SAFETY ASSESSMENT:
+${JSON.stringify(safetyResult.finalOutput, null, 2)}
 
-    if (!content) {
-      throw new Error(`No response from ${name}`)
-    }
+LOCATION: ${location}
+ANALYSIS TIMESTAMP: ${new Date().toISOString()}
+`
+  
+  console.log('🎯 Running decision coordinator with handoff capability...')
+  
+  // Decision coordinator can use handoffs to request more info from specialists if needed
+  const finalResult = await run(
+    decisionCoordinatorAgent,
+    `Synthesize the expert analyses and make a final snow day prediction.
+    
+${expertAnalyses}
 
-    try {
-      return JSON.parse(content)
-    } catch (parseError) {
-      console.warn(`⚠️  Could not parse JSON from ${name}, returning raw content`)
-      return { analysis: content, raw: true }
-    }
-  }
-
-  async generatePrediction(weatherData) {
-    console.log('🔄 Running multi-agent analysis...')
-
-    // Define agent instructions
-    const agents = {
-      meteorologist: {
-        name: 'Chief Meteorologist',
-        instructions: `You are an expert meteorologist analyzing weather for snow day predictions. 
-
-Analyze the weather data and return a JSON object with:
-{
-  "temperature_analysis": {
-    "current_temp_f": number,
-    "overnight_low_f": number,
-    "morning_high_f": number,
-    "freezing_hours": number,
-    "temperature_trend": "rising|falling|steady",
-    "windchill_factor": number
-  },
-  "precipitation_analysis": {
-    "snow_probability_overnight": number (0-100),
-    "snow_probability_morning": number (0-100),
-    "total_snowfall_inches": number,
-    "snowfall_rate_peak": number,
-    "precipitation_type": "snow|freezing_rain|sleet|rain|mixed"
-  },
-  "wind_analysis": {
-    "max_wind_speed_mph": number,
-    "wind_direction": string,
-    "sustained_winds_mph": number,
-    "wind_chill_impact": boolean
-  },
-  "visibility_analysis": {
-    "minimum_visibility_miles": number,
-    "avg_visibility_miles": number,
-    "visibility_factors": [string]
-  },
-  "alert_summary": [{
-    "type": string,
-    "severity": string,
-    "description": string
-  }],
-  "overall_conditions_summary": string
-}`
-      },
-      historian: {
-        name: 'Weather Pattern Historian',
-        instructions: `You are a weather pattern analyst providing historical context for snow day decisions.
-
-Return a JSON object with:
-{
-  "similar_weather_patterns": [{
-    "pattern_description": string,
-    "historical_snow_day_rate": number (0-100),
-    "confidence_level": "high|medium|low"
-  }],
-  "seasonal_context": {
-    "typical_conditions_for_date": string,
-    "unusual_factors": [string],
-    "seasonal_probability_adjustment": number (-20 to 20)
-  },
-  "location_specific_factors": {
-    "local_microclimates": [string],
-    "infrastructure_considerations": [string],
-    "elevation_impact": string
-  },
-  "confidence_assessment": string
-}`
-      },
-      safety_analyst: {
-        name: 'Transportation Safety Analyst',
-        instructions: `You are a transportation safety expert evaluating winter weather risks.
-
-Return a JSON object with:
-{
-  "road_conditions": {
-    "primary_roads_score": number (1-10),
-    "secondary_roads_score": number (1-10),
-    "parking_lots_score": number (1-10),
-    "ice_formation_risk": "low|moderate|high|severe"
-  },
-  "travel_safety": {
-    "walking_conditions_score": number (1-10),
-    "driving_conditions_score": number (1-10),
-    "public_transport_impact": "minimal|moderate|significant|severe",
-    "emergency_access_concern": boolean
-  },
-  "timing_analysis": {
-    "worst_conditions_start_time": string,
-    "worst_conditions_end_time": string,
-    "morning_commute_impact": "minimal|moderate|significant|severe",
-    "afternoon_impact": "minimal|moderate|significant|severe"
-  },
-  "safety_recommendations": [string],
-  "risk_level": "low|moderate|high|severe"
-}`
-      }
-    }
-
-    // Run agents in parallel
-    const agentPromises = Object.entries(agents).map(([key, agent]) =>
-      this.runAgent(agent.name, agent.instructions, weatherData)
-        .then(result => [key, result])
-        .catch(error => {
-          console.error(`❌ ${agent.name} failed:`, error.message)
-          return [key, { error: error.message, agent: agent.name }]
-        })
-    )
-
-    const agentResults = Object.fromEntries(await Promise.all(agentPromises))
-
-    // Decision coordinator
-    console.log('🎯 Running decision coordinator...')
-
-    const coordinatorInstructions = `You are the final decision coordinator for snow day predictions. 
-
-Based on the expert analyses provided, return a JSON object with:
-{
-  "snow_day_probability": number (0-100),
-  "confidence_level": "very_low|low|moderate|high|very_high",
-  "primary_factors": [string],
-  "timeline": {
-    "conditions_start": string,
-    "peak_impact_time": string,
-    "conditions_improve": string
-  },
-  "decision_rationale": string,
-  "alternative_scenarios": [{
-    "scenario": string,
-    "probability": number (0-100),
-    "impact": string
-  }],
-  "recommendations": {
-    "for_schools": [string],
-    "for_residents": [string],
-    "for_authorities": [string]
-  },
-  "updates_needed": boolean,
-  "next_evaluation_time": string
-}
-
-EXPERT ANALYSES:
-${JSON.stringify(agentResults, null, 2)}`
-
-    const finalDecision = await this.runAgent(
-      'Decision Coordinator',
-      coordinatorInstructions,
-      weatherData
-    )
-
-    return {
-      meteorology: agentResults.meteorologist,
-      history: agentResults.historian,
-      safety: agentResults.safety_analyst,
-      final: finalDecision,
-      timestamp: new Date().toISOString(),
-      location: `${weatherData.location.name}, ${weatherData.location.region}`,
-      raw_weather_data: weatherData
-    }
+If you need clarification from any specialist, you can hand off to them.
+Otherwise, provide your final prediction.`
+  )
+  
+  console.log('✅ Multi-agent analysis complete!')
+  
+  return {
+    meteorology: meteorologyResult.finalOutput,
+    history: historyResult.finalOutput,
+    safety: safetyResult.finalOutput,
+    final: finalResult.finalOutput,
+    timestamp: new Date().toISOString(),
+    location,
+    raw_weather_data: weatherData
   }
 }
 
-// Main execution
+// ============================================================================
+// MAIN EXECUTION
+// ============================================================================
+
 async function main() {
   try {
-    // Initialize services
+    // Initialize weather API
     const weatherAPI = new NodeWeatherAPI(appConfig.weatherApiKey, appConfig.zipCode)
-    const agentSystem = new NodeAgentSystem(appConfig.openaiApiKey)
 
     // Get weather data
     const weatherData = await weatherAPI.getForecast()
 
-    // Run agent analysis
-    const prediction = await agentSystem.generatePrediction(weatherData)
+    // Run multi-agent prediction using OpenAI Agents SDK
+    const prediction = await runAgentPrediction(weatherData)
 
     // Ensure output directory exists
     if (!existsSync(appConfig.outputDir)) {
@@ -371,9 +426,7 @@ async function main() {
       }
     }
 
-    // Use the date from the prediction timestamp (or today)
-    // The prediction timestamp is ISO string. We want YYYY-MM-DD.
-    // Note: prediction.timestamp is generated as new Date().toISOString()
+    // Use the date from the prediction timestamp
     const predictionDate = prediction.timestamp.split('T')[0]
     
     // Check if we already have an entry for this date

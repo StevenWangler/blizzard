@@ -12,12 +12,12 @@ export function EnhancedHeader({
 }: EnhancedHeaderProps) {
   return (
     <motion.div 
-      className="text-center mb-6 sm:mb-8 relative"
+      className="text-center mb-8 sm:mb-12 relative"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-5">
         <motion.div
           animate={{ 
             rotate: [0, -5, 5, -5, 0],
@@ -58,7 +58,7 @@ export function EnhancedHeader({
       
       {/* Decorative gradient line */}
       <motion.div 
-        className="mt-4 h-1 w-32 mx-auto rounded-full bg-gradient-to-r from-transparent via-primary to-transparent"
+        className="mt-5 sm:mt-6 h-1 w-32 mx-auto rounded-full bg-gradient-to-r from-transparent via-primary to-transparent"
         initial={{ scaleX: 0, opacity: 0 }}
         animate={{ scaleX: 1, opacity: 0.6 }}
         transition={{ duration: 1, delay: 0.6 }}

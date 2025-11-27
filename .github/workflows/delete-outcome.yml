@@ -1,0 +1,76 @@
+name: Delete Blizzard Outcome
+
+on:
+  workflow_dispatch:
+    inputs:
+      event_date:
+        description: 'Date to delete (YYYY-MM-DD)'
+        required: true
+        type: string
+      confirm:
+        description: 'Type "yes" to confirm deletion'
+        required: true
+        type: string
+
+jobs:
+  delete-record:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Validate confirmation
+        if: ${{ inputs.confirm != 'yes' }}
+        run: |
+          echo "Deletion not confirmed. Please type 'yes' to confirm."
+          exit 1
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Delete from outcomes ledger
+        env:
+          EVENT_DATE: ${{ inputs.event_date }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = 'public/data/outcomes.json';
+          const date = process.env.EVENT_DATE;
+          
+          if (!fs.existsSync(path)) {
+            console.log('No outcomes file found');
+            process.exit(0);
+          }
+          
+          const outcomes = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const originalLength = outcomes.length;
+          const filtered = outcomes.filter(o => o.date !== date);
+          
+          if (filtered.length === originalLength) {
+            console.log('No outcome found for date:', date);
+            process.exit(0);
+          }
+          
+          fs.writeFileSync(path, JSON.stringify(filtered, null, 2));
+          console.log('Deleted outcome for date:', date);
+          console.log('Removed', originalLength - filtered.length, 'record(s)');
+          "
+
+      - name: Commit deletion
+        env:
+          EVENT_DATE: ${{ inputs.event_date }}
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected"
+            exit 0
+          fi
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add public/data/outcomes.json
+          git commit -m "Delete outcome for ${EVENT_DATE}"
+          git push
