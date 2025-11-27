@@ -1,211 +1,184 @@
 {
   "meteorology": {
     "temperature_analysis": {
-      "current_temp_f": 30,
+      "current_temp_f": 30.9,
       "overnight_low_f": 27.3,
-      "morning_high_f": 31.6,
+      "morning_high_f": 30.9,
       "freezing_hours": 48,
       "temperature_trend": "steady",
-      "windchill_factor": 12
+      "windchill_factor": -7
     },
     "precipitation_analysis": {
-      "snow_probability_overnight": 90,
-      "snow_probability_morning": 70,
-      "total_snowfall_inches": 1.5,
+      "snow_probability_overnight": 70,
+      "snow_probability_morning": 60,
+      "total_snowfall_inches": 1,
       "snowfall_rate_peak": 0.5,
       "precipitation_type": "mixed"
     },
     "wind_analysis": {
-      "max_wind_speed_mph": 45,
+      "max_wind_speed_mph": 24,
       "wind_direction": "WNW",
-      "sustained_winds_mph": 20,
+      "sustained_winds_mph": 18,
       "wind_chill_impact": true
     },
     "visibility_analysis": {
       "minimum_visibility_miles": 0,
       "avg_visibility_miles": 4,
       "visibility_factors": [
-        "falling snow",
+        "lake-effect snow bands",
         "blowing snow",
-        "freezing rain",
-        "low clouds",
-        "lake-effect snow bands"
+        "periods of freezing rain and drizzle",
+        "low clouds/overcast"
       ]
     },
     "alert_summary": [
       {
-        "type": "Wind Advisory",
-        "severity": "Moderate",
-        "description": "West to northwest winds 15–25 mph with gusts up to 45 mph through today, making driving difficult and potentially causing scattered tree limb damage and isolated power outages."
-      },
-      {
-        "type": "High Wind Warning (early morning, now transitioning to Wind Advisory)",
-        "severity": "Severe",
-        "description": "Earlier northwest winds 20–30 mph with 50–60 mph gusts along the lakeshore; damaging winds capable of downing trees and power lines and causing widespread power outages. Strong but slightly lower winds continue under a Wind Advisory."
-      },
-      {
         "type": "Winter Weather Advisory",
         "severity": "Moderate",
-        "description": "Snow with additional accumulations generally up to 2 inches today for Kent and nearby counties, with gusty winds up to 30–40 mph. Roads, especially bridges and overpasses, will be slick and hazardous with rapidly changing visibility in lake-effect bands."
+        "description": "Lake-effect snow with additional up to ~2\" and gusts up to ~40 mph for Kent/Ottawa/Muskegon; slick roads, especially bridges/overpasses, and rapidly changing visibility in bands."
       },
       {
-        "type": "Winter Storm Warning (regional, mainly west/central and south of Rockford)",
+        "type": "Wind Advisory",
+        "severity": "Moderate",
+        "description": "NW winds 15–25 mph with gusts up to ~45 mph near the lakeshore; difficult travel for high-profile vehicles and scattered tree limbs/power issues possible."
+      },
+      {
+        "type": "Winter Storm Warning",
         "severity": "Severe",
-        "description": "Heavy lake-effect snow in nearby counties (Mason, Oceana, Newaygo, Mecosta, Allegan, Barry, Kalamazoo, Calhoun, etc.) with 1–4 inches additional accumulation and gusts up to 35–45 mph. Whiteout conditions and treacherous travel possible in heavier bands; Rockford is on the edge of this broader high-impact zone."
+        "description": "Nearby counties north and south of Kent under warnings for heavy snow (1–3\" more) and whiteout conditions in stronger bands; travel may be treacherous there, with impacts extending into the region at times."
       }
     ],
-    "overall_conditions_summary": "Rockford is locked in a cold, windy pattern with temperatures hovering in the upper 20s to near 32°F all day and tonight, remaining below freezing for roughly the next 48 hours. Strong WNW winds around 20 mph with gusts up to 40–45 mph are producing wind chills in the upper teens (about 12°F colder than the air temperature) and will continue to make it feel much colder. Precipitation is mainly light snow and light freezing rain/drizzle, with the heaviest mixed wintry weather focused from late night through mid-morning and again in scattered bands this afternoon. Total additional accumulation in Rockford itself looks on the order of 1–2 inches of snow, but with a glaze of ice possible on untreated surfaces due to intermittent freezing rain. Visibility will vary sharply: it can drop to near zero in heavier lake-effect bands and blowing snow, then improve to several miles between bands, with an average around 4 miles over the day. Existing Winter Weather Advisory and nearby Winter Storm Warnings highlight that roads—especially bridges and overpasses—will be slick and hazardous, and travel conditions can deteriorate quickly where snow bands and gusty winds align."
+    "overall_conditions_summary": "Temperatures in Rockford, MI remain at or below freezing from the current time through at least the next 36–48 hours (upper 20s to around 31°F), so anything that falls will stick and can refreeze. The primary hazard is a mixed bag of light lake-effect snow and light freezing rain/drizzle today, with periods of gusty WNW winds 20–25 mph and gusts into the 30s mph producing wind chills in the upper teens. Model guidance in this dataset shows relatively light additional QPF (around 0.04\" liquid and roughly an inch or less of new snow through tonight) with visibility usually 1–6 miles, but brief drops to near zero are possible in lake-effect bands, consistent with the Winter Weather Advisory for Kent County. Ice potential is present but appears light and intermittent rather than a solid glaze. Roads—especially untreated secondary roads, bridges, and overpasses—are likely to be slick during and shortly after heavier bursts of snow or freezing drizzle, but conditions are not indicative of a classic, high-impact ice storm or a deep snow event. By the Friday morning commute (Nov 28), precipitation has ended, winds have backed off some (10–15 mph), temps are still below freezing but steady, and visibility is good under mainly cloudy skies, allowing plows and salt trucks to catch up overnight. Overall, for a Michigan school district accustomed to winter weather, these conditions point to localized hazardous travel but not a high-probability full snow day scenario for Friday; more likely outcomes would be normal operations or, at most, scattered delays in spots most affected by lake-effect bands or lingering slick spots."
   },
   "history": {
     "similar_weather_patterns": [
       {
-        "pattern_description": "Early-season lake-effect event with Winter Weather Advisory in Kent County: temps near -1 to -3°C (27–30°F), bursts of snow/freezing drizzle, WNW winds 20–30 mph with higher gusts, rapidly changing visibility and slick bridges/overpasses but relatively light total accumulation (1–3 inches).",
-        "historical_snow_day_rate": 35,
-        "confidence_level": "high"
-      },
-      {
-        "pattern_description": "Advisory-level mixed precip day on the backside of a strong low: overcast, scattered light freezing rain/snow showers through the school day, wind gusts 35–45 mph, travel slowed but main roads treated and passable by mid-morning.",
-        "historical_snow_day_rate": 25,
+        "pattern_description": "Late November clipper with lake-effect bands bringing light additional accumulations (0–2\") after a prior snow event, temps near 30°F, northwest winds 20–30 mph, occasional freezing drizzle/mist, and advisories in effect but with improving conditions through the day",
+        "historical_snow_day_rate": 0.25,
         "confidence_level": "medium"
       },
       {
-        "pattern_description": "Regional winter storm/warning to the west and south with Rockford on the advisory fringe: heavier snow and whiteouts in nearby counties (Mason/Newaygo/Allegan/Barry), but Rockford itself seeing lighter bands, intermittent reductions in visibility, and marginal accumulations.",
-        "historical_snow_day_rate": 45,
+        "pattern_description": "Daytime Winter Weather Advisory for Kent/Ottawa/Muskegon with winds gusting 35–40 mph, slick bridges/overpasses, and patchy low visibility in bands, but no major new storm arriving overnight and snow totals generally under 6\" in the 24–36 hr window in Rockford area",
+        "historical_snow_day_rate": 0.3,
         "confidence_level": "medium"
+      },
+      {
+        "pattern_description": "Post-warning/advisory backside of a storm: main heavy snow focused north and west (Mason/Lake/Oceana/Newaygo) under a Winter Storm Warning, with Rockford on the fringe of heavier bands—roads messy in the morning but trending to ‘typical West Michigan winter driving’ by afternoon and next morning",
+        "historical_snow_day_rate": 0.2,
+        "confidence_level": "low"
       }
     ],
     "seasonal_context": {
-      "typical_conditions_for_date": "For late November in Rockford, MI, it is common to see the first sustained wintry pattern: highs around freezing, lows in the 20s, frequent lake-effect snow showers, and occasional advisories. Early-season systems often feature marginal temperatures with mixed snow/freezing drizzle and gusty northwest flow behind a passing low.",
+      "typical_conditions_for_date": "For Rockford (northern Kent County), late November (around November 27–28) commonly features first sustained wintry patterns: highs upper 20s to mid-30s, frequent lake-effect snow showers, and occasional clipper-type systems. It is not unusual to have Winter Weather Advisories or even localized Winter Storm Warnings nearby, especially along and west of US‑131. Snowfalls of 1–4\" in bands with gusty northwest winds are common, and roads can be slick, but schools typically remain open unless there is a particularly intense band over the district at commute times or a broader storm.\nHistorically, true ‘slam dunk’ snow days in this window come from: (1) wide‑spread heavy synoptic snow (8–10\"+ in 12–18 hours) overlapping the morning commute, (2) major lake‑effect events that repeatedly park over Kent County with whiteout conditions for many hours, or (3) ice storms with significant glazing. Temperatures in the teens or single digits with wind chills below about –15°F also play a role later in winter, but those extremes are less common this early in the season.",
       "unusual_factors": [
-        "Presence of an active Winter Weather Advisory specifically including Kent County during the morning and daytime hours, rather than only overnight.",
-        "Strong pressure gradient and persistent WNW winds with gusts near 40–45 mph, enhancing blowing snow potential and wind chills in the teens.",
-        "Nearby Winter Storm Warnings (Mason, Newaygo, Allegan, Barry, etc.) indicating significantly worse conditions within one or two counties of Rockford, increasing risk of localized heavier bands shifting.",
-        "Forecast emphasis on rapidly changing visibility and road conditions in lake-effect bands, which can be more disruptive to school transportation than the modest total snow amount suggests."
+        "Advisory/Warning mosaic: Rockford’s county (Kent) is under a Winter Weather Advisory, while adjacent counties to the north and south are under Winter Storm Warnings, showing the main heavy bands are likely displaced away from Rockford but still close enough for variability.",
+        "Wind Advisory west of Kent: strongest 40–45 mph gusts are focused mainly right along the lakeshore; in Rockford, forecast gusts top out in the mid‑30s mph range, which can cause blowing snow but are below the most disruptive thresholds seen in past high‑impact blizzard closures.",
+        "Precipitation type mix: the hourly forecast mixes light freezing rain, light snow, and overcast periods, but total QPF is low (about 0.04\" liquid for the day) and modeled snow accumulation is minimal, implying more of a ‘nuisance hazard’ than high‑end storm for Rockford itself."
       ],
-      "seasonal_probability_adjustment": 8
+      "seasonal_probability_adjustment": -0.15
     },
     "location_specific_factors": {
       "local_microclimates": [
-        "Rockford sits in northern Kent County, inland from Lake Michigan but still within the core west–northwest lake-effect snow belt. Bands can pivot inland and focus along the Grand River valley and higher terrain north of Grand Rapids.",
-        "Short-distance variability is typical: conditions can range from near-whiteout in a band to relatively light snow or just freezing drizzle a few miles away, especially along the US‑131 corridor.",
-        "Being slightly north of Grand Rapids proper, Rockford can occasionally pick up a bit more lake-effect snow than areas farther south in the county when bands align with a WNW flow."
+        "Rockford sits just inland from the main Lake Michigan snowbelt. Lake‑effect bands frequently set up west or north of town (Muskegon/Oceana/Newaygo) with heavier totals there and lighter, more intermittent snow in Rockford, especially when the wind is WNW–NW as in this forecast.",
+        "With northwest flow events, short stretches of whiteout between open country and wooded/urban areas are common, but they often vary over 5–10 miles; one part of the Rockford area can be significantly worse than another at any given time."
       ],
       "infrastructure_considerations": [
-        "Kent County and Rockford-area road crews are well-practiced with early-season lake-effect events; primary routes (US‑131, main arterials) are usually treated quickly once bands are established.",
-        "However, the advisory explicitly highlights slick bridges and overpasses, which are critical for school bus routes and early-morning parent traffic.",
-        "Strong winds (gusts up to ~40–45 mph) can cause patchy blowing snow on open stretches and reduce visibility on north–south roads, complicating bus operations even with relatively low snow totals.",
-        "Power outage risk is non-zero due to prior high wind warning along the lakeshore and ongoing wind advisory; scattered outages can affect school buildings or traffic signals, but Rockford is slightly inland from the highest wind corridor."
+        "Kent County Road Commission and MDOT are well-practiced at handling light‑to‑moderate lake‑effect and clipper snow; salt and plow operations are routine by late November.",
+        "Rockford Public Schools covers both rural roads and some hillier stretches; historically, marginal events that produce only 1–3\" of additional snow with temps near 30°F are often handled with slower commutes rather than full closures, unless bands persist directly over the district before dawn.",
+        "Bridges and overpasses can glaze with freezing drizzle or light freezing rain, but with air temps around 28–31°F (not deep arctic cold), treatment is usually effective once crews are out."
       ],
-      "elevation_impact": "Rockford’s modestly higher terrain relative to the Grand River lowlands and its position inland from Lake Michigan can enhance lake-effect snow intensity slightly when bands are aligned, leading to localized heavier bursts and briefly worse road conditions than in lower, more urban parts of Kent County."
+      "elevation_impact": "Rockford’s slightly higher elevation compared to downtown Grand Rapids can lead to marginally more accumulation and earlier onset of slick conditions, but the difference is typically on the order of an extra dusting to an inch in a WNW flow—enough to make back roads a bit worse but rarely decisive by itself for a snow day."
     },
-    "confidence_assessment": "Synthesis of the provided data indicates a classic advisory-level early-season lake-effect and mixed-precipitation day for Rockford. Current conditions at ~09:00 (temp around -1°C/30°F, overcast, WNW winds near 20 mph with gusts near 30 mph, wind chills in the upper teens) align well with the ongoing Winter Weather Advisory for Kent County. Hourly forecast through the school day shows:\n\n- Temperatures hovering between about -1.5°C and -0.4°C (29–31°F), cold enough for snow/freezing drizzle to stick on untreated surfaces.\n- Intermittent light freezing rain and snow indicated from morning into late afternoon, with high probabilities of precip in several hours (chance of snow often >70%, chance of rain often 100% in freezing-rain hours).\n- Visibility occasionally dropping to 1–2 km (about 1 mile) in the morning and midday hours, especially in the more active bands.\n- Winds generally 15–25 mph with gusts into the mid‑30s mph, under a regional Wind Advisory, supporting blowing snow and reduced visibility in open areas.\n- Total additional accumulation for Kent County per NWS advisory language on the order of up to ~2 inches, with heavier amounts confined to counties under Winter Storm Warnings to the west and north.\n\nHistorically, Rockford-area districts are less likely to cancel outright for 1–3 inches of snow and advisory-level conditions when primary roads remain passable and crews are active. However, several factors push the risk higher than a typical light snow day:\n\n- The presence of an active Winter Weather Advisory during the commute window, specifically calling out slick and hazardous roads, especially bridges and overpasses.\n- Strong winds and lake-effect banding that can cause rapid, localized deterioration in visibility and road conditions, which is a particular concern for bus operations.\n- Nearby Winter Storm Warnings and High Wind/Wind Advisory zones, indicating that conditions just upstream over the lake and in adjacent counties are significantly worse; band shifts could temporarily bring heavier snow into northern Kent County.\n\nBalancing these, similar historical patterns in late November around Rockford show roughly a one-in-three to one-in-two chance of a snow day or significant delay when:\n- There is an active Winter Weather Advisory including the county,\n- Winds are strong enough to cause blowing snow and low wind chills,\n- And there is at least a modest risk of heavier lake-effect bands.\n\nGiven the forecast specifics (modest total accumulation, but impactful bursts and wind) and Rockford’s inland but lake-effect-prone location, the overall likelihood of a full snow day is best characterized as moderate rather than high. Delays or selective cancellations (e.g., if bands set up unfavorably along key bus routes) are somewhat more likely than a normal on-time day, but a guaranteed closure is not strongly supported by the data.\n\nOverall, confidence in this assessment is medium-high: the synoptic setup and advisory suite are well-defined, but inherent uncertainty in lake-effect band placement and intensity leaves a meaningful range of possible impacts for Rockford specifically."
+    "confidence_assessment": "Based on the data provided for November 27–28, 2025, Rockford is on the advisory side of this system, with the heaviest warnings and worst whiteout risk centered to the north and south. Forecast specifics: temperatures hovering near 28–31°F, wind chills in the upper teens (well above the –15°F closure benchmark), northwest winds 15–25 mph with gusts mainly in the mid‑30s mph, and total new snow for the advisory period in Kent County described as ‘up to two inches,’ with your point‑and‑time model output showing essentially 0 cm of additional accumulation for Rockford on the 27th and no accumulating snow on the 28th.\nHistorically for Rockford and similar West Michigan districts, days like this—advisory‑level conditions with 0–2\" new snow, some lake‑effect variability, and gusty but not extreme winds—produce mixed but generally low closure rates. When closures do occur in this pattern, they are usually tied to one of two things: (1) an especially intense lake‑effect band sits directly over the district at the pre‑dawn hours, dropping several inches in a short time with near‑zero visibility; or (2) earlier ice and compacted snow from a preceding event is left untreated and turns to glare ice by morning. Your forecast shows some light freezing rain overnight and early morning and an NWS emphasis on slick roads and bridges, which is consistent with occasional ‘surprise’ icing in past years, but with modest QPF, improving visibility, and winds/temps that are not extreme, the overall historical signal favors school being open with caution rather than closed.\nIn late November in northern Kent County, this setup aligns most closely with advisory‑type clipper/lake‑effect days that see perhaps 20–30% closure rates regionwide, often driven more by specific band placement than by the broad forecast. Given the limited additional snowfall indicated in your data, absence of extreme cold, and the fact that the main Winter Storm Warnings bracket but do not include Rockford’s county, the historical context suggests a below‑average likelihood of a snow day for Rockford Public Schools under these exact conditions. Overall confidence in this assessment is medium: the broad‑scale pattern is typical and well‑understood, but the inherently localized nature of lake‑effect bands always leaves some uncertainty about conditions on individual bus routes at dawn."
   },
   "safety": {
     "road_conditions": {
       "primary_roads_score": 4,
       "secondary_roads_score": 3,
       "parking_lots_score": 3,
-      "ice_formation_risk": "severe"
+      "ice_formation_risk": "high"
     },
     "travel_safety": {
       "walking_conditions_score": 3,
       "driving_conditions_score": 3,
-      "public_transport_impact": "significant",
-      "emergency_access_concern": true
+      "public_transport_impact": "moderate",
+      "emergency_access_concern": false
     },
     "timing_analysis": {
-      "worst_conditions_start_time": "2025-11-27 00:00",
-      "worst_conditions_end_time": "2025-11-27 19:00",
-      "morning_commute_impact": "severe",
-      "afternoon_impact": "significant"
+      "worst_conditions_start_time": "2025-11-27T00:00:00-05:00",
+      "worst_conditions_end_time": "2025-11-27T11:00:00-05:00",
+      "morning_commute_impact": "significant",
+      "afternoon_impact": "moderate"
     },
     "safety_recommendations": [
-      "Avoid non‑essential driving this morning (through at least 11:00–12:00) due to freezing rain, snow showers, and strong winds creating slick, patchy-ice conditions and rapidly changing visibility.",
-      "If you must drive, reduce speed well below the limit, increase following distance to at least 6–8 seconds, and brake and steer gently to avoid skids on black ice and slushy patches.",
-      "Expect the worst conditions on bridges, overpasses, ramps, and untreated secondary roads; approach these slowly and avoid sudden lane changes or braking.",
-      "Plan for localized whiteout or near‑whiteout bursts in lake‑effect bands; if you encounter one, do not stop in a travel lane—slow gradually, increase spacing, and if you must pull over, move well onto the shoulder with hazard lights on.",
-      "Use winter tires if available; if not, be especially conservative with speed and avoid steep hills or unplowed side streets.",
-      "For walking, assume sidewalks, driveways, and parking lots have invisible ice from freezing drizzle and compacted snow; wear traction footwear, take short steps, and use handrails on stairs and ramps.",
-      "Allow extra time for public transport; buses may run slower and have difficulty on hills and at intersections due to slick pavement and gusty crosswinds.",
-      "Be prepared for scattered power outages from earlier and ongoing winds; keep phones charged, have flashlights ready, and treat any dark intersections as four‑way stops.",
-      "If you are responsible for a facility or parking area, apply salt or sand repeatedly this morning and early afternoon, especially at entrances, crosswalks, and sloped areas where freezing rain can glaze surfaces.",
-      "For emergency and service vehicles, anticipate reduced response speeds on exposed bridges and rural secondary roads; consider pre‑positioning resources where possible until conditions improve later today and tonight."
+      "Expect slick and potentially icy roads, especially on bridges/overpasses, from overnight through the 6–9 AM period on November 27; allow extra commuting time and reduce speeds.",
+      "Winter Weather Advisory and nearby Winter Storm Warnings indicate locally heavier lake-effect bands are possible; be prepared for rapid drops in visibility and patchy hazardous stretches even if some roads look just wet.",
+      "High winds (gusts 30–40 mph) combined with light snow/freezing drizzle can cause blowing snow and sudden slick spots; bus drivers and high‑profile vehicles should use extra caution.",
+      "Secondary roads, neighborhood streets, and untreated parking lots are likely to be the most slippery due to light freezing rain/snow near 6–9 AM; consider extra salting and sanding before arrival times.",
+      "For school operations, conditions are borderline: roads should remain passable with Michigan’s plow/salt response, but elevated caution for the morning commute is warranted rather than an automatic closure.",
+      "Monitor short‑range radar and NWS updates early morning for any intensification of lake‑effect bands or extension of winter storm conditions into the Rockford area that could push risk from ‘significant’ toward ‘severe’.",
+      "Encourage staff and families to use main routes where possible, avoid sudden braking, and watch for black ice given temps hovering in the upper 20s to near 30°F with intermittent freezing precipitation."
     ],
-    "risk_level": "high"
+    "risk_level": "moderate"
   },
   "final": {
-    "snow_day_probability": 45,
-    "confidence_level": "moderate",
+    "snow_day_probability": 0.22,
+    "confidence_level": "high",
     "primary_factors": [
-      "Temperatures locked below freezing (upper 20s to near 32°F) for ~48 hours, favoring persistent ice and snow on untreated surfaces",
-      "Ongoing Winter Weather Advisory for Kent County through the day, explicitly warning of slick and hazardous roads, especially bridges and overpasses",
-      "Periods of light snow and freezing rain/drizzle during key travel windows, with high probabilities of mixed precip from early morning through late afternoon",
-      "Strong WNW winds 15–25 mph with gusts up to ~40–45 mph, producing wind chills in the teens and supporting blowing snow in bands",
-      "Highly variable visibility (near-zero possible in lake-effect bands vs several miles between bands), complicating bus operations and travel planning",
-      "Proximity to Winter Storm Warning counties with heavier lake-effect snow and whiteout conditions, increasing risk that a band pivots over northern Kent/Rockford",
-      "Road safety assessment indicating high risk: severe ice-formation risk, severe morning commute impact, and significant afternoon travel impact"
+      "Forecast additional accumulation is low (around 1\" or less) with mixed light lake-effect and freezing drizzle, not a major snow or ice storm.",
+      "Temperatures stay near/just below freezing with wind chills in the teens—uncomfortable but far from extreme cold closure thresholds.",
+      "Winter Weather Advisory (not Warning) for Kent County, with the heaviest snow and whiteout risk focused in neighboring counties north and south.",
+      "Historical analogs for similar advisory-level, 0–2\" events in late November show roughly 20–30% closure rates, often dependent on narrow lake-effect band placement.",
+      "Roads are expected to be slick and icy in spots, especially early and on secondary roads, but plows/salt crews should have time and capacity to manage conditions before and during the commute.",
+      "Safety assessment labels overall risk as moderate and explicitly calls conditions ‘borderline’ but still generally passable for a Michigan district accustomed to winter driving."
     ],
     "timeline": {
-      "conditions_start": "2025-11-27 00:00 – Mixed light snow and freezing rain begin/continue overnight with gusty WNW winds and rapidly changing visibility.",
-      "peak_impact_time": "2025-11-27 06:00–12:00 – Worst for school-related travel: temps ~29–31°F, frequent light freezing rain/snow, wind gusts near 40–45 mph, visibility at times near 1 mile or less in bands, highest risk of black ice on bridges, overpasses, and untreated roads.",
-      "conditions_improve": "2025-11-27 15:00–19:00 – Precipitation becomes more intermittent and generally light; still cold and breezy with patchy slick spots, but winds slowly ease and visibility improves more consistently. By 2025-11-28 morning, conditions are cold but mainly dry with lighter winds and stable road conditions."
+      "conditions_start": "2025-11-27T00:00:00-05:00",
+      "peak_impact_time": "2025-11-27T05:00:00-05:00",
+      "conditions_improve": "2025-11-27T10:00:00-05:00"
     },
-    "decision_rationale": "Based on the combined meteorological, historical, and safety analyses, Rockford, MI is experiencing a classic advisory-level early-season lake-effect and mixed-precipitation event. Air temperatures hover around 29–31°F from the overnight hours through the school day, with wind chills in the upper teens due to sustained WNW winds around 20 mph and gusts up to 40–45 mph. This temperature regime is cold enough for snow and freezing drizzle to adhere to untreated surfaces, while being marginal enough that treated primary roads can often be kept passable.\n\nThe forecast and NWS alerts show:\n- A Winter Weather Advisory for Kent County through the day, calling for up to ~2 inches of additional snow and gusty winds, with specific emphasis on slick bridges/overpasses and rapidly changing visibility in lake-effect bands.\n- A Wind Advisory (earlier overnight for the broader region, with high wind warnings along the lakeshore) indicating gusts up to 45–60 mph in nearby counties, now easing but still strong enough inland to cause blowing snow and occasional visibility drops.\n- Nearby Winter Storm Warnings to the west, north, and south (Mason, Newaygo, Allegan, Barry, Kalamazoo, Calhoun, etc.), where heavier lake-effect snow and whiteout conditions are expected. Rockford sits on the fringe of this higher-impact zone, so a modest shift in band placement could temporarily bring more intense snow into northern Kent County.\n\nHourly forecast data for November 27 shows:\n- Overnight through mid-morning (00:00–11:00): frequent light freezing rain and snow, with very high probabilities of both rain and snow in many hours, visibility sometimes modeled as low as 0–2 km (~0–1 mile) in bands, and gusts in the upper 20s to low 30s mph. This aligns with the advisory language about rapidly changing conditions and slick roads.\n- Midday to afternoon (12:00–17:00): still cold (around 30–31°F) with intermittent light freezing rain/snow and continued breezy WNW winds. Visibility improves overall but can still drop locally in bands. Road surfaces may remain patchy-icy, especially in shaded or less-traveled areas.\n- Evening and overnight into November 28: precipitation diminishes, winds gradually ease, and conditions trend toward cold, cloudy, and mainly dry with better visibility and more stable road conditions.\n\nFrom a safety and operations standpoint, the most critical factor for a snow-day decision is the morning commute window. The safety analysis flags the morning commute impact as severe, with high risk of black ice and patchy freezing drizzle on bridges, ramps, and secondary roads. Primary roads are likely to be treated and generally passable but may still have slick spots, especially where bursts of snow or freezing drizzle coincide with strong gusts and reduced visibility. Walking conditions for students and bus stop waiting conditions are also degraded by wind chills in the teens and potential for hidden ice on sidewalks and parking lots.\n\nHistorically, Rockford-area districts do not typically cancel for 1–2 inches of snow alone, especially when road crews are active and main routes remain open. However, the combination of:\n- An active Winter Weather Advisory during the commute,\n- Mixed snow/freezing rain with high ice-formation risk,\n- Strong winds and lake-effect banding that can cause sudden whiteout-like conditions,\n- And the proximity to Winter Storm Warning zones with heavier snow,\nraises the likelihood of at least some disruption (delays, selective cancellations, or a full snow day) above a routine light-snow event.\n\nBalancing these factors, the probability of a full district-wide snow day is best assessed as moderate (around 45%). This reflects a meaningful chance that decision-makers opt for closure due to safety concerns on rural and secondary routes, but also acknowledges that conditions may remain just manageable enough—especially if bands stay mostly north or west—for an on-time or delayed start. Confidence is moderate because lake-effect band placement and intensity are inherently uncertain, and small shifts can significantly change local impacts within Kent County.",
+    "decision_rationale": "Synthesizing the three inputs, Rockford is in a classic advisory-level lake-effect/clipper backside pattern: temps around 28–31°F, 48+ hours below freezing, gusty WNW winds, and light additional snow (about 1\" or less) with intermittent freezing drizzle. That is enough for slick roads—especially bridges, overpasses, and rural back roads—but not enough for a classic Michigan closure scenario.\n\nMeteorology: The dataset emphasizes limited QPF (~0.04\"), minimal new accumulation, and improving conditions by the next morning commute with winds backing off somewhat and visibility generally good outside of brief bands. There is no signal for 4\"+ of new snow in Rockford itself, and the ice signal is light and patchy, not a solid glaze. This falls well below the 6–8\" or ice-storm criteria that would support probabilities above the 35–50% range in the Michigan-specific thresholds.\n\nHistory: The closest analog patterns show snow day rates in the 20–30% range, and seasonal context notes that Rockford typically remains open in advisory setups with 0–2\" additional snow unless an intense band parks over the district at dawn or prior ice is severely untreated. Here, the heavy warning-level snow is focused north and south, bracketing but not targeting Kent County. Seasonal adjustment is negative (–0.15), reinforcing that this is a ‘typical’ early-winter nuisance event rather than an outlier.\n\nSafety: The safety assessment rates roads and driving at moderate risk, with significant impact to the morning commute but still explicitly characterizes the situation as borderline and not an automatic closure. With well-practiced plow/salt operations in Kent County and no extreme cold or deep snow, the baseline expectation in this region is that school operates with caution.\n\nGiven all of this, a snow day is clearly possible but not the most likely outcome. To stay decisive relative to the grading scheme and Michigan thresholds, I place the probability near the lower end of the historical 20–30% range—22%—reflecting: (1) non-trivial icing risk and localized band uncertainty (keeps it above 15%), but (2) low total accumulation, advisory-level impacts, and improving conditions by commute time (keeps it below 30%).",
     "alternative_scenarios": [
       {
-        "scenario": "Heavier lake-effect band sets up over northern Kent/Rockford during the pre-dawn and morning commute, with brief whiteouts and rapid accumulations on key bus routes.",
-        "probability": 25,
-        "impact": "Travel becomes treacherous on both primary and secondary roads, with visibility occasionally below 1/4 mile and quick coating of snow/ice on treated surfaces. Multiple minor accidents and spinouts possible. Under this scenario, a full snow day or at least widespread closures/delays across northern Kent County become likely."
+        "scenario": "Intense lake-effect band or localized freezing drizzle zone sets up directly over much of the Rockford district between about 3–7 AM, producing several quick inches of snow or more extensive black ice than forecast.",
+        "probability": 0.15,
+        "impact": "Could push conditions toward treacherous on key bus routes with near-whiteout visibility or significant glazing, increasing the chance of a closure or at least widespread delays."
       },
       {
-        "scenario": "Bands remain focused mainly west and north (Muskegon/Newaygo/Allegan/Barry corridors), leaving Rockford with mostly light freezing drizzle/snow and marginal accumulations.",
-        "probability": 40,
-        "impact": "Primary roads stay mostly wet/slushy and passable, with slick spots confined to bridges, overpasses, and untreated side streets. Visibility reductions are intermittent but not widespread. District may opt for on-time start or limited delays, while still facing some localized transportation issues on rural routes."
+        "scenario": "Advisory conditions verify on the lower-impact side: bands stay mainly northwest or south, icing is patchy and quickly treated, and roads are mostly just wet/slushy by commute time.",
+        "probability": 0.55,
+        "impact": "Most buses run with slower speeds and extra caution; school opens on time with standard winter-weather communications."
       },
       {
-        "scenario": "Precipitation intensity underperforms and transitions earlier to flurries with improving visibility, while winds gradually ease through the morning.",
-        "probability": 20,
-        "impact": "Road crews keep ahead of conditions; most routes are just wet or lightly slushy by mid-morning. Some minor fender-benders and slip hazards remain, but overall risk is closer to a typical early-season nuisance event. Schools are likely to remain open, possibly with cautionary messaging but no major schedule changes."
-      },
-      {
-        "scenario": "Freezing drizzle persists longer than expected with less snow, leading to more widespread black ice despite low total precipitation.",
-        "probability": 15,
-        "impact": "Road surfaces, parking lots, and sidewalks develop a thin, hard-to-see glaze. Even treated roads may refreeze between applications. Accident rates and slip-and-fall incidents increase. This could push decision-makers toward delays or closures, especially if reports of widespread ice come in from bus drivers and law enforcement early in the morning."
+        "scenario": "Forecast slightly overestimates hazards; precipitation ends earlier, winds ease more quickly, and overnight treatment is very effective.",
+        "probability": 0.3,
+        "impact": "Typical winter driving with only minor slick spots; no closure, minimal delays, and conditions closer to routine for late November."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "Plan for at least a potential delayed start or targeted route cancellations, especially for rural and outlying areas where secondary roads, hills, and bridges are more exposed to ice and blowing snow.",
-        "Obtain real-time reports from transportation staff, road commissions, and local law enforcement between 04:30 and 06:30 to assess actual band placement, ice extent, and visibility along key bus corridors.",
-        "Prioritize inspection of bridges, overpasses, and known trouble spots (north–south routes exposed to crosswinds, shaded curves, and hills) before committing to normal operations.",
-        "If operating, allow buses extra time and instruct drivers to reduce speeds, increase following distances, and avoid marginal roads where possible; consider consolidating or adjusting routes that traverse the most exposed areas.",
-        "Ensure school parking lots, drop-off zones, and sidewalks are pre-treated with salt/sand before arrival times and re-treated as needed through the morning due to ongoing freezing drizzle/snow.",
-        "Communicate clearly with families early in the morning about the potential for slick conditions, emphasizing extra travel time, appropriate footwear, and caution at bus stops and school entrances.",
-        "Prepare contingency plans for scattered power outages (especially if any buildings are in more exposed areas), including backup heating checks and communication protocols."
+        "Plan operationally for school to be open, but be prepared for patchy slick conditions on rural routes and hilly areas.",
+        "Have transportation staff and key spotters check known trouble spots (bridges, shaded hills, rural intersections) between about 4:30–6:30 AM and report back before a final go/no-go decision.",
+        "Coordinate with Kent County Road Commission on pre-dawn treatment priorities near key bus routes and school entrances, especially where freezing drizzle may have occurred.",
+        "Consider targeted adjustments (isolated bus stop relocations, brief start delays) if reports show specific routes with significantly worse conditions than the district-wide picture."
       ],
       "for_residents": [
-        "Avoid non-essential driving during the morning hours (through at least late morning) if possible; conditions will be most hazardous then due to freezing rain/snow and strong winds.",
-        "If you must drive, reduce speed well below posted limits, increase following distance to at least 6–8 seconds, and brake and steer gently to avoid skids on black ice and slushy patches.",
-        "Use extra caution on bridges, overpasses, entrance/exit ramps, and untreated neighborhood streets, where ice will form first and may be invisible.",
-        "Expect rapidly changing visibility in lake-effect bands; if you encounter a sudden whiteout, slow gradually, avoid sudden maneuvers, and if you must pull over, move well onto the shoulder with hazard lights on.",
-        "For walking, assume sidewalks, driveways, and parking lots may have a thin glaze of ice from freezing drizzle; wear traction footwear, take short steps, and use handrails on stairs and ramps.",
-        "Allow extra time for school drop-offs, commuting, and deliveries; anticipate that buses and public transport may run slower due to slick roads and gusty crosswinds.",
-        "Prepare for scattered power outages, especially in areas closer to the lakeshore or with many trees; keep phones charged, have flashlights and blankets ready, and treat any dark intersections as four-way stops."
+        "Expect potentially slick, icy spots early in the morning—especially on bridges, overpasses, and untreated neighborhood streets—even if main roads look okay.",
+        "Allow extra time for the morning commute, increase following distance, and avoid sudden braking; use main, treated routes when possible.",
+        "Make sure students walking or waiting at bus stops have appropriate winter gear for wind chills in the teens and low 20s.",
+        "Check district and local road updates early in the morning in case any localized banding or icing produces last-minute adjustments or delays."
       ],
       "for_authorities": [
-        "Maintain elevated road treatment operations through at least early afternoon, focusing on bridges, overpasses, high-speed corridors, and known black-ice locations along the US-131 corridor and major arterials.",
-        "Coordinate closely between road commissions, school districts, and emergency services between 04:00 and 07:00 to share real-time observations on band placement, ice coverage, and accident hotspots.",
-        "Use dynamic messaging signs and local media/social channels to warn drivers about freezing drizzle, slick bridges, and rapidly changing visibility in lake-effect bands.",
-        "Monitor power infrastructure and tree damage reports, especially in areas that experienced stronger overnight winds; be prepared to respond quickly to downed lines and blocked roads.",
-        "Stage or pre-position emergency response resources where feasible to account for slower travel times on exposed rural roads and bridges.",
-        "Review and, if necessary, adjust plow and salt routes to ensure school zones, bus depots, and main commuter corridors receive early and repeated treatment during the advisory period.",
-        "Continue close coordination with the National Weather Service for updates on lake-effect band evolution and any changes to advisory or warning areas that might affect Kent County and Rockford specifically."
+        "Maintain overnight and pre-dawn salting/plowing focus on primary corridors, bus routes, and bridge decks where freezing drizzle and light snow are most likely to create black ice.",
+        "Monitor lake-effect band placement and short-term radar trends closely from about midnight to 7 AM, ready to escalate messaging if heavier bands drift over Kent County.",
+        "Coordinate with school transportation coordinators between about 4:30–6:00 AM to share on-the-ground road condition reports and any emerging hotspots.",
+        "Be prepared for minor crashes and slide-offs during the morning commute due to drivers underestimating patchy ice, but widespread emergency access issues are not expected."
       ]
     },
     "updates_needed": true,
-    "next_evaluation_time": "2025-11-27 05:30"
+    "next_evaluation_time": "2025-11-28T04:30:00-05:00"
   },
-  "timestamp": "2025-11-27T14:00:34.749Z",
+  "timestamp": "2025-11-27T18:10:45.768Z",
   "location": "Rockford, Michigan",
   "raw_weather_data": {
     "location": {
@@ -215,43 +188,43 @@
       "lat": 43.1152000427246,
       "lon": -85.5136032104492,
       "tz_id": "America/Detroit",
-      "localtime_epoch": 1764251987,
-      "localtime": "2025-11-27 08:59"
+      "localtime_epoch": 1764266651,
+      "localtime": "2025-11-27 13:04"
     },
     "current": {
-      "last_updated_epoch": 1764251100,
-      "last_updated": "2025-11-27 08:45",
-      "temp_c": -1.1,
-      "temp_f": 30,
+      "last_updated_epoch": 1764266400,
+      "last_updated": "2025-11-27 13:00",
+      "temp_c": -0.6,
+      "temp_f": 30.9,
       "is_day": 1,
       "condition": {
-        "text": "Overcast",
-        "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-        "code": 1009
+        "text": "Light snow",
+        "icon": "//cdn.weatherapi.com/weather/64x64/day/326.png",
+        "code": 1213
       },
-      "wind_mph": 19.2,
-      "wind_kph": 31,
-      "wind_degree": 285,
+      "wind_mph": 18.3,
+      "wind_kph": 29.5,
+      "wind_degree": 286,
       "wind_dir": "WNW",
-      "pressure_mb": 1016,
-      "pressure_in": 30.01,
-      "precip_mm": 0.08,
+      "pressure_mb": 1018,
+      "pressure_in": 30.06,
+      "precip_mm": 0,
       "precip_in": 0,
-      "humidity": 75,
+      "humidity": 69,
       "cloud": 100,
-      "feelslike_c": -8,
-      "feelslike_f": 17.6,
-      "windchill_c": -7.8,
-      "windchill_f": 18,
-      "heatindex_c": -1.6,
-      "heatindex_f": 29.2,
-      "dewpoint_c": -3.5,
-      "dewpoint_f": 25.6,
+      "feelslike_c": -7.2,
+      "feelslike_f": 19,
+      "windchill_c": -6.8,
+      "windchill_f": 19.8,
+      "heatindex_c": -0.5,
+      "heatindex_f": 31.1,
+      "dewpoint_c": -3.8,
+      "dewpoint_f": 25.2,
       "vis_km": 14,
       "vis_miles": 8,
-      "uv": 0,
-      "gust_mph": 28.4,
-      "gust_kph": 45.6
+      "uv": 1.3,
+      "gust_mph": 22.4,
+      "gust_kph": 36.1
     },
     "forecast": {
       "forecastday": [
@@ -618,25 +591,25 @@
             {
               "time_epoch": 1764248400,
               "time": "2025-11-27 08:00",
-              "temp_c": -1.1,
-              "temp_f": 30,
+              "temp_c": -1.6,
+              "temp_f": 29.2,
               "is_day": 1,
               "condition": {
-                "text": "Overcast",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-                "code": 1009
+                "text": "Light freezing rain",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/311.png",
+                "code": 1198
               },
               "wind_mph": 19.2,
               "wind_kph": 31,
               "wind_degree": 285,
               "wind_dir": "WNW",
-              "pressure_mb": 1016,
-              "pressure_in": 30.01,
+              "pressure_mb": 1015,
+              "pressure_in": 29.98,
               "precip_mm": 0.08,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 75,
-              "cloud": 100,
+              "humidity": 87,
+              "cloud": 74,
               "feelslike_c": -7.8,
               "feelslike_f": 18,
               "windchill_c": -7.8,
@@ -649,8 +622,8 @@
               "chance_of_rain": 100,
               "will_it_snow": 0,
               "chance_of_snow": 69,
-              "vis_km": 14,
-              "vis_miles": 8,
+              "vis_km": 2,
+              "vis_miles": 1,
               "gust_mph": 28.4,
               "gust_kph": 45.6,
               "uv": 0
@@ -818,25 +791,25 @@
             {
               "time_epoch": 1764266400,
               "time": "2025-11-27 13:00",
-              "temp_c": -0.5,
-              "temp_f": 31.1,
+              "temp_c": -0.6,
+              "temp_f": 30.9,
               "is_day": 1,
               "condition": {
-                "text": "Overcast ",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-                "code": 1009
+                "text": "Light snow",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/326.png",
+                "code": 1213
               },
               "wind_mph": 18.3,
               "wind_kph": 29.5,
               "wind_degree": 286,
               "wind_dir": "WNW",
-              "pressure_mb": 1017,
-              "pressure_in": 30.02,
+              "pressure_mb": 1018,
+              "pressure_in": 30.06,
               "precip_mm": 0,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 78,
-              "cloud": 89,
+              "humidity": 69,
+              "cloud": 100,
               "feelslike_c": -6.8,
               "feelslike_f": 19.8,
               "windchill_c": -6.8,
@@ -849,8 +822,8 @@
               "chance_of_rain": 0,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 2,
-              "vis_miles": 1,
+              "vis_km": 14,
+              "vis_miles": 8,
               "gust_mph": 22.4,
               "gust_kph": 36.1,
               "uv": 1.3
@@ -2264,38 +2237,6 @@
     "alerts": {
       "alert": [
         {
-          "identifier": "b31eb829-cb5a-11f0-8583-b63eaaffe11e",
-          "headline": "Wind Advisory issued November 26 at 9:55PM EST until November 27 at 7:00AM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Moderate",
-          "urgency": "Expected",
-          "areas": "Lake; Osceola; Clare; Newaygo; Mecosta; Isabella; Montcalm; Gratiot; Kent; Ionia; Clinton; Barry; Eaton; Ingham; Kalamazoo; Calhoun; Jackson",
-          "category": "Met",
-          "certainty": "Likely",
-          "event": "Wind Advisory",
-          "note": "",
-          "effective": "2025-11-26T21:55:00-05:00",
-          "expires": "2025-11-27T06:00:00-05:00",
-          "desc": "* WHAT...West winds 15 to 25 mph with gusts up to 45 mph.\n\n* WHERE...Portions of central, south central, southwest, and west\ncentral Michigan.\n\n* WHEN...Until 7 AM EST Thursday.\n\n* IMPACTS...Gusty winds will blow around unsecured objects. Tree\nlimbs could be blown down and a few power outages may result.\n",
-          "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution."
-        },
-        {
-          "identifier": "b384bd53-cb5a-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Weather Advisory issued November 26 at 9:53PM EST until November 27 at 7:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Moderate",
-          "urgency": "Expected",
-          "areas": "Muskegon; Ottawa; Kent",
-          "category": "Met",
-          "certainty": "Likely",
-          "event": "Winter Weather Advisory",
-          "note": "",
-          "effective": "2025-11-26T21:53:00-05:00",
-          "expires": "2025-11-27T06:00:00-05:00",
-          "desc": "* WHAT...Snow. Additional snow accumulations up to two inches. Winds\ngusting as high as 45 mph.\n\n* WHERE...Kent, Ottawa, and Muskegon Counties.\n\n* WHEN...Until 7 PM EST Thursday.\n\n* IMPACTS...Roads, and especially bridges and overpasses, will\nlikely become slick and hazardous. Visibility and road conditions\nmay change rapidly over short distances in lake effect snow.\n",
-          "instruction": "During lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions."
-        },
-        {
           "identifier": "2af516b0-cb8d-11f0-8583-b63eaaffe11e",
           "headline": "Winter Weather Advisory issued November 27 at 4:27AM EST until November 27 at 7:00PM EST by NWS Grand Rapids MI",
           "msgtype": "Update",
@@ -2309,22 +2250,6 @@
           "effective": "2025-11-27T04:27:00-05:00",
           "expires": "2025-11-27T12:30:00-05:00",
           "desc": "* WHAT...Snow. Additional snow accumulations up to two inches. Winds\ngusting as high as 40 mph, mainly along the lakeshore.\n\n* WHERE...Kent, Ottawa, and Muskegon Counties.\n\n* WHEN...Until 7 PM EST this evening.\n\n* IMPACTS...Roads, and especially bridges and overpasses, will\nlikely become slick and hazardous. Visibility and road conditions\nmay change rapidly over short distances in lake effect snow.\n",
-          "instruction": "During lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions."
-        },
-        {
-          "identifier": "b35822a2-cb5a-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Weather Advisory issued November 26 at 9:53PM EST until November 27 at 7:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Moderate",
-          "urgency": "Expected",
-          "areas": "Clare; Isabella; Montcalm; Ionia; Eaton; Jackson",
-          "category": "Met",
-          "certainty": "Likely",
-          "event": "Winter Weather Advisory",
-          "note": "",
-          "effective": "2025-11-26T21:53:00-05:00",
-          "expires": "2025-11-27T06:00:00-05:00",
-          "desc": "* WHAT...Snow. Additional snow accumulations between 1 and 3 inches.\nWinds gusting as high as 40 mph.\n\n* WHERE...Portions of central and south central Michigan.\n\n* WHEN...Until 7 PM EST Thursday.\n\n* IMPACTS...Roads, and especially bridges and overpasses, will\nlikely become slick and hazardous.\n",
           "instruction": "During lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions."
         },
         {
@@ -2344,22 +2269,6 @@
           "instruction": "During lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions."
         },
         {
-          "identifier": "b2f48598-cb5a-11f0-8583-b63eaaffe11e",
-          "headline": "High Wind Warning issued November 26 at 9:55PM EST until November 27 at 7:00AM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Severe",
-          "urgency": "Expected",
-          "areas": "Mason; Oceana; Muskegon; Ottawa; Allegan; Van Buren",
-          "category": "Met",
-          "certainty": "Likely",
-          "event": "High Wind Warning",
-          "note": "",
-          "effective": "2025-11-26T21:55:00-05:00",
-          "expires": "2025-11-27T06:00:00-05:00",
-          "desc": "* WHAT...Northwest winds 20 to 30 mph with gusts 50 to 60 mph.\n\n* WHERE...Allegan, Ottawa, Van Buren, Mason, Muskegon, and Oceana\nCounties.\n\n* WHEN...Until 7 AM EST Thursday.\n\n* IMPACTS...Damaging winds will blow down trees and power lines.\nWidespread power outages are expected. Travel will be difficult,\nespecially for high profile vehicles.\n",
-          "instruction": "Watch for falling debris and tree limbs. Use caution if you must\ndrive."
-        },
-        {
           "identifier": "245fdd7e-cb8d-11f0-8583-b63eaaffe11e",
           "headline": "Wind Advisory issued November 27 at 6:50AM EST until November 27 at 7:00PM EST by NWS Grand Rapids MI",
           "msgtype": "Alert",
@@ -2376,22 +2285,6 @@
           "instruction": "Winds this strong can make driving difficult, especially for high\nprofile vehicles. Use extra caution."
         },
         {
-          "identifier": "b3a893ab-cb5a-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Storm Warning issued November 26 at 9:53PM EST until November 27 at 7:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Severe",
-          "urgency": "Expected",
-          "areas": "Mason; Lake; Osceola; Oceana; Newaygo; Mecosta",
-          "category": "Met",
-          "certainty": "Likely",
-          "event": "Winter Storm Warning",
-          "note": "",
-          "effective": "2025-11-26T21:53:00-05:00",
-          "expires": "2025-11-27T06:00:00-05:00",
-          "desc": "* WHAT...Heavy snow. Additional snow accumulations between 2 and 4\ninches. Winds gusting as high as 45 mph.\n\n* WHERE...Portions of central and west central Michigan.\n\n* WHEN...Until 7 PM EST Thursday.\n\n* IMPACTS...Visibilities may drop below 1/4 mile due to falling and\nblowing snow. Whiteout conditions are expected and will make\ntravel treacherous and potentially life-threatening.\n",
-          "instruction": "During lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions."
-        },
-        {
           "identifier": "2ab51990-cb8d-11f0-8583-b63eaaffe11e",
           "headline": "Winter Storm Warning issued November 27 at 4:27AM EST until November 27 at 7:00PM EST by NWS Grand Rapids MI",
           "msgtype": "Update",
@@ -2405,22 +2298,6 @@
           "effective": "2025-11-27T04:27:00-05:00",
           "expires": "2025-11-27T12:30:00-05:00",
           "desc": "* WHAT...Heavy snow. Additional snow accumulations between 1 and 3\ninches. Winds gusting as high as 40 mph.\n\n* WHERE...Portions of central and west central Michigan.\n\n* WHEN...Until 7 PM EST this evening.\n\n* IMPACTS...Visibilities may drop below 1/4 mile due to falling and\nblowing snow. Whiteout conditions are expected and will make\ntravel treacherous and potentially life-threatening.\n",
-          "instruction": "During lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions."
-        },
-        {
-          "identifier": "b3d08918-cb5a-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Storm Warning issued November 26 at 9:53PM EST until November 27 at 7:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Severe",
-          "urgency": "Expected",
-          "areas": "Allegan; Barry; Van Buren; Kalamazoo; Calhoun",
-          "category": "Met",
-          "certainty": "Likely",
-          "event": "Winter Storm Warning",
-          "note": "",
-          "effective": "2025-11-26T21:53:00-05:00",
-          "expires": "2025-11-27T06:00:00-05:00",
-          "desc": "* WHAT...Heavy snow. Additional snow accumulations between 1 and 3\ninches. Winds gusting as high as 45 mph.\n\n* WHERE...Calhoun, Allegan, Barry, Kalamazoo, and Van Buren Counties.\n\n* WHEN...Until 7 PM EST Thursday.\n\n* IMPACTS...Visibilities may drop below 1/4 mile due to falling and\nblowing snow. Whiteout conditions are expected and will make\ntravel treacherous and potentially life-threatening.\n",
           "instruction": "During lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions."
         },
         {

@@ -11,6 +11,7 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { OutcomeRecorder } from '@/components/OutcomeRecorder'
 import { NotificationSettings } from '@/components/NotificationSettings'
 import { EnhancedHeader } from '@/components/EnhancedHeader'
+import { WeatherAtmosphere } from '@/components/WeatherAtmosphere'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -76,6 +77,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background transition-colors relative overflow-hidden">
+      {/* Weather Atmosphere Effects */}
+      <WeatherAtmosphere />
+      
       {/* Animated background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
