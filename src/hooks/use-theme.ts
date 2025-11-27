@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 export type Theme = 'light' | 'dark' | 'system'
 
 export function useTheme() {
-  const [theme, setTheme] = useKV<Theme>('theme-preference', 'system')
+  const [theme, setTheme] = useKV<Theme>('theme-preference', 'dark')
 
   useEffect(() => {
     const root = window.document.documentElement
@@ -14,11 +14,12 @@ export function useTheme() {
     
     let resolvedTheme: 'light' | 'dark'
     
-    if (theme === 'system' || !theme) {
+    if (theme === 'system') {
       // Check system preference
       resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     } else {
-      resolvedTheme = theme as 'light' | 'dark'
+      // Default to dark if theme is null/undefined
+      resolvedTheme = theme || 'dark'
     }
     
     root.classList.add(resolvedTheme)
@@ -26,7 +27,7 @@ export function useTheme() {
     // Listen for system theme changes when in system mode
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {
-      if (theme === 'system' || !theme) {
+      if (theme === 'system') {
         root.classList.remove('light', 'dark')
         root.classList.add(mediaQuery.matches ? 'dark' : 'light')
       }
@@ -37,7 +38,7 @@ export function useTheme() {
   }, [theme])
 
   return {
-    theme: theme || 'system',
+    theme: theme || 'dark',
     setTheme,
   }
 }

@@ -10,8 +10,9 @@ const dataDir = path.join(repoRoot, 'public', 'data')
 
 const eventDate = process.env.EVENT_DATE
 const outcome = process.env.OUTCOME
+const noSchoolReason = process.env.NO_SCHOOL_REASON || ''
 const notes = process.env.NOTES || ''
-const manualProbability = process.env.MANUAL_PROBABILITY
+const rhsPrediction = process.env.RHS_PREDICTION
 const actor = process.env.GITHUB_ACTOR || 'unknown'
 
 if (!eventDate) {
@@ -19,10 +20,12 @@ if (!eventDate) {
   process.exit(1)
 }
 
-if (!outcome || !['snow-day', 'school-open'].includes(outcome)) {
-  console.error('OUTCOME must be "snow-day" or "school-open".')
+if (!outcome || !['snow-day', 'school-open', 'no-school'].includes(outcome)) {
+  console.error('OUTCOME must be "snow-day", "school-open", or "no-school".')
   process.exit(1)
 }
+
+const isNoSchool = outcome === 'no-school'
 
 const outcomesPath = path.join(dataDir, 'outcomes.json')
 const summaryPath = path.join(dataDir, 'summary.json')
@@ -50,7 +53,7 @@ const buildEntry = async () => {
   const summary = await loadJsonIfExists(summaryPath)
   const prediction = await loadJsonIfExists(predictionPath)
 
-  const studentProb = sanitizeProbability(manualProbability)
+  const rhsProb = sanitizeProbability(rhsPrediction)
   let probability = null
   let confidence = null
   let predictionTimestamp = null
@@ -67,18 +70,28 @@ const buildEntry = async () => {
     predictionTimestamp = predictionTimestamp || prediction.timestamp || null
   }
 
-  return {
+  const entry = {
     date: eventDate,
     modelProbability: probability,
-    studentPrediction: studentProb,
+    rhsPrediction: rhsProb,
     confidence: confidence || null,
     predictionTimestamp,
-    actualSnowDay: outcome === 'snow-day',
+    actualSnowDay: isNoSchool ? null : outcome === 'snow-day',
     recordedAt: new Date().toISOString(),
     recordedBy: actor,
     notes: notes || undefined,
     source: 'workflow'
   }
+
+  // Add no-school fields if applicable
+  if (isNoSchool) {
+    entry.noSchoolScheduled = true
+    if (noSchoolReason) {
+      entry.noSchoolReason = noSchoolReason
+    }
+  }
+
+  return entry
 }
 
 const writeLedger = async () => {
@@ -99,14 +112,19 @@ const writeLedger = async () => {
     if (!clone.confidence) delete clone.confidence
     if (!clone.predictionTimestamp) delete clone.predictionTimestamp
     if (clone.modelProbability === null || clone.modelProbability === undefined) delete clone.modelProbability
-    if (clone.studentPrediction === null || clone.studentPrediction === undefined) delete clone.studentPrediction
+    if (clone.rhsPrediction === null || clone.rhsPrediction === undefined) delete clone.rhsPrediction
+    // Clean up legacy studentPrediction field if present
+    delete clone.studentPrediction
     return clone
   })
 
   const json = JSON.stringify(normalized, null, 2)
   await writeFile(outcomesPath, `${json}\n`, 'utf8')
 
-  console.log(`Logged outcome for ${eventDate} (${entry.actualSnowDay ? 'snow day' : 'school open'})`)
+  const outcomeLabel = entry.noSchoolScheduled 
+    ? `no school${entry.noSchoolReason ? ` - ${entry.noSchoolReason}` : ''}`
+    : entry.actualSnowDay ? 'snow day' : 'school open'
+  console.log(`Logged outcome for ${eventDate} (${outcomeLabel})`)
 }
 
 writeLedger().catch(error => {

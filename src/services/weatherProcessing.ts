@@ -343,6 +343,8 @@ export function calculateHeatIndex(tempF: number, humidity: number): number {
 
 /**
  * Categorize snow day probability based on calculated percentage.
+ * MICHIGAN-CALIBRATED: Higher thresholds than national averages.
+ * Michigan schools rarely close for moderate snow - only severe conditions.
  * 
  * @param probability Snow day probability percentage
  * @returns Object with category and description
@@ -352,34 +354,34 @@ export function categorizeSnowDayProbability(probability: number): {
   description: string
   confidence: 'low' | 'medium' | 'high'
 } {
-  if (probability >= 80) {
+  if (probability >= 85) {
     return {
       category: 'Very High',
-      description: 'Snow day highly likely - significant accumulation and dangerous conditions expected',
+      description: 'Snow day highly likely - blizzard conditions, ice storm, or extreme accumulation expected. Even Michigan schools will close.',
       confidence: 'high'
     }
-  } else if (probability >= 60) {
+  } else if (probability >= 65) {
     return {
       category: 'High',
-      description: 'Snow day likely - substantial snow and travel impacts expected',
+      description: 'Snow day likely - significant accumulation with poor timing, or hazardous conditions that concern even experienced Michigan drivers.',
       confidence: 'high'
     }
   } else if (probability >= 40) {
     return {
       category: 'Moderate',
-      description: 'Snow day possible - weather conditions may impact travel and schools',
+      description: 'Snow day possible but not certain - conditions are borderline for Michigan standards. Depends on timing and plow operations.',
       confidence: 'medium'
     }
   } else if (probability >= 20) {
     return {
       category: 'Low',
-      description: 'Snow day unlikely but possible - minor weather impacts expected',
+      description: 'Snow day unlikely - typical Michigan winter weather. Plows should handle it, schools will likely stay open.',
       confidence: 'medium'
     }
   } else {
     return {
       category: 'Very Low',
-      description: 'Snow day very unlikely - minimal weather impacts expected',
+      description: 'Snow day very unlikely - normal Michigan winter conditions. This is what we deal with all season.',
       confidence: 'low'
     }
   }

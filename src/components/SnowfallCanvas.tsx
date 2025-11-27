@@ -8,6 +8,8 @@ interface SnowflakeParticle {
   drift: number
   opacity: number
   angle: number
+  sparkle: number
+  type: 'flake' | 'crystal' | 'dust'
 }
 
 interface SnowfallCanvasProps {
@@ -19,13 +21,16 @@ interface SnowfallCanvasProps {
   respectReducedMotion?: boolean
   /** Custom className for positioning/styling */
   className?: string
+  /** Weather theme for color matching */
+  theme?: 'light_snow' | 'heavy_snow' | 'blizzard' | 'ice_storm' | 'whiteout' | string
 }
 
 export function SnowfallCanvas({
   intensity = 0,
   windSpeed = 0,
   respectReducedMotion = true,
-  className = ''
+  className = '',
+  theme = 'light_snow'
 }: SnowfallCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationFrameRef = useRef<number | undefined>(undefined)
@@ -62,28 +67,60 @@ export function SnowfallCanvas({
     window.addEventListener('resize', resizeCanvas)
 
     // Calculate particle count based on intensity (1-8 inches = 20-100 particles)
-    const particleCount = Math.min(Math.floor(intensity * 10), 150)
+    const baseCount = Math.min(Math.floor(intensity * 12), 180)
+    const particleCount = theme === 'blizzard' || theme === 'whiteout' 
+      ? baseCount * 2 
+      : baseCount
     
     // Calculate drift based on wind speed (0-50 mph = 0-5 drift)
-    const windDrift = Math.min(windSpeed / 10, 5)
+    const windDrift = Math.min(windSpeed / 8, 6)
+
+    // Get theme-specific colors
+    const getSnowColor = (opacity: number) => {
+      switch (theme) {
+        case 'blizzard':
+          return `rgba(255, 255, 255, ${opacity})`
+        case 'ice_storm':
+          return `rgba(200, 230, 255, ${opacity})`
+        case 'whiteout':
+          return `rgba(255, 255, 255, ${Math.min(opacity * 1.2, 1)})`
+        case 'heavy_snow':
+          return `rgba(245, 250, 255, ${opacity})`
+        default:
+          return `rgba(255, 255, 255, ${opacity * 0.9})`
+      }
+    }
 
     // Initialize snowflakes
+    const createSnowflake = (width: number, height: number, randomY = false): SnowflakeParticle => {
+      const types: SnowflakeParticle['type'][] = ['flake', 'crystal', 'dust']
+      const type = types[Math.floor(Math.random() * types.length)]
+      
+      return {
+        x: Math.random() * width,
+        y: randomY ? Math.random() * height : -10,
+        radius: type === 'dust' 
+          ? Math.random() * 1.5 + 0.5 
+          : type === 'crystal' 
+            ? Math.random() * 2.5 + 1.5 
+            : Math.random() * 2 + 1,
+        speed: type === 'dust' 
+          ? Math.random() * 0.8 + 0.3 
+          : Math.random() * 1.2 + 0.5,
+        drift: (Math.random() - 0.5) * windDrift,
+        opacity: type === 'dust' 
+          ? Math.random() * 0.4 + 0.2 
+          : Math.random() * 0.6 + 0.4,
+        angle: Math.random() * Math.PI * 2,
+        sparkle: Math.random(),
+        type
+      }
+    }
+
     const initSnowflakes = () => {
       snowflakesRef.current = []
       for (let i = 0; i < particleCount; i++) {
         snowflakesRef.current.push(createSnowflake(canvas.width, canvas.height, true))
-      }
-    }
-
-    const createSnowflake = (width: number, height: number, randomY = false): SnowflakeParticle => {
-      return {
-        x: Math.random() * width,
-        y: randomY ? Math.random() * height : -10,
-        radius: Math.random() * 2 + 1, // 1-3px radius
-        speed: Math.random() * 1 + 0.5, // 0.5-1.5 fall speed
-        drift: (Math.random() - 0.5) * windDrift, // -2.5 to 2.5 horizontal drift
-        opacity: Math.random() * 0.6 + 0.4, // 0.4-1.0 opacity
-        angle: Math.random() * Math.PI * 2
       }
     }
 
@@ -102,9 +139,10 @@ export function SnowfallCanvas({
         flake.y += flake.speed * deltaTime
         flake.x += flake.drift * deltaTime
         flake.angle += 0.01 * deltaTime
+        flake.sparkle = (flake.sparkle + 0.02) % 1
 
         // Add subtle oscillation for realism
-        const oscillation = Math.sin(flake.angle) * 0.5
+        const oscillation = Math.sin(flake.angle) * (flake.type === 'crystal' ? 1 : 0.5)
         
         // Reset snowflake if it goes off screen
         if (flake.y > canvas.height) {
@@ -117,11 +155,46 @@ export function SnowfallCanvas({
           flake.x = canvas.width
         }
 
-        // Draw snowflake
+        // Calculate sparkle effect for crystals
+        const sparkleBoost = flake.type === 'crystal' 
+          ? Math.sin(flake.sparkle * Math.PI * 2) * 0.3 + 0.7 
+          : 1
+
+        // Draw snowflake based on type
         ctx.beginPath()
-        ctx.arc(flake.x + oscillation, flake.y, flake.radius, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`
-        ctx.fill()
+        
+        if (flake.type === 'crystal' && flake.radius > 2) {
+          // Draw a simple 6-point star for larger crystals
+          ctx.save()
+          ctx.translate(flake.x + oscillation, flake.y)
+          ctx.rotate(flake.angle)
+          
+          const size = flake.radius
+          ctx.strokeStyle = getSnowColor(flake.opacity * sparkleBoost)
+          ctx.lineWidth = 0.5
+          ctx.lineCap = 'round'
+          
+          for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI) / 3
+            ctx.moveTo(0, 0)
+            ctx.lineTo(Math.cos(angle) * size, Math.sin(angle) * size)
+          }
+          ctx.stroke()
+          ctx.restore()
+        } else {
+          // Draw circular snowflake
+          ctx.arc(flake.x + oscillation, flake.y, flake.radius, 0, Math.PI * 2)
+          ctx.fillStyle = getSnowColor(flake.opacity * sparkleBoost)
+          
+          // Add glow for larger flakes
+          if (flake.radius > 1.5 && (theme === 'blizzard' || theme === 'ice_storm')) {
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)'
+            ctx.shadowBlur = flake.radius * 2
+          }
+          
+          ctx.fill()
+          ctx.shadowBlur = 0
+        }
       })
 
       animationFrameRef.current = requestAnimationFrame(animate)
@@ -136,7 +209,7 @@ export function SnowfallCanvas({
       }
       window.removeEventListener('resize', resizeCanvas)
     }
-  }, [intensity, windSpeed, respectReducedMotion])
+  }, [intensity, windSpeed, respectReducedMotion, theme])
 
   // Don't render if no snow predicted
   if (intensity < 1) {

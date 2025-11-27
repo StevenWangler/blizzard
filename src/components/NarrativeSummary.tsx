@@ -15,7 +15,9 @@ interface NarrativeSummaryProps {
 }
 
 export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
-  if (!prediction?.meteorology || !prediction?.final || !prediction?.safety) {
+  // Check for required data - safety may have error instead of full data
+  const hasSafetyData = prediction?.safety?.road_conditions && prediction?.safety?.travel_safety
+  if (!prediction?.meteorology || !prediction?.final) {
     return null
   }
 
@@ -63,14 +65,14 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
       transition={{ duration: 0.5, delay: 0.3 }}
     >
       <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-        <CardHeader className="px-6 pt-6 pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg">
+        <CardHeader className="px-6 sm:px-8 pt-6 sm:pt-8 pb-3">
+          <CardTitle className="flex items-center gap-2.5 text-lg">
             <Sparkle size={20} weight="duotone" className="text-primary" />
             AI Summary
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 px-6 pb-6 pt-0">
-          <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wide text-primary/80 font-semibold">
+        <CardContent className="space-y-6 px-6 sm:px-8 pb-6 sm:pb-8 pt-0">
+          <div className="flex flex-wrap items-center gap-2.5 text-xs uppercase tracking-wide text-primary/80 font-semibold">
             {highlights.map((highlight, index) => (
               <button
                 key={highlight.title}
@@ -112,8 +114,8 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
 
           {narrative.residentRecommendations.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold mb-1 text-primary">Quick Tips</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
+              <h4 className="text-sm font-semibold mb-2 text-primary">Quick Tips</h4>
+              <ul className="text-sm text-muted-foreground space-y-1.5">
                 {narrative.residentRecommendations.map((rec: string, index: number) => (
                   <li key={index} className="flex items-start gap-1.5">
                     <span className="text-primary mt-0.5">•</span>

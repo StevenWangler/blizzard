@@ -191,3 +191,235 @@ button:hover svg,
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid hsl(var(--border) / 0.2);
 }
+
+/* ========================================
+   WEATHER THEME ATMOSPHERIC EFFECTS
+   ======================================== */
+
+/* Animated shimmer effect for weather themes */
+@keyframes weather-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: weather-shimmer 8s linear infinite;
+}
+
+/* Aurora wave animation */
+@keyframes aurora-wave {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-5%) scaleY(1.1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(0) scaleY(0.95);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translateY(3%) scaleY(1.05);
+    opacity: 0.7;
+  }
+}
+
+.animate-aurora {
+  animation: aurora-wave 6s ease-in-out infinite;
+}
+
+/* Blizzard wind effect */
+@keyframes blizzard-wind {
+  0% {
+    transform: translateX(0) skewX(0deg);
+  }
+  25% {
+    transform: translateX(2%) skewX(-2deg);
+  }
+  50% {
+    transform: translateX(-1%) skewX(1deg);
+  }
+  75% {
+    transform: translateX(1%) skewX(-1deg);
+  }
+  100% {
+    transform: translateX(0) skewX(0deg);
+  }
+}
+
+[data-weather-theme="blizzard"] .weather-content,
+[data-weather-theme="whiteout"] .weather-content {
+  animation: blizzard-wind 3s ease-in-out infinite;
+}
+
+/* Ice crystal sparkle */
+@keyframes ice-sparkle {
+  0%, 100% {
+    opacity: 0.4;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.9;
+    filter: brightness(1.3);
+  }
+}
+
+[data-weather-theme="ice_storm"] .weather-accent,
+[data-weather-theme="freezing_rain"] .weather-accent {
+  animation: ice-sparkle 2s ease-in-out infinite;
+}
+
+/* Snow drift floating */
+@keyframes snow-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(3px) rotate(-2deg);
+  }
+}
+
+[data-weather-theme="light_snow"] .snow-element,
+[data-weather-theme="snow_flurries"] .snow-element,
+[data-weather-theme="heavy_snow"] .snow-element {
+  animation: snow-float 4s ease-in-out infinite;
+}
+
+/* Weather theme transitions */
+[data-weather-theme] {
+  transition: 
+    background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.6s ease,
+    border-color 0.6s ease;
+}
+
+/* Theme-specific card effects */
+[data-weather-theme="blizzard"] [data-slot="card"],
+[data-weather-theme="whiteout"] [data-slot="card"] {
+  box-shadow: 
+    0 4px 20px hsl(var(--primary) / 0.15),
+    0 0 40px hsl(var(--accent) / 0.1);
+}
+
+[data-weather-theme="aurora"] [data-slot="card"] {
+  box-shadow: 
+    0 4px 20px hsl(160 85% 50% / 0.15),
+    0 0 30px hsl(280 80% 50% / 0.1);
+}
+
+[data-weather-theme="ice_storm"] [data-slot="card"] {
+  box-shadow: 
+    0 4px 20px hsl(190 80% 50% / 0.2),
+    inset 0 0 30px hsl(190 80% 90% / 0.05);
+}
+
+/* Atmospheric overlay for immersive themes */
+[data-weather-theme="blizzard"]::before,
+[data-weather-theme="whiteout"]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    radial-gradient(ellipse at 30% 20%, hsl(var(--accent) / 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, hsl(var(--primary) / 0.06) 0%, transparent 50%);
+  animation: atmosphere-pulse var(--weather-pulse-speed, 2.5s) ease-in-out infinite alternate;
+}
+
+@keyframes atmosphere-pulse {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Aurora special background */
+[data-weather-theme="aurora"]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    linear-gradient(135deg, 
+      hsl(160 85% 50% / 0.05) 0%,
+      transparent 30%,
+      hsl(280 80% 50% / 0.05) 60%,
+      hsl(320 85% 50% / 0.03) 100%
+    );
+  animation: aurora-shift 10s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-shift {
+  0% {
+    opacity: 0.6;
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    filter: hue-rotate(30deg);
+  }
+}
+
+/* Frost border effect for cold themes */
+[data-weather-theme="ice_storm"] [data-slot="card"]::after,
+[data-weather-theme="freezing_rain"] [data-slot="card"]::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    hsl(190 80% 70% / 0.4) 0%,
+    transparent 50%,
+    hsl(190 80% 70% / 0.2) 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Weather theme badge enhancement */
+[data-weather-theme="blizzard"] [data-slot="badge"],
+[data-weather-theme="heavy_snow"] [data-slot="badge"] {
+  text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+}
+
+[data-weather-theme="aurora"] [data-slot="badge"] {
+  text-shadow: 0 0 15px hsl(160 85% 50% / 0.6);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer,
+  .animate-aurora,
+  [data-weather-theme]::before,
+  [data-weather-theme] .weather-content,
+  [data-weather-theme] .weather-accent,
+  [data-weather-theme] .snow-element {
+    animation: none !important;
+  }
+}
+
