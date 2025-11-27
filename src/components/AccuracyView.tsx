@@ -6,6 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Target, Clock, Database, Warning, ArrowsClockwise, Calendar } from '@phosphor-icons/react'
 import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome } from '@/services/outcomes'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
+import { fetchData } from '@/lib/dataPath'
 
 interface PredictionMeta {
   date: string
@@ -49,36 +50,36 @@ export function AccuracyView() {
   useEffect(() => {
     const fetchSummary = async () => {
       const hydrateFromSummary = async () => {
-        const response = await fetch('/data/summary.json', { cache: 'no-store' })
-        if (!response.ok) return false
-        const summary = await response.json()
-        const date = summary.timestamp ? summary.timestamp.split('T')[0] : todayISO()
-        setPredictionMeta({
-          date,
-          modelPrediction: normalizeProbability(summary.probability ?? summary.final?.snow_day_probability ?? 0),
-          confidence: summary.confidence ?? summary.final?.confidence_level ?? null
-        })
-        return true
+        try {
+          const summary = await fetchData<Record<string, unknown>>('summary.json', { cache: 'no-store' })
+          const date = summary.timestamp ? String(summary.timestamp).split('T')[0] : todayISO()
+          setPredictionMeta({
+            date,
+            modelPrediction: normalizeProbability(summary.probability ?? (summary.final as Record<string, unknown>)?.snow_day_probability ?? 0),
+            confidence: (summary.confidence ?? (summary.final as Record<string, unknown>)?.confidence_level ?? null) as string | null
+          })
+          return true
+        } catch {
+          return false
+        }
       }
 
       const hydrateFromPrediction = async () => {
-        const response = await fetch('/data/prediction.json', { cache: 'no-store' })
-        if (!response.ok) return
-        const prediction = await response.json()
-        const date = prediction.timestamp ? prediction.timestamp.split('T')[0] : todayISO()
-        setPredictionMeta({
-          date,
-          modelPrediction: normalizeProbability(prediction.final?.snow_day_probability ?? 0),
-          confidence: prediction.final?.confidence_level ?? null
-        })
+        try {
+          const prediction = await fetchData<Record<string, unknown>>('prediction.json', { cache: 'no-store' })
+          const date = prediction.timestamp ? String(prediction.timestamp).split('T')[0] : todayISO()
+          setPredictionMeta({
+            date,
+            modelPrediction: normalizeProbability((prediction.final as Record<string, unknown>)?.snow_day_probability ?? 0),
+            confidence: ((prediction.final as Record<string, unknown>)?.confidence_level ?? null) as string | null
+          })
+        } catch {
+          // No prediction data available
+        }
       }
 
-      try {
-        const success = await hydrateFromSummary()
-        if (!success) {
-          await hydrateFromPrediction()
-        }
-      } catch (err) {
+      const success = await hydrateFromSummary()
+      if (!success) {
         await hydrateFromPrediction()
       }
     }

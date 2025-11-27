@@ -12,7 +12,7 @@ on:
       - 'public/data/summary.json'
       - 'public/data/outcomes.json'
   
-  # Deploy on pull requests to main
+  # Build-only check on pull requests (no deploy)
   pull_request:
     branches: [ main ]
 
@@ -20,17 +20,9 @@ on:
 # This workflow handles manual deploys and code changes
 
 jobs:
-  build-and-deploy:
+  # Build job - runs on both pushes and PRs
+  build:
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
     - name: Checkout
@@ -56,10 +48,39 @@ jobs:
     - name: Build application
       run: npm run build
       
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: './dist'
+        retention-days: 1
+
+  # Deploy job - only runs on push to main, not on PRs
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: './dist'
+        
     - name: Setup Pages
       uses: actions/configure-pages@v4
       
-    - name: Upload artifact
+    - name: Upload to Pages
       uses: actions/upload-pages-artifact@v3
       with:
         path: './dist'
@@ -71,8 +92,8 @@ jobs:
   # Optional: Send notification on build failure
   notify-on-failure:
     runs-on: ubuntu-latest
-    needs: build-and-deploy
-    if: failure()
+    needs: [build, deploy]
+    if: failure() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     
     steps:
     - name: Notify build failure

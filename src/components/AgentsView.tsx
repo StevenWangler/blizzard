@@ -14,6 +14,7 @@ import {
 } from '@phosphor-icons/react'
 import type { IconProps } from '@phosphor-icons/react'
 import type { AgentPrediction } from '@/types/agentPrediction'
+import { fetchData } from '@/lib/dataPath'
 
 const CONFIDENCE_LABELS: Record<AgentPrediction['final']['confidence_level'], string> = {
   very_low: 'Very Low',
@@ -174,11 +175,7 @@ export function AgentsView() {
 
     const fetchPrediction = async () => {
       try {
-        const response = await fetch('/data/prediction.json')
-        if (!response.ok) {
-          throw new Error('Prediction data unavailable')
-        }
-        const data: AgentPrediction = await response.json()
+        const data = await fetchData<AgentPrediction>('prediction.json')
         if (!active) return
         setPrediction(data)
         setError(null)
