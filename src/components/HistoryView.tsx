@@ -11,6 +11,8 @@ interface HistoricalEvent {
   eventName: string
   modelPrediction: number | null
   actualOutcome: boolean | null
+  noSchoolScheduled: boolean
+  noSchoolReason?: string
   notes: string
   recordedBy: string
   recordedAt: string
@@ -19,6 +21,22 @@ interface HistoricalEvent {
 }
 
 const generateEventName = (entry: SnowDayOutcome): string => {
+  // Handle no-school days (weekends, holidays)
+  if (entry.noSchoolScheduled) {
+    const reasonLabels: Record<string, string> = {
+      'weekend': 'Weekend',
+      'thanksgiving': 'Thanksgiving Break',
+      'winter-break': 'Winter Break',
+      'spring-break': 'Spring Break',
+      'teacher-day': 'Teacher In-Service',
+      'mlk-day': 'MLK Day',
+      'presidents-day': 'Presidents Day',
+      'memorial-day': 'Memorial Day',
+      'other': 'School Holiday'
+    }
+    return reasonLabels[entry.noSchoolReason || ''] || 'No School Scheduled'
+  }
+
   if (entry.source === 'seed') {
     const demoNames = [
       'January Blizzard',
@@ -53,6 +71,22 @@ const generateEventName = (entry: SnowDayOutcome): string => {
 const generateNotes = (entry: SnowDayOutcome): string => {
   if (entry.notes) return entry.notes
   
+  // Handle no-school days
+  if (entry.noSchoolScheduled) {
+    const reasonDescriptions: Record<string, string> = {
+      'weekend': 'No school on weekends - prediction tracked for reference only.',
+      'thanksgiving': 'School closed for Thanksgiving holiday.',
+      'winter-break': 'School closed for winter break.',
+      'spring-break': 'School closed for spring break.',
+      'teacher-day': 'No classes - teacher in-service day.',
+      'mlk-day': 'School closed for Martin Luther King Jr. Day.',
+      'presidents-day': 'School closed for Presidents Day.',
+      'memorial-day': 'School closed for Memorial Day.',
+      'other': 'School closed for scheduled holiday.'
+    }
+    return reasonDescriptions[entry.noSchoolReason || ''] || 'No school scheduled for this day.'
+  }
+  
   if (entry.actualSnowDay === true) {
     return entry.modelProbability && entry.modelProbability >= 50
       ? 'Model called the closure correctly and confidence tracked well.'
@@ -74,6 +108,8 @@ const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
     eventName: generateEventName(entry),
     modelPrediction: typeof entry.modelProbability === 'number' ? entry.modelProbability : null,
     actualOutcome: entry.actualSnowDay ?? null,
+    noSchoolScheduled: entry.noSchoolScheduled ?? false,
+    noSchoolReason: entry.noSchoolReason,
     notes: generateNotes(entry),
     recordedBy: entry.recordedBy,
     recordedAt: entry.recordedAt,
@@ -82,7 +118,8 @@ const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
   })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
-const getAccuracyBadge = (prediction: number | null, outcome: boolean | null) => {
+const getAccuracyBadge = (prediction: number | null, outcome: boolean | null, noSchoolScheduled: boolean) => {
+  if (noSchoolScheduled) return { text: 'N/A', variant: 'outline' as const }
   if (outcome === null) return { text: 'Pending', variant: 'outline' as const }
   if (prediction === null) return { text: 'Unknown', variant: 'outline' as const }
   const predictedClosure = prediction >= 50
@@ -95,7 +132,8 @@ const getAccuracyBadge = (prediction: number | null, outcome: boolean | null) =>
   return { text: 'Miss', variant: 'destructive' as const }
 }
 
-const calculateBrierScore = (prediction: number | null, outcome: boolean | null) => {
+const calculateBrierScore = (prediction: number | null, outcome: boolean | null, noSchoolScheduled: boolean) => {
+  if (noSchoolScheduled) return null
   if (prediction === null || outcome === null) return null
   const prob = prediction / 100
   return Math.pow(prob - (outcome ? 1 : 0), 2)
@@ -130,13 +168,17 @@ export function HistoryView() {
       return {
         totalEvents: 0,
         snowDays: 0,
+        noSchoolDays: 0,
         modelAccuracy: 0,
         realEvents: 0,
         demoEvents: 0
       }
     }
 
-    const completedEvents = events.filter(e => e.actualOutcome !== null)
+    // Filter out no-school days for accuracy calculations
+    const schoolDayEvents = events.filter(e => !e.noSchoolScheduled)
+    const completedEvents = schoolDayEvents.filter(e => e.actualOutcome !== null)
+    const noSchoolDays = events.filter(e => e.noSchoolScheduled).length
     const snowDays = completedEvents.filter(e => e.actualOutcome === true).length
     const realEvents = completedEvents.filter(e => e.source !== 'seed').length
     const demoEvents = completedEvents.length - realEvents
@@ -146,6 +188,7 @@ export function HistoryView() {
     return {
       totalEvents: events.length,
       snowDays,
+      noSchoolDays,
       modelAccuracy: withProb.length ? Math.round((modelCorrect / withProb.length) * 100) : 0,
       realEvents,
       demoEvents
@@ -166,7 +209,7 @@ export function HistoryView() {
     <div className="space-y-6">
 
       {seasonStats.totalEvents > 0 && (
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid md:grid-cols-5 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-primary">{seasonStats.totalEvents}</div>
@@ -179,9 +222,16 @@ export function HistoryView() {
               <p className="text-sm text-muted-foreground">Snow Days</p>
               {seasonStats.totalEvents > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {Math.round((seasonStats.snowDays / seasonStats.totalEvents) * 100)}% of logged events
+                  {Math.round((seasonStats.snowDays / (seasonStats.totalEvents - seasonStats.noSchoolDays)) * 100) || 0}% of school days
                 </p>
               )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <div className="text-2xl font-bold text-muted-foreground">{seasonStats.noSchoolDays}</div>
+              <p className="text-sm text-muted-foreground">Holidays/Weekends</p>
+              <p className="text-xs text-muted-foreground">Excluded from stats</p>
             </CardContent>
           </Card>
           <Card>
@@ -232,8 +282,8 @@ export function HistoryView() {
           ) : (
             <div className="space-y-4">
               {filteredEvents.map(event => {
-                const badge = getAccuracyBadge(event.modelPrediction, event.actualOutcome)
-                const brier = calculateBrierScore(event.modelPrediction, event.actualOutcome)
+                const badge = getAccuracyBadge(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
+                const brier = calculateBrierScore(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
                 return (
                   <Card key={`${event.date}-${event.recordedAt}`} className="p-4">
                     <div className="space-y-4">
@@ -254,9 +304,15 @@ export function HistoryView() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <Badge variant={event.actualOutcome === true ? 'destructive' : event.actualOutcome === false ? 'secondary' : 'outline'}>
-                            {event.actualOutcome === true ? 'Snow Day' : event.actualOutcome === false ? 'School Open' : 'Pending'}
-                          </Badge>
+                          {event.noSchoolScheduled ? (
+                            <Badge variant="outline" className="bg-muted">
+                              No School
+                            </Badge>
+                          ) : (
+                            <Badge variant={event.actualOutcome === true ? 'destructive' : event.actualOutcome === false ? 'secondary' : 'outline'}>
+                              {event.actualOutcome === true ? 'Snow Day' : event.actualOutcome === false ? 'School Open' : 'Pending'}
+                            </Badge>
+                          )}
                           {brier !== null && (
                             <p className="text-xs text-muted-foreground mt-1">Brier {brier.toFixed(3)}</p>
                           )}

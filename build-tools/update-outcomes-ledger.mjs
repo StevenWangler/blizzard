@@ -10,6 +10,7 @@ const dataDir = path.join(repoRoot, 'public', 'data')
 
 const eventDate = process.env.EVENT_DATE
 const outcome = process.env.OUTCOME
+const noSchoolReason = process.env.NO_SCHOOL_REASON || ''
 const notes = process.env.NOTES || ''
 const manualProbability = process.env.MANUAL_PROBABILITY
 const actor = process.env.GITHUB_ACTOR || 'unknown'
@@ -19,10 +20,12 @@ if (!eventDate) {
   process.exit(1)
 }
 
-if (!outcome || !['snow-day', 'school-open'].includes(outcome)) {
-  console.error('OUTCOME must be "snow-day" or "school-open".')
+if (!outcome || !['snow-day', 'school-open', 'no-school'].includes(outcome)) {
+  console.error('OUTCOME must be "snow-day", "school-open", or "no-school".')
   process.exit(1)
 }
+
+const isNoSchool = outcome === 'no-school'
 
 const outcomesPath = path.join(dataDir, 'outcomes.json')
 const summaryPath = path.join(dataDir, 'summary.json')
@@ -67,18 +70,28 @@ const buildEntry = async () => {
     predictionTimestamp = predictionTimestamp || prediction.timestamp || null
   }
 
-  return {
+  const entry = {
     date: eventDate,
     modelProbability: probability,
     studentPrediction: studentProb,
     confidence: confidence || null,
     predictionTimestamp,
-    actualSnowDay: outcome === 'snow-day',
+    actualSnowDay: isNoSchool ? null : outcome === 'snow-day',
     recordedAt: new Date().toISOString(),
     recordedBy: actor,
     notes: notes || undefined,
     source: 'workflow'
   }
+
+  // Add no-school fields if applicable
+  if (isNoSchool) {
+    entry.noSchoolScheduled = true
+    if (noSchoolReason) {
+      entry.noSchoolReason = noSchoolReason
+    }
+  }
+
+  return entry
 }
 
 const writeLedger = async () => {
@@ -106,7 +119,10 @@ const writeLedger = async () => {
   const json = JSON.stringify(normalized, null, 2)
   await writeFile(outcomesPath, `${json}\n`, 'utf8')
 
-  console.log(`Logged outcome for ${eventDate} (${entry.actualSnowDay ? 'snow day' : 'school open'})`)
+  const outcomeLabel = entry.noSchoolScheduled 
+    ? `no school${entry.noSchoolReason ? ` - ${entry.noSchoolReason}` : ''}`
+    : entry.actualSnowDay ? 'snow day' : 'school open'
+  console.log(`Logged outcome for ${eventDate} (${outcomeLabel})`)
 }
 
 writeLedger().catch(error => {
