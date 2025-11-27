@@ -33,6 +33,7 @@ import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { useNotifications } from '@/hooks/useNotifications'
 import { toast } from 'sonner'
 import { buildOutcomeStats, fetchOutcomeLedger } from '@/services/outcomes'
+import { fetchData } from '@/lib/dataPath'
 import type { OutcomeStats, SnowDayOutcome } from '@/services/outcomes'
 import type { AgentPrediction } from '@/types/agentPrediction'
 
@@ -80,27 +81,24 @@ export function EnhancedPredictionView() {
       
       // Try to load AI agent prediction first
       try {
-        const response = await fetch('/data/prediction.json')
-        if (response.ok) {
-          const data = await response.json()
-          setPrediction(data)
+        const data = await fetchData<AgentPrediction>('prediction.json')
+        setPrediction(data)
           
-          // Update weather theme based on agent analysis
-          if (data.meteorology) {
-            updateWeatherConditions(
-              data.meteorology.precipitation_analysis.total_snowfall_inches,
-              data.meteorology.wind_analysis.max_wind_speed_mph,
-              data.meteorology.visibility_analysis.minimum_visibility_miles
-            )
-          }
-          
-          // Check if we should send notification
-          if (data.final?.snow_day_probability) {
-            checkAndNotify(data.final.snow_day_probability, data.location)
-          }
-          
-          return
+        // Update weather theme based on agent analysis
+        if (data.meteorology) {
+          updateWeatherConditions(
+            data.meteorology.precipitation_analysis.total_snowfall_inches,
+            data.meteorology.wind_analysis.max_wind_speed_mph,
+            data.meteorology.visibility_analysis.minimum_visibility_miles
+          )
         }
+        
+        // Check if we should send notification
+        if (data.final?.snow_day_probability) {
+          checkAndNotify(data.final.snow_day_probability, data.location)
+        }
+        
+        return
       } catch (error) {
         console.log('Agent prediction not available, falling back to legacy weather service')
       }

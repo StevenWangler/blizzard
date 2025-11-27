@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Brain, CloudSnow, Eye, Wind, Warning } from '@phosphor-icons/react'
 import { Badge } from '@/components/ui/badge'
 import { WeatherService } from '@/services/weather'
+import { fetchData } from '@/lib/dataPath'
 
 interface PredictionPulseData {
   final?: {
@@ -46,10 +47,7 @@ export function ConditionPulse() {
       setLoading(true)
       setError(null)
 
-      const response = await fetch('/data/prediction.json')
-      if (!response.ok) throw new Error('AI prediction not available')
-
-      const data: PredictionPulseData = await response.json()
+      const data = await fetchData<PredictionPulseData>('prediction.json')
       setPulseItems(buildItemsFromPrediction(data))
     } catch (predictionError) {
       try {

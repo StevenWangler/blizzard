@@ -8,7 +8,8 @@
  * Designed to be executed by GitHub Actions on a schedule.
  * 
  * Usage:
- *   node build-tools/generate-prediction.mjs
+ *   node build-tools/generate-prediction.mjs          # Production (writes to public/data/)
+ *   node build-tools/generate-prediction.mjs --local  # Local development (writes to public/data/local/)
  * 
  * Environment Variables:
  *   - OPENAI_API_KEY: Required for agent system
@@ -26,10 +27,17 @@ import { z } from 'zod'
 // Load environment variables from .env file
 loadEnv()
 
+// Parse command line arguments
+const args = process.argv.slice(2)
+const isLocalMode = args.includes('--local') || args.includes('-l')
+
 // Enable SDK tracing for debugging and monitoring (false = tracing ON)
 setTracingDisabled(false)
 
 console.log('🚀 Starting Snow Day Prediction Generator (OpenAI Agents SDK)...')
+if (isLocalMode) {
+  console.log('📦 Running in LOCAL mode - output will be saved to public/data/local/')
+}
 
 // Check required environment variables
 const requiredEnvVars = ['OPENAI_API_KEY', 'VITE_WEATHER_API_KEY']
@@ -48,11 +56,13 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const projectRoot = join(__dirname, '..')
 
-// Configuration
+// Configuration - use local directory when in local mode
 const appConfig = {
   weatherApiKey: process.env.VITE_WEATHER_API_KEY,
   zipCode: process.env.VITE_ZIP_CODE || '49341',
-  outputDir: join(projectRoot, 'public', 'data'),
+  outputDir: isLocalMode 
+    ? join(projectRoot, 'public', 'data', 'local')
+    : join(projectRoot, 'public', 'data'),
   outputFile: 'prediction.json'
 }
 
