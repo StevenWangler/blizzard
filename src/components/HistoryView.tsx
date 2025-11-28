@@ -50,7 +50,8 @@ const generateEventName = (entry: SnowDayOutcome): string => {
     return demoNames[index]
   }
 
-  const date = new Date(entry.date)
+  // Add T12:00:00 to avoid timezone issues with date-only strings
+  const date = new Date(entry.date + 'T12:00:00')
   const monthName = date.toLocaleDateString('en-US', { month: 'long' })
   const prob = normalizeProbability(entry.modelProbability)
   
@@ -107,11 +108,12 @@ const generateNotes = (entry: SnowDayOutcome): string => {
 
 const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
   // Filter out future dates - history should only show past events
-  const today = new Date()
-  today.setHours(23, 59, 59, 999) // End of today
+  // Use local date comparison to avoid timezone issues with date-only strings
+  const now = new Date()
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
   
   return ledger
-    .filter(entry => new Date(entry.date) <= today)
+    .filter(entry => entry.date <= todayStr)
     .map(entry => ({
       date: entry.date,
       eventName: generateEventName(entry),
@@ -124,7 +126,7 @@ const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
       recordedAt: entry.recordedAt,
       confidence: entry.confidence ?? undefined,
       source: entry.source
-    })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    })).sort((a, b) => b.date.localeCompare(a.date))
 }
 
 const getAccuracyBadge = (prediction: number | null, outcome: boolean | null, noSchoolScheduled: boolean) => {
@@ -210,7 +212,7 @@ export function HistoryView() {
     return (
       event.eventName.toLowerCase().includes(term) ||
       event.notes.toLowerCase().includes(term) ||
-      new Date(event.date).toLocaleDateString().includes(term)
+      new Date(event.date + 'T12:00:00').toLocaleDateString().includes(term)
     )
   })
 
@@ -303,7 +305,7 @@ export function HistoryView() {
                             {event.eventName}
                           </h3>
                           <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
-                            <span>{new Date(event.date).toLocaleDateString(undefined, { 
+                            <span>{new Date(event.date + 'T12:00:00').toLocaleDateString(undefined, { 
                               weekday: 'long', 
                               year: 'numeric', 
                               month: 'long', 
