@@ -21,7 +21,7 @@ import {
   TreePalm,
   Warning
 } from '@phosphor-icons/react'
-import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome } from '@/services/outcomes'
+import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
 
 /** Get today's date in ISO format */
 const todayISO = () => new Date().toISOString().split('T')[0]
@@ -539,16 +539,19 @@ export function OutcomeRecorder() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {outcomes.slice().reverse().map(entry => (
+                    {outcomes.slice().reverse().map(entry => {
+                      const modelProb = normalizeProbability(entry.modelProbability)
+                      const rhsProb = normalizeProbability(entry.rhsPrediction)
+                      return (
                       <React.Fragment key={`${entry.date}-${entry.recordedAt}`}>
                       <TableRow>
                         <TableCell className="whitespace-nowrap font-medium">
                           {formatDate(entry.date)}
                         </TableCell>
                         <TableCell>
-                          {typeof entry.modelProbability === 'number' ? (
+                          {modelProb !== null ? (
                             <span className="flex items-center gap-1">
-                              {entry.modelProbability}%
+                              {modelProb}%
                               {entry.confidence && (
                                 <span className="text-xs text-muted-foreground">({entry.confidence})</span>
                               )}
@@ -556,7 +559,7 @@ export function OutcomeRecorder() {
                           ) : '—'}
                         </TableCell>
                         <TableCell>
-                          {typeof entry.rhsPrediction === 'number' ? `${entry.rhsPrediction}%` : '—'}
+                          {rhsProb !== null ? `${rhsProb}%` : '—'}
                         </TableCell>
                         <TableCell>
                           {entry.noSchoolScheduled ? (
@@ -677,7 +680,7 @@ export function OutcomeRecorder() {
                         </TableRow>
                       )}
                       </React.Fragment>
-                    ))}
+                    )})}
                   </TableBody>
                 </Table>
               </div>

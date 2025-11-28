@@ -10,7 +10,7 @@ import {
   Trophy, Robot, Users, Target, TrendUp, Lightning, Snowflake, 
   Crown, Medal, ChartLine, Fire
 } from '@phosphor-icons/react'
-import { fetchOutcomeLedger, SnowDayOutcome } from '@/services/outcomes'
+import { fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
 
 interface CompetitorStats {
   name: string
@@ -41,8 +41,8 @@ const calculateCompetitorStats = (
   name: string
 ): CompetitorStats => {
   const validOutcomes = outcomes.filter(o => {
-    const pred = getPrediction(o)
-    return typeof pred === 'number' && o.actualSnowDay !== null && o.actualSnowDay !== undefined && !o.noSchoolScheduled
+    const pred = normalizeProbability(getPrediction(o))
+    return pred !== null && o.actualSnowDay !== null && o.actualSnowDay !== undefined && !o.noSchoolScheduled
   })
 
   if (validOutcomes.length === 0) {
@@ -69,7 +69,7 @@ const calculateCompetitorStats = (
   let schoolOpenTotal = 0
 
   validOutcomes.forEach(o => {
-    const pred = getPrediction(o)!
+    const pred = normalizeProbability(getPrediction(o))!
     const actual = o.actualSnowDay!
     const predBool = pred >= 50
     const actualNum = actual ? 1 : 0
@@ -132,16 +132,18 @@ export function CompetitionView() {
 
   const headToHead = useMemo((): HeadToHeadRecord[] => {
     return outcomes
-      .filter(o => 
-        typeof o.modelProbability === 'number' && 
-        typeof o.rhsPrediction === 'number' &&
-        o.actualSnowDay !== null && 
-        o.actualSnowDay !== undefined &&
-        !o.noSchoolScheduled
-      )
+      .filter(o => {
+        const blizzard = normalizeProbability(o.modelProbability)
+        const rhs = normalizeProbability(o.rhsPrediction)
+        return blizzard !== null && 
+          rhs !== null &&
+          o.actualSnowDay !== null && 
+          o.actualSnowDay !== undefined &&
+          !o.noSchoolScheduled
+      })
       .map(o => {
-        const blizzard = o.modelProbability!
-        const rhs = o.rhsPrediction!
+        const blizzard = normalizeProbability(o.modelProbability)!
+        const rhs = normalizeProbability(o.rhsPrediction)!
         const actual = o.actualSnowDay!
         const actualNum = actual ? 100 : 0
         return {

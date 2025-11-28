@@ -76,3 +76,14 @@ jobs:
           git add public/data/outcomes.json
           git commit -m "Log outcome for ${EVENT_DATE:-${{ inputs.event_date }}}"
           git push
+
+      - name: Trigger site deployment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy.yml',
+              ref: 'main'
+            })
