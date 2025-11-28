@@ -206,17 +206,17 @@ export function HistoryView() {
   })
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative z-10">
 
       {seasonStats.totalEvents > 0 && (
         <div className="grid md:grid-cols-5 gap-5">
-          <Card>
+          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-primary">{seasonStats.totalEvents}</div>
               <p className="text-sm text-muted-foreground">Total Events</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-destructive">{seasonStats.snowDays}</div>
               <p className="text-sm text-muted-foreground">Snow Days</p>
@@ -227,20 +227,20 @@ export function HistoryView() {
               )}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-muted-foreground">{seasonStats.noSchoolDays}</div>
               <p className="text-sm text-muted-foreground">Holidays/Weekends</p>
               <p className="text-xs text-muted-foreground">Excluded from stats</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-accent">{seasonStats.modelAccuracy}%</div>
               <p className="text-sm text-muted-foreground">Model Accuracy</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-muted-foreground">{seasonStats.realEvents}</div>
               <p className="text-sm text-muted-foreground">Live Records</p>
@@ -249,11 +249,11 @@ export function HistoryView() {
         </div>
       )}
 
-      <Card>
+      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <CalendarBlank size={20} />
+              <CalendarBlank size={20} className="text-primary" />
               Event History
             </CardTitle>
             <div className="flex items-center gap-3">
@@ -285,7 +285,7 @@ export function HistoryView() {
                 const badge = getAccuracyBadge(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
                 const brier = calculateBrierScore(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
                 return (
-                  <Card key={`${event.date}-${event.recordedAt}`} className="p-5 sm:p-6">
+                  <Card key={`${event.date}-${event.recordedAt}`} className="rounded-xl border border-border/60 bg-card/80 p-5 sm:p-6 shadow-sm">
                     <div className="space-y-5">
                       <div className="flex items-start justify-between">
                         <div>

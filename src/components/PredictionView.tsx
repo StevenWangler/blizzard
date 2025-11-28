@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { CloudSnow, Thermometer, Wind, Eye, Warning } from '@phosphor-icons/react'
+import { CloudSnow, Thermometer, Wind, Eye, Warning, Clock } from '@phosphor-icons/react'
 import { WeatherService } from '@/services/weather'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
@@ -20,14 +20,60 @@ interface WeatherData {
   lastUpdated: string
 }
 
-const STALE_THRESHOLD_MS = 3 * 60 * 60 * 1000 // three hours
+// GitHub Actions schedule: 7 AM, 12 PM, 6 PM EST
+const REFRESH_TIMES_UTC = [12, 17, 23] // 12:00, 17:00, 23:00 UTC
+
+function getNextRefreshTime(): Date {
+  const now = new Date()
+  const currentUTCHour = now.getUTCHours()
+  const currentUTCMinutes = now.getUTCMinutes()
+  
+  // Find the next scheduled refresh time
+  for (const hour of REFRESH_TIMES_UTC) {
+    if (currentUTCHour < hour || (currentUTCHour === hour && currentUTCMinutes === 0)) {
+      const next = new Date(now)
+      next.setUTCHours(hour, 0, 0, 0)
+      return next
+    }
+  }
+  
+  // If past all today's times, next refresh is tomorrow at first scheduled time
+  const tomorrow = new Date(now)
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
+  tomorrow.setUTCHours(REFRESH_TIMES_UTC[0], 0, 0, 0)
+  return tomorrow
+}
+
+function formatTimeUntil(targetDate: Date): string {
+  const now = new Date()
+  const diffMs = targetDate.getTime() - now.getTime()
+  const diffMins = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMins / 60)
+  const remainingMins = diffMins % 60
+  
+  if (diffHours > 0) {
+    return `${diffHours}h ${remainingMins}m`
+  }
+  return `${remainingMins}m`
+}
 
 export function PredictionView() {
   const [weather, setWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [nextRefresh, setNextRefresh] = useState('')
   
   // Use weather theme hook
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
+
+  // Update next refresh countdown every minute
+  useEffect(() => {
+    const updateNextRefresh = () => {
+      setNextRefresh(formatTimeUntil(getNextRefreshTime()))
+    }
+    updateNextRefresh()
+    const interval = setInterval(updateNextRefresh, 60_000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     loadWeatherData()
@@ -85,8 +131,6 @@ export function PredictionView() {
   const verdict = getSnowDayVerdict(weather.modelProbability)
   const lastUpdatedDate = new Date(weather.lastUpdated)
   const formattedLastUpdated = lastUpdatedDate.toLocaleString()
-  const isStale = Date.now() - lastUpdatedDate.getTime() > STALE_THRESHOLD_MS
-  const staleWarning = isStale ? 'Weather data is over 3 hours old — conditions might have changed.' : null
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -96,10 +140,10 @@ export function PredictionView() {
         <p className="text-xs sm:text-sm text-muted-foreground">
           Last updated: {formattedLastUpdated}
         </p>
-        {staleWarning && (
-          <p className="text-xs sm:text-sm text-amber-600 flex items-center justify-center gap-1">
-            <Warning size={12} />
-            {staleWarning}
+        {nextRefresh && (
+          <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center gap-1">
+            <Clock size={12} />
+            Next update in {nextRefresh}
           </p>
         )}
       </div>
@@ -177,12 +221,6 @@ export function PredictionView() {
           <p className="text-xs text-muted-foreground mt-3 sm:mt-4">
             Last updated: {formattedLastUpdated}
           </p>
-          {staleWarning && (
-            <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-              <Warning size={12} />
-              {staleWarning}
-            </p>
-          )}
         </CardContent>
       </Card>
     </div>

@@ -10,6 +10,7 @@ import { SnowfallCanvas } from '@/components/SnowfallCanvas'
 import { AnimatedProbability } from '@/components/AnimatedProbability'
 import { NarrativeSummary } from '@/components/NarrativeSummary'
 import { ConditionPulse } from '@/components/ConditionPulse'
+import { Markdown } from '@/components/ui/markdown'
 import { 
   CloudSnow, 
   Thermometer, 
@@ -49,7 +50,42 @@ interface WeatherData {
   lastUpdated: string
 }
 
-const STALE_THRESHOLD_MS = 3 * 60 * 60 * 1000 // three hours
+// GitHub Actions schedule: 7 AM, 12 PM, 6 PM EST
+const REFRESH_TIMES_UTC = [12, 17, 23] // 12:00, 17:00, 23:00 UTC
+
+function getNextRefreshTime(): Date {
+  const now = new Date()
+  const currentUTCHour = now.getUTCHours()
+  const currentUTCMinutes = now.getUTCMinutes()
+  
+  // Find the next scheduled refresh time
+  for (const hour of REFRESH_TIMES_UTC) {
+    if (currentUTCHour < hour || (currentUTCHour === hour && currentUTCMinutes === 0)) {
+      const next = new Date(now)
+      next.setUTCHours(hour, 0, 0, 0)
+      return next
+    }
+  }
+  
+  // If past all today's times, next refresh is tomorrow at first scheduled time
+  const tomorrow = new Date(now)
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
+  tomorrow.setUTCHours(REFRESH_TIMES_UTC[0], 0, 0, 0)
+  return tomorrow
+}
+
+function formatTimeUntil(targetDate: Date): string {
+  const now = new Date()
+  const diffMs = targetDate.getTime() - now.getTime()
+  const diffMins = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMins / 60)
+  const remainingMins = diffMins % 60
+  
+  if (diffHours > 0) {
+    return `${diffHours}h ${remainingMins}m`
+  }
+  return `${remainingMins}m`
+}
 
 export function EnhancedPredictionView() {
   const [prediction, setPrediction] = useState<AgentPrediction | null>(null)
@@ -59,9 +95,9 @@ export function EnhancedPredictionView() {
   const [recentAverage, setRecentAverage] = useState<number | null>(null)
   const [trendError, setTrendError] = useState<string | null>(null)
   const [trendLoading, setTrendLoading] = useState(true)
-  const [lastUpdateMeta, setLastUpdateMeta] = useState<{ formatted: string; stale: boolean }>({
+  const [lastUpdateMeta, setLastUpdateMeta] = useState<{ formatted: string; nextRefresh: string }>({
     formatted: '',
-    stale: false
+    nextRefresh: ''
   })
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
@@ -81,7 +117,13 @@ export function EnhancedPredictionView() {
       
       // Try to load AI agent prediction first
       try {
+        console.log('[EnhancedPredictionView] Fetching prediction.json...')
         const data = await fetchData<AgentPrediction>('prediction.json')
+        console.log('[EnhancedPredictionView] Prediction loaded:', { 
+          probability: data.final?.snow_day_probability,
+          location: data.location,
+          hasMeteorology: !!data.meteorology 
+        })
         setPrediction(data)
           
         // Update weather theme based on agent analysis
@@ -100,6 +142,7 @@ export function EnhancedPredictionView() {
         
         return
       } catch (error) {
+        console.error('[EnhancedPredictionView] Prediction fetch failed:', error)
         console.log('Agent prediction not available, falling back to legacy weather service')
       }
       
@@ -150,6 +193,14 @@ export function EnhancedPredictionView() {
     } finally {
       setTrendLoading(false)
     }
+  }
+
+  // Normalize probability to 0-100 scale (handles both 0.32 and 32 formats)
+  const normalizeProbability = (value: number): number => {
+    if (value > 0 && value <= 1) {
+      return Math.round(value * 100)
+    }
+    return Math.round(value)
   }
 
   const getSnowDayVerdict = (probability: number) => {
@@ -228,7 +279,8 @@ export function EnhancedPredictionView() {
   }
 
   // Derive timeline + probability metadata up front so hooks stay stable
-  const probability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability ?? 0
+  const rawProbability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability ?? 0
+  const probability = normalizeProbability(rawProbability)
   const verdict = getSnowDayVerdict(probability)
   const lastUpdateInfo = useMemo(() => {
     if (prediction) {
@@ -243,14 +295,15 @@ export function EnhancedPredictionView() {
 
   useEffect(() => {
     if (!lastUpdateTime) {
-      setLastUpdateMeta({ formatted: '', stale: false })
+      setLastUpdateMeta({ formatted: '', nextRefresh: '' })
       return
     }
 
     const updateMeta = () => {
+      const nextRefreshDate = getNextRefreshTime()
       setLastUpdateMeta({
         formatted: new Date(lastUpdateTime).toLocaleString(),
-        stale: Date.now() - lastUpdateTime > STALE_THRESHOLD_MS
+        nextRefresh: formatTimeUntil(nextRefreshDate)
       })
     }
 
@@ -260,9 +313,7 @@ export function EnhancedPredictionView() {
   }, [lastUpdateTime])
 
   const timestampToShow = lastUpdateMeta.formatted || (lastUpdateInfo ? lastUpdateInfo.date.toLocaleString() : '')
-  const staleWarning = lastUpdateInfo && lastUpdateMeta.stale
-    ? 'This update is over 3 hours old — refresh for the latest conditions.'
-    : null
+  const nextRefreshDisplay = lastUpdateMeta.nextRefresh
 
   // Get snowfall data for canvas animation
   const snowfallIntensity = prediction?.meteorology?.precipitation_analysis?.total_snowfall_inches 
@@ -276,7 +327,7 @@ export function EnhancedPredictionView() {
 
   if (loading) {
     return (
-      <Card>
+      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <Brain size={32} className="animate-spin text-primary sm:w-12 sm:h-12" />
@@ -321,10 +372,10 @@ export function EnhancedPredictionView() {
             <p className="text-xs sm:text-sm text-muted-foreground">
               {lastUpdateInfo.label}: {timestampToShow}
             </p>
-            {staleWarning && (
-              <p className="text-xs sm:text-sm text-amber-600 flex items-center justify-center gap-1">
-                <Warning size={12} />
-                {staleWarning}
+            {nextRefreshDisplay && (
+              <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center gap-1">
+                <Clock size={12} />
+                Next update in {nextRefreshDisplay}
               </p>
             )}
           </>
@@ -337,7 +388,7 @@ export function EnhancedPredictionView() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Card className="text-center border-2 shadow-xl hover:shadow-2xl transition-shadow duration-300 bg-gradient-to-br from-card via-card to-primary/5">
+        <Card className="text-center rounded-2xl border-2 border-primary/10 shadow-xl hover:shadow-2xl transition-shadow duration-300 bg-background/80 backdrop-blur">
           <CardHeader className="pb-6">
             <CardTitle className="text-xl sm:text-2xl flex items-center justify-center gap-3">
               {prediction ? <Brain size={24} className="text-primary" /> : <CloudSnow size={24} className="text-primary" />}
@@ -368,13 +419,18 @@ export function EnhancedPredictionView() {
               <Brain size={16} className="text-primary" />
               {prediction ? 'AI Decision Rationale' : 'Weather Analysis'}
             </h4>
-            <p className="text-sm text-muted-foreground">
-              {prediction 
-                ? (prediction.final?.decision_rationale ?? 'No rationale available')
-                : fallbackWeather 
+            {prediction ? (
+              <Markdown 
+                content={prediction.final?.decision_rationale ?? 'No rationale available'} 
+                className="text-sm text-muted-foreground" 
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {fallbackWeather 
                   ? generateFallbackRationale(fallbackWeather)
                   : 'No rationale available'}
-            </p>
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -384,7 +440,7 @@ export function EnhancedPredictionView() {
 
       {prediction && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-primary/0 to-primary/10">
+          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardHeader className="space-y-3 p-6 sm:p-8 pb-2">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Sparkle size={18} className="text-primary" />
@@ -410,7 +466,7 @@ export function EnhancedPredictionView() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-xl border border-primary/20 p-4">
+                <div className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Season shift</p>
                   <p className="text-2xl font-semibold">
                     {(prediction.history?.seasonal_context?.seasonal_probability_adjustment ?? 0) >= 0 ? '+' : ''}
@@ -419,7 +475,7 @@ export function EnhancedPredictionView() {
                   </p>
                   <p className="text-xs text-muted-foreground">vs typical mid-season odds</p>
                 </div>
-                <div className="rounded-xl border border-primary/20 p-4">
+                <div className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Confidence</p>
                   <p className="text-lg font-semibold capitalize">{prediction.final?.confidence_level?.replace('_', ' ') ?? 'Unknown'}</p>
                   <p className="text-xs text-muted-foreground">Next update by {prediction.final?.next_evaluation_time ?? 'TBD'}</p>
@@ -441,10 +497,10 @@ export function EnhancedPredictionView() {
             </CardContent>
           </Card>
 
-          <Card className="border-primary/10">
+          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardHeader className="space-y-2">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <TrendUp size={18} />
+                <TrendUp size={18} className="text-primary" />
                 Today vs Season Trend
               </CardTitle>
               <p className="text-sm text-muted-foreground">
@@ -500,12 +556,12 @@ export function EnhancedPredictionView() {
 
                   {outcomeStats && (
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="rounded-lg border border-border/60 p-4">
+                      <div className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm">
                         <p className="text-xs uppercase text-muted-foreground">Directional accuracy</p>
                         <p className="text-xl font-semibold mt-1">{outcomeStats.directionalAccuracy}%</p>
                         <p className="text-xs text-muted-foreground mt-1">Based on ledgered days</p>
                       </div>
-                      <div className="rounded-lg border border-border/60 p-4">
+                      <div className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm">
                         <p className="text-xs uppercase text-muted-foreground">Avg probability</p>
                         <p className="text-xl font-semibold mt-1">{outcomeStats.avgProbability}%</p>
                         <p className="text-xs text-muted-foreground mt-1">Season-to-date</p>
@@ -524,10 +580,10 @@ export function EnhancedPredictionView() {
 
       {/* Detailed analysis tabs (only show if we have agent prediction) */}
       {prediction && (
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ChartBar size={20} />
+              <ChartBar size={20} className="text-primary" />
               Expert Analysis
             </CardTitle>
           </CardHeader>
@@ -818,10 +874,10 @@ export function EnhancedPredictionView() {
 
       {/* Recommendations section */}
       {prediction && prediction.final?.recommendations && (
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users size={20} />
+              <Users size={20} className="text-primary" />
               Recommendations
             </CardTitle>
           </CardHeader>

@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Markdown } from '@/components/ui/markdown'
 import {
   CloudSnow,
   Books,
@@ -137,7 +138,9 @@ const workflowSteps: WorkflowStep[] = [
 
 function formatPercent(value?: number | null): string {
   if (typeof value !== 'number') return '—'
-  return `${Math.round(value)}%`
+  // Normalize: if value is between 0 and 1 (exclusive), treat as decimal (e.g., 0.32 -> 32%)
+  const normalized = value > 0 && value <= 1 ? value * 100 : value
+  return `${Math.round(normalized)}%`
 }
 
 function formatDegrees(value?: number | null): string {
@@ -302,8 +305,8 @@ export function AgentsView() {
   const timestampLabel = formatTimestamp(prediction?.timestamp)
 
   return (
-    <div className="space-y-14">
-      <Card className="border-primary/30 bg-primary/5 gap-10">
+    <div className="space-y-14 relative z-10">
+      <Card className="rounded-2xl border border-primary/20 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 gap-10">
         <CardHeader className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-primary">Meet the automation crew</p>
@@ -362,7 +365,7 @@ export function AgentsView() {
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               className="h-full"
             >
-              <Card className="h-full flex flex-col border-border/70 bg-background/80 gap-6">
+              <Card className="h-full flex flex-col rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 gap-6">
                 <CardHeader className="space-y-4">
                   <div className="flex items-center gap-3.5">
                     <div className={`rounded-2xl bg-gradient-to-br ${agent.gradient} p-3 text-primary`}>
@@ -402,7 +405,7 @@ export function AgentsView() {
                       <div className="space-y-3">
                         <p className="text-xs uppercase tracking-wide text-muted-foreground">Latest dispatch</p>
                         <p className="text-sm font-medium text-primary">{insight.headline}</p>
-                        <p className="text-sm text-muted-foreground">{insight.summary}</p>
+                        <Markdown content={insight.summary} className="text-sm text-muted-foreground" />
                       </div>
                       {insight.callouts && insight.callouts.length > 0 && (
                         <div className="grid gap-5 sm:grid-cols-2">
@@ -451,7 +454,7 @@ export function AgentsView() {
         })}
       </div>
 
-      <Card className="bg-background/80 gap-12">
+      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 gap-12">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Sparkle size={20} className="text-primary" />
@@ -466,7 +469,7 @@ export function AgentsView() {
             {workflowSteps.map((step, index) => {
               const StepIcon = step.icon
               return (
-                <div key={step.title} className="rounded-2xl border border-border/70 bg-muted/20 p-5 space-y-3">
+                <div key={step.title} className="rounded-xl border border-border/60 bg-card/80 p-5 space-y-3 shadow-sm">
                   <div className="flex items-start gap-3">
                     <div className="rounded-xl bg-primary/10 p-2.5 text-primary">
                       <StepIcon size={20} weight="duotone" />

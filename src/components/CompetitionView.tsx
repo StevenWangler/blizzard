@@ -241,9 +241,9 @@ export function CompetitionView() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative z-10">
       {/* Hero Section - Current Leader */}
-      <Card className={`relative overflow-hidden ${
+      <Card className={`relative overflow-hidden rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 ${
         leader === 'blizzard' ? 'bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-background' :
         leader === 'rhs' ? 'bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-background' :
         'bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-background'
@@ -383,10 +383,10 @@ export function CompetitionView() {
       {/* Charts Row */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Radar Chart - Skills Comparison */}
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Target size={20} />
+              <Target size={20} className="text-primary" />
               Skills Comparison
             </CardTitle>
           </CardHeader>
@@ -421,10 +421,10 @@ export function CompetitionView() {
         </Card>
 
         {/* Win Trend Over Time */}
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendUp size={20} />
+              <TrendUp size={20} className="text-primary" />
               Cumulative Wins
             </CardTitle>
           </CardHeader>
@@ -461,10 +461,10 @@ export function CompetitionView() {
       </div>
 
       {/* Head-to-Head History */}
-      <Card>
+      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Lightning size={20} weight="fill" />
+            <Lightning size={20} weight="fill" className="text-primary" />
             Head-to-Head Matchups
           </CardTitle>
           <p className="text-sm text-muted-foreground">
@@ -476,7 +476,7 @@ export function CompetitionView() {
             {headToHead.slice().reverse().map((match, idx) => (
               <div 
                 key={match.date} 
-                className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card/80 shadow-sm hover:bg-card transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <div className="text-center min-w-[80px]">
@@ -533,14 +533,14 @@ export function CompetitionView() {
 
       {/* Fun Stats */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardContent className="pt-6 text-center">
             <Fire size={32} className="mx-auto mb-2 text-red-500" weight="fill" />
             <div className="text-2xl font-bold">{headToHead.length}</div>
             <div className="text-sm text-muted-foreground">Total Matchups</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardContent className="pt-6 text-center">
             <ChartLine size={32} className="mx-auto mb-2 text-blue-500" />
             <div className="text-2xl font-bold">
@@ -549,7 +549,7 @@ export function CompetitionView() {
             <div className="text-sm text-muted-foreground">Accuracy Gap</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardContent className="pt-6 text-center">
             <Snowflake size={32} className="mx-auto mb-2 text-cyan-500" weight="fill" />
             <div className="text-2xl font-bold">
@@ -558,7 +558,7 @@ export function CompetitionView() {
             <div className="text-sm text-muted-foreground">Snow Days Predicted</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardContent className="pt-6 text-center">
             <Trophy size={32} className="mx-auto mb-2 text-yellow-500" weight="fill" />
             <div className="text-2xl font-bold">

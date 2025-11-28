@@ -178,23 +178,23 @@ export function AccuracyView() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative z-10">
 
       {pendingRecords.length > 0 && (
-        <Card className="bg-yellow-50 border-yellow-200">
+        <Card className="rounded-2xl border border-amber-500/30 bg-background/80 backdrop-blur shadow-lg shadow-amber-500/5">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <Calendar size={20} className="text-yellow-600 mt-0.5" />
+              <Calendar size={20} className="text-amber-500 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-sm text-yellow-800">
+                <h3 className="font-semibold text-sm">
                   Pending Outcomes ({pendingRecords.length})
                 </h3>
-                <p className="text-xs text-yellow-700 mb-3">
+                <p className="text-xs text-muted-foreground mb-3">
                   These predictions need real-world outcomes logged.
                 </p>
                 <div className="space-y-2">
                   {pendingRecords.map(record => (
-                    <div key={record.date} className="flex items-center justify-between p-2 bg-white rounded border">
+                    <div key={record.date} className="flex items-center justify-between p-2 rounded-lg border border-border/60 bg-card/80">
                       <div className="text-sm">
                         <span className="font-medium mr-2">{new Date(record.date).toLocaleDateString()}</span>
                         <span className="text-muted-foreground">Model: {record.modelPrediction}%</span>
@@ -205,7 +205,7 @@ export function AccuracyView() {
                             size="sm" 
                             variant="outline"
                             onClick={openRecorderTab}
-                            className="text-xs bg-yellow-100 hover:bg-yellow-200 border-yellow-300"
+                            className="text-xs"
                           >
                             Open Recorder
                           </Button>
@@ -239,10 +239,10 @@ export function AccuracyView() {
       )}
 
       <div className="grid md:grid-cols-2 gap-6">
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Target size={20} />
+              <Target size={20} className="text-primary" />
               Model Performance
             </CardTitle>
           </CardHeader>
@@ -263,10 +263,10 @@ export function AccuracyView() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Clock size={20} />
+              <Clock size={20} className="text-primary" />
               Prediction Volume
             </CardTitle>
           </CardHeader>
@@ -292,7 +292,7 @@ export function AccuracyView() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardHeader>
             <CardTitle>Brier Score Trend</CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -326,7 +326,7 @@ export function AccuracyView() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardHeader>
             <CardTitle>Calibration Chart</CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -352,7 +352,7 @@ export function AccuracyView() {
         </Card>
       </div>
 
-      <Card>
+      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader>
           <CardTitle>Recent Predictions</CardTitle>
           <p className="text-sm text-muted-foreground">
@@ -363,7 +363,7 @@ export function AccuracyView() {
           <div className="space-y-3">
             {completedOutcomes.length > 0 ? (
               completedOutcomes.map((record) => (
-                <div key={`${record.date}-${record.recordedAt}`} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <div key={`${record.date}-${record.recordedAt}`} className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card/80 shadow-sm">
                   <div className="flex items-center gap-4">
                     <div className="text-sm font-medium">
                       {new Date(record.date).toLocaleDateString(undefined, { 

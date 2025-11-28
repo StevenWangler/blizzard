@@ -1,3 +1,5 @@
+import { fetchData } from '@/lib/dataPath'
+
 export interface SnowDayOutcome {
   date: string
   modelProbability?: number | null
@@ -25,30 +27,19 @@ export interface OutcomeStats {
   directionalAccuracy: number
 }
 
-const OUTCOMES_ENDPOINT = '/data/outcomes.json'
-
-const safeParse = async (response: Response) => {
-  const text = await response.text()
-  try {
-    return JSON.parse(text)
-  } catch (error) {
-    throw new Error(`Unable to parse outcomes.json: ${error instanceof Error ? error.message : String(error)}`)
-  }
-}
-
 export async function fetchOutcomeLedger(options?: { bustCache?: boolean }): Promise<SnowDayOutcome[]> {
-  const cacheBust = options?.bustCache ? `?t=${Date.now()}` : ''
-  const response = await fetch(`${OUTCOMES_ENDPOINT}${cacheBust}`, {
-    cache: 'no-store'
-  })
-
-  if (!response.ok) {
+  try {
+    // fetchData handles local vs production paths automatically
+    // Add cache busting via a query param if needed (fetchData doesn't handle this)
+    const payload = await fetchData<unknown>('outcomes.json', {
+      cache: options?.bustCache ? 'no-store' : 'default'
+    })
+    if (!Array.isArray(payload)) return []
+    return payload as SnowDayOutcome[]
+  } catch (error) {
+    console.error('Failed to load outcome ledger:', error)
     throw new Error('Failed to load outcome ledger')
   }
-
-  const payload = await safeParse(response)
-  if (!Array.isArray(payload)) return []
-  return payload as SnowDayOutcome[]
 }
 
 export function findOutcomeByDate(outcomes: SnowDayOutcome[], date: string): SnowDayOutcome | undefined {
