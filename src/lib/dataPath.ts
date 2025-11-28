@@ -56,7 +56,9 @@ export async function fetchData<T>(filename: string, options?: RequestInit): Pro
     const localPath = `${DATA_PATHS.local}/${filename}`
     try {
       const localResponse = await fetch(localPath, options)
-      if (localResponse.ok) {
+      // Check if response is OK AND is actually JSON (not an HTML fallback)
+      const contentType = localResponse.headers.get('content-type')
+      if (localResponse.ok && contentType?.includes('application/json')) {
         console.log(`[DataPath] Using local data: ${localPath}`)
         return localResponse.json()
       }

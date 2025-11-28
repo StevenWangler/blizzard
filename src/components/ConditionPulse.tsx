@@ -62,8 +62,17 @@ export function ConditionPulse() {
     }
   }
 
+  // Normalize probability to 0-100 scale (handles both 0.32 and 32 formats)
+  const normalizeProbability = (value: number): number => {
+    if (value > 0 && value <= 1) {
+      return Math.round(value * 100)
+    }
+    return Math.round(value)
+  }
+
   const buildItemsFromPrediction = (data: PredictionPulseData): PulseItem[] => {
-    const probability = data.final?.snow_day_probability ?? null
+    const rawProbability = data.final?.snow_day_probability ?? null
+    const probability = rawProbability !== null ? normalizeProbability(rawProbability) : null
     const primaryFactor = data.final?.primary_factors?.[0]
     const snowfall = data.meteorology?.precipitation_analysis?.total_snowfall_inches ?? null
     const wind = data.meteorology?.wind_analysis?.max_wind_speed_mph ?? null

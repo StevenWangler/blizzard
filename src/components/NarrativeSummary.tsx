@@ -64,7 +64,7 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
     >
-      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader className="px-6 sm:px-8 pt-6 sm:pt-8 pb-3">
           <CardTitle className="flex items-center gap-2.5 text-lg">
             <Sparkle size={20} weight="duotone" className="text-primary" />

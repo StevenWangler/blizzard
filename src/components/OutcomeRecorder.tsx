@@ -226,10 +226,10 @@ export function OutcomeRecorder() {
   const isFormComplete = form.outcome !== null && (form.outcome !== 'no-school' || form.noSchoolReason)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative z-10">
       {/* Pending Outcomes Alert */}
       {pendingDates.length > 0 && (
-        <Card className="border-amber-500/50 bg-amber-500/5">
+        <Card className="rounded-2xl border border-amber-500/30 bg-background/80 backdrop-blur shadow-lg shadow-amber-500/5">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
               <Warning size={20} className="text-amber-500 mt-0.5 flex-shrink-0" />
@@ -255,7 +255,7 @@ export function OutcomeRecorder() {
       )}
 
       {/* Quick Record Card */}
-      <Card>
+      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
@@ -454,7 +454,7 @@ export function OutcomeRecorder() {
 
       {/* How it works - collapsed by default for returning users */}
       <Collapsible>
-        <Card>
+        <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
               <CardTitle className="flex items-center justify-between text-base">
@@ -485,7 +485,7 @@ export function OutcomeRecorder() {
       </Collapsible>
 
       {/* Logged Outcomes Table */}
-      <Card>
+      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ListChecks size={20} />
