@@ -891,7 +891,7 @@ export function EnhancedPredictionView() {
                   {prediction.final?.recommendations?.for_schools?.map((rec, index) => (
                     <li key={index} className="flex items-start gap-2 text-sm">
                       <span className="text-primary">•</span>
-                      <span>{rec}</span>
+                      <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
                     </li>
                   ))}
                 </ul>
@@ -902,7 +902,7 @@ export function EnhancedPredictionView() {
                   {prediction.final?.recommendations?.for_residents?.map((rec, index) => (
                     <li key={index} className="flex items-start gap-2.5 text-sm">
                       <span className="text-primary">•</span>
-                      <span>{rec}</span>
+                      <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
                     </li>
                   ))}
                 </ul>
@@ -913,7 +913,7 @@ export function EnhancedPredictionView() {
                   {prediction.final?.recommendations?.for_authorities?.map((rec, index) => (
                     <li key={index} className="flex items-start gap-2.5 text-sm">
                       <span className="text-primary">•</span>
-                      <span>{rec}</span>
+                      <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
                     </li>
                   ))}
                 </ul>
