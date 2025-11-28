@@ -106,19 +106,25 @@ const generateNotes = (entry: SnowDayOutcome): string => {
 }
 
 const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
-  return ledger.map(entry => ({
-    date: entry.date,
-    eventName: generateEventName(entry),
-    modelPrediction: normalizeProbability(entry.modelProbability),
-    actualOutcome: entry.actualSnowDay ?? null,
-    noSchoolScheduled: entry.noSchoolScheduled ?? false,
-    noSchoolReason: entry.noSchoolReason,
-    notes: generateNotes(entry),
-    recordedBy: entry.recordedBy,
-    recordedAt: entry.recordedAt,
-    confidence: entry.confidence ?? undefined,
-    source: entry.source
-  })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  // Filter out future dates - history should only show past events
+  const today = new Date()
+  today.setHours(23, 59, 59, 999) // End of today
+  
+  return ledger
+    .filter(entry => new Date(entry.date) <= today)
+    .map(entry => ({
+      date: entry.date,
+      eventName: generateEventName(entry),
+      modelPrediction: normalizeProbability(entry.modelProbability),
+      actualOutcome: entry.actualSnowDay ?? null,
+      noSchoolScheduled: entry.noSchoolScheduled ?? false,
+      noSchoolReason: entry.noSchoolReason,
+      notes: generateNotes(entry),
+      recordedBy: entry.recordedBy,
+      recordedAt: entry.recordedAt,
+      confidence: entry.confidence ?? undefined,
+      source: entry.source
+    })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
 const getAccuracyBadge = (prediction: number | null, outcome: boolean | null, noSchoolScheduled: boolean) => {
