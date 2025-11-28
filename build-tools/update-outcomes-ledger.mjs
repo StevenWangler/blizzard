@@ -59,17 +59,27 @@ const buildEntry = async () => {
   let probability = null
   let confidence = null
   let predictionTimestamp = null
+  let targetDate = null
 
   if (summary) {
     probability = sanitizeProbability(summary.probability)
     confidence = summary.confidence || null
     predictionTimestamp = summary.timestamp || null
+    // Use targetDate (school day being predicted) if available
+    targetDate = summary.targetDate || null
   }
 
   if (!probability && prediction?.final) {
     probability = sanitizeProbability(prediction.final.snow_day_probability)
     confidence = confidence || prediction.final.confidence_level || null
     predictionTimestamp = predictionTimestamp || prediction.timestamp || null
+    targetDate = targetDate || prediction.targetDate || null
+  }
+
+  // Validate that the event date matches the prediction's target date (if available)
+  if (targetDate && targetDate !== eventDate) {
+    console.warn(`Warning: Event date (${eventDate}) doesn't match prediction target date (${targetDate})`)
+    console.warn('The prediction may have been for a different school day.')
   }
 
   const entry = {
