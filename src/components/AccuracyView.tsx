@@ -46,7 +46,12 @@ export function AccuracyView() {
       const hydrateFromSummary = async () => {
         try {
           const summary = await fetchData<Record<string, unknown>>('summary.json', { cache: 'no-store' })
-          const date = summary.timestamp ? String(summary.timestamp).split('T')[0] : todayISO()
+          // Use targetDate (the school day being predicted) instead of timestamp (when prediction was made)
+          const date = summary.targetDate 
+            ? String(summary.targetDate) 
+            : summary.timestamp 
+              ? String(summary.timestamp).split('T')[0] 
+              : todayISO()
           const rawProb = summary.probability ?? (summary.final as Record<string, unknown>)?.snow_day_probability ?? 0
           setPredictionMeta({
             date,
@@ -62,7 +67,12 @@ export function AccuracyView() {
       const hydrateFromPrediction = async () => {
         try {
           const prediction = await fetchData<Record<string, unknown>>('prediction.json', { cache: 'no-store' })
-          const date = prediction.timestamp ? String(prediction.timestamp).split('T')[0] : todayISO()
+          // Use targetDate (the school day being predicted) instead of timestamp (when prediction was made)
+          const date = prediction.targetDate 
+            ? String(prediction.targetDate) 
+            : prediction.timestamp 
+              ? String(prediction.timestamp).split('T')[0] 
+              : todayISO()
           const rawProb = (prediction.final as Record<string, unknown>)?.snow_day_probability ?? 0
           setPredictionMeta({
             date,

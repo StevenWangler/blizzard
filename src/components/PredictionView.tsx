@@ -150,7 +150,7 @@ export function PredictionView() {
       
       <Card className="text-center">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl sm:text-2xl">Tomorrow's Snow Day Probability</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl">Next School Day's Snow Day Probability</CardTitle>
           <p className="text-muted-foreground text-sm sm:text-base">Based on weather conditions for Rockford, MI</p>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6">

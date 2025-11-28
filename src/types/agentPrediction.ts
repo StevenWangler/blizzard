@@ -97,5 +97,8 @@ export interface AgentPrediction {
     next_evaluation_time: string
   }
   timestamp: string
+  targetDate?: string
+  targetDayName?: string
+  daysAhead?: number
   location: string
 }
