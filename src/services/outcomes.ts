@@ -46,6 +46,19 @@ export function findOutcomeByDate(outcomes: SnowDayOutcome[], date: string): Sno
   return outcomes.find(entry => entry.date === date)
 }
 
+/**
+ * Normalize probability to 0-100 scale.
+ * Handles both 0-1 scale (e.g., 0.18) and 0-100 scale (e.g., 18) values.
+ */
+export function normalizeProbability(value: number | null | undefined): number | null {
+  if (value === null || value === undefined) return null
+  const num = Number(value)
+  if (Number.isNaN(num) || !Number.isFinite(num)) return null
+  // If value is between 0 and 1 (exclusive of 1), treat as 0-1 scale
+  const normalized = (num > 0 && num <= 1) ? num * 100 : num
+  return Math.max(0, Math.min(100, Math.round(normalized)))
+}
+
 export function buildOutcomeStats(outcomes: SnowDayOutcome[]): OutcomeStats {
   if (!outcomes || outcomes.length === 0) {
     return {
@@ -64,7 +77,7 @@ export function buildOutcomeStats(outcomes: SnowDayOutcome[]): OutcomeStats {
   const openDays = completed.length - snowDays
 
   const probabilityValues = completed
-    .map(entry => (typeof entry.modelProbability === 'number' ? entry.modelProbability : null))
+    .map(entry => normalizeProbability(entry.modelProbability))
     .filter((value): value is number => value !== null)
 
   const avgProbability = probabilityValues.length > 0
@@ -72,8 +85,9 @@ export function buildOutcomeStats(outcomes: SnowDayOutcome[]): OutcomeStats {
     : 0
 
   const directionalCorrect = completed.filter(entry => {
-    if (typeof entry.modelProbability !== 'number') return false
-    const predictedSnowDay = entry.modelProbability >= 50
+    const prob = normalizeProbability(entry.modelProbability)
+    if (prob === null) return false
+    const predictedSnowDay = prob >= 50
     return predictedSnowDay === entry.actualSnowDay
   }).length
 
@@ -83,10 +97,10 @@ export function buildOutcomeStats(outcomes: SnowDayOutcome[]): OutcomeStats {
 
   const brierScores = completed
     .map(entry => {
-      if (typeof entry.modelProbability !== 'number') return null
-      const prob = entry.modelProbability / 100
+      const prob = normalizeProbability(entry.modelProbability)
+      if (prob === null) return null
       const actual = entry.actualSnowDay ? 1 : 0
-      return Math.pow(prob - actual, 2)
+      return Math.pow(prob / 100 - actual, 2)
     })
     .filter((score): score is number => typeof score === 'number')
 

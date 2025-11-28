@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { Target, Clock, Database, Warning, ArrowsClockwise, Calendar } from '@phosphor-icons/react'
-import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome } from '@/services/outcomes'
+import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { fetchData } from '@/lib/dataPath'
 
@@ -15,12 +15,6 @@ interface PredictionMeta {
 }
 
 const todayISO = () => new Date().toISOString().split('T')[0]
-
-const normalizeProbability = (value: unknown) => {
-  const num = Number(value)
-  if (Number.isNaN(num)) return 0
-  return Math.max(0, Math.min(100, Math.round(num)))
-}
 
 export function AccuracyView() {
   const [outcomes, setOutcomes] = useState<SnowDayOutcome[]>([])
@@ -53,9 +47,10 @@ export function AccuracyView() {
         try {
           const summary = await fetchData<Record<string, unknown>>('summary.json', { cache: 'no-store' })
           const date = summary.timestamp ? String(summary.timestamp).split('T')[0] : todayISO()
+          const rawProb = summary.probability ?? (summary.final as Record<string, unknown>)?.snow_day_probability ?? 0
           setPredictionMeta({
             date,
-            modelPrediction: normalizeProbability(summary.probability ?? (summary.final as Record<string, unknown>)?.snow_day_probability ?? 0),
+            modelPrediction: normalizeProbability(rawProb as number) ?? 0,
             confidence: (summary.confidence ?? (summary.final as Record<string, unknown>)?.confidence_level ?? null) as string | null
           })
           return true
@@ -68,9 +63,10 @@ export function AccuracyView() {
         try {
           const prediction = await fetchData<Record<string, unknown>>('prediction.json', { cache: 'no-store' })
           const date = prediction.timestamp ? String(prediction.timestamp).split('T')[0] : todayISO()
+          const rawProb = (prediction.final as Record<string, unknown>)?.snow_day_probability ?? 0
           setPredictionMeta({
             date,
-            modelPrediction: normalizeProbability((prediction.final as Record<string, unknown>)?.snow_day_probability ?? 0),
+            modelPrediction: normalizeProbability(rawProb as number) ?? 0,
             confidence: ((prediction.final as Record<string, unknown>)?.confidence_level ?? null) as string | null
           })
         } catch {
@@ -112,17 +108,19 @@ export function AccuracyView() {
 
   const calibrationData = useMemo(() => {
     if (!outcomes || outcomes.length === 0) return []
-    const completed = outcomes.filter(entry => 
-      typeof entry.modelProbability === 'number' && 
-      entry.actualSnowDay !== null && 
-      entry.actualSnowDay !== undefined
-    )
+    const completed = outcomes.filter(entry => {
+      const prob = normalizeProbability(entry.modelProbability)
+      return prob !== null && 
+        entry.actualSnowDay !== null && 
+        entry.actualSnowDay !== undefined
+    })
     if (completed.length === 0) return []
 
     const buckets = Array(10).fill(0).map(() => ({ predictions: 0, outcomes: 0 }))
 
     completed.forEach(entry => {
-      const bucket = Math.min(Math.floor((entry.modelProbability || 0) / 10), 9)
+      const prob = normalizeProbability(entry.modelProbability) ?? 0
+      const bucket = Math.min(Math.floor(prob / 10), 9)
       buckets[bucket].predictions++
       buckets[bucket].outcomes += entry.actualSnowDay ? 1 : 0
     })
@@ -139,16 +137,17 @@ export function AccuracyView() {
 
   const recentTrend = useMemo(() => {
     const trendSource = outcomes
-      .filter(entry => 
-        typeof entry.modelProbability === 'number' && 
-        entry.actualSnowDay !== null && 
-        entry.actualSnowDay !== undefined
-      )
+      .filter(entry => {
+        const prob = normalizeProbability(entry.modelProbability)
+        return prob !== null && 
+          entry.actualSnowDay !== null && 
+          entry.actualSnowDay !== undefined
+      })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(-7)
 
     return trendSource.map(entry => {
-      const prob = typeof entry.modelProbability === 'number' ? entry.modelProbability : 0
+      const prob = normalizeProbability(entry.modelProbability) ?? 0
       const actual = entry.actualSnowDay ? 1 : 0
       const brier = Math.pow(prob / 100 - actual, 2)
       return {
@@ -162,9 +161,9 @@ export function AccuracyView() {
 
   const completedOutcomes = useMemo(() => {
     return outcomes.map(entry => {
-      const prob = typeof entry.modelProbability === 'number' ? entry.modelProbability : null
+      const prob = normalizeProbability(entry.modelProbability)
       const hasOutcome = entry.actualSnowDay !== null && entry.actualSnowDay !== undefined
-      const brier = (typeof prob === 'number' && hasOutcome) 
+      const brier = (prob !== null && hasOutcome) 
         ? Math.pow(prob / 100 - (entry.actualSnowDay ? 1 : 0), 2) 
         : null
       return { ...entry, modelPrediction: prob, modelBrier: brier }

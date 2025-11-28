@@ -46,7 +46,9 @@ const sanitizeProbability = (value) => {
   const num = Number(value)
   if (Number.isNaN(num)) return null
   if (!Number.isFinite(num)) return null
-  return Math.max(0, Math.min(100, Math.round(num)))
+  // Normalize 0-1 scale to 0-100 (e.g., 0.18 → 18)
+  const normalized = (num > 0 && num <= 1) ? num * 100 : num
+  return Math.max(0, Math.min(100, Math.round(normalized)))
 }
 
 const buildEntry = async () => {

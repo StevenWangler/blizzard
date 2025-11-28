@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { CloudSnow, CalendarBlank, Clock, Database, Sparkle } from '@phosphor-icons/react'
-import { fetchOutcomeLedger, SnowDayOutcome } from '@/services/outcomes'
+import { fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
 
 interface HistoricalEvent {
   date: string
@@ -52,16 +52,17 @@ const generateEventName = (entry: SnowDayOutcome): string => {
 
   const date = new Date(entry.date)
   const monthName = date.toLocaleDateString('en-US', { month: 'long' })
+  const prob = normalizeProbability(entry.modelProbability)
   
   if (entry.actualSnowDay === true) {
-    const confident = typeof entry.modelProbability === 'number' && entry.modelProbability >= 70
+    const confident = prob !== null && prob >= 70
     return confident ? `${monthName} Storm (Predicted)` : `${monthName} Surprise Storm`
   }
   
   if (entry.actualSnowDay === false) {
-    const expectedClosure = typeof entry.modelProbability === 'number' && entry.modelProbability >= 50
+    const expectedClosure = prob !== null && prob >= 50
     if (expectedClosure) return `${monthName} False Alarm`
-    if ((entry.modelProbability ?? 0) >= 30) return `${monthName} Close Call`
+    if ((prob ?? 0) >= 30) return `${monthName} Close Call`
     return `${monthName} Light Snow`
   }
 
@@ -86,15 +87,17 @@ const generateNotes = (entry: SnowDayOutcome): string => {
     }
     return reasonDescriptions[entry.noSchoolReason || ''] || 'No school scheduled for this day.'
   }
+
+  const prob = normalizeProbability(entry.modelProbability)
   
   if (entry.actualSnowDay === true) {
-    return entry.modelProbability && entry.modelProbability >= 50
+    return prob !== null && prob >= 50
       ? 'Model called the closure correctly and confidence tracked well.'
       : 'Closure arrived despite low modeled probability. Capture context in notes next time.'
   }
   
   if (entry.actualSnowDay === false) {
-    return entry.modelProbability && entry.modelProbability >= 50
+    return prob !== null && prob >= 50
       ? 'Model leaned toward closure but schools stayed open.'
       : 'Routine day with manageable conditions.'
   }
@@ -106,7 +109,7 @@ const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
   return ledger.map(entry => ({
     date: entry.date,
     eventName: generateEventName(entry),
-    modelPrediction: typeof entry.modelProbability === 'number' ? entry.modelProbability : null,
+    modelPrediction: normalizeProbability(entry.modelProbability),
     actualOutcome: entry.actualSnowDay ?? null,
     noSchoolScheduled: entry.noSchoolScheduled ?? false,
     noSchoolReason: entry.noSchoolReason,

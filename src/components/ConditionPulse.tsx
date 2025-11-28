@@ -4,6 +4,7 @@ import { Brain, CloudSnow, Eye, Wind, Warning } from '@phosphor-icons/react'
 import { Badge } from '@/components/ui/badge'
 import { WeatherService } from '@/services/weather'
 import { fetchData } from '@/lib/dataPath'
+import { normalizeProbability } from '@/services/outcomes'
 
 interface PredictionPulseData {
   final?: {
@@ -60,14 +61,6 @@ export function ConditionPulse() {
     } finally {
       setLoading(false)
     }
-  }
-
-  // Normalize probability to 0-100 scale (handles both 0.32 and 32 formats)
-  const normalizeProbability = (value: number): number => {
-    if (value > 0 && value <= 1) {
-      return Math.round(value * 100)
-    }
-    return Math.round(value)
   }
 
   const buildItemsFromPrediction = (data: PredictionPulseData): PulseItem[] => {

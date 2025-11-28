@@ -33,7 +33,7 @@ import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { useNotifications } from '@/hooks/useNotifications'
 import { toast } from 'sonner'
-import { buildOutcomeStats, fetchOutcomeLedger } from '@/services/outcomes'
+import { buildOutcomeStats, fetchOutcomeLedger, normalizeProbability } from '@/services/outcomes'
 import { fetchData } from '@/lib/dataPath'
 import type { OutcomeStats, SnowDayOutcome } from '@/services/outcomes'
 import type { AgentPrediction } from '@/types/agentPrediction'
@@ -172,12 +172,12 @@ export function EnhancedPredictionView() {
       if (ledger.length) {
         setOutcomeStats(buildOutcomeStats(ledger))
         const recent = ledger
-          .filter(entry => typeof entry.modelProbability === 'number')
+          .filter(entry => normalizeProbability(entry.modelProbability) !== null)
           .slice(-7)
 
         if (recent.length) {
           const avg = Math.round(
-            recent.reduce((sum, entry) => sum + (entry.modelProbability || 0), 0) / recent.length
+            recent.reduce((sum, entry) => sum + (normalizeProbability(entry.modelProbability) ?? 0), 0) / recent.length
           )
           setRecentAverage(avg)
         } else {
@@ -193,14 +193,6 @@ export function EnhancedPredictionView() {
     } finally {
       setTrendLoading(false)
     }
-  }
-
-  // Normalize probability to 0-100 scale (handles both 0.32 and 32 formats)
-  const normalizeProbability = (value: number): number => {
-    if (value > 0 && value <= 1) {
-      return Math.round(value * 100)
-    }
-    return Math.round(value)
   }
 
   const getSnowDayVerdict = (probability: number) => {
@@ -447,9 +439,10 @@ export function EnhancedPredictionView() {
                 AI Spotlight
               </CardTitle>
               {prediction.meteorology?.overall_conditions_summary && (
-                <p className="text-sm text-muted-foreground">
-                  {prediction.meteorology.overall_conditions_summary}
-                </p>
+                <Markdown 
+                  content={prediction.meteorology.overall_conditions_summary} 
+                  className="text-sm text-muted-foreground [&_p]:my-0" 
+                />
               )}
             </CardHeader>
             <CardContent className="space-y-6 px-6 sm:px-8 pb-6 sm:pb-8 pt-0">
@@ -459,7 +452,7 @@ export function EnhancedPredictionView() {
                   {prediction.final?.primary_factors?.slice(0, 3).map((factor, index) => (
                     <li key={index} className="flex items-start gap-2.5 text-sm">
                       <span className="text-primary mt-0.5">•</span>
-                      <span>{factor}</span>
+                      <Markdown content={factor} className="[&_p]:my-0 [&_p]:inline" />
                     </li>
                   ))}
                 </ul>
