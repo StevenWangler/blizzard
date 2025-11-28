@@ -384,10 +384,14 @@ export function EnhancedPredictionView() {
           <CardHeader className="pb-6">
             <CardTitle className="text-xl sm:text-2xl flex items-center justify-center gap-3">
               {prediction ? <Brain size={24} className="text-primary" /> : <CloudSnow size={24} className="text-primary" />}
-              Tomorrow's Snow Day Probability
+              {prediction?.targetDayName 
+                ? `${prediction.targetDayName}'s Snow Day Probability`
+                : "Tomorrow's Snow Day Probability"}
             </CardTitle>
             <p className="text-muted-foreground text-sm sm:text-base">
-              {prediction ? `AI Analysis for ${prediction.location}` : 'Based on weather conditions for Rockford, MI'}
+              {prediction 
+                ? `AI Analysis for ${prediction.location}${prediction.targetDate ? ` • ${new Date(prediction.targetDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}`
+                : 'Based on weather conditions for Rockford, MI'}
             </p>
           </CardHeader>
         <CardContent className="space-y-6 sm:space-y-8">

@@ -39,6 +39,42 @@ if (isLocalMode) {
   console.log('📦 Running in LOCAL mode - output will be saved to public/data/local/')
 }
 
+/**
+ * Get the next school day from a given date.
+ * Skips weekends (Saturday = 6, Sunday = 0).
+ * TODO: Could be extended to skip known holidays.
+ */
+function getNextSchoolDay(fromDate = new Date()) {
+  const date = new Date(fromDate)
+  date.setHours(0, 0, 0, 0)
+  
+  // Start from tomorrow
+  date.setDate(date.getDate() + 1)
+  
+  // Skip weekends
+  const dayOfWeek = date.getDay()
+  if (dayOfWeek === 6) {
+    // Saturday -> skip to Monday
+    date.setDate(date.getDate() + 2)
+  } else if (dayOfWeek === 0) {
+    // Sunday -> skip to Monday
+    date.setDate(date.getDate() + 1)
+  }
+  
+  return date
+}
+
+/**
+ * Calculate how many days ahead the next school day is.
+ */
+function getDaysUntilNextSchoolDay(fromDate = new Date()) {
+  const today = new Date(fromDate)
+  today.setHours(0, 0, 0, 0)
+  const nextSchool = getNextSchoolDay(fromDate)
+  const diffTime = nextSchool.getTime() - today.getTime()
+  return Math.round(diffTime / (1000 * 60 * 60 * 24))
+}
+
 // Check required environment variables
 const requiredEnvVars = ['OPENAI_API_KEY', 'VITE_WEATHER_API_KEY']
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName])
@@ -77,11 +113,11 @@ class NodeWeatherAPI {
     this.baseUrl = 'https://api.weatherapi.com/v1'
   }
 
-  async getForecast() {
+  async getForecast(daysAhead = 2) {
     const url = new URL(`${this.baseUrl}/forecast.json`)
     url.searchParams.set('key', this.apiKey)
     url.searchParams.set('q', this.zipCode)
-    url.searchParams.set('days', '2')
+    url.searchParams.set('days', String(Math.min(daysAhead + 1, 3))) // +1 for today, max 3 for free tier
     url.searchParams.set('aqi', 'no')
     url.searchParams.set('alerts', 'yes')
 
@@ -316,15 +352,30 @@ const decisionCoordinatorAgent = Agent.create({
 // MULTI-AGENT ORCHESTRATION
 // ============================================================================
 
-async function runAgentPrediction(weatherData) {
+async function runAgentPrediction(weatherData, targetDate, daysAhead) {
   const location = `${weatherData.location.name}, ${weatherData.location.region}`
+  const targetDateStr = targetDate.toISOString().split('T')[0]
+  const dayName = targetDate.toLocaleDateString('en-US', { weekday: 'long' })
+  
   console.log(`📍 Analyzing conditions for ${location}`)
+  console.log(`🎯 Target school day: ${dayName}, ${targetDateStr}`)
+  
+  // Extract the forecast for the target date
+  const targetForecast = weatherData.forecast?.forecastday?.find(
+    day => day.date === targetDateStr
+  ) || weatherData.forecast?.forecastday?.[daysAhead - 1] || weatherData.forecast?.forecastday?.[0]
   
   const weatherContext = `
 WEATHER DATA FOR ${location}:
+TARGET SCHOOL DAY: ${dayName}, ${targetDateStr} (${daysAhead} day${daysAhead > 1 ? 's' : ''} from now)
+
+FOCUS ON THIS DATE'S FORECAST:
+${JSON.stringify(targetForecast, null, 2)}
+
+FULL FORECAST DATA:
 ${JSON.stringify(weatherData, null, 2)}
 
-Analyze these conditions for snow day prediction.`
+Analyze these conditions for snow day prediction for ${dayName}, ${targetDateStr}.`
 
   // Run specialist agents in parallel for efficiency
   console.log('🔄 Running expert analysis agents in parallel...')
@@ -372,6 +423,9 @@ Otherwise, provide your final prediction.`
     safety: safetyResult.finalOutput,
     final: finalResult.finalOutput,
     timestamp: new Date().toISOString(),
+    targetDate: targetDateStr,
+    targetDayName: dayName,
+    daysAhead,
     location,
     raw_weather_data: weatherData
   }
@@ -383,14 +437,22 @@ Otherwise, provide your final prediction.`
 
 async function main() {
   try {
+    // Determine the next school day (skip weekends)
+    const nextSchoolDay = getNextSchoolDay()
+    const daysAhead = getDaysUntilNextSchoolDay()
+    const nextSchoolDayStr = nextSchoolDay.toISOString().split('T')[0]
+    const dayName = nextSchoolDay.toLocaleDateString('en-US', { weekday: 'long' })
+    
+    console.log(`📅 Next school day: ${dayName}, ${nextSchoolDayStr} (${daysAhead} day${daysAhead > 1 ? 's' : ''} ahead)`)
+    
     // Initialize weather API
     const weatherAPI = new NodeWeatherAPI(appConfig.weatherApiKey, appConfig.zipCode)
 
-    // Get weather data
-    const weatherData = await weatherAPI.getForecast()
+    // Get weather data (fetch enough days to cover the next school day)
+    const weatherData = await weatherAPI.getForecast(daysAhead)
 
     // Run multi-agent prediction using OpenAI Agents SDK
-    const prediction = await runAgentPrediction(weatherData)
+    const prediction = await runAgentPrediction(weatherData, nextSchoolDay, daysAhead)
 
     // Ensure output directory exists
     if (!existsSync(appConfig.outputDir)) {
@@ -415,6 +477,9 @@ async function main() {
       primary_factors: prediction.final.primary_factors,
       decision_rationale: prediction.final.decision_rationale,
       timestamp: prediction.timestamp,
+      targetDate: prediction.targetDate,
+      targetDayName: prediction.targetDayName,
+      daysAhead: prediction.daysAhead,
       location: prediction.location
     }
 
@@ -436,8 +501,8 @@ async function main() {
       }
     }
 
-    // Use the date from the prediction timestamp
-    const predictionDate = prediction.timestamp.split('T')[0]
+    // Use the target school day date (not the prediction timestamp)
+    const predictionDate = prediction.targetDate
     
     // Check if we already have an entry for this date
     const existingIndex = outcomes.findIndex(o => o.date === predictionDate)
