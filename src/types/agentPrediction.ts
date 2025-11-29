@@ -73,6 +73,27 @@ export interface AgentPrediction {
     safety_recommendations: string[]
     risk_level: 'low' | 'moderate' | 'high' | 'severe'
   }
+  news: {
+    local_news: Array<{
+      source: string
+      headline: string
+      summary: string
+      relevance: 'high' | 'medium' | 'low'
+      url?: string
+    }>
+    school_district_signals: {
+      official_announcements: string[]
+      early_dismissal_history: boolean
+      neighboring_district_closures: string[]
+    }
+    community_intel: {
+      social_media_sentiment: 'expecting_closure' | 'uncertain' | 'expecting_school' | 'no_buzz'
+      reported_road_conditions: string[]
+      power_outage_reports: boolean
+      local_event_cancellations: string[]
+    }
+    key_findings_summary: string
+  }
   final: {
     snow_day_probability: number
     confidence_level: 'very_low' | 'low' | 'moderate' | 'high' | 'very_high'

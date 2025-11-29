@@ -8,12 +8,13 @@ This project features an advanced multi-agent AI system using the **OpenAI Agent
 
 ### Multi-Agent Design
 
-The system employs four specialized AI agents that work together using the latest SDK patterns:
+The system employs five specialized AI agents that work together using the latest SDK patterns:
 
 1. **Chief Meteorologist Agent** - Analyzes weather conditions, forecasts, and meteorological data
 2. **Weather Pattern Historian Agent** - Provides historical context and climatological patterns  
 3. **Transportation Safety Analyst Agent** - Evaluates travel conditions and safety risks
-4. **Decision Coordinator Agent** - Synthesizes all expert input into final predictions (with handoffs to specialists)
+4. **Local News Intelligence Agent** - Scours local news, social media, and community signals for real-time intel
+5. **Decision Coordinator Agent** - Synthesizes all expert input into final predictions (with handoffs to specialists)
 
 ### Key SDK Features Used
 
@@ -22,6 +23,7 @@ The system employs four specialized AI agents that work together using the lates
 - **Parallel Execution**: Specialist agents run concurrently via `Promise.all()`
 - **Tracing**: Built-in debugging and monitoring of agent workflows
 - **handoffDescription**: Each agent describes when to be consulted
+- **Web Search**: News Intelligence agent uses web search to find real-time local signals
 
 ### Agent Workflow
 
@@ -32,6 +34,7 @@ Weather API → Agent Analysis (Parallel) → Decision Coordination → Structur
    - Current      - Meteorology              - Weigh factors       - Probability
    - Forecast     - Historical patterns      - Handoffs if needed  - Confidence  
    - Alerts       - Safety assessment        - Final decision      - Reasoning
+                  - News intelligence
 ```
 
 ### Structured Output
@@ -42,6 +45,7 @@ The agents produce comprehensive, structured JSON predictions including:
 - **Detailed weather analysis** (temperature, precipitation, wind, visibility)
 - **Historical context** and similar weather patterns
 - **Safety assessment** for roads, travel, and transportation
+- **Local news & community intelligence** (district signals, social media sentiment, neighboring closures)
 - **Timeline** of weather events and impacts
 - **Recommendations** for schools, residents, and authorities
 - **Alternative scenarios** and contingency planning
@@ -50,14 +54,14 @@ The agents produce comprehensive, structured JSON predictions including:
 
 ### Backend Components
 
-- **`src/lib/agentSystem.ts`** - Core multi-agent orchestration system
+- **`src/services/agentSystem.ts`** - Core multi-agent orchestration system
 - **`build-tools/generate-prediction.mjs`** - Node.js script for prediction generation
 - **`.github/workflows/snow-day-prediction.yml`** - Automated GitHub Action
 
 ### Frontend Components  
 
 - **`src/components/EnhancedPredictionView.tsx`** - Rich UI for displaying agent predictions
-- **Tabbed interface** showing weather analysis, historical context, safety assessment, and timeline
+- **Tabbed interface** showing weather analysis, historical context, safety assessment, news intel, and timeline
 - **Interactive recommendations** for different stakeholders
 - **Confidence indicators** and uncertainty communication
 
@@ -154,14 +158,15 @@ node build-tools/generate-prediction.mjs
 3. **Structured reasoning** - JSON schemas ensure consistent, parseable output
 4. **Transparency** - Detailed rationale and confidence levels provided
 5. **Extensibility** - Easy to add new agents or modify existing analysis
+6. **Real-time intelligence** - News agent provides up-to-the-minute local signals
 
 ## Future Enhancements
 
-- **Web search integration** for real-time weather pattern research
 - **Historical data integration** with local school district records  
 - **Voice interface** using OpenAI Realtime API
 - **Fine-tuning** on local weather patterns and outcomes
 - **Human-in-the-loop** for decision validation and feedback
+- **Push notifications** when neighboring districts announce closures
 
 ## Contributing
 

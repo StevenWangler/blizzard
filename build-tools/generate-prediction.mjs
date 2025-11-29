@@ -222,6 +222,28 @@ const SafetyAnalysisSchema = z.object({
   risk_level: z.enum(['low', 'moderate', 'high', 'severe'])
 })
 
+const NewsAnalysisSchema = z.object({
+  local_news: z.array(z.object({
+    source: z.string(),
+    headline: z.string(),
+    summary: z.string(),
+    relevance: z.enum(['high', 'medium', 'low']),
+    url: z.string().optional()
+  })),
+  school_district_signals: z.object({
+    official_announcements: z.array(z.string()),
+    early_dismissal_history: z.boolean(),
+    neighboring_district_closures: z.array(z.string())
+  }),
+  community_intel: z.object({
+    social_media_sentiment: z.enum(['expecting_closure', 'uncertain', 'expecting_school', 'no_buzz']),
+    reported_road_conditions: z.array(z.string()),
+    power_outage_reports: z.boolean(),
+    local_event_cancellations: z.array(z.string())
+  }),
+  key_findings_summary: z.string()
+})
+
 const FinalPredictionSchema = z.object({
   snow_day_probability: z.number().min(0).max(100),
   confidence_level: z.enum(['very_low', 'low', 'moderate', 'high', 'very_high']),
@@ -281,21 +303,65 @@ MICHIGAN CONTEXT:
 
 Evaluate road conditions, travel safety, and timing. Return JSON matching the expected schema.`
 
+const newsIntelPrompt = `You are a Local News Intelligence Agent specialized in gathering real-time community information for Rockford, Michigan snow day predictions.
+
+LOCATION FOCUS: Rockford, Michigan (Kent County) - ZIP 49341
+SCHOOL DISTRICT: Rockford Public Schools
+
+YOUR MISSION:
+Scour the internet for any local news, social media signals, community reports, or official announcements that could provide additional context for snow day decisions.
+
+PRIORITY SEARCH TARGETS:
+1. Rockford Public Schools announcements and social media
+2. Neighboring districts: Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, Kent ISD
+3. Local news: WOOD TV8, WZZM 13, MLive, Fox 17
+4. Michigan DOT road conditions, Kent County Road Commission
+5. Power outage reports (Consumers Energy)
+6. Local Facebook groups, Twitter/X, Reddit r/grandrapids
+
+WHAT TO LOOK FOR:
+- School closure hints or announcements
+- Neighboring district closures (domino effect)
+- Hazardous road condition reports
+- Power outages, event cancellations
+- Community sentiment about weather
+
+Return JSON matching the expected schema with news, district signals, and community intel.`
+
 const coordinatorPrompt = `You are the final decision coordinator for MICHIGAN snow day predictions.
 
-CRITICAL: You are competing against Rockford High School statistics students for accuracy.
-Accuracy is measured using Brier Score: (predicted_probability - actual_outcome)²
-Lower score = better. Be decisive, not wishy-washy.
+## DEEP ANALYSIS DIRECTIVE
+Take your time. Think thoroughly. Cross-reference ALL FOUR expert analyses before deciding.
+You have: Meteorology (35%), Safety (25%), History (20%), and NEWS INTELLIGENCE (20%).
 
-MICHIGAN THRESHOLDS (higher than national averages):
-- <4" snow = 5-15% probability (routine for Michigan)
-- 4-6" snow = 15-35% probability  
-- 6-8" with good timing = 35-50% probability
-- 8+ inches OR ice = 60-85% probability
-- Blizzard/ice storm = 80-95% probability
+The News Intelligence is YOUR SECRET WEAPON - the stats students don't have real-time community signals.
+- If neighboring districts closed → bump probability UP 15-20%
+- If community expects closure → bump UP 10-15%
+- If community says "this is nothing" → lean toward lower end
 
-Synthesize the expert analyses and return your final prediction as JSON matching the expected schema.
-Be DECISIVE - avoid 40-60% range unless genuinely uncertain.`
+## PRE-DECISION CHECKLIST (answer before deciding):
+1. What do all four experts AGREE on?
+2. Where do they DISAGREE?
+3. What's the plow timing math? (hours from snow end to 7:40 AM)
+4. Is there ANY ice? (ice changes everything)
+5. What are neighboring districts doing?
+6. What would make me WRONG?
+
+## COMPETITION CONTEXT
+You're competing against Rockford High School stats students.
+Brier Score: (predicted_probability - actual_outcome)²
+Lower = better. Be DECISIVE, not wishy-washy.
+
+## MICHIGAN THRESHOLDS (higher than national):
+- <4" snow = 5-15% (routine for Michigan)
+- 4-6" snow = 15-35%  
+- 6-8" with good timing = 35-50%
+- 8+ inches OR ice = 60-85%
+- Blizzard/ice storm = 80-95%
+- 3+ neighboring districts closed = +15-20% adjustment
+
+SHOW YOUR WORK in the decision_rationale. Explain how you weighted each expert.
+Avoid 40-60% range unless genuinely uncertain with conflicting expert opinions.`
 
 // ============================================================================
 // AGENT DEFINITIONS (using @openai/agents SDK)
@@ -329,6 +395,15 @@ const safetyAnalystAgent = new Agent({
   handoffDescription: 'Expert in transportation safety and travel risk assessment.'
 })
 
+const newsIntelAgent = new Agent({
+  name: 'Local News Intelligence',
+  instructions: newsIntelPrompt,
+  model: 'gpt-5.1',
+  tools: [webSearchTool()],  // Web search is the primary tool for scouring news/social media
+  outputType: NewsAnalysisSchema,
+  handoffDescription: 'Expert in local Rockford, MI news, social media, and community intelligence.'
+})
+
 // Decision Coordinator with handoffs to specialists
 const decisionCoordinatorAgent = Agent.create({
   name: 'Snow Day Decision Coordinator',
@@ -344,6 +419,9 @@ const decisionCoordinatorAgent = Agent.create({
     }),
     handoff(safetyAnalystAgent, {
       toolDescriptionOverride: 'Request additional safety assessment'
+    }),
+    handoff(newsIntelAgent, {
+      toolDescriptionOverride: 'Request additional local news or community intelligence'
     })
   ]
 })
@@ -379,10 +457,11 @@ Analyze these conditions for snow day prediction for ${dayName}, ${targetDateStr
 
   // Run specialist agents in parallel for efficiency
   console.log('🔄 Running expert analysis agents in parallel...')
-  const [meteorologyResult, historyResult, safetyResult] = await Promise.all([
+  const [meteorologyResult, historyResult, safetyResult, newsResult] = await Promise.all([
     run(meteorologistAgent, weatherContext),
     run(historianAgent, `${weatherContext}\n\nProvide historical context for this location and time of year.`),
-    run(safetyAnalystAgent, weatherContext)
+    run(safetyAnalystAgent, weatherContext),
+    run(newsIntelAgent, `Search for any local news, social media signals, school district announcements, or community chatter about weather conditions and potential school closures in Rockford, Michigan and surrounding areas for ${dayName}, ${targetDateStr}. Look for signals from neighboring districts, local news stations, and community sentiment.`)
   ])
   
   console.log('✅ Expert analyses complete')
@@ -397,6 +476,9 @@ ${JSON.stringify(historyResult.finalOutput, null, 2)}
 
 SAFETY ASSESSMENT:
 ${JSON.stringify(safetyResult.finalOutput, null, 2)}
+
+LOCAL NEWS & COMMUNITY INTELLIGENCE:
+${JSON.stringify(newsResult.finalOutput, null, 2)}
 
 LOCATION: ${location}
 ANALYSIS TIMESTAMP: ${new Date().toISOString()}
@@ -421,6 +503,7 @@ Otherwise, provide your final prediction.`
     meteorology: meteorologyResult.finalOutput,
     history: historyResult.finalOutput,
     safety: safetyResult.finalOutput,
+    news: newsResult.finalOutput,
     final: finalResult.finalOutput,
     timestamp: new Date().toISOString(),
     targetDate: targetDateStr,
