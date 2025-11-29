@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
-import { CloudSnow, Target, Clock, ListChecks, LockSimple, UsersThree, Trophy } from '@phosphor-icons/react'
+import { CloudSnow, Target, Clock, ListChecks, LockSimple, UsersThree, Trophy, Info } from '@phosphor-icons/react'
 import { EnhancedPredictionView } from '@/components/EnhancedPredictionView'
 import { AccuracyView } from '@/components/AccuracyView'
 import { HistoryView } from '@/components/HistoryView'
 import { AgentsView } from '@/components/AgentsView'
 import { CompetitionView } from '@/components/CompetitionView'
+import { AboutView } from '@/components/AboutView'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { OutcomeRecorder } from '@/components/OutcomeRecorder'
 import { NotificationSettings } from '@/components/NotificationSettings'
@@ -73,7 +74,7 @@ function App() {
     toast.success('Admin tools locked')
   }
 
-  const tabGridCols = isAdmin ? 'grid-cols-3 sm:grid-cols-6' : 'grid-cols-3 sm:grid-cols-5'
+  const tabGridCols = isAdmin ? 'grid-cols-3 sm:grid-cols-7' : 'grid-cols-3 sm:grid-cols-6'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-background transition-colors relative overflow-hidden">
@@ -129,6 +130,10 @@ function App() {
               <Trophy size={16} className="sm:w-[18px] sm:h-[18px]" />
               <span className="text-center leading-tight">Competition</span>
             </TabsTrigger>
+            <TabsTrigger value="about" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
+              <Info size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-center leading-tight">About</span>
+            </TabsTrigger>
             {isAdmin && (
               <TabsTrigger value="outcomes" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2 text-xs sm:text-sm min-h-[60px] sm:min-h-[44px]">
                 <ListChecks size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -155,6 +160,10 @@ function App() {
 
           <TabsContent value="competition">
             <CompetitionView />
+          </TabsContent>
+
+          <TabsContent value="about">
+            <AboutView />
           </TabsContent>
 
           {isAdmin && (
