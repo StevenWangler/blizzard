@@ -15,36 +15,42 @@ interface NarrativeSummaryProps {
 }
 
 export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
+  const [activeHighlight, setActiveHighlight] = useState(0)
+  
   // Check for required data - safety may have error instead of full data
   const hasSafetyData = prediction?.safety?.road_conditions && prediction?.safety?.travel_safety
-  if (!prediction?.meteorology || !prediction?.final) {
-    return null
-  }
+  const hasRequiredData = prediction?.meteorology && prediction?.final
 
-  const narrative = useMemo(() => generateFullSummary(prediction), [prediction])
-  const highlights = useMemo<HighlightItem[]>(() => [
-    {
-      title: 'Weather setup',
-      text: narrative.weatherSummary,
-      icon: CloudSnow
-    },
-    {
-      title: 'Impact outlook',
-      text: narrative.impactStatement,
-      icon: TrendUp
-    },
-    {
-      title: 'Timeline beats',
-      text: narrative.timelineNarrative,
-      icon: Clock
-    },
-    {
-      title: 'Safety pulse',
-      text: narrative.safetyAdvisory,
-      icon: ShieldCheck
-    }
-  ], [narrative])
-  const [activeHighlight, setActiveHighlight] = useState(0)
+  const narrative = useMemo(() => {
+    if (!hasRequiredData) return null
+    return generateFullSummary(prediction)
+  }, [prediction, hasRequiredData])
+  
+  const highlights = useMemo<HighlightItem[]>(() => {
+    if (!narrative) return []
+    return [
+      {
+        title: 'Weather setup',
+        text: narrative.weatherSummary,
+        icon: CloudSnow
+      },
+      {
+        title: 'Impact outlook',
+        text: narrative.impactStatement,
+        icon: TrendUp
+      },
+      {
+        title: 'Timeline beats',
+        text: narrative.timelineNarrative,
+        icon: Clock
+      },
+      {
+        title: 'Safety pulse',
+        text: narrative.safetyAdvisory,
+        icon: ShieldCheck
+      }
+    ]
+  }, [narrative])
 
   useEffect(() => {
     setActiveHighlight(0)
@@ -57,6 +63,11 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
     }, 7000)
     return () => clearInterval(timer)
   }, [highlights.length])
+
+  // Early return after all hooks
+  if (!hasRequiredData || !narrative || highlights.length === 0) {
+    return null
+  }
 
   return (
     <motion.div
@@ -90,25 +101,27 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
 
           <div className="relative min-h-[120px] pt-2">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={highlights[activeHighlight]?.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4 }}
-                className="space-y-2"
-              >
-                <p className="text-sm font-semibold text-primary flex items-center gap-2">
-                  {(() => {
-                    const Icon = highlights[activeHighlight].icon
-                    return <Icon size={16} />
-                  })()}
-                  {highlights[activeHighlight].title}
-                </p>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {highlights[activeHighlight].text}
-                </p>
-              </motion.div>
+              {highlights[activeHighlight] && (
+                <motion.div
+                  key={highlights[activeHighlight].title}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
+                  className="space-y-2"
+                >
+                  <p className="text-sm font-semibold text-primary flex items-center gap-2">
+                    {(() => {
+                      const Icon = highlights[activeHighlight].icon
+                      return <Icon size={16} />
+                    })()}
+                    {highlights[activeHighlight].title}
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {highlights[activeHighlight].text}
+                  </p>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
 

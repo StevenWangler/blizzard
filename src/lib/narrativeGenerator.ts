@@ -105,7 +105,7 @@ export function generateTimelineNarrative(timeline: Timeline): string {
 export function generateImpactStatement(
   probability: number,
   confidence: 'very_low' | 'low' | 'moderate' | 'high' | 'very_high',
-  primaryFactors: string[]
+  primaryFactors: string[] | undefined | null
 ): string {
   let likelihoodPhrase = ''
   
@@ -127,8 +127,9 @@ export function generateImpactStatement(
       ? ' with moderate confidence'
       : ' with lower confidence'
 
-  const factorPhrase = primaryFactors.length > 0
-    ? ` due to ${primaryFactors.slice(0, 2).join(' and ')}.`
+  const factors = primaryFactors ?? []
+  const factorPhrase = factors.length > 0
+    ? ` due to ${factors.slice(0, 2).join(' and ')}.`
     : '.'
 
   return `${likelihoodPhrase} to result in a snow day${confidencePhrase}${factorPhrase}`
@@ -206,16 +207,16 @@ export function generateFullSummary(prediction: {
   final: {
     snow_day_probability: number
     confidence_level: 'very_low' | 'low' | 'moderate' | 'high' | 'very_high'
-    primary_factors: string[]
+    primary_factors?: string[]
     timeline: Timeline
   }
-  safety: {
+  safety?: {
     risk_level: 'low' | 'moderate' | 'high' | 'severe'
-    road_conditions: {
+    road_conditions?: {
       primary_roads_score: number
       ice_formation_risk: 'low' | 'moderate' | 'high' | 'severe'
     }
-    travel_safety: {
+    travel_safety?: {
       driving_conditions_score: number
     }
   }
