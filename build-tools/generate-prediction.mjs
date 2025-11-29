@@ -405,7 +405,7 @@ const newsIntelAgent = new Agent({
 })
 
 // Decision Coordinator with handoffs to specialists
-const decisionCoordinatorAgent = Agent.create({
+const decisionCoordinatorAgent = new Agent({
   name: 'Snow Day Decision Coordinator',
   instructions: coordinatorPrompt,
   model: 'gpt-5.1',
@@ -497,6 +497,89 @@ If you need clarification from any specialist, you can hand off to them.
 Otherwise, provide your final prediction.`
   )
   
+  // Validate the final output matches expected schema
+  let validatedFinal = finalResult.finalOutput
+  const parseResult = FinalPredictionSchema.safeParse(validatedFinal)
+  
+  if (!parseResult.success) {
+    console.warn('⚠️ Final output did not match expected schema, attempting to extract correct fields...')
+    console.warn('Validation errors:', parseResult.error.issues)
+    
+    // Check if the model returned meteorology data instead of prediction data
+    if (validatedFinal?.temperature_analysis || validatedFinal?.precipitation_analysis) {
+      console.error('❌ Coordinator returned meteorology data instead of prediction schema!')
+      console.log('🔄 Retrying coordinator with explicit schema reminder...')
+      
+      // Retry with explicit schema instructions
+      const retryResult = await run(
+        decisionCoordinatorAgent,
+        `IMPORTANT: You must respond with a JSON object matching this EXACT structure:
+{
+  "snow_day_probability": <number 0-100>,
+  "confidence_level": <"very_low"|"low"|"moderate"|"high"|"very_high">,
+  "primary_factors": [<array of strings>],
+  "timeline": {
+    "conditions_start": <string>,
+    "peak_impact_time": <string>,
+    "conditions_improve": <string>
+  },
+  "decision_rationale": <string>,
+  "alternative_scenarios": [{"scenario": <string>, "probability": <number>, "impact": <string>}],
+  "recommendations": {
+    "for_schools": [<array of strings>],
+    "for_residents": [<array of strings>],
+    "for_authorities": [<array of strings>]
+  },
+  "updates_needed": <boolean>,
+  "next_evaluation_time": <string>
+}
+
+DO NOT return temperature_analysis, precipitation_analysis, or other meteorology data.
+Return ONLY the prediction decision structure above.
+
+Based on these expert analyses, provide your final snow day prediction:
+
+${expertAnalyses}`
+      )
+      
+      validatedFinal = retryResult.finalOutput
+      const retryParseResult = FinalPredictionSchema.safeParse(validatedFinal)
+      
+      if (!retryParseResult.success) {
+        console.error('❌ Retry also failed schema validation')
+        console.error('Output received:', JSON.stringify(validatedFinal, null, 2).slice(0, 500))
+        throw new Error('Coordinator agent repeatedly returned invalid schema. Check model and prompt configuration.')
+      }
+      
+      console.log('✅ Retry succeeded with valid schema')
+      validatedFinal = retryParseResult.data
+    } else {
+      // Try to use partial data with defaults
+      console.warn('⚠️ Attempting to use partial data with defaults...')
+      validatedFinal = {
+        snow_day_probability: validatedFinal?.snow_day_probability ?? 0,
+        confidence_level: validatedFinal?.confidence_level ?? 'low',
+        primary_factors: validatedFinal?.primary_factors ?? ['Unable to parse prediction'],
+        timeline: validatedFinal?.timeline ?? {
+          conditions_start: 'Unknown',
+          peak_impact_time: 'Unknown',
+          conditions_improve: 'Unknown'
+        },
+        decision_rationale: validatedFinal?.decision_rationale ?? 'Prediction parsing failed - using fallback values',
+        alternative_scenarios: validatedFinal?.alternative_scenarios ?? [],
+        recommendations: validatedFinal?.recommendations ?? {
+          for_schools: ['Check local conditions'],
+          for_residents: ['Monitor weather updates'],
+          for_authorities: ['Standard winter protocols']
+        },
+        updates_needed: true,
+        next_evaluation_time: new Date(Date.now() + 3600000).toISOString()
+      }
+    }
+  } else {
+    validatedFinal = parseResult.data
+  }
+  
   console.log('✅ Multi-agent analysis complete!')
   
   return {
@@ -504,7 +587,7 @@ Otherwise, provide your final prediction.`
     history: historyResult.finalOutput,
     safety: safetyResult.finalOutput,
     news: newsResult.finalOutput,
-    final: finalResult.finalOutput,
+    final: validatedFinal,
     timestamp: new Date().toISOString(),
     targetDate: targetDateStr,
     targetDayName: dayName,

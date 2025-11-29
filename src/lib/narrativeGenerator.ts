@@ -95,8 +95,14 @@ export function generateWeatherSummary(
 /**
  * Generate timeline narrative from event timeline data
  */
-export function generateTimelineNarrative(timeline: Timeline): string {
-  return `Conditions begin ${timeline.conditions_start}, peak around ${timeline.peak_impact_time}, and improve by ${timeline.conditions_improve}.`
+export function generateTimelineNarrative(timeline: Timeline | undefined | null): string {
+  if (!timeline) {
+    return 'Timeline information is currently unavailable.'
+  }
+  const start = timeline.conditions_start ?? 'unknown time'
+  const peak = timeline.peak_impact_time ?? 'unknown time'
+  const improve = timeline.conditions_improve ?? 'unknown time'
+  return `Conditions begin ${start}, peak around ${peak}, and improve by ${improve}.`
 }
 
 /**
@@ -168,14 +174,15 @@ export function generateSafetyAdvisory(
  */
 export function generateResidentRecommendations(
   probability: number,
-  timeline: Timeline,
+  timeline: Timeline | undefined | null,
   safetyRisk: 'low' | 'moderate' | 'high' | 'severe'
 ): string[] {
   const recommendations: string[] = []
+  const peakTime = timeline?.peak_impact_time ?? 'the morning hours'
 
   if (probability >= 50) {
     recommendations.push('Monitor local school and business closings overnight')
-    recommendations.push(`Check for official announcements around ${timeline.peak_impact_time}`)
+    recommendations.push(`Check for official announcements around ${peakTime}`)
   }
 
   if (probability >= 70) {
@@ -205,10 +212,10 @@ export function generateFullSummary(prediction: {
     visibility_analysis: VisibilityAnalysis
   }
   final: {
-    snow_day_probability: number
-    confidence_level: 'very_low' | 'low' | 'moderate' | 'high' | 'very_high'
+    snow_day_probability?: number
+    confidence_level?: 'very_low' | 'low' | 'moderate' | 'high' | 'very_high'
     primary_factors?: string[]
-    timeline: Timeline
+    timeline?: Timeline
   }
   safety?: {
     risk_level: 'low' | 'moderate' | 'high' | 'severe'
@@ -230,6 +237,11 @@ export function generateFullSummary(prediction: {
   // Handle cases where safety data may have an error or be incomplete
   const hasSafetyData = prediction.safety?.road_conditions && prediction.safety?.travel_safety
   
+  // Extract final prediction values with defaults
+  const probability = prediction.final?.snow_day_probability ?? 0
+  const confidence = prediction.final?.confidence_level ?? 'moderate'
+  const timeline = prediction.final?.timeline
+  
   return {
     weatherSummary: generateWeatherSummary(
       prediction.meteorology.temperature_analysis,
@@ -238,11 +250,11 @@ export function generateFullSummary(prediction: {
       prediction.meteorology.visibility_analysis
     ),
     impactStatement: generateImpactStatement(
-      prediction.final.snow_day_probability,
-      prediction.final.confidence_level,
-      prediction.final.primary_factors
+      probability,
+      confidence,
+      prediction.final?.primary_factors
     ),
-    timelineNarrative: generateTimelineNarrative(prediction.final.timeline),
+    timelineNarrative: generateTimelineNarrative(timeline),
     safetyAdvisory: hasSafetyData 
       ? generateSafetyAdvisory(
           prediction.safety.risk_level,
@@ -252,8 +264,8 @@ export function generateFullSummary(prediction: {
         )
       : 'Safety analysis is currently unavailable. Please check local conditions and exercise caution.',
     residentRecommendations: generateResidentRecommendations(
-      prediction.final.snow_day_probability,
-      prediction.final.timeline,
+      probability,
+      timeline,
       hasSafetyData ? prediction.safety.risk_level : 'moderate'
     )
   }
