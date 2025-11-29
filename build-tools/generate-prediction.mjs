@@ -21,7 +21,7 @@ import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { config as loadEnv } from 'dotenv'
-import { Agent, run, tool, handoff, setTracingDisabled, webSearchTool, codeInterpreterTool } from '@openai/agents'
+import { Agent, run, tool, setTracingDisabled, webSearchTool, codeInterpreterTool } from '@openai/agents'
 import { z } from 'zod'
 
 // Load environment variables from .env file
@@ -364,66 +364,203 @@ SHOW YOUR WORK in the decision_rationale. Explain how you weighted each expert.
 Avoid 40-60% range unless genuinely uncertain with conflicting expert opinions.`
 
 // ============================================================================
-// AGENT DEFINITIONS (using @openai/agents SDK)
+// AGENTS-AS-TOOLS CONTEXT (module-level state for tool callbacks)
 // ============================================================================
 
-// Create agents with proper SDK patterns
+let _currentWeatherContext = ''
+let _currentExpertAnalyses = {
+  meteorology: null,
+  history: null,
+  safety: null,
+  news: null
+}
+
+// ============================================================================
+// SPECIALIST AGENTS (used internally and as tools for coordinator)
+// ============================================================================
+
 const meteorologistAgent = new Agent({
   name: 'Chief Meteorologist',
   instructions: meteorologistPrompt,
   model: 'gpt-5.1',
-  tools: [webSearchTool(), codeInterpreterTool()],  // Web search + code for wind chill calcs, trend analysis
-  outputType: WeatherAnalysisSchema,
-  handoffDescription: 'Expert in weather analysis including temperature, precipitation, wind, and visibility.'
+  tools: [webSearchTool(), codeInterpreterTool()],
+  outputType: WeatherAnalysisSchema
 })
 
 const historianAgent = new Agent({
   name: 'Weather Pattern Historian',
   instructions: historianPrompt,
   model: 'gpt-5.1',
-  tools: [webSearchTool(), codeInterpreterTool()],  // Web search + code for statistical pattern analysis
-  outputType: HistoricalAnalysisSchema,
-  handoffDescription: 'Expert in historical weather patterns and climatological context for Michigan.'
+  tools: [webSearchTool(), codeInterpreterTool()],
+  outputType: HistoricalAnalysisSchema
 })
 
 const safetyAnalystAgent = new Agent({
   name: 'Transportation Safety Analyst',
   instructions: safetyAnalystPrompt,
   model: 'gpt-5.1',
-  tools: [webSearchTool(), codeInterpreterTool()],  // Web search + code for timing/plow window calculations
-  outputType: SafetyAnalysisSchema,
-  handoffDescription: 'Expert in transportation safety and travel risk assessment.'
+  tools: [webSearchTool(), codeInterpreterTool()],
+  outputType: SafetyAnalysisSchema
 })
 
 const newsIntelAgent = new Agent({
   name: 'Local News Intelligence',
   instructions: newsIntelPrompt,
   model: 'gpt-5.1',
-  tools: [webSearchTool()],  // Web search is the primary tool for scouring news/social media
-  outputType: NewsAnalysisSchema,
-  handoffDescription: 'Expert in local Rockford, MI news, social media, and community intelligence.'
+  tools: [webSearchTool()],
+  outputType: NewsAnalysisSchema
 })
 
-// Decision Coordinator with handoffs to specialists
+// ============================================================================
+// AGENTS-AS-TOOLS: Coordinator can consult specialists on-demand
+// ============================================================================
+
+const askMeteorologist = tool({
+  name: 'ask_meteorologist',
+  description: 'Ask the Chief Meteorologist a specific follow-up question about weather conditions, temperature trends, precipitation timing, wind patterns, or visibility.',
+  parameters: z.object({
+    question: z.string().describe('The specific question to ask the meteorologist')
+  }),
+  execute: async ({ question }) => {
+    console.log('🌡️ Coordinator consulting meteorologist:', question)
+    const context = _currentExpertAnalyses.meteorology 
+      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.meteorology, null, 2)}\n\n`
+      : ''
+    const result = await run(meteorologistAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
+const askHistorian = tool({
+  name: 'ask_historian',
+  description: 'Ask the Weather Pattern Historian about historical patterns, past similar events, or climatological context.',
+  parameters: z.object({
+    question: z.string().describe('The specific question to ask the historian')
+  }),
+  execute: async ({ question }) => {
+    console.log('📚 Coordinator consulting historian:', question)
+    const context = _currentExpertAnalyses.history 
+      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.history, null, 2)}\n\n`
+      : ''
+    const result = await run(historianAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
+const askSafetyAnalyst = tool({
+  name: 'ask_safety_analyst',
+  description: 'Ask the Transportation Safety Analyst about road conditions, plow timing, commute safety, or travel risks.',
+  parameters: z.object({
+    question: z.string().describe('The specific question to ask the safety analyst')
+  }),
+  execute: async ({ question }) => {
+    console.log('🚗 Coordinator consulting safety analyst:', question)
+    const context = _currentExpertAnalyses.safety 
+      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.safety, null, 2)}\n\n`
+      : ''
+    const result = await run(safetyAnalystAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
+const askNewsIntel = tool({
+  name: 'ask_news_intel',
+  description: 'Ask the News Intelligence Agent to search for specific local information - neighboring district closures, community sentiment, road reports, or school announcements.',
+  parameters: z.object({
+    question: z.string().describe('The specific search or question for the news intel agent')
+  }),
+  execute: async ({ question }) => {
+    console.log('📰 Coordinator consulting news intel:', question)
+    const context = _currentExpertAnalyses.news 
+      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.news, null, 2)}\n\n`
+      : ''
+    const result = await run(newsIntelAgent, `${context}Follow-up request: ${question}`)
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
+const crossCheckExperts = tool({
+  name: 'cross_check_experts',
+  description: 'Ask two or more specialists to cross-check each other\'s analyses. Use when you see potential conflicts or want validation.',
+  parameters: z.object({
+    experts: z.array(z.enum(['meteorologist', 'historian', 'safety_analyst', 'news_intel'])).min(2).describe('Which experts to cross-check'),
+    question: z.string().describe('The specific aspect to cross-check or validate')
+  }),
+  execute: async ({ experts, question }) => {
+    console.log('🔄 Coordinator cross-checking experts:', experts.join(', '), '-', question)
+    const expertMap = {
+      meteorologist: { agent: meteorologistAgent, analysis: _currentExpertAnalyses.meteorology },
+      historian: { agent: historianAgent, analysis: _currentExpertAnalyses.history },
+      safety_analyst: { agent: safetyAnalystAgent, analysis: _currentExpertAnalyses.safety },
+      news_intel: { agent: newsIntelAgent, analysis: _currentExpertAnalyses.news }
+    }
+    
+    const combinedContext = experts.map(e => {
+      const data = expertMap[e]
+      return `${e.toUpperCase()} ANALYSIS:\n${JSON.stringify(data.analysis, null, 2)}`
+    }).join('\n\n')
+    
+    const primaryExpert = expertMap[experts[0]]
+    const result = await run(
+      primaryExpert.agent,
+      `Cross-check request. Here are the analyses from multiple experts:\n\n${combinedContext}\n\nWeather context:\n${_currentWeatherContext}\n\nQuestion to validate: ${question}\n\nProvide your perspective on this cross-check.`
+    )
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
+// ============================================================================
+// DECISION COORDINATOR (with agents-as-tools)
+// ============================================================================
+
 const decisionCoordinatorAgent = new Agent({
   name: 'Snow Day Decision Coordinator',
-  instructions: coordinatorPrompt,
+  instructions: coordinatorPrompt + `
+
+## AGENT CONSULTATION TOOLS
+
+You have direct access to consult your specialist team for follow-up questions:
+
+- **ask_meteorologist**: Get clarification on weather data, timing, precipitation types
+- **ask_historian**: Explore historical patterns, ask "has this happened before?"
+- **ask_safety_analyst**: Deep-dive on road conditions, plow timing math, commute risks
+- **ask_news_intel**: Search for latest local news, district announcements, community buzz
+- **cross_check_experts**: Have experts validate each other's analyses
+
+USE THESE TOOLS when:
+1. You see a conflict between expert analyses
+2. You need more detail on a specific aspect
+3. You want to validate your reasoning
+4. Something doesn't add up and you need clarification
+5. You want to confirm neighboring district status is current
+
+CRITICAL OUTPUT REQUIREMENT:
+You MUST respond with a JSON object matching this EXACT structure:
+{
+  "snow_day_probability": <number 0-100>,
+  "confidence_level": <"very_low"|"low"|"moderate"|"high"|"very_high">,
+  "primary_factors": [<array of strings>],
+  "timeline": {
+    "conditions_start": <string>,
+    "peak_impact_time": <string>,
+    "conditions_improve": <string>
+  },
+  "decision_rationale": <string explaining your reasoning>,
+  "alternative_scenarios": [{"scenario": <string>, "probability": <number>, "impact": <string>}],
+  "recommendations": {
+    "for_schools": [<array of strings>],
+    "for_residents": [<array of strings>],
+    "for_authorities": [<array of strings>]
+  },
+  "updates_needed": <boolean>,
+  "next_evaluation_time": <ISO datetime string>
+}
+
+DO NOT return temperature_analysis, precipitation_analysis, or raw weather data.
+Return ONLY the prediction decision structure above.`,
   model: 'gpt-5.1',
-  outputType: FinalPredictionSchema,
-  handoffs: [
-    handoff(meteorologistAgent, {
-      toolDescriptionOverride: 'Request additional meteorological analysis'
-    }),
-    handoff(historianAgent, {
-      toolDescriptionOverride: 'Request additional historical context'
-    }),
-    handoff(safetyAnalystAgent, {
-      toolDescriptionOverride: 'Request additional safety assessment'
-    }),
-    handoff(newsIntelAgent, {
-      toolDescriptionOverride: 'Request additional local news or community intelligence'
-    })
-  ]
+  tools: [askMeteorologist, askHistorian, askSafetyAnalyst, askNewsIntel, crossCheckExperts],
+  outputType: FinalPredictionSchema
 })
 
 // ============================================================================
@@ -482,19 +619,37 @@ ${JSON.stringify(newsResult.finalOutput, null, 2)}
 
 LOCATION: ${location}
 ANALYSIS TIMESTAMP: ${new Date().toISOString()}
+
+---
+REMINDER: You have tools to consult specialists for follow-up questions if needed:
+- ask_meteorologist, ask_historian, ask_safety_analyst, ask_news_intel, cross_check_experts
+Use them if you need clarification or see conflicts in the analyses above.
 `
+
+  // Store context for agent tools
+  _currentWeatherContext = weatherContext
+  _currentExpertAnalyses = {
+    meteorology: meteorologyResult.finalOutput,
+    history: historyResult.finalOutput,
+    safety: safetyResult.finalOutput,
+    news: newsResult.finalOutput
+  }
   
-  console.log('🎯 Running decision coordinator with handoff capability...')
+  console.log('🎯 Running decision coordinator (with agent consultation tools)...')
   
-  // Decision coordinator can use handoffs to request more info from specialists if needed
+  // Decision coordinator can now call agent tools for follow-ups
   const finalResult = await run(
     decisionCoordinatorAgent,
-    `Synthesize the expert analyses and make a final snow day prediction.
-    
-${expertAnalyses}
+    `Based on the expert analyses provided below, make a final snow day prediction and recommendation.
 
-If you need clarification from any specialist, you can hand off to them.
-Otherwise, provide your final prediction.`
+Before finalizing, consider:
+1. Do any expert analyses conflict? If so, use your tools to clarify.
+2. Is the plow timing math clear? If not, ask the safety analyst.
+3. Are neighboring district closures confirmed? If uncertain, ask news intel.
+
+Synthesize all inputs and provide a comprehensive decision with clear rationale and confidence levels.
+
+${expertAnalyses}`
   )
   
   // Validate the final output matches expected schema
