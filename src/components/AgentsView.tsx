@@ -11,7 +11,8 @@ import {
   Books,
   ShieldCheck,
   CirclesThreePlus,
-  Sparkle
+  Sparkle,
+  Newspaper
 } from '@phosphor-icons/react'
 import type { IconProps } from '@phosphor-icons/react'
 import type { AgentPrediction } from '@/types/agentPrediction'
@@ -25,7 +26,7 @@ const CONFIDENCE_LABELS: Record<AgentPrediction['final']['confidence_level'], st
   very_high: 'Very High'
 }
 
-type AgentId = 'meteorology' | 'history' | 'safety' | 'final'
+type AgentId = 'meteorology' | 'history' | 'safety' | 'news' | 'final'
 
 type AgentProfile = {
   id: AgentId
@@ -61,7 +62,7 @@ const agentProfiles: AgentProfile[] = [
     title: 'Atmospheric Signal Hunter',
     mission: 'Blends live radar, model guidance, and alert feeds into a clean snapshot for the rest of the crew.',
     focusAreas: ['Temperature structure', 'Precip type & timing', 'Wind + visibility'],
-    tools: ['get_weather_data', 'search_weather_context'],
+    tools: ['get_weather_data', 'web_search'],
     deliverables: ['Quantitative weather analysis', 'Alert digest', 'Overnight vs. morning breakdowns'],
     model: 'gpt-5.1',
     tone: 'Technical + precise',
@@ -74,7 +75,7 @@ const agentProfiles: AgentProfile[] = [
     title: 'Context Archivist',
     mission: 'Finds the closest historical analogs, seasonal oddities, and local quirks that bend the odds.',
     focusAreas: ['Analog events', 'Seasonal norms', 'Microclimate flags'],
-    tools: ['search_weather_context'],
+    tools: ['web_search'],
     deliverables: ['Historical hit rate', 'Seasonal adjustment', 'Confidence commentary'],
     model: 'gpt-5.1',
     tone: 'Story-driven + data-backed',
@@ -87,12 +88,25 @@ const agentProfiles: AgentProfile[] = [
     title: 'Mobility Risk Forecaster',
     mission: 'Scores roads, sidewalks, and bus routes so the threat to travelers is crystal clear.',
     focusAreas: ['Road surface risk', 'Commute timing', 'Emergency access'],
-    tools: ['get_weather_data'],
+    tools: ['get_weather_data', 'web_search'],
     deliverables: ['Roadway scorecard', 'Safety recommendations', 'Impact timeline'],
     model: 'gpt-5.1',
     tone: 'Direct + pragmatic',
     icon: ShieldCheck,
     gradient: 'from-emerald-500/30 via-teal-400/15 to-transparent'
+  },
+  {
+    id: 'news',
+    name: 'Local News Intelligence',
+    title: 'Community Signal Scanner',
+    mission: 'Scours local news, social media, and community chatter for real-time signals that could tip the scales.',
+    focusAreas: ['Local news', 'Social signals', 'District announcements'],
+    tools: ['web_search'],
+    deliverables: ['News digest', 'Community sentiment', 'Neighboring district closures'],
+    model: 'gpt-5.1',
+    tone: 'Investigative + thorough',
+    icon: Newspaper,
+    gradient: 'from-rose-500/30 via-red-400/15 to-transparent'
   },
   {
     id: 'final',
@@ -127,6 +141,12 @@ const workflowSteps: WorkflowStep[] = [
     description: 'The Safety Analyst scores roads, buses, and walking routes hour-by-hour.',
     handoff: 'Publishes a risk tier plus actionable safety guidance.',
     icon: ShieldCheck
+  },
+  {
+    title: 'Scour local intelligence',
+    description: 'The News Intelligence agent searches local news, social media, and community chatter for real-time signals.',
+    handoff: 'Delivers news digest, community sentiment, and neighboring district closure alerts.',
+    icon: Newspaper
   },
   {
     title: 'Coordinate the final call',
@@ -285,6 +305,39 @@ export function AgentsView() {
       }
     }
 
+    const { news } = prediction
+    if (news && !hasError(news)) {
+      const sentimentLabel = {
+        expecting_closure: '🔴 Expecting closure',
+        uncertain: '🟡 Uncertain',
+        expecting_school: '🟢 Expecting school',
+        no_buzz: '⚪ No buzz'
+      }[news.community_intel?.social_media_sentiment] || 'Scanning...'
+      
+      const neighboringClosures = news.school_district_signals?.neighboring_district_closures?.length || 0
+      
+      result.news = {
+        headline: sentimentLabel,
+        summary: news.key_findings_summary,
+        callouts: [
+          {
+            label: 'Neighboring Closures',
+            value: neighboringClosures > 0 ? `${neighboringClosures} district${neighboringClosures > 1 ? 's' : ''}` : 'None reported'
+          },
+          {
+            label: 'Power Outages',
+            value: news.community_intel?.power_outage_reports ? 'Reported' : 'None'
+          }
+        ]
+      }
+    } else if (news && hasError(news)) {
+      result.news = {
+        headline: 'Data temporarily unavailable',
+        summary: 'The news intelligence agent encountered an issue. Will retry on next run.',
+        callouts: []
+      }
+    }
+
     if (final) {
       result.final = {
         headline: `${formatPercent(final.snow_day_probability)} chance • ${formatConfidence(final.confidence_level)}`,
@@ -310,9 +363,9 @@ export function AgentsView() {
         <CardHeader className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-primary">Meet the automation crew</p>
-            <CardTitle className="mt-2 text-2xl sm:text-3xl">Four specialists, one crystal-clear call</CardTitle>
+            <CardTitle className="mt-2 text-2xl sm:text-3xl">Five specialists, one crystal-clear call</CardTitle>
             <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-              Every forecast run is a round-table between meteorology, historical context, safety, and decision science.
+              Every forecast run is a round-table between meteorology, historical context, safety, local news intelligence, and decision science.
             </p>
           </div>
           <div className="rounded-2xl border border-primary/40 bg-background/70 px-5 py-4 text-right">

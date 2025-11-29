@@ -36,6 +36,7 @@ import { getRelevantWeatherInformation } from './weatherProcessing'
 import meteorologistPrompt from './prompts/meteorologist.txt?raw'
 import historianPrompt from './prompts/historian.txt?raw'
 import safetyAnalystPrompt from './prompts/safety-analyst.txt?raw'
+import newsIntelPrompt from './prompts/news-intel.txt?raw'
 import decisionCoordinatorPrompt from './prompts/decision-coordinator.txt?raw'
 
 const WEATHER_API_KEY_MISSING_MESSAGE = 'Weather API key is not configured. Please set VITE_WEATHER_API_KEY to run the snow day prediction agents.'
@@ -124,6 +125,28 @@ const SafetyAnalysisSchema = z.object({
   risk_level: z.enum(['low', 'moderate', 'high', 'severe'])
 })
 
+const NewsAnalysisSchema = z.object({
+  local_news: z.array(z.object({
+    source: z.string(),
+    headline: z.string(),
+    summary: z.string(),
+    relevance: z.enum(['high', 'medium', 'low']),
+    url: z.string().optional()
+  })),
+  school_district_signals: z.object({
+    official_announcements: z.array(z.string()),
+    early_dismissal_history: z.boolean(),
+    neighboring_district_closures: z.array(z.string())
+  }),
+  community_intel: z.object({
+    social_media_sentiment: z.enum(['expecting_closure', 'uncertain', 'expecting_school', 'no_buzz']),
+    reported_road_conditions: z.array(z.string()),
+    power_outage_reports: z.boolean(),
+    local_event_cancellations: z.array(z.string())
+  }),
+  key_findings_summary: z.string()
+})
+
 const FinalPredictionSchema = z.object({
   snow_day_probability: z.number().min(0).max(100),
   confidence_level: z.enum(['very_low', 'low', 'moderate', 'high', 'very_high']),
@@ -204,6 +227,15 @@ export const safetyAnalystAgent = new Agent({
   handoffDescription: 'Expert in transportation safety and travel risk assessment. Consult for road conditions, commute impact analysis, and safety recommendations.'
 })
 
+export const newsIntelAgent = new Agent({
+  name: 'Local News Intelligence',
+  instructions: newsIntelPrompt,
+  model: 'gpt-5.1',
+  tools: [webSearchTool()],  // Web search is the primary tool for scouring news/social media
+  outputType: NewsAnalysisSchema,
+  handoffDescription: 'Expert in local Rockford, MI news, social media, school district announcements, and community intelligence. Consult for real-time local signals and community sentiment.'
+})
+
 // Decision Coordinator with handoffs to specialist agents for follow-up queries
 export const decisionCoordinatorAgent = Agent.create({
   name: 'Snow Day Decision Coordinator',
@@ -220,6 +252,9 @@ export const decisionCoordinatorAgent = Agent.create({
     }),
     handoff(safetyAnalystAgent, {
       toolDescriptionOverride: 'Request additional safety assessment or transportation risk analysis'
+    }),
+    handoff(newsIntelAgent, {
+      toolDescriptionOverride: 'Request additional local news, social media signals, or community intelligence'
     })
   ]
 })
@@ -229,6 +264,7 @@ export async function runSnowDayPrediction(): Promise<{
   meteorology: z.infer<typeof WeatherAnalysisSchema>
   history: z.infer<typeof HistoricalAnalysisSchema>
   safety: z.infer<typeof SafetyAnalysisSchema>
+  news: z.infer<typeof NewsAnalysisSchema>
   final: z.infer<typeof FinalPredictionSchema>
   timestamp: string
   location: string
@@ -245,10 +281,11 @@ export async function runSnowDayPrediction(): Promise<{
     
     // Run agents in parallel for efficiency
     console.log('🔄 Running expert analysis agents...')
-    const [meteorologyResult, historyResult, safetyResult] = await Promise.all([
+    const [meteorologyResult, historyResult, safetyResult, newsResult] = await Promise.all([
       run(meteorologistAgent, `Analyze the current weather forecast and conditions for snow day prediction. Focus on overnight and morning conditions that would impact school operations and transportation safety.`),
       run(historianAgent, `Provide historical context and pattern analysis for the current weather situation. Compare to similar past events and provide climatological perspective for this time of year and location: ${location}.`),
-      run(safetyAnalystAgent, `Evaluate transportation safety and travel conditions based on the forecasted weather. Assess risks for school transportation, student/staff commuting, and campus operations.`)
+      run(safetyAnalystAgent, `Evaluate transportation safety and travel conditions based on the forecasted weather. Assess risks for school transportation, student/staff commuting, and campus operations.`),
+      run(newsIntelAgent, `Search for any local news, social media signals, school district announcements, or community chatter about weather conditions and potential school closures in Rockford, Michigan and surrounding areas. Look for signals from neighboring districts, local news stations, and community sentiment.`)
     ])
     
     console.log('🎯 Coordinating final decision...')
@@ -263,6 +300,9 @@ ${JSON.stringify(historyResult.finalOutput, null, 2)}
 
 SAFETY ASSESSMENT:
 ${JSON.stringify(safetyResult.finalOutput, null, 2)}
+
+LOCAL NEWS & COMMUNITY INTELLIGENCE:
+${JSON.stringify(newsResult.finalOutput, null, 2)}
 
 LOCATION: ${location}
 ANALYSIS TIMESTAMP: ${new Date().toISOString()}
@@ -282,6 +322,7 @@ ${expertAnalyses}`
       meteorology: meteorologyResult.finalOutput || {} as z.infer<typeof WeatherAnalysisSchema>,
       history: historyResult.finalOutput || {} as z.infer<typeof HistoricalAnalysisSchema>,
       safety: safetyResult.finalOutput || {} as z.infer<typeof SafetyAnalysisSchema>,
+      news: newsResult.finalOutput || {} as z.infer<typeof NewsAnalysisSchema>,
       final: finalResult.finalOutput || {} as z.infer<typeof FinalPredictionSchema>,
       timestamp: new Date().toISOString(),
       location
@@ -298,5 +339,6 @@ export {
   WeatherAnalysisSchema,
   HistoricalAnalysisSchema,
   SafetyAnalysisSchema,
+  NewsAnalysisSchema,
   FinalPredictionSchema
 }
