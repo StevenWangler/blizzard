@@ -50,8 +50,8 @@ interface WeatherData {
   lastUpdated: string
 }
 
-// GitHub Actions schedule: 7 AM, 12 PM, 6 PM EST
-const REFRESH_TIMES_UTC = [12, 17, 23] // 12:00, 17:00, 23:00 UTC
+// GitHub Actions schedule: 9 AM, 1 PM, 6 PM EST
+const REFRESH_TIMES_UTC = [14, 18, 23] // 14:00, 18:00, 23:00 UTC
 
 function getNextRefreshTime(): Date {
   const now = new Date()
