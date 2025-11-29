@@ -1,5 +1,39 @@
-import { createContext, createElement, useContext, useEffect, useState, type ReactNode } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { createContext, createElement, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
+
+// Safe wrapper for useKV that falls back to useState when Spark KV is unavailable
+function useSafeKV<T>(key: string, defaultValue: T): [T, (value: T | ((prev: T) => T)) => void] {
+  const [state, setState] = useState<T>(defaultValue)
+  const [initialized, setInitialized] = useState(false)
+
+  // Try to load from localStorage on mount as fallback
+  useEffect(() => {
+    if (initialized) return
+    try {
+      const stored = localStorage.getItem(`spark_kv_${key}`)
+      if (stored) {
+        setState(JSON.parse(stored))
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+    setInitialized(true)
+  }, [key, initialized])
+
+  const setValue = useCallback((value: T | ((prev: T) => T)) => {
+    setState(prev => {
+      const newValue = typeof value === 'function' ? (value as (prev: T) => T)(prev) : value
+      // Also persist to localStorage as backup
+      try {
+        localStorage.setItem(`spark_kv_${key}`, JSON.stringify(newValue))
+      } catch {
+        // Ignore localStorage errors
+      }
+      return newValue
+    })
+  }, [key])
+
+  return [state, setValue]
+}
 
 export interface WeatherTheme {
   name: string
@@ -535,8 +569,8 @@ interface WeatherThemeContextValue {
 const WeatherThemeContext = createContext<WeatherThemeContextValue | null>(null)
 
 function useProvideWeatherTheme(): WeatherThemeContextValue {
-  const [weatherConditions, setWeatherConditions] = useKV<{snowfall: number, windSpeed: number, visibility: number} | null>('weather-conditions', null)
-  const [isDarkMode, setIsDarkMode] = useKV<boolean>('dark-mode', false)
+  const [weatherConditions, setWeatherConditions] = useSafeKV<{snowfall: number, windSpeed: number, visibility: number} | null>('weather-conditions', null)
+  const [isDarkMode, setIsDarkMode] = useSafeKV<boolean>('dark-mode', false)
   const [currentTheme, setCurrentTheme] = useState<string>('clear')
 
   useEffect(() => {
