@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { SnowfallCanvas } from '@/components/SnowfallCanvas'
 import { AnimatedProbability } from '@/components/AnimatedProbability'
 import { NarrativeSummary } from '@/components/NarrativeSummary'
@@ -26,7 +27,9 @@ import {
   Sparkle,
   Info,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  CaretDown,
+  CaretRight
 } from '@phosphor-icons/react'
 import { WeatherService } from '@/services/weather'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
@@ -95,6 +98,8 @@ export function EnhancedPredictionView() {
   const [recentAverage, setRecentAverage] = useState<number | null>(null)
   const [trendError, setTrendError] = useState<string | null>(null)
   const [trendLoading, setTrendLoading] = useState(true)
+  const [rationaleOpen, setRationaleOpen] = useState(false)
+  const [spotlightOpen, setSpotlightOpen] = useState(false)
   const [lastUpdateMeta, setLastUpdateMeta] = useState<{ formatted: string; nextRefresh: string }>({
     formatted: '',
     nextRefresh: ''
@@ -410,24 +415,31 @@ export function EnhancedPredictionView() {
             <Progress value={probability} className="h-2 sm:h-3" />
           </div>
 
-          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg p-5 sm:p-6 text-left border border-primary/20 mt-6">
-            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
-              <Brain size={16} className="text-primary" />
-              {prediction ? 'AI Decision Rationale' : 'Weather Analysis'}
-            </h4>
-            {prediction ? (
-              <Markdown 
-                content={prediction.final?.decision_rationale ?? 'No rationale available'} 
-                className="text-sm text-muted-foreground" 
-              />
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                {fallbackWeather 
-                  ? generateFallbackRationale(fallbackWeather)
-                  : 'No rationale available'}
-              </p>
-            )}
-          </div>
+          <Collapsible open={rationaleOpen} onOpenChange={setRationaleOpen} className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg text-left border border-primary/20 mt-6">
+            <CollapsibleTrigger asChild>
+              <button className="w-full p-5 sm:p-6 flex items-center justify-between cursor-pointer hover:bg-primary/5 transition-colors rounded-lg">
+                <h4 className="font-semibold text-sm flex items-center gap-2">
+                  <Brain size={16} className="text-primary" />
+                  {prediction ? 'AI Decision Rationale' : 'Weather Analysis'}
+                </h4>
+                <CaretDown size={16} className={`text-muted-foreground transition-transform ${rationaleOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-5 sm:px-6 pb-5 sm:pb-6">
+              {prediction ? (
+                <Markdown 
+                  content={prediction.final?.decision_rationale ?? 'No rationale available'} 
+                  className="text-sm text-muted-foreground" 
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {fallbackWeather 
+                    ? generateFallbackRationale(fallbackWeather)
+                    : 'No rationale available'}
+                </p>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
         </CardContent>
       </Card>
       </motion.div>
@@ -435,63 +447,80 @@ export function EnhancedPredictionView() {
       <ConditionPulse />
 
       {prediction && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
-            <CardHeader className="space-y-3 p-6 sm:p-8 pb-2">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Sparkle size={18} className="text-primary" />
-                AI Spotlight
-              </CardTitle>
-              {prediction.meteorology?.overall_conditions_summary && (
-                <Markdown 
-                  content={prediction.meteorology.overall_conditions_summary} 
-                  className="text-sm text-muted-foreground [&_p]:my-0" 
-                />
+            <CardHeader className="space-y-3 p-6 sm:p-8 pb-4">
+              <button 
+                onClick={() => setSpotlightOpen(!spotlightOpen)}
+                className="w-full text-left hover:bg-primary/5 transition-colors rounded-xl -m-2 p-2 cursor-pointer"
+              >
+                <CardTitle className="flex items-center justify-between text-lg">
+                  <span className="flex items-center gap-2">
+                    <Sparkle size={18} className="text-primary" />
+                    AI Spotlight
+                  </span>
+                  <CaretDown size={18} className={`text-muted-foreground transition-transform ${spotlightOpen ? 'rotate-180' : ''}`} />
+                </CardTitle>
+              </button>
+              {!spotlightOpen && prediction.meteorology?.overall_conditions_summary && (
+                <p className="text-sm text-muted-foreground line-clamp-3">
+                  {prediction.meteorology.overall_conditions_summary}
+                </p>
               )}
             </CardHeader>
-            <CardContent className="space-y-6 px-6 sm:px-8 pb-6 sm:pb-8 pt-0">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Top drivers</p>
-                <ul className="mt-3 space-y-2">
-                  {prediction.final?.primary_factors?.slice(0, 3).map((factor, index) => (
-                    <li key={index} className="flex items-start gap-2.5 text-sm">
-                      <span className="text-primary mt-0.5">•</span>
-                      <Markdown content={factor} className="[&_p]:my-0 [&_p]:inline" />
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {spotlightOpen && (
+              <div className="px-6 sm:px-8 pb-6 sm:pb-8">
+                {prediction.meteorology?.overall_conditions_summary && (
+                  <Markdown 
+                    content={prediction.meteorology.overall_conditions_summary} 
+                    className="text-sm text-muted-foreground [&_p]:my-0 mb-6" 
+                  />
+                )}
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Top drivers</p>
+                    <ul className="mt-3 space-y-2">
+                      {prediction.final?.primary_factors?.slice(0, 3).map((factor, index) => (
+                        <li key={index} className="flex items-start gap-2.5 text-sm">
+                          <span className="text-primary mt-0.5">•</span>
+                          <Markdown content={factor} className="[&_p]:my-0 [&_p]:inline" />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Season shift</p>
-                  <p className="text-2xl font-semibold">
-                    {(prediction.history?.seasonal_context?.seasonal_probability_adjustment ?? 0) >= 0 ? '+' : ''}
-                    {prediction.history?.seasonal_context?.seasonal_probability_adjustment ?? 0}
-                    <span className="text-sm font-medium ml-1">pts</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground">vs typical mid-season odds</p>
-                </div>
-                <div className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Confidence</p>
-                  <p className="text-lg font-semibold capitalize">{prediction.final?.confidence_level?.replace('_', ' ') ?? 'Unknown'}</p>
-                  <p className="text-xs text-muted-foreground">Next update by {prediction.final?.next_evaluation_time ?? 'TBD'}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm">
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">Season shift</p>
+                      <p className="text-2xl font-semibold">
+                        {(prediction.history?.seasonal_context?.seasonal_probability_adjustment ?? 0) >= 0 ? '+' : ''}
+                        {prediction.history?.seasonal_context?.seasonal_probability_adjustment ?? 0}
+                        <span className="text-sm font-medium ml-1">pts</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">vs typical mid-season odds</p>
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm">
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">Confidence</p>
+                      <p className="text-lg font-semibold capitalize">{prediction.final?.confidence_level?.replace('_', ' ') ?? 'Unknown'}</p>
+                      <p className="text-xs text-muted-foreground">Next update by {prediction.final?.next_evaluation_time ?? 'TBD'}</p>
+                    </div>
+                  </div>
+
+                  {(prediction.history?.seasonal_context?.unusual_factors?.length ?? 0) > 0 && (
+                    <div className="flex flex-wrap gap-2.5">
+                      {prediction.history?.seasonal_context?.unusual_factors?.slice(0, 3).map((factor, index) => (
+                        <span
+                          key={index}
+                          className="rounded-full bg-primary/10 text-primary text-xs px-3.5 py-1.5"
+                        >
+                          {factor}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {(prediction.history?.seasonal_context?.unusual_factors?.length ?? 0) > 0 && (
-                <div className="flex flex-wrap gap-2.5">
-                  {prediction.history?.seasonal_context?.unusual_factors?.slice(0, 3).map((factor, index) => (
-                    <span
-                      key={index}
-                      className="rounded-full bg-primary/10 text-primary text-xs px-3.5 py-1.5"
-                    >
-                      {factor}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </CardContent>
+            )}
           </Card>
 
           <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
