@@ -1,12 +1,12 @@
 {
   "meteorology": {
     "temperature_analysis": {
-      "current_temp_f": 24,
+      "current_temp_f": 26.5,
       "overnight_low_f": 23.7,
       "morning_high_f": 29,
       "freezing_hours": 24,
       "temperature_trend": "rising",
-      "windchill_factor": -7.9
+      "windchill_factor": -7
     },
     "precipitation_analysis": {
       "snow_probability_overnight": 0,
@@ -25,70 +25,58 @@
       "minimum_visibility_miles": 1,
       "avg_visibility_miles": 4,
       "visibility_factors": [
-        "low clouds/overcast",
-        "patchy mist or fog at times"
+        "low stratus/overcast",
+        "patchy mist or haze at times"
       ]
     },
-    "alert_summary": [
-      {
-        "type": "Winter Storm Warning (nearby counties, expires 2025-12-02 07:00 AM)",
-        "severity": "severe",
-        "description": "Heavy snow impacts early Tuesday in Ottawa/Muskegon/Mason/Oceana, but this warning ends a full day before the target school day."
-      },
-      {
-        "type": "Winter Weather Advisory (nearby counties, expires 2025-12-02 07:00 AM)",
-        "severity": "moderate",
-        "description": "Light additional snow early Tuesday in Lake/Newaygo; also ends well before Wednesday and does not overlap the 12/03 school commute."
-      }
-    ],
-    "overall_conditions_summary": "For Rockford, MI on Wednesday 2025-12-03, conditions are cold, dry, and overcast. Temperatures stay below freezing overnight (low around 24°F, wind chills in the low teens) and slowly rise to just above freezing in the afternoon (max around 33°F). Winds increase into the 10–18 mph range with gusts into the low-to-mid 20s mph, producing noticeable wind chill but not damaging wind. Crucially, there is no forecast precipitation: hourly data show 0.00\" precip and 0 snow all day and night, with model chances of snow and rain both at 0%. Visibility is generally 4–6 miles, occasionally as low as about 1 mile in thicker low clouds or patchy fog, but not at blizzard or heavy-snow levels. Prior winter storm alerts for surrounding counties (Winter Storm Warning and Winter Weather Advisory) end early Tuesday morning, more than 24 hours before the Wednesday morning commute. Roads may be somewhat snow-packed or icy in spots from earlier events, but with no new snow or ice during the overnight and commute period, road crews in West Michigan should easily keep main routes and bus lines in good condition. Overall, this pattern—dry, cold, breezy, and simply overcast—is well within normal winter operating conditions for Michigan schools. Based on the forecast alone, the likelihood of a weather-related school closure or delay for Wednesday 2025-12-03 is very low."
+    "alert_summary": [],
+    "overall_conditions_summary": "For Rockford, Michigan on Wednesday, 2025-12-03, conditions are cold, breezy, and overcast but dry. Temperatures remain below freezing much of the day (mid 20s in the morning to around 32–33°F in the afternoon), with wind chills frequently in the teens due to 10–18 mph winds and gusts into the low-20s mph range. However, forecast precipitation is essentially zero all day and night—no rain, no snow, and no freezing drizzle indicated in the hourly data. Visibility is occasionally reduced to around 1–2 miles under low clouds and mist but generally remains adequate for travel, with no heavy fog or blowing snow. There are no active weather alerts. In a Michigan context—where schools routinely operate with several inches of snow and even moderate cold—these conditions are typical winter weather rather than disruptive. Roads may have some residual slick spots from prior freezing precipitation, but with no new snow or ice falling and temperatures hovering near or just below freezing, this setup does not meet typical closure criteria. Overall, the meteorological risk for a snow day or widespread school closure on Wednesday, 2025-12-03 is very low."
   },
   "history": {
     "similar_weather_patterns": [
       {
-        "pattern_description": "Dry, overcast early-December day following a prior winter storm/advisory period; temps in the 20s–low 30s, moderate winds (15–25 mph), but no ongoing snow, ice, or new accumulation during the school commute window.",
+        "pattern_description": "Early December days with temps in the 20s–low 30s, overcast, dry or trace precip, and modest winds (15–25 mph gusts) but no active winter storm or ice event",
+        "historical_snow_day_rate": 0.01,
+        "confidence_level": "high"
+      },
+      {
+        "pattern_description": "Cold, cloudy mornings around 8–9°F actual temp or 10–20°F wind chill, but improving through the day with no accumulating snow or freezing rain during commute windows",
         "historical_snow_day_rate": 0.02,
         "confidence_level": "high"
       },
       {
-        "pattern_description": "Lingering winter storm headlines in nearby counties the prior day (winter storm warning/advisory through early 12/02) with roads mostly plowed and just patchy slick spots by the following day, under cloudy but calm weather.",
-        "historical_snow_day_rate": 0.05,
+        "pattern_description": "High humidity, mist/fog or freezing fog preceding a dry, overcast day with sub-freezing temps but treated/clear roads and no new precipitation",
+        "historical_snow_day_rate": 0.03,
         "confidence_level": "medium"
-      },
-      {
-        "pattern_description": "Cold, breezy, overcast day with wind chills in the single digits to teens above zero, but well above the extreme cold closure benchmark of about -15°F wind chill.",
-        "historical_snow_day_rate": 0.01,
-        "confidence_level": "high"
       }
     ],
     "seasonal_context": {
-      "typical_conditions_for_date": "For early December in Rockford and the broader West Michigan region, it is common to see daytime highs in the upper 20s to low 30s°F, frequent cloud cover, and intermittent lake-effect snow or light mixed precipitation. Schools are accustomed to operating with some snow on the ground, cold morning temperatures, and occasionally slick secondary roads. Closures in this window usually require either a fresh, poorly timed heavy snow event (8–10+ inches overnight into the commute), an ice storm causing widespread glazing, or dangerous wind chills well below zero.",
+      "typical_conditions_for_date": "For Rockford and the Grand Rapids area in early December, it is common to see highs in the upper 20s to low 30s°F, lows in the teens or 20s°F, frequent cloud cover, and intermittent light snow or freezing drizzle. True winter storms and lake-effect bursts do occur, but many school days in this period feature exactly what’s forecast here: cold, gray, and breezy, with little or no new accumulation on the day itself.",
       "unusual_factors": [
-        "A winter storm warning and winter weather advisory were in effect for nearby counties (Ottawa, Muskegon, Mason, Oceana, Lake, Newaygo) through the early morning of Tuesday 2025-12-02, which may have created plow and cleanup operations regionally, but these alerts expire a full day before the target school day.",
-        "Despite recent winter weather, the forecast for Wednesday 2025-12-03 itself shows no accumulating snow, no freezing rain or drizzle, and no significant visibility reductions during typical bus and parent drop-off times.",
-        "Wind chills during the morning bus run fall around 10–15°F above zero, which is cold but nowhere near the extreme cold thresholds Michigan districts typically use for closure decisions."
+        "Forecast shows essentially zero precipitation (0.0\" liquid, 0.0 cm snow) through the entire school day on December 3, which is on the quiet side for this time of year.",
+        "Winds are a bit brisk (sustained in the teens, gusts near 25–30 mph) but well below blizzard thresholds, and visibility mostly remains several miles.",
+        "Wind chills in the morning commute window are in the low teens °F, noticeably cold but not in the extreme-cold range that Michigan districts use for closures."
       ],
-      "seasonal_probability_adjustment": -0.1
+      "seasonal_probability_adjustment": -0.05
     },
     "location_specific_factors": {
       "local_microclimates": [
-        "Rockford, north of Grand Rapids and in West Michigan’s lake-effect belt, regularly experiences early-season snow and slick roads; transportation departments and school operations are generally well adapted to these conditions.",
-        "Proximity to areas that just had a winter storm warning/advisory means some rural or less-traveled roads could retain compacted snow or isolated icy patches, but this is a routine scenario for December travel here, not typically a closure trigger by itself."
+        "Rockford is just north of Grand Rapids and can see localized slick spots from freezing drizzle or fog, especially on rural and shaded roads, but that risk is tied to active precip, which is largely absent in this forecast.",
+        "Being inland from Lake Michigan, Rockford does get lake-effect snow bands at times, but no banded or convective snow signal appears in the hour-by-hour data for December 3."
       ],
       "infrastructure_considerations": [
-        "Road crews in Kent County are experienced with clearing post-storm snow and treating main routes before the next school day when no new precipitation is occurring.",
-        "School bus fleets and operations are planned around frequent freezing temperatures; days with dry roads, even if cold and overcast, almost always proceed as normal.",
-        "Because Michigan districts rarely close for temperature alone unless wind chills drop below roughly -15°F, the forecast wind chills in the low teens are well within normal operating range."
+        "Road crews and school transportation in this part of Michigan are very experienced with routine cold, light freezing drizzle, and patchy ice; they generally keep main routes passable in conditions like those on December 2–3.",
+        "Districts in Kent County (including Rockford) rarely cancel for cold unless wind chills drop toward -15°F or below, and they usually require significant active snow, ice storms, or whiteout conditions coinciding with bus times to close."
       ],
-      "elevation_impact": "Local elevation variations around Rockford can slightly enhance prior lake-effect snow accumulation on the higher ridges, but with no ongoing snow or ice on 2025-12-03, elevation-related differences mainly affect how long old snowpack persists on side roads, not enough to broadly justify a closure."
+      "elevation_impact": "Rockford’s modest elevation and terrain can slightly enhance localized icing in low spots and on hills, but given the absence of new precip and only moderate winds, this does not materially raise closure risk for December 3."
     },
-    "confidence_assessment": "Given the forecast for Wednesday 2025-12-03 in Rockford, Michigan—dry and overcast, no forecast snow or ice, temperatures in the 20s to low 30s°F, and wind chills staying roughly 10–15°F above zero—the setup does not align with historical closure patterns in this region. Michigan districts, including those in West Michigan, almost never cancel solely for cold at these levels or for routine post-storm slick spots when no additional precipitation is falling. Historically comparable days (cold, gray, breezy, but dry and post-storm) almost always have school in session, with at most minor delays if localized refreeze is worse than expected. Therefore, the implied probability of a snow day for Wednesday 2025-12-03 is very low, and the historical context strongly supports a normal school day proceeding as scheduled."
+    "confidence_assessment": "Given the forecast for Wednesday, 2025-12-03 in Rockford, MI—lows in the mid-20s°F, highs near 33°F, steady overcast, no measurable snow or rain, no ice storm signal, and wind chills in the low teens with gusts under 40 mph—the pattern aligns with a very typical early-December, in-school day for this area. Historically, Rockford and similar West Michigan districts almost never cancel school under conditions of dry roads, no active storm, and non-extreme cold, even if it is gray, breezy, and unpleasant. The prior day (Dec 2) shows some light freezing rain/mist and freezing fog, which could create isolated slick spots, but by the target day there is no indication of ongoing icing or accumulating snow during the morning commute or the rest of the school day. Comparing this setup to past early-December events in West Michigan, the snow-day rate for similar patterns is around 1–3%, driven mainly by occasional localized icing that proves worse than expected, not by the forecast pattern itself. Overall, the historical and meteorological context strongly point toward school being in session on December 3, with only a very low probability that unforeseen road icing or an unmodeled band of precip would prompt a closure or delay."
   },
   "safety": {
     "road_conditions": {
       "primary_roads_score": 9,
-      "secondary_roads_score": 8,
-      "parking_lots_score": 8,
+      "secondary_roads_score": 9,
+      "parking_lots_score": 9,
       "ice_formation_risk": "moderate"
     },
     "travel_safety": {
@@ -104,122 +92,137 @@
       "afternoon_impact": "minimal"
     },
     "safety_recommendations": [
-      "No new snow or mixed precip is forecast overnight into the Wednesday, 2025-12-03 morning commute; expect dry but cold pavement with overcast skies.",
-      "Temperatures remain in the low-to-mid 20s°F (around -4°C) during the 6–8 AM commute, so any existing melt or slush from prior events will stay frozen; spot black ice is possible on untreated side streets, bridges, and parking lots.",
-      "Winds 13–18 mph with higher gusts can cause wind chill in the low teens, so students waiting at stops should be dressed for cold and wind (hats, gloves, face covering).",
-      "Primary roads and bus routes should be in good shape given no active precipitation and Michigan’s plow/salt operations working after the earlier system.",
-      "Advise transportation staff and parents to watch for isolated slick patches in shaded areas, residential streets, and school lots/sidewalks, but overall travel should be routine winter driving.",
-      "Based on this forecast alone, conditions are not sufficient to justify a full snow day or delay for Rockford on 2025-12-03; normal schedule with standard winter cautions is appropriate."
+      "No new snow or mixed precip is forecast from 00:00–08:00 on Wednesday; expect dry but cold pavement with subfreezing temps (-4 to -3 °C / low‑mid 20s °F). Standard winter operations should be sufficient.",
+      "Winds 10–18 mph with gusts into low 20s mph may create wind‑chill near 10–15 °F during the early morning; advise students and staff to dress for cold and limit time outdoors at bus stops.",
+      "Because temperatures remain below freezing until midday and humidity is high (>90%), watch for isolated refreeze/black ice in spots that were wet from prior light freezing rain or mist—bridges, shaded curves, and parking‑lot entrances.",
+      "Have transportation staff and SROs do early-morning spot checks of known slick spots (bridge decks, hilltops, rural curves) between 5:30–6:30 AM, but widespread treatment is unlikely to be necessary.",
+      "Visibility is generally good (around 10 km / 6 mi during the commute) with overcast skies; no fog, blowing snow, or heavy precipitation is expected to impair bus or parent traffic.",
+      "Plan for a normal, on-time start; based on this forecast there is no justification for a weather-related delay or closure for Wednesday, 2025-12-03."
     ],
     "risk_level": "low"
   },
   "news": {
     "local_news": [
       {
-        "source": "National Weather Service / Forecast APIs",
-        "headline": "Light snow and flurries with slick spots expected Wednesday, Dec. 3 in Rockford, MI area",
-        "summary": "Latest forecast for Rockford, Michigan (Kent County) shows Wednesday, Dec. 3, 2025 will be chilly with intermittent light snow and flurries. Accumulations are expected to be minor (around a centimeter or so), but forecasters flag potential for slippery spots on untreated roads and sidewalks, especially during the morning commute. No winter storm warnings or major advisories specific to Rockford, MI are evident at this time.",
+        "source": "National Weather Service / local TV aggregates",
+        "headline": "Winter weather for West Michigan on Wednesday, December 3, 2025",
+        "summary": "Forecasts for Kent County (including Rockford) for Wednesday, Dec. 3, 2025, show seasonable early‑December conditions with a chance of light snow showers and typical cold but no major winter storm, blizzard, or ice event currently highlighted for the morning commute period. Travel impacts are expected to be minor with standard winter driving precautions.",
         "relevance": "high",
-        "url": "https://forecast.weather.gov/"
+        "url": "https://www.weather.gov"
       },
       {
-        "source": "FOX 17 West Michigan Closings Page",
-        "headline": "West Michigan school closings and delays board (no advance listings yet for Dec. 3, 2025)",
-        "summary": "The FOX 17 (Grand Rapids) closings page is active for West Michigan schools and organizations, including Kent County districts, but as of the latest check there are no posted closures or delays specific to Wednesday, Dec. 3, 2025 for Rockford Public Schools or nearby districts. This board tends to populate late evening or early morning if conditions warrant.",
+        "source": "Rockford Public Schools (MI) official site",
+        "headline": "No special weather alerts posted; normal schedule",
+        "summary": "As of the evening of Tuesday, Dec. 2, 2025, the Rockford Public Schools (MI) district website lists normal calendar items through December (including an early‑release day on Dec. 10 and winter break beginning Dec. 22) but does not show any alerts, banners, or news posts about potential weather‑related closures or delays for Wednesday, Dec. 3, 2025.",
+        "relevance": "high",
+        "url": "https://www.rockfordschools.org"
+      },
+      {
+        "source": "WOOD TV8 / WZZM 13 / FOX 17 / MLive school closing boards",
+        "headline": "No widespread preemptive school closing wave for Dec. 3 detected",
+        "summary": "A scan of West Michigan media school‑closing boards and weather stories for the night of Dec. 2, 2025, shows no large wave of pre‑announced closures or delays for Wednesday, Dec. 3, in Kent County districts. Outlets are emphasizing routine winter driving care more than severe, closure‑level conditions.",
+        "relevance": "high",
+        "url": "https://www.woodtv.com"
+      },
+      {
+        "source": "Kent County Road Commission / MDOT",
+        "headline": "Routine winter maintenance, no major closure advisories near Rockford",
+        "summary": "Available information from MDOT and Kent County Road Commission indicates standard winter road‑treatment operations, with no major highway/arterial closure alerts or unusually hazardous driving bulletins specifically targeting the Rockford area for the Wednesday morning commute.",
         "relevance": "medium",
-        "url": "https://www.fox17online.com/weather/school-closings-delays"
+        "url": "https://www.kentcountyroads.net"
       },
       {
-        "source": "Forest Hills Public Schools (Kent County, MI) – District News & Closings Info",
-        "headline": "No current weather-related closure announcement; standard inclement weather procedures in place",
-        "summary": "Forest Hills Public Schools’ official site and school closings information page outline how they will communicate any weather-related delays or closures (SchoolMessenger alerts, district homepage, Facebook, Twitter/X, local TV/radio). The November 2025 district news items focus on academics and programs; there is no special alert or news post indicating a planned closure or delay for Wednesday, Dec. 3, 2025. This suggests business-as-usual unless conditions change overnight.",
+        "source": "Consumers Energy outage map (West Michigan)",
+        "headline": "No significant, widespread outages in the Rockford area",
+        "summary": "The Consumers Energy outage map for the Rockford/Kent County area does not show a cluster of large outages that would typically drive school‑closure decisions (such as prolonged power loss across neighborhoods or multiple school buildings).",
         "relevance": "medium",
-        "url": "https://www.fhps.net/district/school-closings-information/"
-      },
-      {
-        "source": "Regional education news (West Michigan)",
-        "headline": "Rural West Michigan districts weigh closures when back roads ice over",
-        "summary": "Recent coverage about West Michigan school disruptions notes that rural districts sometimes close or delay when back roads ice over after snow events, even if main roads are in better shape. However, this is general context and not a specific notice for Rockford Public Schools or Dec. 3, 2025. It does underscore that side roads and hills around Rockford can influence closure decisions beyond simple snow totals.",
-        "relevance": "low",
-        "url": "https://rollingout.com/2025/12/01/west-michigan-school-closures-snow/"
+        "url": "https://www.consumersenergy.com/outagecenter"
       }
     ],
     "school_district_signals": {
-      "official_announcements": [],
+      "official_announcements": [
+        "Rockford Public Schools (MI) has no posted notice of a closure, delay, or e‑learning day for Wednesday, Dec. 3, 2025, as of the latest check on the evening of Tuesday, Dec. 2.",
+        "The district’s public‑facing calendar continues to show Dec. 3 as a normal instruction day, with the next notable change in schedule being an early‑release day on Wednesday, Dec. 10.",
+        "There are no fresh superintendent posts, news items, or front‑page alerts hinting at an impending weather decision tonight (no language like “monitoring weather for tomorrow” or “please prepare for potential delays”)."
+      ],
       "early_dismissal_history": false,
-      "neighboring_district_closures": []
+      "neighboring_district_closures": [
+        "Forest Hills Public Schools: Public information is limited to general inclement‑weather guidelines; there is no discrete announcement of closure/delay for Wednesday, Dec. 3, 2025, at this time.",
+        "Cedar Springs, Sparta, Lowell, Greenville, Kent ISD: No clear public statements or media‑flagged decisions announcing closures or delays for Wednesday, Dec. 3, 2025, have surfaced in current scans of local news and web sources."
+      ]
     },
     "community_intel": {
       "social_media_sentiment": "uncertain",
       "reported_road_conditions": [
-        "Forecast indicates potential for slick spots on untreated roads and sidewalks in Kent County Wednesday morning due to light snow and below-freezing temps overnight.",
-        "No widespread reports yet of major crashes, road closures, or impassable conditions in the Rockford area as of the evening of Tuesday, Dec. 2, 2025."
+        "Reports and forecast discussions point to typical early‑December conditions: cold, possibly slick spots and light snow showers, but not the kind of high‑impact system (heavy lake‑effect band directly over Rockford or significant ice) that normally drives early, proactive system‑wide closures.",
+        "No viral posts or large volumes of photos/videos from Rockford‑area drivers tonight (Dec. 2) showing white‑out conditions, jack‑knifed trucks, or widespread spin‑outs on US‑131/M‑57 that would usually signal a strong community expectation of a snow day the next morning."
       ],
       "power_outage_reports": false,
-      "local_event_cancellations": []
+      "local_event_cancellations": [
+        "No notable Rockford‑area community events or evening activities for Tuesday night into Wednesday morning are being prominently reported as canceled solely due to weather, which aligns with the absence of a major storm signal."
+      ]
     },
-    "key_findings_summary": "As of Tuesday evening, Dec. 2, 2025, there are **no official announcements** from Rockford Public Schools (Rockford, MI) about closing or delaying school for Wednesday, Dec. 3, 2025, and **no firm closure signals** from key neighboring Kent County districts such as Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, or Kent ISD.\n\nThe **weather forecast for Rockford, MI on Wednesday, Dec. 3** calls for cold conditions with intermittent light snow and flurries and the possibility of **slippery spots on untreated roads**, but not a major storm or heavy accumulation. This type of forecast often leads to **normal operations with caution** rather than pre-announced district-wide closures.\n\nLocal and regional closings boards (e.g., FOX 17’s West Michigan closings list) are active but **do not yet list Rockford or nearby Kent County districts** as closed or delayed for Dec. 3. These lists typically fill in late evening or early morning if conditions worsen.\n\nCommunity/social chatter specific to Rockford, MI about a likely snow day on Dec. 3 is relatively quiet and mixed—some awareness of the light snow and early-December pattern, but **no strong, widespread expectation of an automatic snow day** based on current information.\n\nOverall, current open-source signals point to **uncertain but leaning toward school being in session** on Wednesday, Dec. 3, 2025, barring any overnight change such as unexpected heavier snow bands, flash-freezing, or new road-hazard or power-outage issues. Families should monitor Rockford Public Schools’ official channels and regional TV/radio closings lists early Wednesday morning for any last-minute decisions."
+    "key_findings_summary": "As of the evening of Tuesday, December 2, 2025, there are no strong public signals pointing toward a weather‑related closure or delay for Rockford Public Schools (MI) on Wednesday, December 3. Official district channels are quiet on weather changes, neighboring districts are not (yet) announcing closures, local media are not flagging a major storm or travel emergency focused on the Rockford/Kent County area, the road‑agency and power‑outage data do not show extraordinary disruptions, and social chatter reflects normal winter caution rather than a clear “snow day incoming” sentiment. Overall, current open‑source indicators support expectations of a normal school day on Dec. 3, with the usual caveat that superintendents sometimes make early‑morning decisions if overnight conditions deteriorate more than forecast."
   },
   "final": {
-    "snow_day_probability": 6,
+    "snow_day_probability": 3,
     "confidence_level": "high",
     "primary_factors": [
-      "No ongoing or forecast accumulating snow or ice during the overnight and Wednesday 12/03 morning commute (meteorologist: 0% precip, 0\" snow)",
-      "Historical analogs for similar cold, dry, overcast days after a storm show ~1–5% closure rates in West Michigan (historian)",
-      "Road conditions rated good on primary and secondary routes; only routine patchy black ice risk, with low overall travel risk (safety analyst)",
-      "No neighboring district closures, no official closure signals, and only light, mixed community concern—not a strong ‘snow day’ expectation (news intelligence)",
-      "Prior winter storm headlines in nearby counties end more than 24 hours before the target commute, giving ample cleanup time",
-      "Morning wind chills in the low teens are far above extreme-cold closure thresholds used by Michigan districts"
+      "No accumulating snow or measurable precip forecast overnight or during the school day",
+      "Temperatures cold but typical for early December in West Michigan; wind chills in low teens, not at extreme-cold closure thresholds",
+      "Road safety assessment shows high scores (8–9/10) for primary, secondary roads, and parking lots with only isolated black-ice risk",
+      "Historical analogs with nearly identical conditions show a 1–3% snow-day rate for Rockford and similar districts",
+      "Local news, school closing boards, and Rockford Public Schools communications show no indication of anticipated closures or delays",
+      "No neighboring Kent County districts are closing or signaling likely closure; no power or major road disruptions reported"
     ],
     "timeline": {
       "conditions_start": "2025-12-03T00:00:00",
-      "peak_impact_time": "2025-12-03T06:00:00",
+      "peak_impact_time": "2025-12-03T05:00:00",
       "conditions_improve": "2025-12-03T09:00:00"
     },
-    "decision_rationale": "1. Expert agreement vs. conflict\n- AGREEMENTS:\n  • All four experts agree there is no major storm affecting Rockford on the morning of Wed 12/03.\n  • Meteorologist: 0% snow, 0\" accumulation; dry, overcast, cold.\n  • Historian: This pattern (cold, gray, post-storm, no new precip) almost never produces closures; historical snow-day rates 1–5%.\n  • Safety analyst: Primary and secondary roads 8–9/10, low risk; only routine patchy black ice expected; explicitly says conditions do NOT justify a snow day or delay.\n  • News intel: No closures posted, no strong community expectation of a snow day, no Rockford-specific alerts.\n\n- APPARENT DISAGREEMENTS (and resolution):\n  • Meteorology vs. news intel wording: The meteorologist’s detailed forecast says 0% precip and 0\" snow; one news/headline blurb mentions “intermittent light snow and flurries with slick spots.” In West Michigan, models often show trace flurries with effectively 0 measurable accumulation, which is consistent with both: a technical 0\" forecast and a public headline emphasizing possible slick spots. With roads already plowed and temps cold and steady, this produces minor, not closure-level, impact. No other data suggest substantial snow.\n  • Safety vs. news intel on severity: Safety analysis characterizes travel impact as minimal, consistent with the more cautious yet non-alarmist tone of the news intel. Both say ‘watch for slick spots’ but ‘not a major storm’.\n\n  After cross-referencing, there is no meaningful conflict: all point to a routine cold, possibly slightly slick, early-December morning.\n\n2. Plow timing math\n- Last impactful advisories and warnings in nearby counties expire early Tuesday 12/02 at 07:00, more than 24 hours before the Wednesday 12/03 commute.\n- No new snow is forecast Tuesday day/night for Rockford, just cold and overcast.\n- That gives road crews effectively all day Tuesday and Tuesday night for cleanup before buses roll around ~7:00–7:40 AM Wednesday.\n- Hours from meaningful snow end (early Tue morning) to school start (Wed ~7:40 AM): roughly 24–26 hours.\n- With that much lead time and no new accumulation, West Michigan plow/salt operations can easily clear main routes and major bus corridors; any remaining issues are limited, localized slick patches.\n\n3. Ice risk\n- Temperatures stay in the 20s°F overnight with a slow rise toward freezing later Wednesday.\n- Safety analyst flags ice risk as “moderate,” meaning:\n  • Existing melt/slush from the prior storm stays frozen.\n  • Spot black ice in shaded/untreated side streets, parking lots, and bridges is possible.\n- Crucially:\n  • There is no freezing rain, drizzle, or active icing event forecast.\n  • This is routine post-storm refreeze, not a glaze-ice storm.\n  • Emergency access concern is explicitly marked false.\n\n  In Michigan, this level of residual slickness is handled with standard caution and salting, not widespread closure.\n\n4. Neighboring district behavior (secret-weapon weighting)\n- News intel explicitly states:\n  • No neighboring closures listed on FOX 17’s closings board for 12/03.\n  • No official closure announcements from key nearby districts (Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, Kent ISD).\n  • Community/social chatter shows no strong consensus expecting a snow day.\n- Per the rules:\n  • 3+ neighboring districts closed ⇒ +15–20% bump. That condition is NOT met (0 districts closed so far).\n  • Community expecting closure ⇒ +10–15% bump. Also NOT met; sentiment is ‘uncertain but leaning open.’\n  • If community says “this is nothing,” lean lower. Here, the signal is closer to “nothing major, just be careful,” which supports staying at the low end.\n\n  Therefore, the news-intel weighting (20%) pulls the probability down toward the historical/meteorological baseline, with no positive bump.\n\n5. Weighting of experts (per instructions)\n- Meteorology (35% weight):\n  • Forecast supports extremely low closure probability because there is no active storm, no accumulation, and only moderate wind chills. Alone, this suggests ~2–5%.\n- Safety (25% weight):\n  • Risk rated low; explicit recommendation: normal schedule, no closure/delay needed. This also points near 5%.\n- History (20% weight):\n  • Direct analogs show 1–5% closure rates with high confidence. Slight seasonal adjustment downward. This anchors the lower bound.\n- News Intelligence (20% weight):\n  • No neighboring closures, no pre-emptive Rockford signal, mixed-but-quiet chatter. That supports ‘school in session,’ again ~5–10% at most.\n\n  Combining these: the blended, weighted estimate clusters tightly at the low end (roughly 3–8%). Selecting 6% reflects both the tiny chance of an unexpected overnight issue and the strong consensus that conditions are routine.\n\n6. Why avoid 40–60% and be decisive\n- There is no genuine expert conflict: all four lines of evidence agree on LOW risk.\n- Michigan-specific thresholds:\n  • <4\" new snow and no ice storm ⇒ 5–15% typical. Here we have effectively 0\" new snow and no glaze-ice event.\n  • No 8\"+ totals, no blizzard, no ice storm, no extreme cold.\n- That places this day right at the bottom of the Michigan scale. Using 6% is decisively in that lowest band.\n\n7. What would make this prediction wrong?\nThe main failure modes (low probability but non-zero) are:\n- A surprise, heavier-than-expected lake-effect band sets up overnight directly over Rockford, producing several inches (4–6\"+) right into the commute.\n- An unforecast light freezing drizzle event causes widespread black ice rather than isolated slick spots.\n- A major overnight incident (multi-car pileups, significant power outages, or a water/heat infrastructure problem at schools) leads to closure for reasons only partly related to the forecast.\n- New, last-minute decisions by multiple neighboring districts (3+ closing) based on localized back-road icing could create pressure for Rockford to follow, even if main-road data still look manageable.\n\nGiven the current expert consensus and tools, these remain low-probability, high-impact outliers, justifying a small but non-zero closure probability.",
+    "decision_rationale": "1. Expert agreement check:\n- Meteorology: Dry, cold, breezy, no snow/ice, no alerts, typical winter day; explicitly calls snow-day risk \"very low.\"\n- Safety: Roads and travel rated safe (8–9/10), only localized black-ice risk, and explicitly recommends a normal, on-time start.\n- History: Very similar past patterns in Rockford show only about a 1–3% snow-day rate; districts almost never close under dry-road, non-extreme-cold conditions.\n- News/Intel: No closure wave, no alerts from Rockford Public Schools, no neighboring districts announcing closures, routine winter messaging from media and road agencies.\nAll four domains independently point toward school being in session. There are no material conflicts among the experts.\n\n2. Where they might differ:\n- Meteorology notes essentially zero precip; news intel mentions a general media phrase \"chance of light snow showers\" in a broader regional context. The detailed meteorological forecast for Rockford itself still shows no meaningful overnight/morning accumulation or active storm. This is a minor wording difference, not a substantive forecast conflict.\n- Safety flags only a moderate risk of isolated black ice due to residual moisture and subfreezing temperatures, but still assigns very good road scores and low overall risk.\nNet: No serious disagreement – just nuance about small, localized slick spots.\n\n3. Plow timing math:\n- Snow probability overnight and in the morning is 0; total snowfall forecast is 0\". That means no new accumulation requiring plow operations.\n- Worst conditions window (per safety) is 00:00–08:00, but those are cold/dry conditions, not active precip.\n- With no new snow to clear, plow timing relative to a 7:40 AM start is effectively a non-factor; crews are on routine winter maintenance, not catch-up from a storm.\n\n4. Ice risk:\n- Temps: low–mid 20s°F in the early morning, rising toward freezing later; 24 straight hours below freezing supports potential refreeze in any wet spots.\n- Safety labels ice-formation risk as \"moderate\" but still rates roads 8–9/10 and calls commute impact \"minimal.\"\n- Meteorology: no new freezing rain or drizzle; only patchy mist/haze at times with visibility usually several miles.\n- History: Past cases with only patchy black ice and no active storm still very rarely trigger system-wide closures.\nConclusion: There is some localized black-ice potential on bridges/curves/parking lots, but not the widespread, high-impact icing that typically forces closures or delays in Kent County.\n\n5. Neighboring districts and community signals:\n- News intel explicitly checked Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, Kent ISD: no pre-announced closures or delays.\n- West Michigan school closing boards show no developing closure wave for Dec. 3.\n- Rockford Public Schools website: no alerts, no \"monitoring weather\" language, calendar shows a normal day.\n- Road commission and MDOT: routine winter maintenance, no special hazard advisories.\n- Social media: no strong \"snow day incoming\" sentiment; people are treating this as ordinary early-December weather.\nSince 3+ neighboring districts closing would warrant a +15–20% upward adjustment, the absence of any neighboring closures or strong community expectation justifies keeping the probability at the very low end.\n\n6. What would make this prediction wrong:\n- An unforecast overnight event: e.g., an unexpected band of freezing drizzle or snow develops after 10 PM, creating widespread black ice and significantly worse road conditions than currently modeled.\n- A surprise operational issue: a major power outage hitting multiple school buildings overnight or early morning, or a major traffic/road closure affecting key routes.\n- A cold mis-forecast: if wind chills plunge much lower than expected (toward -15°F or colder) and the district applies a stricter cold policy than typical history suggests.\nAt present, none of these are indicated by the data or news intel; they remain low-probability tail risks.\n\n7. Weighting of experts (per directive):\n- Meteorology (35%): Strongly indicates no storm and no measurable precip; assigns very low risk. This heavily anchors the prediction at the low end.\n- Safety (25%): Confirms roads and travel conditions are safe with only isolated concerns and explicitly recommends normal operations. This reinforces a low closure probability.\n- History (20%): Similar patterns historically close only about 1–3% of the time, aligning with the current 3% estimate and supporting high confidence.\n- News Intelligence (20% – secret weapon): Finds no neighboring closures, no district alerts, and normal community behavior. Since there is no closure wave, no upward adjustment is applied; if anything, this keeps us near the historical base rate rather than bumping higher.\n\n8. Final decision and calibration:\n- Michigan thresholds: With 0\" new snow and no ice storm, we are below even the \"<4\" snow\" baseline of 5–15%. Historical and intel-based evidence argue for an even lower figure because there isn't even minor accumulation – just cold.\n- Brier-score mindset: Using a 3% probability reflects that closures under these conditions are not impossible (surprise ice/power issues), but they are rare. The experts largely agree, and there are no conflicting signals that would justify a mid-range (40–60%) or even low-mid (15–30%) probability.\nTherefore, I set the snow-day probability at 3% with high confidence, anticipating a normal school day on Wednesday, December 3, 2025.",
     "alternative_scenarios": [
       {
-        "scenario": "Surprise lake-effect snow band delivers 4–6\"+ of new accumulation focused on Rockford between midnight and 7 AM, reducing plow catch-up time and making many secondary roads snow-covered and slick.",
-        "probability": 10,
-        "impact": "Could raise closure/delay probability into the 35–50% range, especially if rates are heavy near commute time and neighboring districts start posting closures."
-      },
-      {
-        "scenario": "Unforecast freezing drizzle or rapid flash-freeze leads to widespread black ice on main routes, hills, and intersections by early morning.",
-        "probability": 7,
-        "impact": "Travel risk would jump to moderate/high; full closure or at least a 2-hour delay would become much more plausible (40–70% range), depending on timing and severity."
-      },
-      {
-        "scenario": "Multiple neighboring Kent County districts (3+ of Forest Hills, Cedar Springs, Sparta, Lowell, Greenville) announce closures overnight due to localized back-road issues, even with only light flurries.",
+        "scenario": "Unexpected overnight freezing drizzle or snow band creates widespread black ice and significantly worsens road conditions by 5–7 AM.",
         "probability": 5,
-        "impact": "Peer-pressure and shared road conditions could push Rockford toward closure or delay; probability could increase by 15–20 percentage points relative to current estimate."
+        "impact": "Could prompt a last-minute 2-hour delay or, less likely, a full closure if multiple bus routes and secondary roads become hazardous at once."
+      },
+      {
+        "scenario": "Localized power outages develop overnight affecting several school buildings in the Rockford district.",
+        "probability": 2,
+        "impact": "Might force a closure or remote-learning day even with safe roads, if heating, lighting, or communications are compromised at multiple sites."
+      },
+      {
+        "scenario": "Forecast overestimates temperatures; wind chills drop toward or below -15°F with added wind early in the morning.",
+        "probability": 3,
+        "impact": "Could trigger an extreme-cold-related delay or closure if district leadership adheres to more conservative cold thresholds than typical historical practice suggests."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "Plan for a normal school day on Wednesday, 2025-12-03; no preemptive closure or delay is justified by current data.",
-        "Have transportation staff and drivers briefed on the possibility of isolated slick spots on untreated side streets, hills, bridges, and parking lots, especially before sunrise.",
-        "Ensure salt/sand application in known trouble spots around campuses (entrances, curves, hills, bus loops, primary student drop-off and pick-up zones).",
-        "Remind families via evening communication to allow a little extra time and to send students dressed for wind chills in the low teens (hats, gloves, warm coats).",
-        "Set an internal early-morning check (around 4:30–5:00 AM) for on-the-ground road reports, but treat closure as unlikely barring a significant overnight change."
+        "Plan for a normal, on-time start on Wednesday, December 3, 2025.",
+        "Have transportation and operations staff perform targeted early-morning checks (5:30–6:30 AM) on known trouble spots: bridges, shaded curves, and bus loop entrances for black ice.",
+        "Communicate to families that conditions will be cold and breezy; encourage appropriate winter clothing for students at bus stops and during recess.",
+        "Keep maintenance crews on standard winter operations; broad plowing or heavy salting runs should not be necessary barring an unexpected overnight precip development.",
+        "Have a contingency protocol ready (robocalls, website updates) in case an unforeseen icing or power issue emerges before 6:00 AM, but treat this as a low-likelihood backup, not the base expectation."
       ],
       "for_residents": [
-        "Expect school to be in session; plan morning routines accordingly but watch for localized slick spots on driveways, sidewalks, and side streets.",
-        "Wear winter-appropriate clothing for students at stops: layered clothing, hats, gloves/mittens, and wind-blocking outerwear given low-teen wind chills.",
-        "Drive cautiously on the morning commute: reduce speed slightly, increase following distance, and be alert for black ice on bridges and shaded sections.",
-        "If you live on rural or hilly back roads, consider allowing extra time and using winter tires or four-wheel drive if available, even though conditions are still typical for Michigan.",
-        "Monitor official Rockford Public Schools channels and local TV/radio/closings pages early Wednesday in case of any unexpected overnight developments."
+        "Expect typical early-December conditions: cold, breezy, and overcast with mostly dry roads; allow a little extra time for the morning commute out of caution.",
+        "Drive attentively and at winter speeds, especially on bridges, overpasses, and less-traveled side streets where isolated black ice may linger.",
+        "Ensure children are dressed in warm layers, hats, and gloves; wind chills in the low teens can be uncomfortable for extended time at bus stops.",
+        "If you notice significant localized icing or hazardous conditions early in the morning, report them to local authorities or the school district so they can reassess if needed."
       ],
       "for_authorities": [
-        "Continue routine winter maintenance: plow and salt priority routes and known icy spots through Tuesday and overnight into early Wednesday; no need for emergency-level operations.",
-        "Have road crews do early-morning spot checks on bridges, hills, and rural bus routes for any unexpected icing or drifting, adjusting salt operations accordingly.",
-        "Coordinate with neighboring districts and county dispatch for any reports of significant overnight incidents (multi-vehicle crashes, major icing zones) that might warrant re-evaluating school operations, though this is not expected.",
-        "Maintain communication channels with the district’s transportation director between roughly 4:30–6:00 AM to confirm that road conditions remain consistent with the low-risk forecast."
+        "Continue routine winter maintenance and spot-treat known icy locations; no need for emergency-level operations based on current forecasts.",
+        "Have road and school transportation staff coordinate brief condition checks before 6:00 AM, focusing on bridges, hills, and rural routes for unexpected ice.",
+        "Maintain situational awareness of any overnight radar trends and NWS updates in case an unmodeled band of precip develops; be prepared to reassess if conditions deviate from the dry forecast.",
+        "Monitor utility outage reports overnight; if any large clusters appear in the Rockford area impacting schools or major neighborhoods, loop in district leadership promptly."
       ]
     },
     "updates_needed": true,
-    "next_evaluation_time": "2025-12-03T09:30:00Z"
+    "next_evaluation_time": "2025-12-03T10:30:00Z"
   },
-  "timestamp": "2025-12-02T14:05:18.950Z",
+  "timestamp": "2025-12-02T18:14:20.349Z",
   "targetDate": "2025-12-03",
   "targetDayName": "Wednesday",
   "daysAhead": 1,
@@ -232,43 +235,43 @@
       "lat": 43.1152000427246,
       "lon": -85.5136032104492,
       "tz_id": "America/Detroit",
-      "localtime_epoch": 1764684223,
-      "localtime": "2025-12-02 09:03"
+      "localtime_epoch": 1764699202,
+      "localtime": "2025-12-02 13:13"
     },
     "current": {
-      "last_updated_epoch": 1764684000,
-      "last_updated": "2025-12-02 09:00",
-      "temp_c": -7.8,
-      "temp_f": 18,
+      "last_updated_epoch": 1764698400,
+      "last_updated": "2025-12-02 13:00",
+      "temp_c": -2.8,
+      "temp_f": 27,
       "is_day": 1,
       "condition": {
-        "text": "Patchy light snow",
-        "icon": "//cdn.weatherapi.com/weather/64x64/day/323.png",
-        "code": 1210
+        "text": "Mist",
+        "icon": "//cdn.weatherapi.com/weather/64x64/day/143.png",
+        "code": 1030
       },
-      "wind_mph": 2.2,
-      "wind_kph": 3.6,
-      "wind_degree": 142,
-      "wind_dir": "SE",
+      "wind_mph": 4.3,
+      "wind_kph": 6.8,
+      "wind_degree": 315,
+      "wind_dir": "NW",
       "pressure_mb": 1014,
-      "pressure_in": 29.94,
-      "precip_mm": 0.09,
+      "pressure_in": 29.95,
+      "precip_mm": 0,
       "precip_in": 0,
-      "humidity": 96,
+      "humidity": 89,
       "cloud": 75,
-      "feelslike_c": -9.5,
-      "feelslike_f": 14.9,
-      "windchill_c": -8.1,
-      "windchill_f": 17.4,
-      "heatindex_c": -6.3,
-      "heatindex_f": 20.7,
-      "dewpoint_c": -7.8,
-      "dewpoint_f": 17.9,
+      "feelslike_c": -5.6,
+      "feelslike_f": 21.9,
+      "windchill_c": -3.6,
+      "windchill_f": 25.4,
+      "heatindex_c": -2.3,
+      "heatindex_f": 27.8,
+      "dewpoint_c": -3.3,
+      "dewpoint_f": 26.1,
       "vis_km": 8,
       "vis_miles": 4,
-      "uv": 0.2,
-      "gust_mph": 3.8,
-      "gust_kph": 6
+      "uv": 1.4,
+      "gust_mph": 5.2,
+      "gust_kph": 8.4
     },
     "forecast": {
       "forecastday": [
@@ -675,25 +678,25 @@
             {
               "time_epoch": 1764684000,
               "time": "2025-12-02 09:00",
-              "temp_c": -7.8,
-              "temp_f": 18,
+              "temp_c": -6.3,
+              "temp_f": 20.7,
               "is_day": 1,
               "condition": {
-                "text": "Patchy light snow",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/323.png",
-                "code": 1210
+                "text": "Light freezing rain",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/311.png",
+                "code": 1198
               },
-              "wind_mph": 2.2,
-              "wind_kph": 3.6,
+              "wind_mph": 1.8,
+              "wind_kph": 2.9,
               "wind_degree": 142,
               "wind_dir": "SE",
-              "pressure_mb": 1014,
-              "pressure_in": 29.94,
+              "pressure_mb": 1017,
+              "pressure_in": 30.03,
               "precip_mm": 0.09,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 96,
-              "cloud": 75,
+              "humidity": 91,
+              "cloud": 81,
               "feelslike_c": -8.1,
               "feelslike_f": 17.4,
               "windchill_c": -8.1,
@@ -706,8 +709,8 @@
               "chance_of_rain": 100,
               "will_it_snow": 1,
               "chance_of_snow": 88,
-              "vis_km": 8,
-              "vis_miles": 4,
+              "vis_km": 10,
+              "vis_miles": 6,
               "gust_mph": 3.8,
               "gust_kph": 6,
               "uv": 0.2
@@ -835,25 +838,25 @@
             {
               "time_epoch": 1764698400,
               "time": "2025-12-02 13:00",
-              "temp_c": -2.3,
-              "temp_f": 27.8,
+              "temp_c": -2.8,
+              "temp_f": 27,
               "is_day": 1,
               "condition": {
-                "text": "Partly Cloudy ",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
-                "code": 1003
+                "text": "Mist",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/143.png",
+                "code": 1030
               },
               "wind_mph": 4.3,
               "wind_kph": 6.8,
               "wind_degree": 315,
               "wind_dir": "NW",
-              "pressure_mb": 1016,
-              "pressure_in": 29.99,
+              "pressure_mb": 1014,
+              "pressure_in": 29.95,
               "precip_mm": 0,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 91,
-              "cloud": 36,
+              "humidity": 89,
+              "cloud": 75,
               "feelslike_c": -3.6,
               "feelslike_f": 25.4,
               "windchill_c": -3.6,
@@ -866,8 +869,8 @@
               "chance_of_rain": 0,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 10,
-              "vis_miles": 6,
+              "vis_km": 8,
+              "vis_miles": 4,
               "gust_mph": 5.2,
               "gust_kph": 8.4,
               "uv": 1.4
@@ -2279,40 +2282,7 @@
       ]
     },
     "alerts": {
-      "alert": [
-        {
-          "identifier": "7bf4f345-cf48-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Storm Warning issued December 1 at 10:26PM EST until December 2 at 7:00AM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Severe",
-          "urgency": "Expected",
-          "areas": "Mason; Oceana; Muskegon; Ottawa",
-          "category": "Met",
-          "certainty": "Likely",
-          "event": "Winter Storm Warning",
-          "note": "",
-          "effective": "2025-12-01T22:26:00-05:00",
-          "expires": "2025-12-02T06:30:00-05:00",
-          "desc": "* WHAT...Heavy snow. Additional snow accumulations between 4 and 7\ninches in Oceana and Mason Counties and 1 to 2 inches in Muskegon\nand Ottawa Counties.\n\n* WHERE...Ottawa, Mason, Muskegon, and Oceana Counties.\n\n* WHEN...Until 7 AM EST Tuesday.\n\n* IMPACTS...Unplowed roads could be impassable. The hazardous\nconditions will  impact the Tuesday morning commute.\n",
-          "instruction": "If you must travel, keep an extra flashlight, food, and water in\nyour vehicle in case of an emergency."
-        },
-        {
-          "identifier": "7c1c8895-cf48-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Weather Advisory issued December 1 at 10:26PM EST until December 2 at 7:00AM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Moderate",
-          "urgency": "Expected",
-          "areas": "Lake; Newaygo",
-          "category": "Met",
-          "certainty": "Likely",
-          "event": "Winter Weather Advisory",
-          "note": "",
-          "effective": "2025-12-01T22:26:00-05:00",
-          "expires": "2025-12-02T06:30:00-05:00",
-          "desc": "* WHAT...Snow. Additional snow accumulations between 1 and 3 inches.\n\n* WHERE...Lake and Newaygo Counties.\n\n* WHEN...Until 7 AM EST Tuesday.\n\n* IMPACTS...Plan on slippery road conditions. The hazardous\nconditions could impact the Tuesday morning commute.\n",
-          "instruction": "Slow down and use caution while traveling."
-        }
-      ]
+      "alert": []
     }
   }
 }
