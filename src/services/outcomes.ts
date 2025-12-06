@@ -55,7 +55,7 @@ export function normalizeProbability(value: number | null | undefined): number |
   const num = Number(value)
   if (Number.isNaN(num) || !Number.isFinite(num)) return null
   // If value is between 0 and 1 (exclusive of 1), treat as 0-1 scale
-  const normalized = (num > 0 && num <= 1) ? num * 100 : num
+  const normalized = (num > 0 && num < 1) ? num * 100 : num
   return Math.max(0, Math.min(100, Math.round(normalized)))
 }
 
