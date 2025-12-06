@@ -51,26 +51,32 @@ const sanitizeProbability = (value) => {
   return Math.max(0, Math.min(100, Math.round(normalized)))
 }
 
-const buildEntry = async () => {
+const buildEntry = async (existingEntry = null) => {
   const summary = await loadJsonIfExists(summaryPath)
   const prediction = await loadJsonIfExists(predictionPath)
 
-  const rhsProb = sanitizeProbability(rhsPrediction)
-  let probability = null
+  const rhsProbExisting = sanitizeProbability(existingEntry?.rhsPrediction)
+  const rhsProb = sanitizeProbability(rhsPrediction) ?? rhsProbExisting ?? null
+
+  const existingProbability = sanitizeProbability(existingEntry?.modelProbability)
+  const existingConfidence = existingEntry?.confidence || null
+  const existingPredictionTimestamp = existingEntry?.predictionTimestamp || null
+
+  let probabilityFromPrediction = null
   let confidence = null
   let predictionTimestamp = null
   let targetDate = null
 
   if (summary) {
-    probability = sanitizeProbability(summary.probability)
+    probabilityFromPrediction = sanitizeProbability(summary.probability)
     confidence = summary.confidence || null
     predictionTimestamp = summary.timestamp || null
     // Use targetDate (school day being predicted) if available
     targetDate = summary.targetDate || null
   }
 
-  if (!probability && prediction?.final) {
-    probability = sanitizeProbability(prediction.final.snow_day_probability)
+  if (!probabilityFromPrediction && prediction?.final) {
+    probabilityFromPrediction = probabilityFromPrediction ?? sanitizeProbability(prediction.final.snow_day_probability)
     confidence = confidence || prediction.final.confidence_level || null
     predictionTimestamp = predictionTimestamp || prediction.timestamp || null
     targetDate = targetDate || prediction.targetDate || null
@@ -82,12 +88,21 @@ const buildEntry = async () => {
     console.warn('The prediction may have been for a different school day.')
   }
 
+  // If the prediction was for a different date, or if no prediction is available,
+  // fall back to the existing ledger values so we don't overwrite historical probabilities.
+  const probability = (targetDate && targetDate !== eventDate)
+    ? (existingProbability ?? probabilityFromPrediction)
+    : (probabilityFromPrediction ?? existingProbability)
+
+  const resolvedConfidence = confidence || existingConfidence || null
+  const resolvedPredictionTimestamp = predictionTimestamp || existingPredictionTimestamp || null
+
   const entry = {
     date: eventDate,
     modelProbability: probability,
     rhsPrediction: rhsProb,
-    confidence: confidence || null,
-    predictionTimestamp,
+    confidence: resolvedConfidence,
+    predictionTimestamp: resolvedPredictionTimestamp,
     actualSnowDay: isNoSchool ? null : outcome === 'snow-day',
     recordedAt: new Date().toISOString(),
     recordedBy: actor,
@@ -107,9 +122,11 @@ const buildEntry = async () => {
 }
 
 const writeLedger = async () => {
-  const entry = await buildEntry()
   const raw = await loadJsonIfExists(outcomesPath)
   const ledger = Array.isArray(raw) ? raw : []
+  const existingEntry = ledger.find(item => item && item.date === eventDate)
+
+  const entry = await buildEntry(existingEntry)
 
   const filtered = ledger.filter(item => item && item.date !== eventDate)
   filtered.push(entry)
