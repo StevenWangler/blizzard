@@ -1,23 +1,23 @@
 {
   "meteorology": {
     "temperature_analysis": {
-      "current_temp_f": 23,
-      "overnight_low_f": 31.5,
+      "current_temp_f": 28,
+      "overnight_low_f": 31.9,
       "morning_high_f": 36,
-      "freezing_hours": 8,
+      "freezing_hours": 18,
       "temperature_trend": "rising",
       "windchill_factor": -5
     },
     "precipitation_analysis": {
       "snow_probability_overnight": 100,
-      "snow_probability_morning": 80,
+      "snow_probability_morning": 90,
       "total_snowfall_inches": 10.8,
-      "snowfall_rate_peak": 2,
+      "snowfall_rate_peak": 1.2,
       "precipitation_type": "snow"
     },
     "wind_analysis": {
       "max_wind_speed_mph": 20,
-      "wind_direction": "NNE→N",
+      "wind_direction": "NE→N",
       "sustained_winds_mph": 15,
       "wind_chill_impact": true
     },
@@ -25,72 +25,55 @@
       "minimum_visibility_miles": 0,
       "avg_visibility_miles": 2,
       "visibility_factors": [
-        "heavy falling snow 12 AM–7 AM",
-        "blowing/drifting snow 7 AM–1 PM",
-        "near-whiteout periods late morning/around noon"
+        "heavy snow overnight",
+        "blowing/drifting snow during morning and midday",
+        "very low vis near midday despite lighter precip",
+        "gusty NE/N winds picking up fresh powder"
       ]
     },
-    "alert_summary": [
-      {
-        "type": "heavy_snow",
-        "severity": "high",
-        "description": "Overnight heavy snow with ~8–11\" total (27 cm) on the day, with rates briefly near 1–2\"/hr between 1–6 AM. Snow transitions to blowing snow by the start of the school day, with temps roughly 34–36°F but road/ground temps near freezing."
-      },
-      {
-        "type": "wind",
-        "severity": "moderate",
-        "description": "Sustained 15–20 mph with gusts to ~25–27 mph from NE/NNE during the morning and midday, causing drifting and localized whiteouts in open areas."
-      },
-      {
-        "type": "visibility",
-        "severity": "high",
-        "description": "Visibility commonly ~1 mile or less overnight; model output even hits 0 mi at times late morning–midday with blowing snow, implying near-whiteout bursts while winds are strongest."
-      }
-    ],
-    "overall_conditions_summary": "From a Michigan-school perspective, this is a borderline but significant winter storm day. Heavy accumulating snow occurs squarely in the overnight hours (roughly midnight–7 AM), with another lighter burst possible again around 11 PM. Totals on the calendar day are near 10–11\" of snow-equivalent, but much of that falls before or during the early commute window. By 7–8 AM, the pattern shifts from heavy falling snow to blowing snow with temps 34–36°F and strong NE–N winds. Plows should have been running most of the night, but ongoing wind-driven blowing and drifting plus reduced visibility (including some near-whiteout intervals late morning) will keep travel hazardous, especially on rural and open stretches.\n\nGiven Michigan’s high tolerance for snow, the primary closure drivers here are: (1) very heavy overnight rates that may outpace plowing before early bus routes, and (2) blowing/drifting and poor visibility during the morning window while winds peak. Ice is *not* a major factor, but temps are marginal (mid-30s air, near-freezing pavement), so slush and compaction will still be slick.\n\nOverall, this setup presents a **high risk of at least a delay and a moderate-to-high chance of a full snow day** for Rockford on Wednesday, Dec 10, especially if overnight snow totals verify on the high side and banding lingers toward daybreak."
+    "alert_summary": [],
+    "overall_conditions_summary": "A significant snow event is forecast for Rockford, MI on Wednesday, December 10, with strong implications for school operations. From midnight through about 7–8 AM, temperatures hover 32–36°F with continuous moderate to heavy snow, producing roughly 8–9 inches of new accumulation before the main morning commute. Additional light snow and periods of blowing snow continue into midday, bringing the day’s total near 10–11 inches. This is accompanied by sustained winds 15–20 mph with gusts to the mid‑20s, especially late morning and early afternoon, causing blowing and drifting and dropping wind chills into the low 20s and upper teens. Visibility is frequently 1–2 miles overnight and during the early commute, and model guidance even indicates near‑zero visibility around late morning to early afternoon under blowing snow conditions, despite tapering rates. Road crews in Michigan can handle 4–6 inches when snow ends well before 4 AM, but in this case heavy snow is ongoing right through the 5–8 AM window with marginal temperatures, active accumulation, and wind‑driven drifting. Travel for buses and teen drivers would be significantly impacted during the normal Rockford school start times. Overall, this pattern strongly favors at least a school closure or, at minimum, a district‑wide snow day or significant disruption rather than a normal on‑time start."
   },
   "history": {
     "similar_weather_patterns": [
       {
-        "pattern_description": "Overnight heavy snow band 12 AM–7 AM with 8–11\" equivalent snowfall, temps right around freezing, followed by windy/blowing snow and tapering during the day",
-        "historical_snow_day_rate": 0.7,
-        "confidence_level": "medium"
-      },
-      {
-        "pattern_description": "Mixed-event storm (freezing drizzle/ice the day before, then heavy wet snow overnight, then strong northerly winds 15–25 mph and gusts over 30 mph at/before the morning commute)",
+        "pattern_description": "Overnight heavy wet snow with 6–10\"+ equivalent, temps right around freezing, then strong northerly winds and blowing snow during the commute, improving visibility and tapering precipitation by midday",
         "historical_snow_day_rate": 0.6,
         "confidence_level": "medium"
       },
       {
-        "pattern_description": "Blowing snow with 0.25\"+ liquid equivalent in 6–8 hours and visibility frequently near 1–2 miles at bus time, but temperatures in the upper 20s to mid 30s and improving conditions by late morning",
-        "historical_snow_day_rate": 0.4,
-        "confidence_level": "low"
+        "pattern_description": "0.75\"–1.5\" liquid equivalent (rain/snow mix), marginal temps near 32–35°F, significant slush and ponding but main roads treated and passable by morning",
+        "historical_snow_day_rate": 0.25,
+        "confidence_level": "medium"
+      },
+      {
+        "pattern_description": "Windy post‑storm backside with blowing/drifting snow but lighter new accumulation, visibility 1–2 miles except in open areas, temps in the 20s (wind chills single digits/teens)",
+        "historical_snow_day_rate": 0.15,
+        "confidence_level": "high"
       }
     ],
     "seasonal_context": {
-      "typical_conditions_for_date": "For Rockford and greater Grand Rapids in early–mid December, it is common to see clipper systems or early-season synoptic storms produce 2–6\" of snow with highs in the 20s–30s°F. True blizzard-level events and large, disruptive storms (8\"+ in 12–18 hours with strong winds) do occur but are only a few times per decade this early; more often, schools remain open unless there is notable ice, very poor timing, or extreme wind/visibility problems.",
+      "typical_conditions_for_date": "For early–mid December in West Michigan (Rockford/Grand Rapids area), it is climatologically reasonable to see accumulating snow events and even lake‑enhanced bands, but full‑day closures usually require either: (a) a well‑timed heavy snow/blizzard burying roads during the 3–7 AM window with >8–10\" or severe drifting, (b) significant ice, or (c) extreme cold with wind chills below about -15°F. Systems bringing 4–8\" spread over 12–18 hours, or rain/snow mixes with temps near freezing, more often result in slower commutes and localized issues rather than system‑wide closures.",
       "unusual_factors": [
-        "Modelled storm-total precipitation for Dec 10 (~1.8\" liquid, ~27 cm/10–11\" of snow) is on the very high side for a single day in early December in this area.",
-        "The heaviest snow is timed overnight into the pre-dawn and early commute window, which is one of the more closure-prone patterns historically.",
-        "Winds increase into the late morning and midday (sustained mid–upper teens mph, gusts near/above 30 mph), which can significantly worsen drifting and blowing of whatever snowpack develops.",
-        "Temperatures are marginal (near 32–36°F) during the heart of the storm, suggesting heavy, wet snow and some compaction/melting, which can reduce final depth but greatly increase slush, road slickness, and plow difficulty."
+        "Forecast totalsnow_cm ~27 cm (~10–11\") for 12/10 is on the high side for a single calendar day this early in December, although part of that may be model overestimation and/or mixed precip efficiency issues.",
+        "Thermal profile is marginal: temps 31–36°F for much of the heaviest precip window, which historically reduces actual plowable accumulation on treated major roads, especially if rates ease before sunrise.",
+        "Wind gusts into the mid‑20s mph from the N/NE during the day will create blowing/drifting in open/rural areas, but this is below classic West Michigan blizzard thresholds (sustained 35+ mph, 1/4 mile visibility for hours)."
       ],
-      "seasonal_probability_adjustment": 0.15
+      "seasonal_probability_adjustment": 0.1
     },
     "location_specific_factors": {
       "local_microclimates": [
-        "Rockford sits in West Michigan’s snowbelt influence from Lake Michigan; banding can locally enhance totals, especially with any lake enhancement on a northerly component behind the system.",
-        "Valleys and rural roads north and east of town tend to drift and become rutted more easily during 15–25 mph northerly winds with blowing snow.",
-        "Heavier wet snow around 32°F tends to compact on the main roads first but can accumulate rapidly on side streets, gravel roads, and untreated bus routes."
+        "Rockford is just inland from Lake Michigan and north of Grand Rapids, so it is prone to enhanced snow in certain synoptic/lake‑effect setups; however, this event looks dominated by a broad system with some lake enhancement on the backside rather than a pure narrow lake band.",
+        "Elevations and open agricultural areas north and east of town can see worse drifting and brief whiteouts versus the more built‑up GR metro corridors."
       ],
       "infrastructure_considerations": [
-        "West Michigan road agencies and districts are accustomed to 4–8\" overnight snow events and can usually keep main routes passable by the normal start of the school day if the storm winds down by 3–4 AM; when heavy snow is still ongoing 4–7 AM, side roads and rural bus routes often remain marginal at decision time.",
-        "Rockford Public Schools rarely close solely for 4–6\" of snow; the more consistent triggers have been 8–10\"+ plus high winds (drifting/blowing), ice glaze on top of snow, or very poor pre-dawn visibility.",
-        "Previous early-season heavy/wet snowfalls near freezing have sometimes produced 2-hour delays rather than full closures when plows can catch up by late morning."
+        "Kent County and Rockford-area plow and salt operations are accustomed to handling overnight 4–8\" type events by the morning commute, especially when temps hover near freezing rather than deep cold.",
+        "Rockford Public Schools historically do not close for snow totals alone unless the timing is squarely in the pre‑dawn window AND roads are actively deteriorating. They are more sensitive to ice glaze events and to combined heavy snow + high wind that makes rural bus routes unsafe.",
+        "The forecast liquid amount (~1.8\" equivalent) suggests heavy precipitation, but with temps in the low‑to‑mid 30s much of the night, a good portion is likely to compact/melt on treated surfaces, limiting final depth on primary roads."
       ],
-      "elevation_impact": "Local elevation differences around Rockford are modest but enough that slightly higher, more open areas can see more drifting and localized deeper drifts than the city center during 15–25 mph northerly winds."
+      "elevation_impact": "Slightly higher terrain around Rockford can hold snowpack better than urban Grand Rapids, so secondary and subdivision roads may stay slushier/packed longer, but not enough on its own to compel closure absent extreme visibility or ice."
     },
-    "confidence_assessment": "This forecast depicts a high-impact, marginal-temperature winter storm for Rockford on Wednesday, Dec 10, with a classic overnight heavy-snow timing that has historically produced a moderate-to-high likelihood of at least a delay and a fair chance of a full snow day. From roughly midnight through around 7 AM, the hourly data show continuous moderate to heavy snow, with individual hours producing on the order of 0.1–0.2\" of liquid and 2–5 cm of snow. Summed across the overnight period, that supports the day’s modeled total of ~27 cm (~10–11\") of snow, acknowledging that some compaction and partial melting will occur because temps rise to near or just above freezing (31–36°F) during the heaviest band. \n\nKey features relative to typical Michigan closure triggers:\n- **Snow amount and timing**: The storm concentrates a large portion of its snowfall *before and around* the morning commute. By 6–7 AM, several inches (potentially near or above the 8\" mark in favored bands) could be on the ground with ongoing snow. Historically in West Michigan, when totals approach the 8–10\" range *with poor timing* (still snowing at bus time) rather than after the commute, closure rates rise significantly.\n- **Wind and blowing snow**: Winds increase into the morning and midday with sustained speeds into the mid upper-teens mph and gusts around 30–40 mph from the north-northeast. This is not a true blizzard setup (temperatures are in the low–mid 30s and official visibility may not stay below 1/4 mile for 3+ consecutive hours), but it is enough to cause **drifting**, reduced visibility, and ongoing road degradation even as snowfall intensity eases. Rural bus routes and east–west roads in open areas are especially impacted in similar past systems.\n- **Cold / wind chill**: Forecast wind chills in the teens to low 20s°F are far from the extreme-cold closure criterion (around -15°F wind chill or lower). Cold will not be the primary driver of a decision.\n- **Preceding conditions**: The previous day (Dec 9) features light freezing rain, drizzle, and minor snow—creating a potentially slick underlying surface. This sets up a base of ice or compacted snow that can worsen traction on untreated surfaces once heavy wet snow falls on top, a combination that has played a role in past closure events even when air temperatures are marginal.\n\nComparing to historical patterns for Rockford/Grand Rapids in early–mid December, events with **overnight heavy wet snow, 8\"+ potential, and winds gusting >30 mph before and during the commute** have often led to at least a 2-hour delay and frequently a closure, especially when the heaviest band continues into the 4–7 AM window and plow crews struggle to get both primary and secondary roads cleared in time. On the other hand, Michigan districts are resilient to snow alone: when comparable liquid totals verified more as slushy, partially melted snow with rapid improvement by mid-morning, some similar forecasts ended up producing only marginal travel impacts and school remained open.\n\nGiven these factors, the **primary closure drivers**—snow amount and timing plus blowing/drifting—are present, while the **secondary/extreme triggers** (severe cold, long-duration blizzard criteria, or widespread ice accretion) are less pronounced. The forecast sits in the bracket of storms that have historically produced a **meaningful but not guaranteed** snow day in Rockford: more disruptive than a routine 3–5\" clipper, but not an automatic closure on severity alone. \n\nOverall, relative to typical early-December patterns in this area, this system is somewhat higher-end in modeled QPF and overnight snowfall intensity, with decision outcomes in past analogs often depending on the exact placement of bands and how efficiently road crews can operate between about 2 AM and 7 AM."
+    "confidence_assessment": "Putting this in Michigan school-closure terms: \n\n1. **Snow/Ice Amount & Type**  \n- The model day summary shows ~27 cm (~10–11\") of snow for Wednesday with ~1.8\" liquid equivalent. Hourly breakdown, though, has temps 31–36°F through the overnight heavy burst (midnight–7 AM) with very high humidity and mixed rain/snow flags. Historically in Kent County, that combination tends to produce **heavy, wet, compacting snow and slush**, not 10+ inches of fluffy, driftable powder everywhere.\n- Key school-closure pattern here is often: colder (upper teens/low 20s) with heavy rates, or significant ice. This forecast is marginally cold, not frigid, and lacks a clear freezing‑rain signal during the pre‑dawn commute for 12/10.\n\n2. **Timing vs. School Operations**  \n- Heaviest modeled snow rates are clustered between roughly **12 AM and 7 AM** Wednesday, then transition to blowing snow and lighter precip. That does match the sensitive window for bus routes and secondary road treatment. \n- However, by **8–9 AM and later**, the forecast evolves from heavy snow to mainly **blowing snow with lighter new precipitation**, suggesting that plows could make meaningful progress before and during the commute.\n\n3. **Wind/Visibility/Cold**  \n- Winds are forecast to peak near **20 mph gusting into the upper 20s mph** from the N/NE through mid‑day, with some 30–40 km/h gusts. That can cause **areas of blowing/drifting snow and brief low visibility**, especially on open rural roads, but typically falls short of a true blizzard or whiteout standard used for broad closures in this region.\n- Wind chills during the day sit mostly in the **teens to low 20s°F**, locally around 10–15°F at times—**well above the common -15°F wind chill threshold** where cold alone drives decisions in Michigan.\n\n4. **Historical Analog Behavior for Rockford/Kent County**  \n- When Rockford has closed in similar December systems, conditions have usually included at least one of: \n  - **Sustained or gusty winds 30–40+ mph with frequent sub–½‑mile visibility** right through the 5–8 AM window, \n  - **Road‑coating ice** (from freezing rain or flash‑freeze), or \n  - A **truly disruptive storm with >8–10\" of snow that is still falling heavily at commute time**, leaving many main roads unplowed or re‑covering quickly.\n- In setups where: \n  - Temps hover around freezing, \n  - There is heavy but wet/marginal snow overnight, and \n  - Winds are in the 20–30 mph gust range with gradual improvement after sunrise, \n  Rockford and nearby districts often **run school on time** or, at most, consider **isolated delays** if local superintendents find poorer‑than‑modeled conditions on rural routes.\n\n5. **Net Framing for 2025‑12‑10**  \n- This forecast does check some closure‑friendly boxes: heavy overnight precip, accumulating wet snow, and gusty winds leading to blowing/drifting by morning. \n- But important Michigan‑specific mitigating factors are also present: \n  - Marginal temps reduce effective road accumulation. \n  - Winds are below classic blizzard thresholds. \n  - No extreme cold or dominant freezing‑rain signal at bus time. \n  - Precip intensity appears to **taper and conditions gradually improve during the day**, not remain in full blizzard mode.\n\nConsidering how Rockford/Kent County have historically handled similar events in early December, this pattern aligns most closely with **challenging but manageable travel**, not a near‑certain full district snow day. \n\n**Overall qualitative assessment:** Historically, a system with these modeled characteristics would produce **heightened concern and early‑morning road checks**, but has **less than even odds** of forcing a full‑day closure solely on snow/wind grounds. Confidence in this assessment is **medium**, since small shifts in overnight temperature or precip type (e.g., more efficient snow, or a surprise ice component) could push conditions closer to the higher‑impact analog pattern."
   },
   "safety": {
     "road_conditions": {
@@ -101,7 +84,7 @@
     },
     "travel_safety": {
       "walking_conditions_score": 1,
-      "driving_conditions_score": 2,
+      "driving_conditions_score": 1,
       "public_transport_impact": "severe",
       "emergency_access_concern": true
     },
@@ -112,132 +95,113 @@
       "afternoon_impact": "moderate"
     },
     "safety_recommendations": [
-      "Strongly consider full closure for Wednesday, 2025-12-10 due to heavy overnight and morning snow with blowing snow and low visibility during the 6–9 AM window.",
-      "Expect 6+ inches of accumulation from roughly 12:00 AM–8:00 AM with ongoing rates of 1+ inch/hour at times and wind gusts 20–30 mph causing blowing/drifting.",
-      "Primary roads may be partially treated but will likely remain snow-covered and rutted during the morning commute given continuous snowfall and marginal temps near freezing.",
-      "Secondary/subdivision roads and rural routes will be difficult to clear by 6–8 AM; anticipate deep snow, drifts, and reduced lane definition.",
-      "Visibility of ~1–2 km (often less) during 2–10 AM with ‘heavy snow’ and ‘blowing snow’ conditions is unsafe for bus operation, especially on unlit rural routes.",
-      "Temps hovering 31–36°F with high humidity and heavy precip create high risk of compacted snow and slush refreezing on less-traveled surfaces and in parking lots.",
-      "Walking routes (sidewalks, crosswalk approaches, school entrances) will be very slick due to wet snow/slush over ice, with limited time for custodial crews to fully clear before start.",
-      "If school must operate, consider a multi-hour delay, but even a delay may not fully resolve blowing snow and visibility concerns based on forecast through late morning.",
-      "Coordinate early with transportation, road commission, and neighboring districts on Tuesday evening based on any updated winter storm/advisory products, as conditions are borderline storm-level.",
-      "Prepare for potential power interruptions or blocked access for emergency vehicles in some neighborhoods due to drifting and heavy wet snow on trees/lines."
+      "Heavy, continuous snow from about 12:00 AM–7:00 AM with 2–5 cm/hr rates and 1–2 mile visibility or less will make 6–8 AM roads snow‑covered and rutted even with active plowing; treat conditions as hazardous for buses and teen drivers.",
+      "Temperatures hover 31–36°F with very high humidity, creating a wet, heavy, compacting snow that is difficult to clear and prone to slush and refreeze on untreated surfaces; assume high ice risk on side streets, hills, and parking lots.",
+      "Winds increase into the 10–20 mph range with higher gusts and forecast ‘blowing snow’ and visibility near 1–2 miles (sometimes near zero in the product) through late morning; expect drifting, reduced sight distances at intersections, and obscured lane markings.",
+      "Total daily snow over 25 cm (~10+ inches) combined with nearly 2\" liquid equivalent suggests plows will struggle to keep secondary roads and rural routes in safe condition during the actual commute window, even with Michigan’s robust overnight operations.",
+      "Walking routes and school campuses will be slick and slushy at arrival time; sidewalks, drop‑off loops, and stairs will likely be hazardous without intensive pre‑dawn treatment and continuous clearing.",
+      "Given severe impacts during the 6–8 AM window, districts should seriously consider a full closure rather than a short delay; conditions are expected to improve gradually by early afternoon but remain breezy and cold with lingering blowing snow.",
+      "Coordinate closely with county road commissions overnight for real‑time reports; if banding is heavier than forecast, emergency access for buses and responders on some neighborhood and rural roads could be compromised around daybreak.",
+      "If school is somehow held, enforce strict speed reductions for buses, adjust routes away from steep grades and known drifting trouble spots, and expand parent communication about extra travel time and the option to keep students home if local roads are worse than district averages."
     ],
     "risk_level": "severe"
   },
   "news": {
     "local_news": [
       {
-        "source": "WOOD TV8 / Grand Rapids-area outlets",
-        "headline": "No widespread West Michigan school closing alerts yet issued for Wed, Dec. 10, 2025",
-        "summary": "Searches of WOOD TV8, WZZM 13, FOX 17, and MLive closing/alert pages the evening of Tuesday, Dec. 9, 2025, show no active lists or headlines indicating widespread weather-related school closings for Wednesday, Dec. 10, 2025, in Kent County or Rockford-area districts. Current coverage is focused on other local news and standard early-December holiday/event content, not severe winter weather or hazardous travel alerts for tomorrow.",
+        "source": "Regional forecast (Big Rapids News / NWS summaries)",
+        "headline": "Multiple snow systems impacting West & Mid-Michigan through Wednesday",
+        "summary": "Forecast discussions for this week show several clipper-type systems bringing snow to much of Michigan through Wednesday night. For West/Mid-Michigan (including the Grand Rapids/Kent County region), guidance points to roughly 3–6\" of total snow potential from late Tuesday into Wednesday, with locally higher amounts north, and the possibility of light freezing drizzle creating a glaze of ice in spots Tuesday. Advisory-level snow is possible, but as of the latest updates no major winter storm warnings focused specifically on Kent County/Grand Rapids have been highlighted; impacts are framed as periods of hazardous travel rather than a crippling blizzard.",
         "relevance": "high",
-        "url": "https://www.woodtv.com"
+        "url": "https://www.bigrapidsnews.com/news/article/michigan-snow-forecast-midweek-december-8-21230909.php"
       },
       {
-        "source": "National Weather Service / regional weather coverage (via news)",
-        "headline": "Typical early-December winter conditions; no major storm headlines centered on Kent County for Dec. 10",
-        "summary": "Regional weather coverage for West Michigan on Dec. 9, 2025, indicates normal early-winter conditions (cold, possible light snow or flurries) but does not highlight a significant winter storm, blizzard, ice storm, or extreme cold event specifically targeting Kent County for Wednesday, Dec. 10, 2025. There are no top-level articles warning of school-closure-level impacts for that date in the Grand Rapids/Rockford area.",
-        "relevance": "high",
-        "url": "https://www.weather.gov/grr"
-      },
-      {
-        "source": "Consumers Energy (regional news)",
-        "headline": "Consumers Energy conducting scheduled dam siren tests Dec. 9–10, 2025",
-        "summary": "Consumers Energy announced routine emergency siren tests near several hydroelectric dams on December 9–10, 2025. These tests are not related to the weather or power reliability issues: they are periodic safety checks and do not indicate elevated risk of power outages for Rockford or Kent County on Dec. 10.",
-        "relevance": "low",
-        "url": "https://www.bigrapidsnews.com/news/article/consumers-energy-dam-siren-tests-21230520.php"
+        "source": "Regional winter weather alerts (NW Michigan)",
+        "headline": "Winter weather advisories focused north of Kent County for Dec. 9–10",
+        "summary": "Northern lakeshore counties (Manistee, Benzie, Mason) are under winter weather advisories through Wednesday for 5–6\" type events and blowing snow, with travel cautioned there. This indicates the core of heavier/lake-enhanced snow is focused north along the lakeshore; Kent County and Rockford are likely to be on the southern/less intense edge of these systems, though still experiencing snow and some slick roads.",
+        "relevance": "medium",
+        "url": "https://www.manisteenews.com/news/article/winter-weather-alerts-place-northern-michigan-21232173.php"
       }
     ],
     "school_district_signals": {
-      "official_announcements": [
-        "Rockford Public Schools (RPS, Kent County MI) district news feed and homepage as of the evening of Tuesday, Dec. 9, 2025, do not display any alert, banner, or news item announcing a closure, delay, or early dismissal for Wednesday, Dec. 10, 2025. The latest public district news items are routine board/school updates and not weather-related.",
-        "Rockford’s previous communication about snow days (Dec. 10, 2024 superintendent update) reiterates that snow-day decisions are communicated via SchoolMessenger phone/text plus postings on the district website and to local media. There is no such notice yet for Dec. 10, 2025, indicating that no decision to close has been posted as of now.",
-        "Checks of Grand Rapids Public Schools and other nearby district calendars/announcement feeds (Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, Kent ISD where visible) show normal event listings for Dec. 10, 2025 (concerts, regular school events), with no system-wide weather closure alerts posted publicly at this time."
-      ],
+      "official_announcements": [],
       "early_dismissal_history": false,
-      "neighboring_district_closures": [
-        "No neighboring district (Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, Grand Rapids Public, Kent ISD programs) has publicly posted a weather-related closure or delay for Wednesday, Dec. 10, 2025, as of the current check on Tuesday evening. Their websites and public calendars still show regular Wednesday activities proceeding as scheduled, such as GRPS winter concerts on Dec. 10."
-      ]
+      "neighboring_district_closures": []
     },
     "community_intel": {
       "social_media_sentiment": "uncertain",
       "reported_road_conditions": [
-        "As of Tuesday evening, Dec. 9, social media and community chatter in the broader Grand Rapids/Rockford area reference typical early-winter driving—cold, possibly slick spots on untreated side roads—but there are no widespread reports of severe drifting, whiteout conditions, or major crash clusters around Rockford that would strongly pressure a preemptive closure call for Dec. 10.",
-        "Kent County Road Commission communications indicate ongoing standard winter maintenance and monitoring, not an emergency-level situation. There are no posts flagging countywide impassable roads for Wednesday morning at this time."
+        "Forecast language for West/Mid-Michigan emphasizes \"potentially hazardous\" travel at times Tuesday night into Wednesday due to accumulating snow and possible light freezing drizzle, but not a major blizzard-scale event.",
+        "Heavier snow bands and formal advisories are focused to the north along the Lake Michigan shore (e.g., Mason/Manistee/Benzie), suggesting Rockford/Kent County will likely see plowable but moderate snow with typical winter driving challenges rather than region-wide shutdown conditions."
       ],
       "power_outage_reports": false,
-      "local_event_cancellations": [
-        "No major Rockford- or Grand Rapids–area event cancellations for Wednesday, Dec. 10, 2025, have been announced due to weather. GRPS and other districts still list Wednesday evening concerts and school events as on-schedule, which is a weak signal that organizers are not currently expecting a disruptive storm on that date."
-      ]
+      "local_event_cancellations": []
     },
-    "key_findings_summary": "As of Tuesday evening, December 9, 2025, there are no clear signals from Rockford Public Schools, neighboring districts, or major local news outlets that point toward a likely weather-related closure for Rockford, Michigan on Wednesday, December 10, 2025. Rockford Public Schools’ official channels show no closure or delay alerts yet, and nearby districts (Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, Grand Rapids Public) are still advertising normal Wednesday events. Local news (WOOD TV8, WZZM 13, FOX 17, MLive) is not highlighting a major winter storm or extreme cold event centered on Kent County for Dec. 10. Community chatter and transportation/power signals reflect routine early-winter conditions—cold and possibly slick, but not obviously severe enough at this time to trigger widespread pre-announced closures. The dominant signal right now is \"status quo / wait-and-see\": any Rockford decision will likely come in the early morning hours of Dec. 10 if overnight weather or road conditions worsen unexpectedly."
+    "key_findings_summary": "As of the evening of Tuesday, December 9, 2025, there are no public indications online of Rockford Public Schools (MI) or its neighboring Kent County districts announcing closures, delays, or early dismissals for Wednesday, December 10, 2025. Local TV station closings lists and district communication channels do not yet show weather-related decisions for that date. Regional forecasts support several inches of snow and potentially slick roads, but the strongest advisories appear focused north of Kent County. Community/social chatter visible online is in a general \"watching the forecast\"/uncertain mode rather than confidently expecting a guaranteed snow day. In short: conditions may be messy for the Wednesday commute, but there is no strong public signal yet that Rockford Public Schools or nearby districts are leaning toward closing based on currently available information online."
   },
   "final": {
-    "snow_day_probability": 78,
-    "confidence_level": "high",
+    "snow_day_probability": 68,
+    "confidence_level": "moderate",
     "primary_factors": [
-      "Forecast 10–11\" storm-total snow with 1–2\"/hr rates 1–6 AM (8\"+ on ground by daybreak)",
-      "Michigan-specific threshold: 8\"+ snow with blowing/drifting pushes baseline closure odds into 60–85% range",
-      "Heavy snow continues up to ~6–7 AM; only 1–2\" more after 6 AM but right in bus window, leaving roads snow-packed and rutted at decision time",
-      "Safety analyst rates morning-commute risk as severe; primary and secondary roads only ~1/3 quality at 7:40 AM with high ice/slush risk",
-      "Blowing/drifting snow and visibility drops (near-whiteout bursts late morning) keep conditions hazardous even as new accumulation tapers",
-      "Historical analogs for Rockford/GR with overnight 8\"+ plus wind give ~60–70% snow day rate, especially when heavy snow overlaps 4–7 AM",
-      "No ice storm or glazing focus, but underlying slick base plus heavy wet snow markedly worsens traction",
-      "News/community intel shows no neighboring closures or strong “everyone expects a snow day” signal, so no extra bump from regional domino effect",
-      "Kent County not treated as blizzard bullseye in media, but local forecast details for Rockford still align with a high-impact school-operations day"
+      "Effective overnight accumulation in town on main roads now cross‑checked at roughly 5–7\" by 7–8 AM, with locally higher totals/drifts on secondary and rural routes",
+      "Snow continues at >0.25\"/hr through the core 2–7 AM window with no true plow ‘catch‑up’ window before 6:30–7:40 AM bus pickups",
+      "Temperatures hovering 31–36°F create heavy, wet, compacting snow and slush with localized refreeze/ice risk in lots, side streets, and untreated areas",
+      "Blowing and drifting snow plus 1–2 mile visibility (briefly lower) during the morning commute, especially in open/rural parts of the district",
+      "Historical analogs: similar early‑December, wet 5–8\" storms with marginal temps and improving conditions by late morning produce <50% closure odds, but this case is nearer the high‑impact end of that spectrum",
+      "News/community intel: no neighboring district closures announced yet and public sentiment is ‘wait and see’ rather than confident about a snow day, which slightly tempers closure odds",
+      "Michigan‑specific tolerance for snow is high, but 6–8\"‑class event with marginal temps and no early‑morning lull pushes into the 60–80% closure band"
     ],
     "timeline": {
-      "conditions_start": "2025-12-10T01:00:00-05:00",
-      "peak_impact_time": "2025-12-10T02:00:00-05:00 to 2025-12-10T09:00:00-05:00",
-      "conditions_improve": "2025-12-10T11:00:00-05:00 to 2025-12-10T13:00:00-05:00 (roads gradually improving but still impacted by blowing/drifting snow)"
+      "conditions_start": "2025-12-10T00:00:00",
+      "peak_impact_time": "2025-12-10T02:00:00–2025-12-10T09:00:00",
+      "conditions_improve": "2025-12-10T10:00:00–2025-12-10T13:00:00"
     },
-    "decision_rationale": "PRE-DECISION CHECKLIST\n1. AGREEMENTS ACROSS EXPERTS\n- All four agree this is a significant winter event for Rockford, not a routine dusting:\n  • Meteorologist: ~10.8\" total, peak 1–2\"/hr 1–6 AM, heavy snow ending around 6–7 AM then blowing/drifting.\n  • Historian: Overnight 8\"+ with winds and poor timing is a classic moderate–high snow day pattern here.\n  • Safety analyst: Morning-commute risk labeled severe; strong recommendation to strongly consider full closure.\n  • News intel: While not hyped as a blizzard locally, they acknowledge messy, potentially hazardous commuting conditions.\n- Everyone agrees there is no major ice storm or extreme-cold driver; the main hazards are heavy snow, timing, and wind/blowing snow.\n- Everyone agrees the worst travel risk for school operations is the morning window (2–10 AM), with partial but not full improvement by late morning.\n\n2. DISAGREEMENTS / TENSIONS\n- Severity framing:\n  • Meteorologist + Safety + Historian lean toward a high-impact school day (heavy snow plus timing plus wind).\n  • News intel shows *no strong public expectation* of closures and no neighboring districts announcing shutdowns yet; Kent County is not the media focus of a major blizzard.\n- Storm footprint perception:\n  • Meteorology/historical: Rockford could be near the higher end of modeled snow totals (8–11\").\n  • News intel: Regional coverage frames Kent County more as mixed-precip/messy commute vs. headline blizzard, suggesting some uncertainty about exact band placement and intensity.\n- Operational response:\n  • Safety analyst clearly leans toward full closure rather than relying on a 2‑hour delay.\n  • Community/administrative signals are still in “wait-and-see,” not preemptive-closure mode.\n\n3. PLOW TIMING MATH (HOURS FROM SNOW END TO 7:40 AM)\n- Meteorologist: Heavy snow rates (near or above 1\"/hr) 1–6 AM; tapers below ~0.5\"/hr by around 7 AM; only ~1–2\" additional snow after 6 AM.\n- That means heavy accumulating snow is still ongoing very late in the pre‑dawn period:\n  • Effective heavy-snow window: ~1–6 AM.\n  • Significant tapering: ~6–7 AM.\n  • Rockford start time: ~7:40 AM.\n- So time between heavy snow effectively *ending* and school start is roughly:\n  • From when rates truly drop out of the heavy range (~6 AM) to first buses/teen drivers (~6:30–7:00 AM): 0–1 hour.\n  • From taper below 0.5\"/hr (~7 AM) to first bell (~7:40 AM): <1 hour.\n- Safety analyst’s operational view:\n  • By 6 AM: Primaries have had at least one pass but are snow-covered; many secondaries still in early-pass condition.\n  • By 7 AM: Primaries maybe 1–2 passes but still rutted/slushy; secondaries still spotty.\n  • By 7:40 AM: Primaries score ≈1 (poor but passable); secondaries ≈0.5–1, coded as 1.\n- Net: There is essentially **no true cleanup window** between heavy accumulation and the bulk of the school commute; plows are fighting active snow and wind right up to and through decision time.\n\n4. ICE RISK\n- Meteorology: Precipitation type is mainly snow; not an ice storm. Temps rise to mid 30s with pavement near freezing; indicates wet/heavy snow and slush, not deep freeze.\n- Historian: Notes light freezing drizzle/ice the day before, creating a slick base for heavy wet snow to fall on.\n- Safety analyst: Explicitly flags ice formation risk as high due to:\n  • temps 31–36°F,\n  • heavy wet snow and slush,\n  • compaction and refreezing in less-traveled areas and parking lots.\n- Conclusion: **No major ice accretion event**, but a meaningful *ice/slush/compaction* component that significantly degrades traction, especially on side streets, bus routes, and campus surfaces. This amplifies the impact of the snow and pushes the event toward the higher-closure band.\n\n5. NEIGHBORING DISTRICTS & COMMUNITY SIGNALS\n- News intel (latest scan):\n  • No neighboring districts (Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, GRPS, Kent ISD) have announced closures or delays for Dec 10.\n  • Local TV closing lists are not yet populated with Kent County-wide weather closures.\n  • No strong social-media or news narrative of “everyone expects a snow day” in Rockford/GR.\n- This means:\n  • No +15–20% probability bump from neighboring closures domino effect.\n  • No +10–15% bump from clear community expectation of closure.\n  • Signals are neutral to slightly conservative: community and media are in a watchful but not panicked posture.\n\n6. WHAT WOULD MAKE THIS WRONG?\n- Ways I could be *too high* (over-predict closure):\n  • Heavy-snow band sets up 20–40 miles away, leaving Rockford with 4–6\" instead of 8–11\" and more of a rain/mix transition—then Michigan-hardened operations likely keep schools open.\n  • Plows manage to get ahead of the storm better than modeled, clearing primaries and most secondaries to near-2 quality by 7 AM, with only minor blowing issues.\n  • Winds do not cause as much drifting/visibility reduction as expected, so by 7–8 AM conditions are more like a typical moderate winter commute.\n- Ways I could be *too low* (under-predict closure):\n  • Totals locally overperform into the 11–12\"+ range with 2\"+/hr rates lingering to 7–8 AM and true near-blizzard bursts—this would push closure odds well into the 85–95% range.\n  • Underlying ice from Dec 9 proves worse than expected, causing widespread spinouts and emergency calls before 6 AM, forcing a reactive closure.\n  • A late-evening shift in NWS messaging upgrades to warnings/advisories focused squarely on Kent County, prompting a stronger regional closure wave than current intel shows.\n\nWEIGHTING OF EXPERT INPUTS (explicit per instructions)\n- Meteorology (35% weight):\n  • Indicates a borderline but *significant* winter storm with 10.8\" and overnight peak snowfall that directly overlaps the commute.\n  • Key drivers supporting closure: 8\"+ overnight, heavy 1–2\"/hr rates 1–6 AM, winds 15–25 mph with whiteout bursts late morning, and little/no cleanup gap.\n  • On its own, this would suggest closure probability around the upper half of the 8\"+ band: roughly **70–80%**.\n- Safety (25% weight):\n  • Classifies risk as severe; explicitly leans toward **full closure** over a 2‑hour delay.\n  • Rates 7:40 AM road conditions at only 1/3 on both primary and secondary routes, with high ice/slush risk and poor visibility.\n  • On its own, this pushes closure odds into the **80–90%** range, because transportation is the operational bottleneck.\n- History (20% weight):\n  • Main analog: Overnight heavy snow (~8–11\"), near-freezing temps, winds and blowing snow → historical snow day rate ~0.7 (70%).\n  • Another analog with similar wind and mixed-precip context: ~60% closure rate.\n  • Weighted together, historical context suggests something like **60–70%**.\n- News Intelligence (20% weight):\n  • Shows no neighboring closures, no strong community expectation, and Kent County framed as a messy commute rather than bullseye blizzard.\n  • This tempers the forecast, pushing against automatically jumping to very high closure odds.\n  • On its own, this would imply a more cautious **40–55%** (wait for actual overnight conditions).\n\nSYNTHESIS INTO A SINGLE PROBABILITY\n- Start with Michigan threshold guidance:\n  • 8+ inches OR ice → **60–85%** baseline.\n  • Here we have ~10.8\" modeled, with meaningful ice/slush risk on top of a prior slick base but not a pure ice storm.\n- Meteorology + Safety weighted heavily (35% + 25% = 60% of the decision) both tilt toward the *upper* portion of 60–85% due to timing and transport risk.\n- History (20%) reinforces that ~70% is a realistic central value based on past analogs.\n- News intel (20%) prevents pushing into the 90%+ “automatic” blizzard category because regional messaging isn’t treating this as a slam-dunk closure event and no neighboring domino has started.\n- Mathematically, a rough weighted blend of each expert’s implicit probability band:\n  • Meteorology: assume 75% → 0.35 * 75 = 26.25\n  • Safety: assume 85% → 0.25 * 85 = 21.25\n  • History: assume 65% → 0.20 * 65 = 13.0\n  • News intel: assume 50% → 0.20 * 50 = 10.0\n  → Sum ≈ 70.5%\n- However, Michigan threshold guidance for 8\"+ with marginal ice and very poor timing justifies nudging higher than 70, particularly because the plow window is so short and the safety analyst is strongly closure-leaning.\n- I therefore adjust upward modestly, but not into near-certainty, to **78%**:\n  • Still within the 60–85% band for 8\"+ events.\n  • Reflects strong operational risk while respecting the lack of neighboring pre-closures and only moderate media framing.\n\nCONFIDENCE LEVEL\n- Model agreement on timing and snow amounts is solid; all operational experts align on severe morning hazard.\n- The main uncertainty is exact band placement (does Rockford see 6–8\" vs. 10–11\"?).\n- Because most plausible outcomes still produce at least borderline-closure conditions, confidence in a *high* probability (not the exact number) is strong.\n- I set confidence as **high** rather than very_high to reflect: (1) mixed-precip risk mentioned in some broader coverage, and (2) the absence of neighboring closure dominoes so far.\n\nBOTTOM-LINE RECOMMENDATION\n- From an operations and safety standpoint, Rockford should **plan for a full snow day** on Wed, Dec 10, 2025, with:\n  • Early-morning confirmation based on actual road conditions and radar trends.\n  • A 2‑hour delay as a backup option only if overnight snow underperforms and roads look much better than expected by ~5–5:30 AM.\n- With the current data, a full closure is the more defensible call against both historical patterns and transportation safety analysis.\n",
+    "decision_rationale": "PRE‑DECISION CHECKLIST\n\n1. What do all four experts AGREE on?\n- A plowable, significant snow event occurs overnight into Wednesday.\n- Snow is ongoing through the 2–7 AM window, not fully over before buses.\n- Temps hover near freezing (31–36°F), making the snow wet, heavy, and slushy.\n- Visibility is reduced (often 1–2 miles, occasionally worse) during the morning commute with blowing/drifting issues.\n- Travel will be hazardous at least at some level for the 6–8 AM window.\n- There is no classic blizzard or deep‑cold extreme; this is a strong but not historic storm for West Michigan.\n\n2. Where do they DISAGREE?\n- **Snow amount on roads by commute:**\n  - Original meteorological narrative suggested ~10–11\" total day snow with ~8–9\" before commute.\n  - Cross‑check of experts (meteorologist + safety) refined that to **~6–7\" falling 12–7 AM, with ~5–7\" effectively on main roads by 8 AM** due to compaction and treatment.\n  - Safety framing before cross‑check leaned closer to a 10\"+ high‑end impact and implied extensive plow overload; cross‑check shifts that to a still‑significant but more routine 5–7\" main‑road event.\n\n- **Ice severity:**\n  - Safety initially flagged **“high” ice formation risk**.\n  - Cross‑check downgrades this to **localized, moderate glaze/slush refreeze**, especially on lots and side streets, not a widespread crippling ice storm. No strong freezing‑rain signal.\n\n- **Overall disruption framing:**\n  - Meteorological + historical view: heavy but **“challenging but manageable”**, historically **<50% closure odds** for similar marginal‑temp early‑December storms.\n  - Safety view: **“severe risk”** with strong recommendation for closure.\n  - News intel: regional coverage and advisories put Kent County on the **southern/less intense edge**, emphasizing hazardous but not paralyzing travel; no early school closures announced and public sentiment is **uncertain, not closure‑confident**.\n\n3. Plow timing math (hours from snow end to 7:40 AM)\n- From safety tool clarification:\n  - Heavy, plow‑defeating snow at 0.8–2\"/hr persists from **~12 AM to at least 7 AM**.\n  - Accumulation rates remain >0.25\"/hr through at least 7 AM; only after **8–10 AM** does it transition to lighter snow/blowing with less new accumulation.\n  - Conclusion: **Essentially 0 useful hours** of lull between end of impactful snow and **6:30–7:40 AM** bus window. Cleanup/widening time doesn’t really open until mid‑/late morning.\n\n4. Is there ANY ice? (ice changes everything)\n- Temps: **31–36°F**, very humid – classic wet, compacting snow and slush setup.\n- Cross‑check: ICE severity **low–moderate**, not high:\n  - Slush, compaction, and localized refreeze on **untreated surfaces, parking lots, side streets, and hills**.\n  - Main roads likely slushy/slick but **not a district‑wide glassy ice glaze**.\n- So: **No major freezing‑rain/ice storm**, but **enough localized icing** to materially worsen walking, lots, and marginal roads.\n\n5. What are neighboring districts doing?\n- News intel (FOX 17 closings and other sources):\n  - **No active closings or delays** yet for Kent County districts (Rockford, GR, Northview, Comstock Park, Sparta, Cedar Springs, etc.).\n  - No winter storm warnings centered on Kent; stronger advisories and heavier totals are to the **north** (Mason/Manistee/Benzie, etc.).\n  - Community/social sentiment is **“watching the forecast/uncertain”**; not clearly expecting a slam‑dunk snow day.\n- Applying the developer rules:\n  - 0 neighboring closures → **no +15–20% bump** from confirmed closures.\n  - Community not strongly expecting closure → **no +10–15% expectation bump; if anything, this restrains us from over‑forecasting**.\n\n6. What would make me WRONG?\n- **Too HIGH a probability (false alarm)** if:\n  - Actual totals in Rockford proper verify toward the low end (e.g., 3–4\" by commute, faster taper 4–5 AM),\n  - Plows over‑perform and have main and many secondary routes in decent shape by 6:30–7:30 AM,\n  - Visibility issues and drifts are localized rather than widespread, and\n  - Superintendent emphasizes Michigan’s higher tolerance, deciding to run school on time or with only a minor delay.\n\n- **Too LOW a probability (miss) if:**\n  - Banding over‑performs and Rockford lands in a heavier corridor (8\"+ on roads by 8 AM instead of 5–7\"),\n  - A thin but impactful ice glaze forms on lots and key bus routes early morning,\n  - Visibility degrades to frequent near‑whiteouts 5–8 AM on rural routes, and\n  - Kent County plows struggle more than expected, prompting broad closures.\n\nGiven the model blend and cross‑check, the **first error mode (too high)** is somewhat more plausible than a surprise crippling storm – hence I avoid going above ~70%.\n\nWEIGHTING THE FOUR INPUTS\n- Meteorology (35% weight):\n  - Cross‑checked view: **5–7\" effective accumulation on main roads by 8 AM**, wet snow, no blizzard, but snow still falling and blowing at commute time.\n  - This suggests **meaningful risk but not a guaranteed shutdown**.\n  - Contribution: leans around **45–55% closure odds**.\n\n- Safety (25% weight):\n  - Emphasizes **severe** 6–8 AM conditions: continuous heavy snow, zero plow catch‑up window, hazardous secondary/rural roads, risky parking lots and walking routes.\n  - Strongly recommends closure or at least large delay.\n  - Contribution: pushes probability up to **~75–80%** if taken alone.\n\n- History (20% weight):\n  - Analog 1 (6–10\" heavy wet snow, winds, improving visibility by midday): **~60% historical snow‑day rate**.\n  - But added nuance: marginal temps + West Michigan competence + improvement after sunrise usually mean **less than even odds** in early December.\n  - Our case fits **upper end** of ‘challenging but manageable’ – likely **40–55%** from pure climatology.\n\n- News intelligence (20% weight):\n  - No advisories centered on Kent; heavier alerts to the north.\n  - No pre‑announced closures or delays; sentiment is **wait‑and‑see**.\n  - This argues against assuming a near‑certain closure and pulls the blended probability **downward**, perhaps into the **50–60%** range.\n\nCombining these, with explicit weights and adjustments:\n- Start from meteorology/historical blended baseline: ~**50%**.\n- Add safety emphasis on zero plow window, hazardous lots, and rural routes: **+15–20 points → ~65–70%**.\n- Apply news‑intel/community moderation (no neighboring closures, no strong closure expectation): **–3 to –5 points → landing near 65–67%**.\n- Michigan threshold guidance suggests 8\"+ or strong ice should be **60–85%**; we’re marginally below 8\" on most roads but within a 6–8\" plus timing window – that justifies being **in the 60s, not 50s**.\n\nI deliberately avoid the 40–60% ‘shrug’ band because the **plow‑timing and commute overlap** materially raise risk compared with a routine 4–6\" Michigan event. I set the final number at **68%** to reflect:\n- Clearly more likely than not, but\n- Allowing for the substantial chance that Rockford leans on its high snow tolerance and manages an in‑person day.\n\nALTERNATIVE SCENARIOS",
     "alternative_scenarios": [
       {
-        "scenario": "Storm underperforms south; Rockford ends up with ~4–6\" total, mixed snow/rain, and roads mostly plowed/treated by 6–7 AM",
-        "probability": 15,
-        "impact": "Morning commute is messy but within normal Michigan tolerances. Primaries approach 2–3 quality by start time; secondaries around 1–2. In this case, RPS might open on time or with a 2‑hour delay instead of closing, and a 78% closure forecast would be too high."
+        "scenario": "Storm verifies on the lower end for Kent County; Rockford sees ~3–5\" by commute, rates ease by 4–5 AM, and plows get main/secondary routes in decent shape before 7 AM. Visibility is mostly >1–2 miles with only modest drifting, and parking lots are slushy but manageable.",
+        "probability": 0.25,
+        "impact": "District likely **opens on time or with only a minor delay**. Brier‑score risk here is that a 68% closure call overshot the true likelihood; students may attend school in marginal but typical Michigan winter conditions."
       },
       {
-        "scenario": "Base-case heavy-snow outcome verifies; Rockford gets 8–11\" with heaviest between 1–6 AM, tapering 6–7 AM, plus blowing/drifting and poor visibility through midday",
-        "probability": 60,
-        "impact": "Roads at 7–8 AM are snow‑ and slush-covered with ruts, drifting, and limited lane definition on many bus routes; visibility is reduced by falling and blowing snow. A full closure is very likely; a 2‑hour delay still leaves marginal conditions in rural areas."
+        "scenario": "Base‑case verification: ~5–7\" of wet snow on most roads by 7–8 AM, still snowing/blowing, very limited plow catch‑up before buses, with localized ice and poor conditions on rural routes and school lots.",
+        "probability": 0.5,
+        "impact": "Superintendent, after early‑morning road checks and road‑commission input, opts for a **full snow day closure** given the combination of ongoing accumulation, drifting, and safety concerns for buses/teen drivers."
       },
       {
-        "scenario": "Storm overperforms or lingers; Rockford sees 11–12\"+ with 1–2\"/hr rates persisting toward 7–8 AM and stronger-than-expected whiteout conditions",
-        "probability": 25,
-        "impact": "Conditions approach near-blizzard severity during and after the commute window. Many secondaries are functionally impassable at decision time, and even afternoon improvement is slow. Closure becomes almost certain; the 78% estimate would be too low in hindsight."
+        "scenario": "High‑end verification: heavier band sets up over Rockford, producing 7–10\" on roads by commute plus more pronounced localized icing and frequent sub‑mile visibility on rural routes.",
+        "probability": 0.25,
+        "impact": "Multiple Kent County districts close; Rockford almost certainly **declares a snow day**, possibly along with some power/incident reports. Our 68% probability would be slightly conservative in hindsight but still directionally correct."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "Prepare tonight as though a **full closure on Wed, Dec 10** is the default, with final confirmation by ~5:00 AM after checking radar and road reports.",
-        "Coordinate closely with Kent County Road Commission and bus contractors overnight to get real-time assessments of secondary and rural route conditions between 4:30–5:30 AM.",
-        "If overnight radar and totals confirm 8\"+ on the ground with active snow or severe blowing at 5 AM, lean strongly toward **full closure** rather than a delay; safety analysis flags bus operations as high risk.",
-        "Retain a contingency plan for a **2‑hour delay** only if: (a) totals are closer to 4–6\", (b) banding has clearly shifted away and rates dropped earlier than expected, and (c) roads are already improving toward a primary=2, secondary=1–2 condition by ~5 AM.",
-        "Communicate clearly to staff and families tonight that a late-evening or early-morning decision is possible, and that transportation safety on rural routes is the primary driver, not extreme cold.",
-        "If closed, use the day to fully clear parking lots, sidewalks, and campus approaches; wet, compacted snow on top of prior slick surfaces will require repeated scraping and salting."
+        "Plan operationally for a **high likelihood of full closure** on 2025-12-10, but be prepared to confirm based on 4–5 AM road reports.",
+        "Coordinate with Kent County Road Commission and local law enforcement overnight for real-time conditions, especially on rural and hillier routes.",
+        "If conditions at 4–5 AM still show active, moderate-to-heavy snow with poor visibility and un-widened secondary roads, lean toward **full-day closure** rather than a short delay, because the plow catch-up window opens mainly after normal start time.",
+        "If, in the morning, rates have eased earlier than expected and main/secondary roads are reasonably clear, a **2-hour delay** could be considered instead of full closure—but only with confirmation that parking lots and key walking routes are treated and safe.",
+        "Ensure custodial/grounds staff are ready for intensive treatment of **sidewalks, stairs, and parking lots**, where slush and localized ice pose the main slip risk, should you decide to open.",
+        "Communicate clearly to families the evening before that conditions are borderline and that a **morning decision** (closure vs. delay) will depend heavily on actual overnight snowfall and plow progress."
       ],
       "for_residents": [
-        "Expect **very difficult travel from roughly 2–9 AM** with heavy snow, ruts, and poor visibility; avoid nonessential trips during this window if possible.",
-        "If you must drive early, allow extra time, reduce speed significantly, and be prepared for plowed-but-snow-covered main roads and poorly cleared side streets.",
-        "Shovel and treat driveways and walkways in stages rather than waiting until the end; heavy, wet snow will compact and can be physically demanding to clear in one go.",
-        "Watch for slick refreezing in the evening on side streets, driveways, and sidewalks as slush compacts and temperatures hover near freezing.",
-        "Keep an eye on local school and media channels early Wednesday morning; final closure or delay decisions may come close to 5–6 AM based on actual conditions."
+        "Expect **snow-covered and slushy roads** during the early morning, with reduced visibility and possible drifting, especially in open areas north and east of Rockford.",
+        "If school is open, allow **extra travel time** and drive cautiously; teen drivers and buses should be especially conservative on curves, hills, and untreated side streets.",
+        "Use proper winter footwear and caution on **sidewalks, driveways, and parking lots**, which may be slick due to compacted slush and patchy ice.",
+        "Avoid unnecessary early-morning travel if you can; conditions are likely to improve steadily from late morning into early afternoon as plows catch up and snowfall intensity decreases.",
+        "Keep vehicles fueled and equipped with winter gear (scraper, brush, blanket) given the potential for slow travel and minor incidents."
       ],
       "for_authorities": [
-        "Stage plows and salt trucks for **maximum coverage between 2–8 AM**, prioritizing bus routes and known trouble spots (hills, curves, open east–west corridors prone to drifting).",
-        "Coordinate with neighboring jurisdictions and Kent County dispatch to monitor crashes, spinouts, and impassable segments before 5 AM to inform school and public messaging.",
-        "Plan for repeated passes on secondaries and rural bus routes even after snowfall tapers, as blowing and drifting will partially refill lanes well into late morning.",
-        "Have communication staff prepared for **early-morning updates** emphasizing that while temperatures are near freezing, the combination of heavy wet snow, slush, and wind makes conditions more hazardous than a typical 3–5\" event.",
-        "If possible, share real-time road-condition maps or photos with school decision-makers around 4:30–5:30 AM to support a clear, defensible closure vs. delay call."
+        "Staff **full overnight plow and salt operations**, prioritizing primary routes but allocating sufficient resources to key school bus corridors where possible.",
+        "Monitor snowfall rates and visibility closely from **midnight to 7 AM**; if banding is heavier than expected, be prepared to inform school districts promptly that conditions are not improving in time for a safe commute.",
+        "Focus additional treatment on **intersections, hills, bridges, and known drifting trouble spots**, as these will be the highest-risk segments for buses and teen drivers.",
+        "Coordinate public messaging with local media and school districts to set expectations for a **slow, hazardous morning commute**, and encourage reduced speeds and extra spacing.",
+        "Be ready for some **localized emergency access challenges** in rural or subdivision areas around daybreak; stage resources accordingly if possible."
       ]
     },
     "updates_needed": true,
-    "next_evaluation_time": "2025-12-10T05:00:00-05:00"
+    "next_evaluation_time": "2025-12-10T09:30:00-05:00"
   },
-  "timestamp": "2025-12-09T14:07:12.528Z",
+  "timestamp": "2025-12-09T18:13:31.059Z",
   "targetDate": "2025-12-10",
   "targetDayName": "Wednesday",
   "daysAhead": 1,
@@ -250,43 +214,43 @@
       "lat": 43.1152000427246,
       "lon": -85.5136032104492,
       "tz_id": "America/Detroit",
-      "localtime_epoch": 1765289072,
-      "localtime": "2025-12-09 09:04"
+      "localtime_epoch": 1765303898,
+      "localtime": "2025-12-09 13:11"
     },
     "current": {
-      "last_updated_epoch": 1765288800,
-      "last_updated": "2025-12-09 09:00",
-      "temp_c": -5,
-      "temp_f": 23,
+      "last_updated_epoch": 1765303200,
+      "last_updated": "2025-12-09 13:00",
+      "temp_c": -2.2,
+      "temp_f": 28,
       "is_day": 1,
       "condition": {
         "text": "Overcast",
         "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
         "code": 1009
       },
-      "wind_mph": 13.9,
-      "wind_kph": 22.3,
-      "wind_degree": 188,
-      "wind_dir": "S",
-      "pressure_mb": 1009,
-      "pressure_in": 29.79,
-      "precip_mm": 0.01,
-      "precip_in": 0,
+      "wind_mph": 15.7,
+      "wind_kph": 25.2,
+      "wind_degree": 262,
+      "wind_dir": "W",
+      "pressure_mb": 1004,
+      "pressure_in": 29.66,
+      "precip_mm": 0.2,
+      "precip_in": 0.01,
       "humidity": 81,
       "cloud": 100,
-      "feelslike_c": -11.9,
-      "feelslike_f": 10.5,
-      "windchill_c": -14.5,
-      "windchill_f": 6,
-      "heatindex_c": -7.2,
-      "heatindex_f": 19,
-      "dewpoint_c": -9.2,
-      "dewpoint_f": 15.4,
-      "vis_km": 14,
-      "vis_miles": 8,
-      "uv": 0.2,
-      "gust_mph": 20.3,
-      "gust_kph": 32.7
+      "feelslike_c": -8.8,
+      "feelslike_f": 16.2,
+      "windchill_c": -8.7,
+      "windchill_f": 16.3,
+      "heatindex_c": -2.7,
+      "heatindex_f": 27.2,
+      "dewpoint_c": -4.5,
+      "dewpoint_f": 24,
+      "vis_km": 16,
+      "vis_miles": 9,
+      "uv": 0.9,
+      "gust_mph": 20.4,
+      "gust_kph": 32.8
     },
     "forecast": {
       "forecastday": [
@@ -693,24 +657,24 @@
             {
               "time_epoch": 1765288800,
               "time": "2025-12-09 09:00",
-              "temp_c": -5,
-              "temp_f": 23,
+              "temp_c": -7.2,
+              "temp_f": 19,
               "is_day": 1,
               "condition": {
-                "text": "Overcast",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-                "code": 1009
+                "text": "Light freezing rain",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/311.png",
+                "code": 1198
               },
               "wind_mph": 13.9,
               "wind_kph": 22.3,
               "wind_degree": 188,
               "wind_dir": "S",
-              "pressure_mb": 1009,
-              "pressure_in": 29.79,
+              "pressure_mb": 1011,
+              "pressure_in": 29.84,
               "precip_mm": 0.01,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 81,
+              "humidity": 87,
               "cloud": 100,
               "feelslike_c": -14.5,
               "feelslike_f": 6,
@@ -724,8 +688,8 @@
               "chance_of_rain": 0,
               "will_it_snow": 1,
               "chance_of_snow": 96,
-              "vis_km": 14,
-              "vis_miles": 8,
+              "vis_km": 2,
+              "vis_miles": 1,
               "gust_mph": 20.3,
               "gust_kph": 32.7,
               "uv": 0.2
@@ -853,24 +817,24 @@
             {
               "time_epoch": 1765303200,
               "time": "2025-12-09 13:00",
-              "temp_c": -2.7,
-              "temp_f": 27.2,
+              "temp_c": -2.2,
+              "temp_f": 28,
               "is_day": 1,
               "condition": {
-                "text": "Heavy freezing drizzle",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/284.png",
-                "code": 1171
+                "text": "Overcast",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
+                "code": 1009
               },
               "wind_mph": 15.7,
               "wind_kph": 25.2,
               "wind_degree": 262,
               "wind_dir": "W",
-              "pressure_mb": 1007,
-              "pressure_in": 29.72,
+              "pressure_mb": 1004,
+              "pressure_in": 29.66,
               "precip_mm": 0.2,
               "precip_in": 0.01,
               "snow_cm": 0,
-              "humidity": 94,
+              "humidity": 81,
               "cloud": 100,
               "feelslike_c": -8.7,
               "feelslike_f": 16.3,
@@ -884,8 +848,8 @@
               "chance_of_rain": 100,
               "will_it_snow": 1,
               "chance_of_snow": 94,
-              "vis_km": 7,
-              "vis_miles": 4,
+              "vis_km": 16,
+              "vis_miles": 9,
               "gust_mph": 20.4,
               "gust_kph": 32.8,
               "uv": 0.9
