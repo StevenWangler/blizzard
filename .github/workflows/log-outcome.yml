@@ -34,6 +34,10 @@ on:
         description: 'Optional notes or context'
         required: false
         type: string
+      blizzard_prediction:
+        description: 'Blizzard AI prediction (0-100) - manual override when workflow misses it'
+        required: false
+        type: string
       rhs_prediction:
         description: 'Rockford High School prediction (0-100) - competition tracking'
         required: false
@@ -60,6 +64,7 @@ jobs:
           OUTCOME: ${{ inputs.actual_outcome }}
           NO_SCHOOL_REASON: ${{ inputs.no_school_reason }}
           NOTES: ${{ inputs.notes }}
+          BLIZZARD_PREDICTION: ${{ inputs.blizzard_prediction }}
           RHS_PREDICTION: ${{ inputs.rhs_prediction }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: node build-tools/update-outcomes-ledger.mjs

@@ -90,17 +90,17 @@ select:focus {
 
 /* Dropdown menu animations */
 [data-radix-popper-content-wrapper] {
-  animation: slideIn 0.2s ease-out;
+  /* Fade only to avoid fighting Radix positioning transforms */
+  animation: dropdownFade 0.18s ease-out;
+  animation-fill-mode: both;
 }
 
-@keyframes slideIn {
+@keyframes dropdownFade {
   from {
     opacity: 0;
-    transform: translateY(-10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -422,4 +422,3 @@ button:hover svg,
     animation: none !important;
   }
 }
-

@@ -12,6 +12,7 @@ const eventDate = process.env.EVENT_DATE
 const outcome = process.env.OUTCOME
 const noSchoolReason = process.env.NO_SCHOOL_REASON || ''
 const notes = process.env.NOTES || ''
+const blizzardPrediction = process.env.BLIZZARD_PREDICTION
 const rhsPrediction = process.env.RHS_PREDICTION
 const actor = process.env.GITHUB_ACTOR || 'unknown'
 
@@ -55,6 +56,7 @@ const buildEntry = async (existingEntry = null) => {
   const summary = await loadJsonIfExists(summaryPath)
   const prediction = await loadJsonIfExists(predictionPath)
 
+  const manualProbability = sanitizeProbability(blizzardPrediction)
   const rhsProbExisting = sanitizeProbability(existingEntry?.rhsPrediction)
   const rhsProb = sanitizeProbability(rhsPrediction) ?? rhsProbExisting ?? null
 
@@ -90,9 +92,9 @@ const buildEntry = async (existingEntry = null) => {
 
   // If the prediction was for a different date, or if no prediction is available,
   // fall back to the existing ledger values so we don't overwrite historical probabilities.
-  const probability = (targetDate && targetDate !== eventDate)
+  const probability = manualProbability ?? ((targetDate && targetDate !== eventDate)
     ? (existingProbability ?? probabilityFromPrediction)
-    : (probabilityFromPrediction ?? existingProbability)
+    : (probabilityFromPrediction ?? existingProbability))
 
   const resolvedConfidence = confidence || existingConfidence || null
   const resolvedPredictionTimestamp = predictionTimestamp || existingPredictionTimestamp || null

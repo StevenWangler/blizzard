@@ -153,6 +153,56 @@ export function WeatherAtmosphere() {
         hasGradientOverlay: true,
         hasGlow: true,
         glowIntensity: 0.9
+      },
+      polar_dawn: {
+        particleCount: 120,
+        particleTypes: ['snow', 'star'],
+        speedMultiplier: 0.9,
+        sizeRange: [0.8, 2.8],
+        windStrength: 0.6,
+        hasGradientOverlay: true,
+        hasGlow: true,
+        glowIntensity: 0.55
+      },
+      frosted_pine: {
+        particleCount: 140,
+        particleTypes: ['snow'],
+        speedMultiplier: 1,
+        sizeRange: [1, 3],
+        windStrength: 1,
+        hasGradientOverlay: true,
+        hasGlow: true,
+        glowIntensity: 0.35
+      },
+      glacial_lagoon: {
+        particleCount: 160,
+        particleTypes: ['snow', 'ice'],
+        speedMultiplier: 1.4,
+        sizeRange: [1, 3.5],
+        windStrength: 1.2,
+        hasGradientOverlay: true,
+        hasGlow: true,
+        glowIntensity: 0.65
+      },
+      cabin_glow: {
+        particleCount: 110,
+        particleTypes: ['snow'],
+        speedMultiplier: 0.8,
+        sizeRange: [1, 2.5],
+        windStrength: 0.6,
+        hasGradientOverlay: true,
+        hasGlow: true,
+        glowIntensity: 0.5
+      },
+      ice_palace: {
+        particleCount: 220,
+        particleTypes: ['snow', 'ice'],
+        speedMultiplier: 1.8,
+        sizeRange: [1, 4],
+        windStrength: 1.6,
+        hasGradientOverlay: true,
+        hasGlow: true,
+        glowIntensity: 0.85
       }
     }
     return configs[currentTheme] || configs.clear
