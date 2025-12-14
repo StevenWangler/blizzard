@@ -11,7 +11,14 @@ import { Sun, Moon, CloudSnow, Snowflake } from '@phosphor-icons/react'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 
 export function ThemeToggle() {
-  const { isDarkMode, toggleDarkMode, getCurrentTheme } = useWeatherTheme()
+  const { 
+    isDarkMode, 
+    toggleDarkMode, 
+    getCurrentTheme, 
+    isRotationEnabled,
+    toggleRotation,
+    setManualTheme
+  } = useWeatherTheme()
   const currentTheme = getCurrentTheme()
 
   return (
@@ -40,6 +47,16 @@ export function ThemeToggle() {
           {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           {isDarkMode && <span className="ml-auto text-xs">☀️</span>}
           {!isDarkMode && <span className="ml-auto text-xs">🌙</span>}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={toggleRotation} className="flex items-center gap-2">
+          <Snowflake className="h-4 w-4" />
+          {isRotationEnabled ? 'Pause winter rotation' : 'Rotate winter moods'}
+          <span className="ml-auto text-xs">{isRotationEnabled ? '⏸️' : '▶️'}</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setManualTheme(null)} className="flex items-center gap-2">
+          <CloudSnow className="h-4 w-4" />
+          Return to live weather
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled className="text-xs text-muted-foreground justify-center">

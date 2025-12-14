@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { CloudSnow, CalendarBlank, Clock, Database, Sparkle } from '@phosphor-icons/react'
+import { CloudSnow, CalendarBlank, Clock, ArrowsClockwise } from '@phosphor-icons/react'
 import { fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
 
 interface HistoricalEvent {
@@ -156,23 +157,24 @@ export function HistoryView() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const ledger = await fetchOutcomeLedger({ bustCache: true })
-        setEvents(toHistoricalEvents(ledger))
-      } catch (err) {
-        console.warn('Could not load history:', err)
-        setEvents([])
-      } finally {
-        setLoading(false)
-      }
+  const loadHistory = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const ledger = await fetchOutcomeLedger({ bustCache: true })
+      setEvents(toHistoricalEvents(ledger))
+    } catch (err) {
+      console.warn('Could not load history:', err)
+      setEvents([])
+      setError('Unable to load history right now. Please try again.')
+    } finally {
+      setLoading(false)
     }
-
-    load()
   }, [])
+
+  useEffect(() => {
+    loadHistory()
+  }, [loadHistory])
 
   const seasonStats = useMemo(() => {
     if (events.length === 0) {
@@ -180,19 +182,23 @@ export function HistoryView() {
         totalEvents: 0,
         snowDays: 0,
         noSchoolDays: 0,
-        modelAccuracy: 0,
+        modelAccuracy: null as number | null,
         realEvents: 0,
-        demoEvents: 0
+        demoEvents: 0,
+        pendingSchoolDays: 0,
+        completedSchoolDays: 0,
+        scorableEvents: 0
       }
     }
 
     // Filter out no-school days for accuracy calculations
     const schoolDayEvents = events.filter(e => !e.noSchoolScheduled)
     const completedEvents = schoolDayEvents.filter(e => e.actualOutcome !== null)
+    const pendingSchoolDays = schoolDayEvents.filter(e => e.actualOutcome === null).length
     const noSchoolDays = events.filter(e => e.noSchoolScheduled).length
     const snowDays = completedEvents.filter(e => e.actualOutcome === true).length
-    const realEvents = completedEvents.filter(e => e.source !== 'seed').length
-    const demoEvents = completedEvents.length - realEvents
+    const realEvents = events.filter(e => e.source !== 'seed').length
+    const demoEvents = events.length - realEvents
     const withProb = completedEvents.filter(e => e.modelPrediction !== null)
     const modelCorrect = withProb.filter(e => (e.modelPrediction ?? 0) >= 50 === e.actualOutcome).length
 
@@ -200,19 +206,28 @@ export function HistoryView() {
       totalEvents: events.length,
       snowDays,
       noSchoolDays,
-      modelAccuracy: withProb.length ? Math.round((modelCorrect / withProb.length) * 100) : 0,
+      modelAccuracy: withProb.length ? Math.round((modelCorrect / withProb.length) * 100) : null,
       realEvents,
-      demoEvents
+      demoEvents,
+      pendingSchoolDays,
+      completedSchoolDays: completedEvents.length,
+      scorableEvents: withProb.length
     }
   }, [events])
 
   const filteredEvents = events.filter(event => {
     const term = searchTerm.toLowerCase()
     if (!term) return true
+    const dateText = new Date(event.date + 'T12:00:00').toLocaleDateString(undefined, { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }).toLowerCase()
     return (
       event.eventName.toLowerCase().includes(term) ||
       event.notes.toLowerCase().includes(term) ||
-      new Date(event.date + 'T12:00:00').toLocaleDateString().includes(term)
+      dateText.includes(term)
     )
   })
 
@@ -225,16 +240,20 @@ export function HistoryView() {
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-primary">{seasonStats.totalEvents}</div>
               <p className="text-sm text-muted-foreground">Total Events</p>
+              <p className="text-xs text-muted-foreground">{seasonStats.pendingSchoolDays} pending outcomes</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-destructive">{seasonStats.snowDays}</div>
               <p className="text-sm text-muted-foreground">Snow Days</p>
-              {seasonStats.totalEvents > 0 && (
+              {seasonStats.completedSchoolDays > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {Math.round((seasonStats.snowDays / (seasonStats.totalEvents - seasonStats.noSchoolDays)) * 100) || 0}% of school days
+                  {Math.round((seasonStats.snowDays / seasonStats.completedSchoolDays) * 100)}% of completed school days
                 </p>
+              )}
+              {seasonStats.completedSchoolDays === 0 && (
+                <p className="text-xs text-muted-foreground">No verified outcomes yet</p>
               )}
             </CardContent>
           </Card>
@@ -247,14 +266,22 @@ export function HistoryView() {
           </Card>
           <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
-              <div className="text-2xl font-bold text-accent">{seasonStats.modelAccuracy}%</div>
+              <div className="text-2xl font-bold text-accent">
+                {seasonStats.modelAccuracy !== null ? `${seasonStats.modelAccuracy}%` : '—'}
+              </div>
               <p className="text-sm text-muted-foreground">Model Accuracy</p>
+              <p className="text-xs text-muted-foreground">
+                {seasonStats.scorableEvents > 0 
+                  ? `Based on ${seasonStats.scorableEvents} scored predictions`
+                  : 'Need completed outcomes to score'}
+              </p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-muted-foreground">{seasonStats.realEvents}</div>
               <p className="text-sm text-muted-foreground">Live Records</p>
+              <p className="text-xs text-muted-foreground">Demo data: {seasonStats.demoEvents}</p>
             </CardContent>
           </Card>
         </div>
@@ -275,6 +302,9 @@ export function HistoryView() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
+              <Button variant="ghost" size="icon" onClick={loadHistory} disabled={loading} title="Refresh history">
+                <ArrowsClockwise size={18} className={loading ? 'animate-spin' : ''} />
+              </Button>
               {seasonStats.totalEvents > 0 && (
                 <div className="text-xs text-muted-foreground">
                   {filteredEvents.length} of {seasonStats.totalEvents} events
@@ -284,7 +314,23 @@ export function HistoryView() {
           </div>
         </CardHeader>
         <CardContent>
-          {filteredEvents.length === 0 ? (
+          {error && (
+            <div className="mb-4 flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+              <Clock size={16} className="mt-0.5" />
+              <div className="flex-1">
+                <p>{error}</p>
+                <Button variant="link" className="px-0 text-destructive underline-offset-4" onClick={loadHistory}>
+                  Try again
+                </Button>
+              </div>
+            </div>
+          )}
+          {loading && events.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Clock size={32} className="mx-auto mb-3 animate-spin" />
+              <p className="text-sm">Loading history...</p>
+            </div>
+          ) : filteredEvents.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <CloudSnow size={40} className="mx-auto mb-3 opacity-50" />
               <p className="text-sm">No matching events yet.</p>

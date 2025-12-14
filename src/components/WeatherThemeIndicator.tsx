@@ -47,6 +47,16 @@ export function WeatherThemeIndicator() {
         return <Snowflake size={16} weight="fill" className={`${iconClass} text-white animate-pulse`} />
       case 'aurora':
         return <Sparkle size={16} weight="fill" className={`${iconClass} text-emerald-400 animate-pulse`} />
+      case 'polar_dawn':
+        return <Sun size={16} weight="fill" className={`${iconClass} text-amber-400`} />
+      case 'frosted_pine':
+        return <CloudSnow size={16} weight="fill" className={`${iconClass} text-emerald-400`} />
+      case 'glacial_lagoon':
+        return <CloudSnow size={16} weight="fill" className={`${iconClass} text-cyan-400`} />
+      case 'cabin_glow':
+        return <Sun size={16} weight="fill" className={`${iconClass} text-amber-500`} />
+      case 'ice_palace':
+        return <Sparkle size={16} weight="fill" className={`${iconClass} text-purple-400 animate-pulse`} />
       default:
         return <CloudSnow size={16} className={`${iconClass} text-primary`} />
     }

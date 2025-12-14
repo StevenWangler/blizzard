@@ -55,6 +55,46 @@ export interface WeatherTheme {
   pulseSpeed?: 'slow' | 'normal' | 'fast'
 }
 
+function clampOklchLightness(
+  color: string,
+  options: { minLightness?: number; maxLightness?: number; minChroma?: number }
+): string {
+  const match = color.match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/i)
+  if (!match) return color
+
+  const [, lightness, chroma, hue] = match
+  let l = Number.parseFloat(lightness)
+  const c = Number.parseFloat(chroma)
+  const h = Number.parseFloat(hue)
+
+  if (Number.isNaN(l) || Number.isNaN(c) || Number.isNaN(h)) return color
+
+  if (options.minLightness !== undefined && l < options.minLightness) {
+    l = options.minLightness
+  }
+  if (options.maxLightness !== undefined && l > options.maxLightness) {
+    l = options.maxLightness
+  }
+
+  const adjustedChroma = Math.max(c, options.minChroma ?? 0)
+  return `oklch(${l.toFixed(3)} ${adjustedChroma.toFixed(3)} ${h.toFixed(3)})`
+}
+
+function applyDarkContrastSafety(theme: WeatherTheme): WeatherTheme {
+  // Keep night palettes moody while enforcing a minimum contrast for legibility.
+  return {
+    ...theme,
+    background: clampOklchLightness(theme.background, { minLightness: 0.14, minChroma: 0.04 }),
+    card: clampOklchLightness(theme.card, { minLightness: 0.18, minChroma: 0.04 }),
+    secondary: clampOklchLightness(theme.secondary, { minLightness: 0.2, minChroma: 0.04 }),
+    muted: clampOklchLightness(theme.muted, { minLightness: 0.2, minChroma: 0.04 }),
+    border: clampOklchLightness(theme.border, { minLightness: 0.32, minChroma: 0.04 }),
+    primary: clampOklchLightness(theme.primary, { minLightness: 0.55, minChroma: 0.12 }),
+    accent: clampOklchLightness(theme.accent, { minLightness: 0.58, minChroma: 0.12 }),
+    foreground: clampOklchLightness(theme.foreground, { minLightness: 0.92, minChroma: 0.02 })
+  }
+}
+
 export const weatherThemes: Record<string, WeatherTheme> = {
   clear: {
     name: 'Clear Skies',
@@ -271,6 +311,96 @@ export const weatherThemes: Record<string, WeatherTheme> = {
     atmosphereIntensity: 0.35,
     shimmer: true,
     pulseSpeed: 'slow'
+  },
+  polar_dawn: {
+    name: 'Polar Dawn',
+    emoji: '🌅',
+    primary: 'oklch(0.62 0.16 25)',       // Sunrise amber
+    secondary: 'oklch(0.92 0.045 250)',   // Frosted lavender sky
+    accent: 'oklch(0.75 0.17 340)',       // Pink glow
+    background: 'oklch(0.985 0.02 255)',  // Snowfield white
+    foreground: 'oklch(0.25 0.06 250)',   // Cool text
+    card: 'oklch(0.995 0.015 255)',       // Crisp card
+    border: 'oklch(0.9 0.03 250)',        // Soft edge
+    muted: 'oklch(0.93 0.025 255)',       // Gentle muted
+    gradient: 'linear-gradient(140deg, oklch(0.96 0.05 25) 0%, oklch(0.97 0.04 330) 40%, oklch(0.99 0.015 255) 100%)',
+    glowColor: 'oklch(0.8 0.14 20)',
+    particleColor: 'rgba(255, 225, 240, 0.8)',
+    atmosphereIntensity: 0.28,
+    shimmer: true,
+    pulseSpeed: 'slow'
+  },
+  frosted_pine: {
+    name: 'Frosted Pines',
+    emoji: '🌲',
+    primary: 'oklch(0.5 0.14 150)',       // Evergreen
+    secondary: 'oklch(0.9 0.03 150)',     // Snowy needles
+    accent: 'oklch(0.7 0.14 50)',         // Lantern glow
+    background: 'oklch(0.97 0.02 150)',   // Powder backdrop
+    foreground: 'oklch(0.24 0.07 150)',   // Pine bark text
+    card: 'oklch(0.99 0.015 150)',        // Soft white card
+    border: 'oklch(0.88 0.025 150)',      // Pine mist border
+    muted: 'oklch(0.92 0.02 150)',        // Muted frost
+    gradient: 'linear-gradient(155deg, oklch(0.9 0.035 150) 0%, oklch(0.95 0.025 120) 50%, oklch(0.98 0.02 60) 100%)',
+    glowColor: 'oklch(0.76 0.12 55)',
+    particleColor: 'rgba(225, 245, 235, 0.9)',
+    atmosphereIntensity: 0.32,
+    shimmer: false,
+    pulseSpeed: 'normal'
+  },
+  glacial_lagoon: {
+    name: 'Glacial Lagoon',
+    emoji: '🧊',
+    primary: 'oklch(0.53 0.16 220)',      // Arctic teal
+    secondary: 'oklch(0.88 0.05 230)',    // Misty fjord
+    accent: 'oklch(0.72 0.16 255)',       // Ice sparkle
+    background: 'oklch(0.96 0.03 225)',   // Pale aqua
+    foreground: 'oklch(0.2 0.07 230)',    // Deep water text
+    card: 'oklch(0.99 0.02 225)',         // Frost glass
+    border: 'oklch(0.86 0.04 225)',       // Lagoon edge
+    muted: 'oklch(0.9 0.035 225)',        // Mist muted
+    gradient: 'linear-gradient(150deg, oklch(0.9 0.055 220) 0%, oklch(0.94 0.045 240) 50%, oklch(0.97 0.03 200) 100%)',
+    glowColor: 'oklch(0.72 0.18 250)',
+    particleColor: 'rgba(205, 240, 255, 0.9)',
+    atmosphereIntensity: 0.36,
+    shimmer: true,
+    pulseSpeed: 'normal'
+  },
+  cabin_glow: {
+    name: 'Cabin Glow',
+    emoji: '🏔️',
+    primary: 'oklch(0.56 0.13 35)',       // Warm cabin light
+    secondary: 'oklch(0.9 0.02 80)',      // Snowy roof
+    accent: 'oklch(0.72 0.16 55)',        // Candlelit accent
+    background: 'oklch(0.975 0.015 80)',  // Frosty dusk
+    foreground: 'oklch(0.22 0.06 40)',    // Cabin timber
+    card: 'oklch(0.99 0.01 80)',          // Snowy card
+    border: 'oklch(0.9 0.02 70)',         // Gentle outline
+    muted: 'oklch(0.93 0.02 80)',         // Soft muted
+    gradient: 'linear-gradient(165deg, oklch(0.96 0.025 80) 0%, oklch(0.95 0.04 40) 45%, oklch(0.98 0.015 220) 100%)',
+    glowColor: 'oklch(0.78 0.14 55)',
+    particleColor: 'rgba(255, 225, 200, 0.65)',
+    atmosphereIntensity: 0.3,
+    shimmer: false,
+    pulseSpeed: 'slow'
+  },
+  ice_palace: {
+    name: 'Ice Palace',
+    emoji: '🏰',
+    primary: 'oklch(0.5 0.2 270)',        // Regal violet ice
+    secondary: 'oklch(0.86 0.05 270)',    // Frosted lilac
+    accent: 'oklch(0.74 0.2 320)',        // Neon magenta
+    background: 'oklch(0.95 0.035 285)',  // Glacial mist
+    foreground: 'oklch(0.2 0.1 270)',     // Deep plum
+    card: 'oklch(0.985 0.02 280)',        // Palace white
+    border: 'oklch(0.86 0.04 280)',       // Cool edge
+    muted: 'oklch(0.9 0.03 280)',         // Frozen hush
+    gradient: 'linear-gradient(135deg, oklch(0.9 0.08 285) 0%, oklch(0.94 0.07 300) 45%, oklch(0.97 0.035 250) 100%)',
+    glowColor: 'oklch(0.76 0.2 320)',
+    particleColor: 'rgba(230, 220, 255, 0.9)',
+    atmosphereIntensity: 0.42,
+    shimmer: true,
+    pulseSpeed: 'fast'
   }
 }
 
@@ -491,8 +621,109 @@ export const darkWeatherThemes: Record<string, WeatherTheme> = {
     atmosphereIntensity: 0.5,
     shimmer: true,
     pulseSpeed: 'slow'
+  },
+  polar_dawn: {
+    name: 'Polar Midnight',
+    emoji: '🌌',
+    primary: 'oklch(0.64 0.18 25)',       // Midnight amber
+    secondary: 'oklch(0.2 0.08 255)',     // Indigo shadow
+    accent: 'oklch(0.75 0.18 340)',       // Aurora blush
+    background: 'oklch(0.1 0.06 255)',    // Night snow
+    foreground: 'oklch(0.9 0.03 245)',    // Moonlit text
+    card: 'oklch(0.14 0.055 250)',        // Polar card
+    border: 'oklch(0.24 0.06 250)',       // Frost line
+    muted: 'oklch(0.18 0.05 250)',        // Soft haze
+    gradient: 'linear-gradient(145deg, oklch(0.12 0.08 20) 0%, oklch(0.1 0.07 320) 45%, oklch(0.08 0.06 250) 100%)',
+    glowColor: 'oklch(0.7 0.14 350)',
+    particleColor: 'rgba(255, 210, 235, 0.55)',
+    atmosphereIntensity: 0.38,
+    shimmer: true,
+    pulseSpeed: 'slow'
+  },
+  frosted_pine: {
+    name: 'Evergreen Night',
+    emoji: '🌲',
+    primary: 'oklch(0.58 0.16 150)',      // Luminous pine
+    secondary: 'oklch(0.18 0.06 150)',    // Forest shadow
+    accent: 'oklch(0.74 0.16 50)',        // Firelight gold
+    background: 'oklch(0.11 0.05 150)',   // Moonless grove
+    foreground: 'oklch(0.9 0.03 140)',    // Frostbite text
+    card: 'oklch(0.15 0.055 150)',        // Dark frost card
+    border: 'oklch(0.26 0.06 150)',       // Pine outline
+    muted: 'oklch(0.19 0.05 150)',        // Quiet needles
+    gradient: 'linear-gradient(160deg, oklch(0.13 0.06 150) 0%, oklch(0.1 0.05 120) 40%, oklch(0.09 0.045 55) 100%)',
+    glowColor: 'oklch(0.68 0.12 55)',
+    particleColor: 'rgba(200, 230, 215, 0.65)',
+    atmosphereIntensity: 0.42,
+    shimmer: false,
+    pulseSpeed: 'normal'
+  },
+  glacial_lagoon: {
+    name: 'Midnight Fjord',
+    emoji: '🧊',
+    primary: 'oklch(0.6 0.18 220)',       // Arctic teal neon
+    secondary: 'oklch(0.2 0.07 230)',     // Deep water
+    accent: 'oklch(0.78 0.18 255)',       // Electric ice
+    background: 'oklch(0.08 0.06 235)',   // Night fjord
+    foreground: 'oklch(0.88 0.025 225)',  // Frost text
+    card: 'oklch(0.12 0.06 235)',         // Glassy card
+    border: 'oklch(0.24 0.065 235)',      // Waterline
+    muted: 'oklch(0.17 0.055 235)',       // Mist muted
+    gradient: 'linear-gradient(150deg, oklch(0.1 0.08 225) 0%, oklch(0.08 0.07 245) 45%, oklch(0.09 0.065 205) 100%)',
+    glowColor: 'oklch(0.68 0.2 255)',
+    particleColor: 'rgba(180, 225, 245, 0.7)',
+    atmosphereIntensity: 0.5,
+    shimmer: true,
+    pulseSpeed: 'normal'
+  },
+  cabin_glow: {
+    name: 'Hearthlight',
+    emoji: '🏔️',
+    primary: 'oklch(0.6 0.14 45)',        // Hearth amber
+    secondary: 'oklch(0.22 0.05 80)',     // Night snowcap
+    accent: 'oklch(0.74 0.16 60)',        // Candle glow
+    background: 'oklch(0.12 0.06 40)',    // Cabin dusk
+    foreground: 'oklch(0.9 0.03 70)',     // Warm text
+    card: 'oklch(0.16 0.06 55)',          // Cozy card
+    border: 'oklch(0.26 0.06 60)',        // Soft outline
+    muted: 'oklch(0.2 0.05 60)',          // Muted haze
+    gradient: 'linear-gradient(170deg, oklch(0.14 0.06 60) 0%, oklch(0.12 0.06 20) 45%, oklch(0.1 0.05 230) 100%)',
+    glowColor: 'oklch(0.72 0.16 55)',
+    particleColor: 'rgba(255, 205, 175, 0.55)',
+    atmosphereIntensity: 0.44,
+    shimmer: false,
+    pulseSpeed: 'slow'
+  },
+  ice_palace: {
+    name: 'Crystal Citadel',
+    emoji: '🏰',
+    primary: 'oklch(0.56 0.22 280)',      // Luminous violet ice
+    secondary: 'oklch(0.22 0.08 280)',    // Shadowed frost
+    accent: 'oklch(0.78 0.22 320)',       // Neon magenta
+    background: 'oklch(0.07 0.08 285)',   // Midnight frost
+    foreground: 'oklch(0.86 0.04 275)',   // Glimmer text
+    card: 'oklch(0.12 0.075 285)',        // Crystal card
+    border: 'oklch(0.23 0.075 285)',      // Facet edge
+    muted: 'oklch(0.16 0.065 285)',       // Cold muted
+    gradient: 'linear-gradient(135deg, oklch(0.08 0.1 285) 0%, oklch(0.07 0.1 305) 45%, oklch(0.09 0.08 250) 100%)',
+    glowColor: 'oklch(0.74 0.22 320)',
+    particleColor: 'rgba(210, 205, 255, 0.8)',
+    atmosphereIntensity: 0.55,
+    shimmer: true,
+    pulseSpeed: 'fast'
   }
 }
+
+// Curated rotation of cozy/winter themes that work in light and dark mode
+export const winterRotationThemes = [
+  'polar_dawn',
+  'frosted_pine',
+  'glacial_lagoon',
+  'cabin_glow',
+  'ice_palace',
+  'aurora',
+  'snow_flurries'
+] as const
 
 export function getWeatherThemeFromConditions(snowfall: number, windSpeed: number, visibility: number, isDark: boolean = false): string {
   // Enhanced weather condition detection with more granular themes
@@ -563,6 +794,10 @@ interface WeatherThemeContextValue {
   updateWeatherConditions: (snowfall: number, windSpeed: number, visibility: number) => void
   isDarkMode: boolean
   toggleDarkMode: () => void
+  setManualTheme: (themeKey: string | null) => void
+  manualThemeKey: string | null
+  isRotationEnabled: boolean
+  toggleRotation: () => void
   weatherConditions: { snowfall: number, windSpeed: number, visibility: number } | null
 }
 
@@ -571,7 +806,9 @@ const WeatherThemeContext = createContext<WeatherThemeContextValue | null>(null)
 function useProvideWeatherTheme(): WeatherThemeContextValue {
   const [weatherConditions, setWeatherConditions] = useSafeKV<{snowfall: number, windSpeed: number, visibility: number} | null>('weather-conditions', null)
   const [isDarkMode, setIsDarkMode] = useSafeKV<boolean>('dark-mode', false)
-  const [currentTheme, setCurrentTheme] = useState<string>('clear')
+  const [autoTheme, setAutoTheme] = useState<string>('clear')
+  const [manualThemeKey, setManualThemeKey] = useSafeKV<string | null>('manual-weather-theme', null)
+  const [isRotationEnabled, setRotationEnabled] = useSafeKV<boolean>('weather-theme-rotation', false)
 
   useEffect(() => {
     if (weatherConditions) {
@@ -581,7 +818,7 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
         weatherConditions.visibility,
         isDarkMode
       )
-      setCurrentTheme(themeKey)
+      setAutoTheme(themeKey)
     }
   }, [weatherConditions, isDarkMode])
 
@@ -593,9 +830,52 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
     setIsDarkMode(prev => !prev)
   }
 
+  const setManualTheme = (themeKey: string | null) => {
+    setRotationEnabled(false)
+    setManualThemeKey(themeKey)
+  }
+
+  const toggleRotation = () => {
+    setRotationEnabled(prev => {
+      const next = !prev
+      if (!next) {
+        setManualThemeKey(null)
+      }
+      return next
+    })
+  }
+
+  // Automatically cycle through curated winter themes when enabled
+  useEffect(() => {
+    if (!isRotationEnabled) return
+
+    const sequence = winterRotationThemes.map(String)
+    if (!sequence.length) return
+
+    let index = manualThemeKey ? sequence.indexOf(manualThemeKey) : Math.floor(Math.random() * sequence.length)
+    if (index < 0) index = 0
+
+    const advanceTheme = () => {
+      const nextTheme = sequence[index % sequence.length]
+      setManualThemeKey(nextTheme)
+      index = (index + 1) % sequence.length
+    }
+
+    advanceTheme()
+    const interval = window.setInterval(advanceTheme, 16000)
+    return () => window.clearInterval(interval)
+  }, [isRotationEnabled, manualThemeKey, setManualThemeKey])
+
+  const activeTheme = manualThemeKey ?? autoTheme
+
   const applyTheme = (themeKey: string) => {
     const themes = isDarkMode ? darkWeatherThemes : weatherThemes
-    const theme = themes[themeKey]
+    const selectedTheme = themes[themeKey]
+    const theme = selectedTheme
+      ? isDarkMode
+        ? applyDarkContrastSafety(selectedTheme)
+        : selectedTheme
+      : undefined
     
     if (theme) {
       const root = document.documentElement
@@ -635,20 +915,24 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
 
   // Apply theme whenever it changes
   useEffect(() => {
-    applyTheme(currentTheme)
-  }, [currentTheme, isDarkMode])
+    applyTheme(activeTheme)
+  }, [activeTheme, isDarkMode])
 
   const getCurrentTheme = () => {
     const themes = isDarkMode ? darkWeatherThemes : weatherThemes
-    return themes[currentTheme]
+    return themes[activeTheme]
   }
 
   return {
-    currentTheme,
+    currentTheme: activeTheme,
     getCurrentTheme,
     updateWeatherConditions,
     isDarkMode,
     toggleDarkMode,
+    setManualTheme,
+    manualThemeKey,
+    isRotationEnabled,
+    toggleRotation,
     weatherConditions
   }
 }

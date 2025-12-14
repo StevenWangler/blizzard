@@ -1,9 +1,18 @@
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { useWeatherTheme, weatherThemes, darkWeatherThemes } from '../hooks/useWeatherTheme'
+import { useWeatherTheme, weatherThemes, darkWeatherThemes, winterRotationThemes } from '../hooks/useWeatherTheme'
 
 export function WeatherThemeDemo() {
-  const { updateWeatherConditions, isDarkMode, toggleDarkMode, getCurrentTheme, currentTheme } = useWeatherTheme()
+  const { 
+    updateWeatherConditions, 
+    isDarkMode, 
+    toggleDarkMode, 
+    getCurrentTheme, 
+    currentTheme,
+    setManualTheme,
+    toggleRotation,
+    isRotationEnabled
+  } = useWeatherTheme()
   
   const testScenarios = [
     { name: 'Clear', emoji: '☀️', snowfall: 0, windSpeed: 3, visibility: 10, description: 'Sunny skies' },
@@ -22,6 +31,7 @@ export function WeatherThemeDemo() {
 
   const currentThemeData = getCurrentTheme()
   const allThemes = isDarkMode ? darkWeatherThemes : weatherThemes
+  const winterShowcaseKeys = Array.from(winterRotationThemes)
 
   return (
     <Card className="overflow-hidden">
@@ -59,6 +69,48 @@ export function WeatherThemeDemo() {
               <span className="text-xs font-medium">{scenario.name}</span>
             </Button>
           ))}
+        </div>
+
+        {/* Winter showcase and rotation */}
+        <div className="space-y-2 pt-2">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold">Winter showcase</h4>
+            <Button 
+              variant={isRotationEnabled ? 'default' : 'outline'} 
+              size="sm" 
+              onClick={toggleRotation}
+              className="transition-all duration-300"
+            >
+              {isRotationEnabled ? '⏸️ Pause rotation' : '▶️ Rotate themes'}
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {winterShowcaseKeys.map((key) => {
+              const theme = allThemes[key]
+              if (!theme) return null
+
+              return (
+                <Button
+                  key={key}
+                  variant={currentTheme === key ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setManualTheme(key)}
+                  className="flex flex-col items-center gap-1 h-auto py-2 transition-all duration-300 hover:scale-105"
+                >
+                  <span className="text-lg">{theme.emoji}</span>
+                  <span className="text-xs font-medium text-center leading-tight">{theme.name}</span>
+                </Button>
+              )
+            })}
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setManualTheme(null)} 
+            className="w-full"
+          >
+            Back to live weather-driven colors
+          </Button>
         </div>
 
         {/* Current theme display */}

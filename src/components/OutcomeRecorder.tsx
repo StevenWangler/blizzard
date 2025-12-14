@@ -87,6 +87,10 @@ const ghCommandFromForm = (form: OutcomeFormState) => {
     parts.push(`-f notes="${sanitized}"`)
   }
 
+  if (form.blizzardPrediction.trim()) {
+    parts.push(`-f blizzard_prediction=${form.blizzardPrediction.trim()}`)
+  }
+
   if (form.rhsPrediction.trim()) {
     parts.push(`-f rhs_prediction=${form.rhsPrediction.trim()}`)
   }
@@ -99,6 +103,7 @@ interface OutcomeFormState {
   outcome: 'snow-day' | 'school-open' | 'no-school' | null
   noSchoolReason: string
   notes: string
+  blizzardPrediction: string
   rhsPrediction: string
 }
 
@@ -112,6 +117,7 @@ export function OutcomeRecorder() {
     outcome: null,
     noSchoolReason: '',
     notes: '',
+    blizzardPrediction: '',
     rhsPrediction: ''
   })
   const [error, setError] = useState<string | null>(null)
@@ -207,7 +213,7 @@ export function OutcomeRecorder() {
   }
 
   const handlePendingDateClick = (date: string) => {
-    setForm(prev => ({ ...prev, date, outcome: null, noSchoolReason: '', notes: '', rhsPrediction: '' }))
+    setForm(prev => ({ ...prev, date, outcome: null, noSchoolReason: '', notes: '', blizzardPrediction: '', rhsPrediction: '' }))
     setShowNoSchoolOptions(false)
   }
 
@@ -217,6 +223,7 @@ export function OutcomeRecorder() {
       outcome: null,
       noSchoolReason: '',
       notes: '',
+      blizzardPrediction: '',
       rhsPrediction: ''
     })
     setShowNoSchoolOptions(false)
@@ -331,7 +338,20 @@ export function OutcomeRecorder() {
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-4 pt-4">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-3">
+                <div>
+                  <label className="text-sm font-medium">Blizzard AI Prediction (optional)</label>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    placeholder="0-100"
+                    value={form.blizzardPrediction}
+                    onChange={(e) => setForm(prev => ({ ...prev, blizzardPrediction: e.target.value }))}
+                    min={0}
+                    max={100}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Manual override if the workflow missed it</p>
+                </div>
                 <div>
                   <label className="text-sm font-medium">RHS Prediction (optional)</label>
                   <Input
@@ -345,7 +365,7 @@ export function OutcomeRecorder() {
                   />
                   <p className="text-xs text-muted-foreground mt-1">Rockford High School's prediction</p>
                 </div>
-                <div>
+                <div className="md:col-span-3">
                   <label className="text-sm font-medium">Notes (optional)</label>
                   <Textarea
                     value={form.notes}
@@ -385,6 +405,9 @@ export function OutcomeRecorder() {
                   )}
                   {form.notes && (
                     <div><span className="text-muted-foreground">notes:</span> <code className="font-semibold">{form.notes}</code></div>
+                  )}
+                  {form.blizzardPrediction && (
+                    <div><span className="text-muted-foreground">blizzard_prediction:</span> <code className="font-semibold">{form.blizzardPrediction}</code></div>
                   )}
                   {form.rhsPrediction && (
                     <div><span className="text-muted-foreground">rhs_prediction:</span> <code className="font-semibold">{form.rhsPrediction}</code></div>
