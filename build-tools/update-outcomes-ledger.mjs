@@ -44,11 +44,14 @@ const loadJsonIfExists = async (targetPath) => {
 
 const sanitizeProbability = (value) => {
   if (value === null || value === undefined) return null
-  const num = Number(value)
-  if (Number.isNaN(num)) return null
-  if (!Number.isFinite(num)) return null
-  // Normalize 0-1 scale to 0-100 (e.g., 0.18 → 18)
-  const normalized = (num > 0 && num <= 1) ? num * 100 : num
+
+  // Allow strings like "12" or "12%" and trim whitespace
+  const cleaned = typeof value === 'string' ? value.replace('%', '').trim() : value
+  const num = Number(cleaned)
+  if (Number.isNaN(num) || !Number.isFinite(num)) return null
+
+  // Normalize 0-1 scale to 0-100 (e.g., 0.18 → 18) but keep 1 as 1, not 100
+  const normalized = (num > 0 && num < 1) ? num * 100 : num
   return Math.max(0, Math.min(100, Math.round(normalized)))
 }
 
