@@ -39,14 +39,22 @@ const smartDefaultDate = () => {
   return hour < 10 ? yesterdayISO() : todayISO()
 }
 
-/** Format a date for display */
+/** Extract just the YYYY-MM-DD portion from a date string */
+const dateOnly = (value: string | null | undefined) => (value || '').split('T')[0]
+
+/** Format a date for display; tolerates strings with or without time components */
 const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr + 'T12:00:00')
+  if (!dateStr) return 'Invalid date'
+
+  const datePart = dateOnly(dateStr)
+  const date = new Date(`${datePart}T12:00:00`)
+  if (Number.isNaN(date.getTime())) return dateStr
+
   const today = todayISO()
   const yesterday = yesterdayISO()
   
-  if (dateStr === today) return 'Today'
-  if (dateStr === yesterday) return 'Yesterday'
+  if (datePart === today) return 'Today'
+  if (datePart === yesterday) return 'Yesterday'
   
   return date.toLocaleDateString(undefined, { 
     weekday: 'short', 
@@ -180,7 +188,7 @@ export function OutcomeRecorder() {
   }
 
   const getDeleteCommand = (date: string) => {
-    return `gh workflow run delete-outcome.yml --ref development -f event_date=${date} -f confirm=yes`
+    return `gh workflow run delete-outcome.yml --ref development -f event_date=${dateOnly(date)} -f confirm=yes`
   }
 
   const copyDeleteCommand = async (date: string) => {
@@ -642,7 +650,7 @@ export function OutcomeRecorder() {
                                   <span className="text-sm font-medium">Use GitHub's Web Interface</span>
                                 </div>
                                 <div className="text-xs bg-muted rounded p-2 space-y-1">
-                                  <div><span className="text-muted-foreground">event_date:</span> <code className="font-semibold">{entry.date}</code></div>
+                                  <div><span className="text-muted-foreground">event_date:</span> <code className="font-semibold">{dateOnly(entry.date)}</code></div>
                                   <div><span className="text-muted-foreground">confirm:</span> <code className="font-semibold">yes</code></div>
                                 </div>
                                 <Button asChild size="sm" variant="destructive" className="w-full">
@@ -675,7 +683,7 @@ export function OutcomeRecorder() {
                                       <Button 
                                         variant="ghost" 
                                         size="sm" 
-                                        onClick={() => copyDeleteCommand(entry.date)}
+                                        onClick={() => copyDeleteCommand(dateOnly(entry.date))}
                                         className="h-6 text-xs"
                                       >
                                         {deleteCopied ? (
