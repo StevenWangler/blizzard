@@ -862,7 +862,7 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
     }
 
     advanceTheme()
-    const interval = window.setInterval(advanceTheme, 16000)
+    const interval = window.setInterval(advanceTheme, 180000)
     return () => window.clearInterval(interval)
   }, [isRotationEnabled, manualThemeKey, setManualThemeKey])
 
