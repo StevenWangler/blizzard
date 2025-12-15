@@ -35,11 +35,62 @@ export async function fetchOutcomeLedger(options?: { bustCache?: boolean }): Pro
       cache: options?.bustCache ? 'no-store' : 'default'
     })
     if (!Array.isArray(payload)) return []
-    return payload as SnowDayOutcome[]
+    return cleanOutcomeLedger(payload as SnowDayOutcome[])
   } catch (error) {
     console.error('Failed to load outcome ledger:', error)
     throw new Error('Failed to load outcome ledger')
   }
+}
+
+function choosePreferredOutcome(existing: SnowDayOutcome, candidate: SnowDayOutcome): SnowDayOutcome {
+  // Favor entries with verified outcomes, then no-school flags, then human/workflow sources, then most recent timestamps
+  const existingHasOutcome = typeof existing.actualSnowDay === 'boolean'
+  const candidateHasOutcome = typeof candidate.actualSnowDay === 'boolean'
+  if (existingHasOutcome !== candidateHasOutcome) {
+    return candidateHasOutcome ? candidate : existing
+  }
+
+  const existingNoSchool = !!existing.noSchoolScheduled
+  const candidateNoSchool = !!candidate.noSchoolScheduled
+  if (existingNoSchool !== candidateNoSchool) {
+    return candidateNoSchool ? candidate : existing
+  }
+
+  const existingIsWorkflow = existing.source && existing.source !== 'prediction'
+  const candidateIsWorkflow = candidate.source && candidate.source !== 'prediction'
+  if (existingIsWorkflow !== candidateIsWorkflow) {
+    return candidateIsWorkflow ? candidate : existing
+  }
+
+  const toTimestamp = (value?: string) => {
+    const parsed = value ? Date.parse(value) : NaN
+    return Number.isNaN(parsed) ? 0 : parsed
+  }
+  const existingRecordedAt = toTimestamp(existing.recordedAt)
+  const candidateRecordedAt = toTimestamp(candidate.recordedAt)
+  return candidateRecordedAt >= existingRecordedAt ? candidate : existing
+}
+
+export function cleanOutcomeLedger(outcomes: SnowDayOutcome[]): SnowDayOutcome[] {
+  const deduped = new Map<string, SnowDayOutcome>()
+
+  for (const entry of outcomes) {
+    if (!entry || typeof entry !== 'object') continue
+
+    const trimmedDate = typeof entry.date === 'string' ? entry.date.trim() : ''
+    if (!trimmedDate) continue
+
+    const normalized = { ...entry, date: trimmedDate }
+    const existing = deduped.get(trimmedDate)
+    if (!existing) {
+      deduped.set(trimmedDate, normalized)
+      continue
+    }
+
+    deduped.set(trimmedDate, choosePreferredOutcome(existing, normalized))
+  }
+
+  return Array.from(deduped.values())
 }
 
 export function findOutcomeByDate(outcomes: SnowDayOutcome[], date: string): SnowDayOutcome | undefined {
