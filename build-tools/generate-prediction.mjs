@@ -27,6 +27,29 @@ import { z } from 'zod'
 // Load environment variables from .env file
 loadEnv()
 
+// Default timezone for date calculations (keeps runs in sync with the district's local time)
+const DEFAULT_TIMEZONE = process.env.VITE_TIMEZONE || process.env.TIMEZONE || 'America/Detroit'
+
+/**
+ * Convert a date into the target timezone so weekend/weekday math matches local time.
+ */
+function getDateInTimeZone(fromDate = new Date(), timeZone = DEFAULT_TIMEZONE) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric'
+  }).formatToParts(fromDate)
+
+  const partMap = Object.fromEntries(parts.map(p => [p.type, p.value]))
+  const year = Number(partMap.year)
+  const month = Number(partMap.month)
+  const day = Number(partMap.day)
+
+  // Return a date anchored to the start of the day in UTC for the target timezone's calendar date
+  return new Date(Date.UTC(year, month - 1, day))
+}
+
 // Parse command line arguments
 const args = process.argv.slice(2)
 const isLocalMode = args.includes('--local') || args.includes('-l')
@@ -44,21 +67,21 @@ if (isLocalMode) {
  * Skips weekends (Saturday = 6, Sunday = 0).
  * TODO: Could be extended to skip known holidays.
  */
-function getNextSchoolDay(fromDate = new Date()) {
-  const date = new Date(fromDate)
-  date.setHours(0, 0, 0, 0)
+function getNextSchoolDay(fromDate = new Date(), timeZone = DEFAULT_TIMEZONE) {
+  const date = getDateInTimeZone(fromDate, timeZone)
+  date.setUTCHours(0, 0, 0, 0)
   
   // Start from tomorrow
-  date.setDate(date.getDate() + 1)
+  date.setUTCDate(date.getUTCDate() + 1)
   
   // Skip weekends
-  const dayOfWeek = date.getDay()
+  const dayOfWeek = date.getUTCDay()
   if (dayOfWeek === 6) {
     // Saturday -> skip to Monday
-    date.setDate(date.getDate() + 2)
+    date.setUTCDate(date.getUTCDate() + 2)
   } else if (dayOfWeek === 0) {
     // Sunday -> skip to Monday
-    date.setDate(date.getDate() + 1)
+    date.setUTCDate(date.getUTCDate() + 1)
   }
   
   return date
@@ -67,10 +90,10 @@ function getNextSchoolDay(fromDate = new Date()) {
 /**
  * Calculate how many days ahead the next school day is.
  */
-function getDaysUntilNextSchoolDay(fromDate = new Date()) {
-  const today = new Date(fromDate)
-  today.setHours(0, 0, 0, 0)
-  const nextSchool = getNextSchoolDay(fromDate)
+function getDaysUntilNextSchoolDay(fromDate = new Date(), timeZone = DEFAULT_TIMEZONE) {
+  const today = getDateInTimeZone(fromDate, timeZone)
+  today.setUTCHours(0, 0, 0, 0)
+  const nextSchool = getNextSchoolDay(fromDate, timeZone)
   const diffTime = nextSchool.getTime() - today.getTime()
   return Math.round(diffTime / (1000 * 60 * 60 * 24))
 }
@@ -96,6 +119,7 @@ const projectRoot = join(__dirname, '..')
 const appConfig = {
   weatherApiKey: process.env.VITE_WEATHER_API_KEY,
   zipCode: process.env.VITE_ZIP_CODE || '49341',
+  timeZone: DEFAULT_TIMEZONE,
   outputDir: isLocalMode 
     ? join(projectRoot, 'public', 'data', 'local')
     : join(projectRoot, 'public', 'data'),
@@ -104,6 +128,7 @@ const appConfig = {
 
 console.log(`📍 Location: ${appConfig.zipCode}`)
 console.log(`📂 Output: ${join(appConfig.outputDir, appConfig.outputFile)}`)
+console.log(`⏱️ Timezone for scheduling: ${appConfig.timeZone}`)
 
 // Weather API client for Node.js
 class NodeWeatherAPI {
@@ -759,10 +784,11 @@ ${expertAnalyses}`
 async function main() {
   try {
     // Determine the next school day (skip weekends)
-    const nextSchoolDay = getNextSchoolDay()
-    const daysAhead = getDaysUntilNextSchoolDay()
+    const runTimestamp = new Date()
+    const nextSchoolDay = getNextSchoolDay(runTimestamp, appConfig.timeZone)
+    const daysAhead = getDaysUntilNextSchoolDay(runTimestamp, appConfig.timeZone)
     const nextSchoolDayStr = nextSchoolDay.toISOString().split('T')[0]
-    const dayName = nextSchoolDay.toLocaleDateString('en-US', { weekday: 'long' })
+    const dayName = nextSchoolDay.toLocaleDateString('en-US', { weekday: 'long', timeZone: appConfig.timeZone })
     
     console.log(`📅 Next school day: ${dayName}, ${nextSchoolDayStr} (${daysAhead} day${daysAhead > 1 ? 's' : ''} ahead)`)
     
