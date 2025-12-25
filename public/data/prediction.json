@@ -1,12 +1,12 @@
 {
   "meteorology": {
     "temperature_analysis": {
-      "current_temp_f": 32.7,
+      "current_temp_f": 37,
       "overnight_low_f": 28.4,
       "morning_high_f": 32,
       "freezing_hours": 24,
       "temperature_trend": "steady",
-      "windchill_factor": -6.3
+      "windchill_factor": -6
     },
     "precipitation_analysis": {
       "snow_probability_overnight": 0,
@@ -25,69 +25,83 @@
       "minimum_visibility_miles": 0,
       "avg_visibility_miles": 4,
       "visibility_factors": [
-        "heavy snow showers ~9–10 AM",
-        "freezing rain late morning–early afternoon",
-        "brief dense low-level cloud/fog around 5–8 AM"
+        "snow",
+        "freezing_rain",
+        "low_clouds",
+        "mist",
+        "blowing_snow_possible"
       ]
     },
     "alert_summary": [
       {
-        "type": "winter_mix",
+        "type": "ice",
         "severity": "high",
-        "description": "Moderate/heavy snow 9–11 AM changing to moderate/heavy freezing rain 11 AM–1 PM with temps 30–32°F – high risk of glazing on untreated surfaces and slick travel late morning through afternoon."
+        "description": "Freezing rain mixed with snow from approximately 9 AM–1 PM near 30–32°F could produce a glaze of ice on untreated roads, sidewalks, and overpasses. Even in Michigan, this level of icing can cause hazardous travel and bus issues."
+      },
+      {
+        "type": "snow",
+        "severity": "moderate",
+        "description": "Roughly 1\" of new snow mainly between 9–11 AM with periods of moderate to heavy snow showers and visibility near 1 mile. Amount is below typical Michigan closure thresholds but enough to slick up roads under the snow/ice mix."
+      },
+      {
+        "type": "timing",
+        "severity": "high",
+        "description": "Heaviest mixed precipitation occurs during the core of the school commute and late morning (around 7–11 AM for snow onset and 11 AM–1 PM for freezing rain), limiting time for plows and salt trucks to fully mitigate impacts before and during arrival."
       }
     ],
-    "overall_conditions_summary": "For Rockford, MI on Friday 2025-12-26, temperatures stay near 30–32°F all day with 24+ hours at or below freezing. From the school-operations perspective, the overnight period (midnight–7 AM) is dry but cold and windy; no accumulating snow or ice is falling during typical bus times, so road crews have a clean window. Snow begins after the normal start of the school day: moderate to heavy snow showers develop 9–11 AM with about 1.1\" total daytime accumulation and visibility briefly down to ~1 mile. Around late morning to midday, thermal profiles support a transition to moderate or heavy freezing rain from roughly 11 AM–1 PM while temps hover 31–32°F, producing a potentially hazardous glaze on untreated roads, sidewalks, and parking lots. Winds from the E/ESE 15–20 mph (gusts near 25–40 mph early) will enhance wind chill but are below damaging thresholds. In a Michigan context, ~1\" of snow alone would not justify a closure, but the timing and presence of freezing rain during the late morning/midday hours is the key concern. Because there is no overnight snow/ice and plows have clear roads by early morning, the risk of a full-morning snow day *before* school starts is low. The more likely operational impact is on **midday/afternoon travel and events** (early dismissals, activity cancellations) if the freezing rain verifies. Overall: low probability of a traditional morning snow day closure, but a moderate to high risk of very slick conditions developing late morning through afternoon due to freezing rain on top of cold pavement."
+    "overall_conditions_summary": "For Rockford, MI on Friday, December 26, 2025, temperatures stay near freezing all day (roughly 28–32°F), with about 24 hours at or below 32°F. Winds are breezy from the E/ESE (frequent 15–18 mph, gusts near 25–40 mph early), producing wind chills in the teens and low 20s.\n\nPrecipitation timing is critical: conditions are dry but overcast overnight through about 8 AM. Around 9–11 AM, moderate to heavy snow showers develop, with roughly 1\" of accumulation and visibility occasionally dropping to ~1 mile. Between about 11 AM and 1 PM, the model shifts to moderate/heavy freezing rain while surface temps hover around 31–32°F, creating a notable risk of icing on roads and sidewalks, especially on untreated surfaces and elevated bridges. Precipitation then tapers to mainly overcast, misty conditions for the remainder of the day with continued near-freezing temperatures.\n\nFor Michigan standards, the snow amounts (around 1\") are not by themselves enough for a snow day. However, the presence of freezing rain during the late morning, coinciding with the school day and possible early bus or mid‑day traffic, is a significant hazard. Because ice is a primary closure driver in West Michigan and the worst conditions overlap with typical school hours (rather than ending by 4 AM), the setup is concerning for travel safety even if total snow is modest."
   },
   "history": {
     "similar_weather_patterns": [
       {
-        "pattern_description": "Marginal winter storm with mixed snow and freezing rain, temps hovering 28–32°F, 0.3–0.5\" liquid equivalent, 1–3\" snow plus glazing, strongest impacts mid‑morning through early afternoon but not an all‑day event",
+        "pattern_description": "Light to moderate wintry mix event with 1–2 inches of snow during the morning commute, then a transition to several hours of freezing rain near 30–32°F, with breezy but not damaging east winds (15–25 mph gusts).",
+        "historical_snow_day_rate": 0.15,
+        "confidence_level": "medium"
+      },
+      {
+        "pattern_description": "Sub-freezing overnight (upper 20s) with roads pre-treated, followed by briefly intense snow showers around school start time but total daytime snow under 3 inches, then a lull/transition to mixed precip by early afternoon.",
+        "historical_snow_day_rate": 0.2,
+        "confidence_level": "medium"
+      },
+      {
+        "pattern_description": "Icy mixed-precip days where air temperatures hover right at freezing (30–32°F), producing patchy glaze ice on untreated surfaces but mainly wet/slushy main roads by late morning/early afternoon.",
         "historical_snow_day_rate": 0.25,
-        "confidence_level": "medium"
-      },
-      {
-        "pattern_description": "Morning commute snow of 1–2\" with gusty 20–30 mph easterly winds, then transition to light freezing rain around late morning, staying just below freezing at the surface",
-        "historical_snow_day_rate": 0.3,
-        "confidence_level": "medium"
-      },
-      {
-        "pattern_description": "Cold, cloudy, subfreezing but not dangerously cold day (wind chills mostly in the teens/20s) with some reduced visibility (1–3 miles) during heavier bands, no blizzard conditions",
-        "historical_snow_day_rate": 0.1,
-        "confidence_level": "high"
+        "confidence_level": "low"
       }
     ],
     "seasonal_context": {
-      "typical_conditions_for_date": "For late December in Rockford (Grand Rapids region), it is common to see highs around the upper 20s/low 30s, occasional light to moderate synoptic snow or lake‑enhanced snow, and frequent overcast. Events bringing 1–3\" of snow with some wind near or just after Christmas are typical, and schools are usually in winter break around this date. Historically, closures in this area are more closely tied to larger, high‑impact systems (6–10\"+ with poor timing, strong lake‑effect bursts, or significant icing) rather than modest accumulations.",
+      "typical_conditions_for_date": "Late December in Rockford (just north of Grand Rapids) commonly features highs in the upper 20s to low 30s°F, frequent light snow or lake-effect episodes, and occasional mixed-precip events when marginally warm air rides over a shallow cold surface layer. Schools in this part of Michigan are very accustomed to driving in light snow, slush, and marginal freezing conditions around this time of year.",
       "unusual_factors": [
-        "Presence of a freezing‑rain signal (moderate or heavy freezing rain indicated 11:00–13:00) with surface temps ~31°F, which raises concern for glazing on untreated surfaces and power lines.",
-        "Wind gusts in the mid‑20s to low‑40s mph range during the morning hours with active snow may produce brief low visibility and drifting, though not to blizzard thresholds.",
-        "Visibility dipping to about 1 mile at times around the morning onset (09:00–10:00) could cause localized travel difficulties if the snow and ice arrive slightly earlier than forecast."
+        "Presence of a several-hour window of moderate to heavy snow showers overlapping with the typical bus commute (roughly 7–10 AM) on 2025-12-26.",
+        "Forecasted period of moderate to heavy freezing rain from roughly late morning through early afternoon (around 11 AM–1 PM), with surface temps near 31–32°F and sustained easterly winds 15–20 mph, which can create localized icing on untreated or elevated surfaces.",
+        "Visibility drops to around 1–3 km (about 1–2 miles) during the heaviest snow and freezing rain, which can briefly reduce travel speeds, especially on secondary/rural roads."
       ],
-      "seasonal_probability_adjustment": 0.2
+      "seasonal_probability_adjustment": -0.15
     },
     "location_specific_factors": {
       "local_microclimates": [
-        "Rockford sits in West Michigan, where easterly flow is less favorable for classic Lake Michigan lake‑effect; this event is more synoptic/mixed‑precip than pure lake‑effect, so extreme localized bands are less likely.",
-        "Valleys and low‑lying areas can see slightly colder surface temperatures, which might enhance icing on back roads, driveways, and bridges even if main roads are treated."
+        "Rockford sits in the hilly belt north of Grand Rapids, where elevation changes and tree cover can allow slightly more snow accumulation and lingering icy patches on back roads and driveways compared with the urban core.",
+        "Proximity to the Grand River valley and smaller tributaries can promote shallow cold pockets at night, sometimes keeping road surfaces a bit slicker than air temperatures alone would imply.",
+        "East-to-southeast flow events tend to be more mixed-precip (snow to sleet/freezing rain to drizzle) than classic heavy lake-effect snowbands, so you get more ice risk but usually not extreme snow totals."
       ],
       "infrastructure_considerations": [
-        "Kent County and nearby road commissions are well‑experienced with handling 1–3\" snow events and light icing; pre‑treatment and salting usually keep main routes passable.",
-        "School closure decisions in this region historically require either widespread hazardous roads (from 8–10\"+ of snow, strong wind, or heavy lake‑effect bands) or significant ice accretion making secondary roads dangerous. Marginal icing near 31–32°F often results in slower travel rather than full shutdowns, especially when not coinciding with an early‑morning onset."
+        "Kent County and Rockford-area road crews are well-practiced at pre-treating and plowing for marginal events like 1–3 inches of snow plus some freezing rain; main routes and bus corridors are typically prioritized and cleared by early morning and late morning reevaluations.",
+        "School closure decisions in this region historically emphasize extreme cold (wind chills below about -15°F), widespread ice storms (0.25\"+ glaze, tree/powerline issues), or disruptive snow totals (8–10\"+ with poor timing) more than modest mixed-precip events.",
+        "The forecast does not indicate damaging winds, power outages, or blizzard-level visibility reductions; this reduces the likelihood of infrastructure-driven closures such as downed lines or impassable roads."
       ],
-      "elevation_impact": "Local elevation variations around Rockford are modest; they can slightly enhance accumulation on the north/east of town and in higher terrain, but are unlikely to push this event into a high‑end snowstorm given total QPF and temperature profiles."
+      "elevation_impact": "Local hills around Rockford may accumulate slightly more snow (perhaps toward the higher end of the 2–3 cm daytime snow shown) and may see a bit more persistent icing on neighborhood and gravel roads. However, elevations are not high enough to create a dramatically different outcome than the broader Grand Rapids metro—just somewhat slicker untreated side roads during the morning and midday."
     },
-    "confidence_assessment": "Based on the provided hourly forecast for Friday, 2025‑12‑26, Rockford is expected to see:\n- Temperatures largely 28–32°F all day.\n- Winds 15–20 mph with gusts up to ~40 mph in the morning.\n- Precipitation beginning as moderate to heavy snow around 09:00–10:00, producing roughly 2–3 cm (about 1 inch) of snow by late morning, then transitioning to moderate/freezing rain 11:00–13:00, tapering to lighter overcast conditions for the afternoon commute.\n- Total liquid precipitation around 0.37\" with about 2.8 cm (~1.1\") of snow, implying more mixed precipitation and ice than deep snow.\n\nWhen compared with historical patterns for Kent County and similar West Michigan districts, conditions like this (1–3\" of snow, some morning icing, gusty but non‑blizzard winds, wind chills mostly in the teens) have only occasionally led to school closures by themselves. Closures are more common when:\n- Blizzard criteria or near‑whiteout conditions occur for several hours, or\n- Ice storms create widespread glazing and power issues, or\n- Snowfall totals exceed about 8–10\" with poor timing (e.g., starting before first buses and continuing through the morning).\n\nThis forecast shows:\n- No extreme cold (wind chills are around 15–25°F, far above the ~‑15°F threshold that historically triggers cold‑related closures).\n- Snow totals well below usual closure thresholds, and the heaviest snow/ice appears to peak late morning rather than before the first buses.\n- Some potential for slick conditions, especially if freezing rain verifies more than modeled or arrives earlier.\n\nGiven Michigan’s high tolerance for winter driving and Rockford’s experience with managing these moderate events, the historical analogs suggest a relatively low probability that these specific conditions alone would produce a snow day for Friday, 2025‑12‑26. The main wildcard is how much ice actually accretes and whether timing shifts earlier into the 05:00–07:00 bus window, but based strictly on the forecast pattern and past behavior, this setup more often results in:\n- School operating as normal or with cautionary messaging, possibly with some localized delays or minor issues on untreated back roads,\n- Rather than a district‑wide cancellation.\n\nOverall, confidence in the historical context and its application to this forecast is medium‑to‑high: the pattern is fairly typical for late December in West Michigan and does not currently resemble the higher‑impact snow or ice events that have driven widespread closures in the past."
+    "confidence_assessment": "Based on the provided forecast for Friday, 2025-12-26, this looks like a marginal-impact winter event for Rockford by Michigan standards, not a classic high-probability snow day setup.\n\nKey factors relative to typical Michigan closure triggers:\n- Snow amounts: The modeled daytime snow on 2025-12-26 is modest—about 2.8 cm (~1.1 inches) total, with the most intense snow showers between roughly 9–10 AM. Even with some uncertainty, this points to something like 1–3 inches on many surfaces, well below the 8–10+ inch threshold that more commonly drives closures in this area.\n- Timing: The heavier snow showers coincide with or just after the morning commute period (around school start time). That can certainly create slick conditions and slower travel, but it is relatively short-lived (a couple of hours), and then the precipitation transitions toward more freezing rain/drizzle and overcast conditions.\n- Ice risk: Freezing rain during the late morning and early afternoon (around 11 AM–1 PM) is the most notable concern. With air temperatures hovering near 31–32°F and winds still 15–20 mph, there is potential for a thin glaze on untreated and elevated surfaces. However, forecast total liquid precipitation for the day (~0.37\" total, only part of which is freezing) suggests a minor to moderate icing event, not a classic Michigan ice storm with major tree and powerline damage.\n- Cold and wind: Temperatures stay in the upper 20s to low 30s°F, and wind chills mostly in the teens to low 20s°F. This is far from the extreme cold threshold of about -15°F wind chill that sometimes prompts cold-related closures.\n- Visibility and wind: Visibility is reduced (1–3 km, about 1–2 miles) during the snow and freezing rain, and winds gust into the upper 20s to low 40s kph (mid-teens to mid-20s mph), but there is no indication of true blizzard conditions (sustained 35+ mph winds with near-zero visibility).\n\nHistorical context for Rockford and similar west-central Michigan districts:\n- Late-December mixed-precip days with 1–3 inches of snow and some freezing drizzle or light freezing rain are common. These often result in:\n  - Normal school operation, sometimes with caution advisories, when roads are treated promptly and power remains stable.\n  - Occasional 2-hour delays if icing is more widespread than expected on rural routes or if a heavier burst of precip coincides exactly with the bus window.\n- Full-day closures are more typically associated with:\n  - Larger synoptic systems dropping 8–12+ inches of snow, especially if this falls rapidly during the pre-dawn hours.\n  - Significant ice storms producing a quarter-inch or more of glaze, tree damage, and scattered outages.\n  - Arctic outbreaks with dangerous wind chills or blizzard-level conditions.\n\nGiven all of that, historically similar patterns in this area point to:\n- Higher likelihood of either a regular school day or, at most, a delay rather than a full snow day.\n- The main wildcard is how efficiently freezing rain accumulates on hilly rural roads and bridges. If real-time conditions early Friday morning show widespread glazing and accidents, administrators might consider adjusting, but the forecast data alone does not strongly support a preemptive full closure.\n\nOverall, in terms of historical analogs and Michigan-specific closure habits, this setup aligns with events that produce some travel difficulty and localized slick spots, but usually not district-wide snow days. Confidence in this assessment is medium: the general character of the storm is clear (modest snow plus some freezing rain), but small shifts in temperature or precip type could change how icy the roads actually are around bus times."
   },
   "safety": {
     "road_conditions": {
       "primary_roads_score": 7,
-      "secondary_roads_score": 6,
+      "secondary_roads_score": 5,
       "parking_lots_score": 5,
       "ice_formation_risk": "high"
     },
     "travel_safety": {
-      "walking_conditions_score": 5,
+      "walking_conditions_score": 4,
       "driving_conditions_score": 6,
       "public_transport_impact": "moderate",
       "emergency_access_concern": false
@@ -99,13 +113,13 @@
       "afternoon_impact": "significant"
     },
     "safety_recommendations": [
-      "Expect mainly dry but cold pavement during the core 6–8 AM school commute, with temps around -1 to -0.8°C (30°F) and strong ESE winds; drifting is limited but wind chills are in the teens, so extra time for buses is prudent.",
-      "Visibility drops to 1–3 km after 5 AM and winds reach 18–19 mph with gusts near 40 mph; advise reduced speeds on secondary roads and emphasize bus driver caution on open/rural stretches.",
-      "Heavier mixed precip (moderate/heavy snow showers changing to freezing rain) is forecast after about 9 AM, peaking late morning to early afternoon; this is more likely to affect late-start programs or midday activities than the initial start of school.",
-      "Given temps hovering right at freezing and periods of freezing rain from roughly 11 AM–1 PM, maintenance should pre-treat priority surfaces (hills, bridges, shaded curves, and parking lots) before late morning.",
-      "Plan for potentially slick sidewalks and school campus surfaces at arrival, especially where any light pre-commute drizzle or very light snow occurs on sub-freezing pavement; encourage staff/parents to use designated cleared walkways.",
-      "Monitor short-range updates overnight for any earlier-than-expected onset of snow or freezing rain (before 7–8 AM); if the shield moves in faster than modeled, conditions could quickly shift from moderate to high impact around the start time.",
-      "Consider that dismissal and after-school travel may be more hazardous than the morning, due to daytime icing risk and refreezing; be prepared to alter or cancel afternoon/evening activities and late runs if freezing rain verifies."
+      "Plow and salt operations overnight should have roads in decent shape by 6–7 AM, but crews should be prepared for rapid deterioration after 9 AM as snow showers intensify.",
+      "Given temps near 30°F and very high humidity, assume any untreated surfaces (side streets, school lots, sidewalks) may be slick even without active snowfall during the commute.",
+      "Plan extra sanding/salting of bus loops, parent drop-off areas, and sidewalks before arrival; re-treat around late morning as freezing rain moves in.",
+      "Buses and staff should anticipate reduced visibility and increasingly slick pavements if travel extends later into the morning; avoid late-morning field trips or mid-day transport if possible.",
+      "For walkers, encourage use of main cleared routes only and advise families about elevated slip risk on neighborhood sidewalks and driveways.",
+      "Monitor updated forecasts closely Thursday evening and early Friday; if the freezing-rain onset trends earlier into the commute window, risk would rise toward high and may justify delay or cancellation.",
+      "Consider earlier dismissal or cancellation of afternoon/evening activities due to potential icing from late-morning freezing rain and saturated surfaces near 32°F."
     ],
     "risk_level": "moderate"
   },
@@ -113,121 +127,117 @@
     "local_news": [
       {
         "source": "Rockford Public Schools",
-        "headline": "Closed for Winter Break – No School on Friday, Dec. 26, 2025",
-        "summary": "The Rockford Public Schools district calendar and a Dec. 22 update state that the district is closed for Winter Break from Dec. 22 through Dec. 31. Dec. 26, 2025, is listed as a Winter Break day, with school not resuming until Monday, Jan. 5, 2026.",
+        "headline": "Closed for Winter Break – Dec. 22, 2025 through early January",
+        "summary": "The Rockford Public Schools district site and news section state that the district is closed for Winter Break beginning Monday, Dec. 22, 2025, with school scheduled to resume Monday, Jan. 5, 2026. The calendar shows Dec. 22–31 labeled as Winter Break, including Friday, Dec. 26, 2025. This means there is no regular school day on Dec. 26 regardless of weather, so no separate ‘snow day’ decision is expected.",
         "relevance": "high",
-        "url": "https://www.rockfordschools.org"
+        "url": "https://www.rockfordschools.org/"
       },
       {
-        "source": "Rockford Public Schools",
-        "headline": "Winter Break! District Closed Dec. 22–Jan. 2",
-        "summary": "A Dec. 1 district news post explains that Rockford Public Schools will be closed for winter break starting Dec. 22 through Jan. 2, with classes resuming Monday, Jan. 5, 2026. This covers Friday, Dec. 26, 2025, so there is no question of a weather-related closure that day.",
+        "source": "Rockford Public Schools – News Post",
+        "headline": "“Closed for Winter Break” notice (Dec. 22, 2025)",
+        "summary": "A district news article reiterates that RPS is closed for Winter Break starting Dec. 22. It confirms that school will resume Monday, Jan. 5, 2026, and frames the closure as calendar-based, not weather-based.",
         "relevance": "high",
-        "url": "https://www.rockfordschools.org/pub/news/posts/1891"
+        "url": "https://www.rockfordschools.org/pub/news/posts/1877"
       },
       {
-        "source": "Regional Michigan news (Big Rapids / Grand Rapids area)",
-        "headline": "Post-Christmas storm could bring freezing rain to Michigan on Friday, Dec. 26",
-        "summary": "A Dec. 23 article summarizing National Weather Service Grand Rapids guidance says a post‑Christmas system is expected to bring freezing rain into southwest Michigan Friday morning (Dec. 26), with ice accretion possibly exceeding one‑tenth of an inch in some locations north of I‑94 and near M‑46, before changing to plain rain later in the day. Travel impacts and slick roads are the main concerns.",
-        "relevance": "high",
-        "url": "https://www.bigrapidsnews.com/news/article/michigan-freezing-rain-friday-21259459.php"
-      },
-      {
-        "source": "Regional Michigan news (statewide outlets)",
-        "headline": "Freezing rain concerns rising for Friday across parts of Michigan",
-        "summary": "Multiple Michigan outlets echo the forecast that a storm system passing through Thursday night into Friday (Dec. 26) could produce freezing rain in portions of the state, including southwest and west‑central Michigan, before transitioning to rain later Friday. Impacts could include icy roads for the Friday morning period.",
+        "source": "Kent ISD / Regional school calendars (proxy via district sites)",
+        "headline": "Neighboring districts also on winter break Dec. 26, 2025",
+        "summary": "Forest Hills and other nearby districts show Dec. 26, 2025, as part of Christmas/New Year/Winter Break on their calendars, indicating that the date is a scheduled holiday period across much of the region rather than a normal school day where closures would be weather-driven.",
         "relevance": "medium",
-        "url": "https://www.ourmidland.com/news/article/michigan-freezing-rain-friday-21259459.php"
+        "url": "https://www.fhrangers.org/"
+      },
+      {
+        "source": "ClickOnDetroit 4Warn Weather (Metro Detroit)",
+        "headline": "Freezing rain/ice expected Friday, Dec. 26, 2025 (primarily Metro Detroit)",
+        "summary": "A 4Warn Weather Alert is in effect for Metro Detroit on Friday, Dec. 26, 2025, due to anticipated freezing rain and ice during the first half of the day. While this is focused on southeast Michigan, it suggests a broader weather system that could also bring mixed precipitation to West Michigan, potentially causing slick travel even though area schools are on break.",
+        "relevance": "medium",
+        "url": "https://www.clickondetroit.com/news/local/2025/12/24/4warn-weather-alert-issued-for-friday-in-metro-detroit-heres-why-what-that-means/"
       }
     ],
     "school_district_signals": {
       "official_announcements": [
-        "Rockford Public Schools’ official website and news posts clearly show that Dec. 26, 2025, falls within Winter Break; the district is closed and will not be in session, independent of weather conditions.",
-        "There are no separate Rockford Public Schools alerts or social posts indicating any additional ‘snow day’ or weather‑related closure, likely because break is already in effect.",
-        "Neighboring Kent ISD‑served districts commonly share a similar winter‑break window around Christmas, so most are likely off as well, though individual calendars should be checked for precise dates."
+        "Rockford Public Schools’ official website and news posts show Winter Break running from December 22, 2025, through at least January 2, 2026, with school resuming Monday, January 5, 2026. Friday, December 26, 2025, is labeled as ‘Winter Break’ on the district calendar, not a regular school day.",
+        "No Rockford Public Schools social or web announcements were found referencing weather-related closures, delays, or ‘snow day’ style decisions specific to Friday, December 26, 2025. Because the date falls inside Winter Break, such announcements are unlikely unless related to facilities or events, not student attendance.",
+        "Forest Hills and several other districts in Michigan show Dec. 26, 2025, as Christmas/New Year or Winter Break, suggesting a planned day off regionally rather than an operational day that might be closed for weather."
       ],
       "early_dismissal_history": false,
       "neighboring_district_closures": [
-        "Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, and other Kent ISD districts appear to be on their scheduled winter breaks around Dec. 26, 2025 (no active ‘weather-related closure’ chatter; closures are calendar‑based, not storm‑based, on that date)."
+        "Forest Hills: Calendar lists Dec. 26, 2025, as part of Christmas/New Year Break (no school).",
+        "Other sample Forest Hills/Forest Hills HS calendars similarly mark Dec. 26 as Winter Recess / No School, consistent with a broader break period."
       ]
     },
     "community_intel": {
-      "social_media_sentiment": "uncertain",
+      "social_media_sentiment": "no_buzz",
       "reported_road_conditions": [
-        "Forecast discussion suggests potentially slick and icy roads Friday morning, Dec. 26, especially in portions of southwest/west‑central Michigan as freezing rain develops before changing to rain.",
-        "Travel impacts are flagged as possible, with at least one local write‑up calling out concerns for icing depending on how much cold air remains near the surface."
+        "Regional TV weather (Metro Detroit) is highlighting the risk of freezing rain and icing for the morning and early afternoon of Friday, Dec. 26, 2025, which could imply slick bridges and untreated roads in parts of lower Michigan, though this coverage is not Rockford-specific.",
+        "No specific Kent County Road Commission, MDOT, or Grand Rapids–area social chatter was found that directly references dangerous conditions or school-related travel impacts for Rockford on the morning of Dec. 26, 2025. Most public‑facing focus is on holiday travel rather than school commuting."
       ],
       "power_outage_reports": false,
       "local_event_cancellations": [
-        "No specific Rockford‑area local event cancellations are being widely reported yet for Friday, Dec. 26, 2025; main messaging so far is general caution about possible freezing rain and travel conditions rather than named event shutdowns."
+        "No notable Rockford Public Schools student-day events appear on the district calendar for Dec. 26, 2025, because it is part of Winter Break.",
+        "No clear pattern of community event cancellations in Rockford tied specifically to Dec. 26, 2025, weather was found in quick scans of news and regional outlets; most schedules assume holiday break operations."
       ]
     },
-    "key_findings_summary": "For Friday, Dec. 26, 2025, Rockford Public Schools is already closed for Winter Break according to its official calendar and winter‑break announcement, which lists Dec. 26 as a break day and indicates that school does not resume until Monday, Jan. 5, 2026. That means there is no active ‘snow day decision’ for Rockford on that date—school is out regardless of weather. Regional forecast coverage from Michigan outlets and NWS Grand Rapids highlights a post‑Christmas system bringing potential freezing rain into southwest/west‑central Michigan Friday morning before changing to rain later, with possible light ice accretion and slick roads; however, this is framed as a travel‑hazard story rather than a school‑closure one. Neighboring districts in the Kent ISD area also appear to be on winter break, so any closures are calendar‑driven, not weather‑driven. Community chatter so far centers on watching the freezing‑rain setup and possible icy roads, not on whether Rockford or nearby districts will call off school, because classes are already not in session."
+    "key_findings_summary": "For Friday, December 26, 2025, Rockford Public Schools and surrounding districts (e.g., Forest Hills) are already closed for scheduled Winter Break, with RPS stating that school will not resume until Monday, January 5, 2026. Because Dec. 26 is not a regular school day, there is effectively a 0% need for a ‘snow day’ decision in the traditional sense: no student attendance is planned, and no official weather-related closure messaging is being issued. Regional forecasts (especially for Metro Detroit) do indicate freezing rain and potential icing on Friday morning, which could make travel slick across parts of Michigan, but this is a holiday-break travel issue rather than a school-closure issue for Rockford. Community and social-media channels show no focused chatter about Rockford-area school closures for Dec. 26, reflecting that the date is already part of winter vacation rather than a live school day at risk of being canceled for weather."
   },
   "final": {
-    "snow_day_probability": 5,
-    "confidence_level": "high",
+    "snow_day_probability": 2,
+    "confidence_level": "very_high",
     "primary_factors": [
-      "Rockford Public Schools is already closed for Winter Break on Friday, Dec. 26, 2025, so no operational snow-day decision is needed",
-      "Forecast snowfall is low (~1.1\"), well under typical Michigan closure thresholds",
-      "Highest-impact weather (snow then freezing rain) is mid/late morning through early afternoon, not during the pre-7:40 AM start window",
-      "Road agencies in Kent County are experienced with this level of snow/ice and can utilize a dry overnight window for treatment",
-      "Historical analogs for similar mixed snow/freezing-rain events in this region show relatively low closure rates unless icing becomes severe and early-morning focused"
+      "Rockford Public Schools and neighboring districts are already closed for Winter Break on Friday, Dec. 26, 2025 (calendar-based, not weather-based)",
+      "No student attendance or normal bus operations are scheduled, so no traditional ‘snow day’ decision is required",
+      "Forecast snowfall is low (~1.1\"), well below Michigan snow-only closure thresholds",
+      "Main hazard is a modest freezing-rain/ice window late morning–early afternoon, impacting holiday travel more than school operations",
+      "Historical analogs for similar mixed-precip events in this region show low full-closure rates when school is in session, and here school is not in session at all",
+      "Local news, district communications, and community channels show no school-closure chatter because the date is already a holiday"
     ],
     "timeline": {
-      "conditions_start": "2025-12-26 09:00 (onset of moderate snow after a cold, dry overnight/morning commute window)",
-      "peak_impact_time": "2025-12-26 11:00–13:00 (transition to moderate/heavy freezing rain with slick roads and glazing risk)",
-      "conditions_improve": "2025-12-26 14:00–16:00 (precipitation trends lighter / mix to rain, roads gradually improve where treated)"
+      "conditions_start": "2025-12-26 08:00 (cloudy, near-freezing, roads initially in decent shape from overnight treatment)",
+      "peak_impact_time": "2025-12-26 09:00–13:00 (1\" snow then period of freezing rain and slick untreated surfaces)",
+      "conditions_improve": "2025-12-26 13:00–16:00 (precipitation tapers to mist/overcast; roads gradually improve as treatment catches up, though patchy ice may persist in spots)"
     },
-    "decision_rationale": "PRE-DECISION CHECKLIST\n1. Expert agreement:\n- All four streams agree the *overnight through early-morning commute (before ~8 AM)* is dry but cold, with roads largely clear for plows and traffic.\n- They agree on **low snow totals (~1.1\")**, with the main hazard being a **late-morning to early-afternoon transition to freezing rain (11 AM–1 PM)** creating slick conditions.\n- They concur this is *not* a high-end snowstorm (no blizzard conditions, no extreme cold) but does pose **moderate travel risk** once freezing rain develops.\n- News intel and historian both emphasize that Rockford and neighboring districts are **already on Winter Break**; closures on Dec. 26 are calendar-based, not weather-based.\n\n2. Disagreements / nuances:\n- Meteorologist: explicitly notes a **low probability of a traditional morning snow day closure**; sees the primary risk as late-morning/afternoon travel and activities.\n- Safety analyst: labels risk as **moderate** overall, highlighting **significant afternoon impact** but only **moderate morning commute impact**.\n- Historian: similar mixed-precip patterns show **~25–30% snow-day rates**, but that’s for days when school is actually in session and when icing occasionally reaches higher impact.\n- News intel: clarifies that **no actual snow-day decision exists** because school is closed for break; that effectively dominates the operational outcome.\n\nThere is no substantive conflict about the *weather*: the differences are in how impactful the event would be **if school were in session**. In reality, the NEWS intelligence makes clear the key operational fact: **no classes that day**.\n\n3. Plow timing math:\n- Snow and mixed precip begin around **09:00**.\n- Standard high-school start/reference time: **~07:40 AM**.\n- End of meaningful freezing-rain threat: **~13:00**.\n- From the **end of snow/ice to 07:40 AM**, for this specific calendar day, is not relevant because the event is *after* the typical start time. If school *were* in session, plow crews would actually have a **clean, dry overnight window (midnight–7 AM)** to fully prep roads before any precip starts.\n\n4. Ice presence:\n- Yes, **freezing rain is explicitly forecast** 11:00–13:00 with temps 30–32°F and a high risk of glazing on untreated surfaces.\n- This *would* be a serious concern for midday travel and could justify early dismissals or activity cancellations if school were in session.\n- However, it does **not** coincide with the early-morning bus window, which is the main driver of a classic snow day.\n\n5. Neighboring districts:\n- News intel reports that **Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, and other Kent ISD districts** are also on **winter break**; any closures are **calendar-driven**.\n- There are **no weather-based closure chains** or domino effects to factor in; thus, no +15–20% bump from neighboring districts is appropriate.\n\n6. What would make this prediction wrong?\n- The only realistic way to be wrong on a *snow day* probability here would be if the **calendar information were incorrect** (i.e., school unexpectedly in session) or if a district opted to brand some weather-related action (like cancelling a camp or optional program) as a full ‘closure.’\n- All provided official sources, however, consistently show **Winter Break Dec. 22–Jan. 2** with no classes Dec. 26. The probability of a true instructional-day snow day is therefore effectively tied to a calendar reversal, which is extremely unlikely.\n\nWEIGHTING OF EXPERTS (per directive)\n- Meteorology (35%): Indicates **low morning hazard, higher late-morning/afternoon hazard**, and only ~1.1\" snow with mixed freezing rain. On weather alone, this supports a **low–moderate** snow-day risk if school were open, mainly because of the ice.\n- Safety (25%): Rates overall risk as **moderate**, but emphasizes that **core 6–8 AM commute is mainly dry**, with worst travel 09:00–13:00. That again suggests **not a classic morning closure**, more of a midday concern.\n- History (20%): Analog events show ~25–30% closure rates **when school is in session** and when icing sometimes lines up with commute windows. Given the later timing here and Michigan’s higher thresholds, that historical signal is **on the low side** of closure probability.\n- News Intelligence (20% – ‘secret weapon’): Provides the decisive context: **Rockford Public Schools is closed for Winter Break; no instructional day exists to cancel.** Neighboring districts are also on break. This essentially collapses the actual, realized snow-day probability for Dec. 26, 2025, toward 0–5%, regardless of the marginal meteorological case for closures on a normal school day.\n\nSYNTHESIS INTO A PROBABILITY\n- If this were a normal school day:\n  - 1.1\" of snow + mid/late-morning freezing rain with high ice risk would put the **base closure probability** roughly in the **20–30%** range given Michigan thresholds (low snow amount, but presence of ice and tricky midday timing).\n- However, because **school is already out for Winter Break**, the operational question “Will there be a snow day?” translates to: “Will the district declare a weather-related school closure on a day where no school is scheduled?” Historically and practically, that is almost never done.\n\nGiven that:\n- Calendar certainty is high (official website, multiple posts, regional practice),\n- Neighboring districts are also on break (no chain-reaction effect),\n- No indication of an emergency-level storm (blizzard/ice storm with infrastructure failure),\n\nI assign a **5% snow day probability**. This is not 0% only to allow for highly unusual administrative labeling (e.g., if the district bizarrely issued a ‘closure’ notice despite break), but such a scenario is extremely unlikely.\n\nConfidence is **high** because the key determinant (the calendar) is clear and corroborated, and all weather experts broadly agree on timing and magnitude of the event.\n\nIn summary: Weather may cause **hazardous midday travel**, but it will almost certainly **not** result in a formal snow day for Rockford, since school is already closed for Winter Break.",
+    "decision_rationale": "1. Expert agreement checklist\n- Meteorologist: Mixed-precip event with about 1\" of snow and a late-morning freezing-rain window (9 AM–1 PM), with temps near 30–32°F and significant but not extreme icing. Emphasizes that snow amount alone is not a Michigan-style snow-day trigger, but ice is the main concern.\n- Historian: Very similar past setups (1–3\" snow plus light freezing rain) in Rockford usually do NOT produce full snow days; at most delays, and generally routine operations. Mixed events like this are common in late December and rarely justify closure without major icing or heavy totals.\n- Safety analyst: Rates overall risk as moderate. Primary roads likely OK early, but secondary roads, lots, and sidewalks get slick, especially after 9 AM. Advises monitoring for earlier ice onset and suggests caution for late-morning/afternoon transport.\n- News & community intel: Confirms Rockford Public Schools and nearby districts are already closed for Winter Break on Dec. 26. There is no regular school day, no bus commute, and no snow-day style messaging. Regional coverage flags icing as a concern for holiday travel, not for school operations.\n\nAll four agree on: (a) modest snow totals, (b) some icing risk mid to late morning, (c) no blizzard/major storm, and (d) Dec. 26 is part of Winter Break (from news intel, supported by lack of closure chatter). Together, that means: even if this were a school day, it would be marginal for a full closure; in reality, it is not a school day at all.\n\n2. Where they disagree\nThere is no material conflict:\n- Meteorology and safety are aligned on timing and severity (moderate operational risk, focused on ice).\n- History places this squarely in the low snow-day-probability bucket when school is in session, consistent with the other two.\n- News intel reframes the question: there is essentially no concept of a ‘snow day’ because school is already closed. This doesn’t conflict with the others; it just changes the decision context.\nBecause there is no substantive disagreement about conditions or school calendar, no tool clarification is needed.\n\n3. Plow timing math (relative to a normal school day)\n- Worst conditions: ~09:00–13:00.\n- In a normal schedule, high school bus arrivals would be around 7:20–7:40 AM.\n- Snow/ice onset is after 8–9 AM, so:\n  - By 6–7 AM, overnight-treated roads are likely in fair shape (dry or just damp/cold).\n  - There are essentially 0 hours from the END of the main event to a hypothetical 7:40 AM arrival; instead, the event ramps up AFTER that time and peaks during late morning.\nOperationally, that pattern is more of a concern for mid‑day travel or early dismissal than for pre‑school arrival, but with no school in session, it primarily affects holiday/errand travel.\n\n4. Ice assessment\nIce is present and is the primary hazard:\n- Forecast freezing rain from ~11 AM–1 PM with temps near 31–32°F.\n- Meteorologist explicitly flags a glaze risk on untreated roads and elevated surfaces, with high-severity ice alert.\n- Safety analyst calls ice formation risk high and notes significant afternoon impact.\n- Historian: similar ice-glaze days rarely produce full closures unless icing is heavier or more widespread.\nSo: yes, there is nontrivial ice—but expected to be a light-to-moderate glaze, not a major Michigan ice storm.\n\n5. Neighboring districts\nNews intel shows:\n- Rockford: Winter Break, no school on Dec. 26.\n- Forest Hills and other regional districts: also on Winter Break (no school).\nThese are calendar-based closures, not weather-based snow days. Under the competition rules, the ‘3+ neighboring districts closed → +15–20%’ adjustment applies to weather-driven school-day closures, which is not the case here, so no upward adjustment is warranted.\n\n6. What would make this prediction wrong?\nThe only realistic way to be wrong in a snow-day prediction sense would be if:\n- The calendar information is incorrect and there actually were a scheduled student day on Dec. 26, AND\n- Ice accumulation is significantly worse than forecast (e.g., heavier freezing rain starting early in the bus window, with widespread crashes and severe road glaze) prompting a last‑minute closure.\nGiven multiple high-relevance sources confirming Winter Break and lack of any school-operations chatter, that scenario is extremely unlikely.\n\n7. Probabilistic decision in Brier-score terms\n- If this were a normal school day with this forecast (1\" snow + modest freezing rain, marginal timing), historical and expert data would support a roughly 15–30% chance of a full snow day, with a higher chance of just normal operations or a delay.\n- Because Dec. 26 is definitively a non-school Winter Break day, the true probability that the district needs to call a weather-related student snow day is effectively 0%.\nTo avoid claiming literal impossibility, I set the snow_day_probability at 2% (allowing for extremely unlikely calendar or forecast errors) with a very_high confidence label. This balances decisiveness (important for Brier score) against a small allowance for residual uncertainty.\n\nWeighting of experts:\n- Meteorology (35%): Establishes that this is a modest mixed event with some ice but no blizzard or big snow totals; without the calendar, this alone would suggest low-to-moderate closure odds.\n- Safety (25%): Upgrades concern for late-morning/afternoon travel but still frames risk as moderate, not high, reinforcing that this is not a classic full-closure situation even if school were in session.\n- History (20%): Provides quantitative analog closure rates (15–25%) for similar events, indicating low historical propensity for full snow days.\n- News intelligence (20%): Is decisive in this case by confirming that Dec. 26 is already part of Winter Break regionally, effectively collapsing snow-day probability near zero regardless of weather.\nCombining all four, the rational conclusion is that no snow day is needed or meaningful on this date, and the residual probability is only for rare edge cases.",
     "alternative_scenarios": [
       {
-        "scenario": "Forecast verifies but school unexpectedly *is* in session (calendar error in assumptions); late-morning freezing rain creates hazardous roads and the district opts for an early dismissal rather than a full-morning closure.",
-        "probability": 10,
-        "impact": "Morning runs proceed as normal on mostly dry roads, but conditions deteriorate by late morning; buses and parent traffic face icy roads for mid-day dismissal, with elevated accident risk and significant disruption. Statistically this still would not count as a classic pre-emptive ‘snow day.’"
+        "scenario": "Forecast verifies, with light snow then a modest glaze of ice late morning; roads are slick in spots but manageable with treatment, and schools remain on Winter Break with no weather-driven decisions.",
+        "probability": 80,
+        "impact": "Holiday and retail travel are slower and somewhat hazardous on secondary roads and bridges, but there is no operational impact on Rockford schools."
       },
       {
-        "scenario": "Storm trends slightly colder and earlier, with snow/freezing rain arriving by 06:00–07:00, creating icy conditions before the normal bus window (hypothetical normal school day).",
+        "scenario": "Ice accretion is somewhat worse than forecast (earlier onset, heavier freezing rain), causing more widespread slick roads and some minor accidents.",
         "probability": 15,
-        "impact": "If this were a regular school day, an earlier onset plus more ice could push historical/meteorological closure probabilities into the 40–60% range. In reality, with Winter Break in effect, the main impact is on holiday travel and daytime activities, not school operations."
+        "impact": "Significant travel disruptions for holiday traffic and possible event cancellations, but still no school-day closure since district is on break; facilities or athletic events might be adjusted."
       },
       {
-        "scenario": "System underperforms; mixed precip is lighter, arrival is closer to late morning, and freezing rain is brief with minimal glaze.",
-        "probability": 40,
-        "impact": "Roads become only marginally slick in spots, main routes stay largely wet where treated, and holiday travelers experience slower speeds but few major issues. Even on a regular school day this would almost certainly not warrant a closure, reinforcing the low snow-day probability."
-      },
-      {
-        "scenario": "System overperforms into a localized ice storm with >0.25\" ice, leading to power outages and tree/line damage in parts of West Michigan.",
+        "scenario": "Either the calendar information is wrong or the district had a special session planned, and icing coincides with the morning commute strongly enough to justify a last‑minute weather closure or delay.",
         "probability": 5,
-        "impact": "Significant travel disruption, hazardous roads, and infrastructure issues could occur. On a normal school day this would likely produce widespread closures. With Winter Break, the impact shifts to emergency response and public safety rather than school cancellation, though some districts might *post* closure messages for clarity."
+        "impact": "This would create an actual ‘snow/ice day’ and invalidate the core assumption that Dec. 26 is a non-school day; impact would be moderate due to ice but still not a major regional disaster."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "No snow-day decision is required for Rockford on Friday, Dec. 26, 2025, because the district is already closed for Winter Break.",
-        "If any staff trainings, athletics, or optional programs are scheduled on campus, treat **11:00–15:00** as a higher-risk travel window; consider delaying, moving to virtual, or cancelling if freezing rain verifies.",
-        "Communicate to staff, families, and activity organizers that **late-morning through early-afternoon travel may be icy**, even though there is no school, and encourage flexibility for any optional events.",
-        "Coordinate with facilities and maintenance teams to pre-treat key surfaces (parking lots, main walks, steps, ramps) early Friday morning before precip starts, especially if buildings will be accessed for athletics or community events."
+        "No snow-day decision is required for Friday, Dec. 26, 2025, because Rockford Public Schools are already closed for Winter Break.",
+        "Use this event as a real-world drill opportunity: review how you would respond if similar timing/icing occurred on an actual school day (considering potential for delays or early dismissal rather than automatic full closure).",
+        "If any facilities, athletics, or staff workdays are scheduled, plan for extra salting/sanding of parking lots, sidewalks, and steps late Thursday night and again mid-morning Friday before and during the freezing-rain window.",
+        "Communicate caution to staff or students participating in optional activities (practices, rehearsals, tournaments) about potentially slick travel late morning through early afternoon."
       ],
       "for_residents": [
-        "Plan essential driving for earlier in the morning or later in the afternoon/evening when possible; the **riskiest window is roughly 11:00–13:00** while freezing rain is most likely.",
-        "Use caution on untreated surfaces—driveways, sidewalks, steps, and side streets may develop a thin, hard-to-see glaze; walk slowly and use handrails where available.",
-        "If you must travel during the late-morning/early-afternoon window, reduce speed, increase following distance, and avoid sudden braking or sharp turns, especially on bridges and overpasses.",
-        "Monitor local updates from the National Weather Service Grand Rapids and road commissions Thursday night and Friday morning for any change in timing or severity of the freezing rain.",
-        "Ensure vehicles are winter-ready (good tires, adequate windshield washer fluid, ice scraper, emergency kit) since conditions could deteriorate quickly once freezing rain begins."
+        "Plan for potentially slick travel between about 9 AM and 1 PM on Friday due to light snow followed by freezing rain; avoid unnecessary driving during the peak icing period if possible.",
+        "Give yourself extra time, increase following distances, and use main treated routes rather than untreated side streets and hills.",
+        "Be cautious on sidewalks, driveways, and porches—black ice is possible near 30–32°F even when it just looks wet.",
+        "If traveling longer distances in lower Michigan, check updated MDOT and local advisories, as icing may be worse in some corridors (especially bridges and overpasses)."
       ],
       "for_authorities": [
-        "Use the dry overnight window to **pre-treat primary and secondary routes** before precip onset; prioritize bridges, overpasses, hills, and known trouble spots.",
-        "Stage crews to respond quickly during the **11:00–13:00** window when freezing rain and rapid glazing are most likely; consider proactive salting just ahead of the main band where feasible.",
-        "Coordinate messaging with local media and social channels to emphasize that **Friday’s primary hazard is freezing rain and ice**, not heavy snow, and that the worst travel is likely late morning through early afternoon.",
-        "Monitor observed surface temperatures and pavement sensors closely; if temps stay below freezing longer than expected, extend icing precautions further into the afternoon.",
-        "If any widespread power outages or tree/line damage begin to appear, be prepared to shift from routine winter ops to **emergency response coordination** with utilities and public safety agencies."
+        "Schedule road crews to pre-treat primary routes overnight and be ready for reapplication mid-morning as precipitation transitions from snow to freezing rain.",
+        "Prioritize salting/sanding bridges, overpasses, hills, and known trouble spots before 10 AM and again as freezing rain begins.",
+        "Coordinate with law enforcement and emergency services to monitor crash hotspots and adjust treatment accordingly during the 9 AM–1 PM window.",
+        "Use social and web channels Friday morning to emphasize that while schools are on break, roads may become slick, particularly for holiday and retail traffic, and encourage staggered or delayed travel where feasible."
       ]
     },
     "updates_needed": false,
     "next_evaluation_time": "2025-12-26T09:00:00-05:00"
   },
-  "timestamp": "2025-12-25T14:05:30.559Z",
+  "timestamp": "2025-12-25T18:13:40.125Z",
   "targetDate": "2025-12-26",
   "targetDayName": "Friday",
   "daysAhead": 1,
@@ -240,43 +250,43 @@
       "lat": 43.1152000427246,
       "lon": -85.5136032104492,
       "tz_id": "America/Detroit",
-      "localtime_epoch": 1766671459,
-      "localtime": "2025-12-25 09:04"
+      "localtime_epoch": 1766686379,
+      "localtime": "2025-12-25 13:12"
     },
     "current": {
-      "last_updated_epoch": 1766671200,
-      "last_updated": "2025-12-25 09:00",
-      "temp_c": 0.4,
-      "temp_f": 32.7,
+      "last_updated_epoch": 1766685600,
+      "last_updated": "2025-12-25 13:00",
+      "temp_c": 2.8,
+      "temp_f": 37,
       "is_day": 1,
       "condition": {
-        "text": "Overcast",
-        "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-        "code": 1009
+        "text": "Partly cloudy",
+        "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+        "code": 1003
       },
-      "wind_mph": 6.3,
-      "wind_kph": 10.1,
-      "wind_degree": 6,
-      "wind_dir": "N",
-      "pressure_mb": 1021,
-      "pressure_in": 30.16,
+      "wind_mph": 12.5,
+      "wind_kph": 20.2,
+      "wind_degree": 55,
+      "wind_dir": "NE",
+      "pressure_mb": 1023,
+      "pressure_in": 30.2,
       "precip_mm": 0,
       "precip_in": 0,
-      "humidity": 88,
-      "cloud": 100,
-      "feelslike_c": -2.9,
-      "feelslike_f": 26.9,
-      "windchill_c": -2.8,
-      "windchill_f": 27,
-      "heatindex_c": 1.2,
-      "heatindex_f": 34.1,
-      "dewpoint_c": 0.3,
-      "dewpoint_f": 32.6,
-      "vis_km": 11,
-      "vis_miles": 6,
-      "uv": 0.1,
-      "gust_mph": 11.8,
-      "gust_kph": 19
+      "humidity": 72,
+      "cloud": 75,
+      "feelslike_c": -1.7,
+      "feelslike_f": 28.9,
+      "windchill_c": -2.6,
+      "windchill_f": 27.3,
+      "heatindex_c": 2,
+      "heatindex_f": 35.6,
+      "dewpoint_c": 0,
+      "dewpoint_f": 31.9,
+      "vis_km": 16,
+      "vis_miles": 9,
+      "uv": 1.2,
+      "gust_mph": 15.9,
+      "gust_kph": 25.6
     },
     "forecast": {
       "forecastday": [
@@ -683,11 +693,11 @@
             {
               "time_epoch": 1766671200,
               "time": "2025-12-25 09:00",
-              "temp_c": 0.4,
-              "temp_f": 32.7,
+              "temp_c": 1.2,
+              "temp_f": 34.1,
               "is_day": 1,
               "condition": {
-                "text": "Overcast",
+                "text": "Overcast ",
                 "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
                 "code": 1009
               },
@@ -695,12 +705,12 @@
               "wind_kph": 10.1,
               "wind_degree": 6,
               "wind_dir": "N",
-              "pressure_mb": 1021,
-              "pressure_in": 30.16,
+              "pressure_mb": 1023,
+              "pressure_in": 30.2,
               "precip_mm": 0,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 88,
+              "humidity": 93,
               "cloud": 100,
               "feelslike_c": -2.8,
               "feelslike_f": 27,
@@ -714,7 +724,7 @@
               "chance_of_rain": 0,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 11,
+              "vis_km": 10,
               "vis_miles": 6,
               "gust_mph": 11.8,
               "gust_kph": 19,
@@ -843,25 +853,25 @@
             {
               "time_epoch": 1766685600,
               "time": "2025-12-25 13:00",
-              "temp_c": 2,
-              "temp_f": 35.6,
+              "temp_c": 2.8,
+              "temp_f": 37,
               "is_day": 1,
               "condition": {
-                "text": "Cloudy ",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/119.png",
-                "code": 1006
+                "text": "Partly cloudy",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+                "code": 1003
               },
               "wind_mph": 12.5,
               "wind_kph": 20.2,
               "wind_degree": 55,
               "wind_dir": "NE",
-              "pressure_mb": 1024,
-              "pressure_in": 30.24,
+              "pressure_mb": 1023,
+              "pressure_in": 30.2,
               "precip_mm": 0,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 86,
-              "cloud": 84,
+              "humidity": 72,
+              "cloud": 75,
               "feelslike_c": -2.6,
               "feelslike_f": 27.3,
               "windchill_c": -2.6,
@@ -874,8 +884,8 @@
               "chance_of_rain": 0,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 10,
-              "vis_miles": 6,
+              "vis_km": 16,
+              "vis_miles": 9,
               "gust_mph": 15.9,
               "gust_kph": 25.6,
               "uv": 1.2
