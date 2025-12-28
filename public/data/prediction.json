@@ -1,8 +1,8 @@
 {
   "meteorology": {
     "temperature_analysis": {
-      "current_temp_f": 39.1,
-      "overnight_low_f": 20.9,
+      "current_temp_f": 42.1,
+      "overnight_low_f": 20.5,
       "morning_high_f": 30,
       "freezing_hours": 22,
       "temperature_trend": "falling",
@@ -11,13 +11,13 @@
     "precipitation_analysis": {
       "snow_probability_overnight": 85,
       "snow_probability_morning": 90,
-      "total_snowfall_inches": 3.5,
+      "total_snowfall_inches": 3,
       "snowfall_rate_peak": 1,
-      "precipitation_type": "mixed"
+      "precipitation_type": "snow"
     },
     "wind_analysis": {
       "max_wind_speed_mph": 31.5,
-      "wind_direction": "WNW",
+      "wind_direction": "W to NW",
       "sustained_winds_mph": 25,
       "wind_chill_impact": true
     },
@@ -27,70 +27,65 @@
       "visibility_factors": [
         "heavy blowing snow",
         "falling snow",
-        "sleet",
-        "fog",
-        "nighttime darkness during onset"
+        "lake-effect bands",
+        "low clouds/precipitation"
       ]
     },
     "alert_summary": [
       {
-        "type": "Winter Storm Watch",
-        "severity": "Severe",
-        "description": "NWS calling for 4–7\" of snow with winds gusting to 60 mph; whiteout conditions possible and both Monday AM and PM commutes potentially treacherous."
-      },
-      {
-        "type": "High Wind Watch",
-        "severity": "Severe",
-        "description": "Potential for west winds 25–35 mph with gusts to 60 mph; hazardous travel and possible power outages."
-      },
-      {
         "type": "Winter Weather Advisory",
         "severity": "Moderate",
-        "description": "Light icing ahead of the storm and difficult travel conditions possible in adjacent counties."
+        "description": "2–5\" snow with blowing snow; winds gusting up to ~55 mph; slippery roads and reduced visibility likely for both morning and evening commute."
+      },
+      {
+        "type": "Winter Storm Warning (nearby counties including Newaygo, Ottawa, Muskegon, etc.)",
+        "severity": "Severe",
+        "description": "4–8\" snow with significant blowing/drifting and whiteout conditions at times; travel may become treacherous, especially in heavier lake-effect bands."
       }
     ],
-    "overall_conditions_summary": "A strong storm transitions Rockford from heavy rain Sunday night to sleet and then heavy, wind‑driven snow through Monday. Temperatures crash from upper 30s around midnight to the 20s by the Monday morning commute, with road surfaces near or below freezing for most of the school day. Between roughly 2–8 AM, mixed sleet and snow with 25–35 mph WSW winds and gusts near 40–45 mph will create rapidly deteriorating road conditions, with visibility dropping to near zero at times from 3–noon due to blowing snow. Snow and blowing snow continue into the afternoon and evening with wind chills near or below 10°F and ongoing whiteout‑type bursts. Although liquid QPF is very high (1.6–1.7\"), model‑derived snow totals (about 3–4\" in this specific hourly dataset) may be underdoing accumulation given the NWS Winter Storm Watch calling for 4–7\" plus 50–60 mph gusts along and west of US‑131. For a West Michigan district with high snow tolerance, the main closure drivers are: (1) timing squarely hitting the Monday morning start and afternoon release, (2) combination of snow + wind producing whiteouts and drifting, and (3) active Winter Storm Watch for Kent County. Overall this setup strongly favors widespread school impacts. Likely outcome: Rockford Public Schools has a HIGH likelihood of at least a full snow day on Monday, Dec 29, with a small chance of an early dismissal scenario if they attempted to open; closure probability is in the 80–90% range given current data."
+    "overall_conditions_summary": "For Rockford (Kent County) on Monday, December 29, 2025, a strong system transitions from heavy rain to sleet and then snow overnight. Temperatures fall from the upper 30s around midnight to the 20s by the morning commute, with wind chills near or below 0°F at times. From roughly 2–4 AM, rain changes to sleet and then snow as temps drop below freezing. Between about 3 AM and early afternoon, very strong WSW–W winds (sustained 25–30 mph, gusts potentially 45–55 mph per NWS), combined with snow and existing wet surfaces, will create rapidly deteriorating road conditions: flash freeze potential, drifting, and locally whiteout-level visibility (forecast vis often at or near 0 miles from about 3 AM through midday). Total new snow for Rockford looks on the order of 2–4\" (advisory-level), but nearby counties under Winter Storm Warnings will see heavier amounts. In a Michigan context, the snowfall amount alone is not extreme, but the combination of: (1) overnight rain changing to snow/flash freeze right into the start of the day, (2) very strong winds causing blowing and drifting, (3) visibility frequently below 1 mile and at times near zero, and (4) an active Winter Weather Advisory specifically mentioning impacts to both the Monday morning and evening commutes, all points to a high risk of dangerous travel during normal school start times.\n\nGiven Michigan’s high tolerance for snow but low tolerance for ice + whiteout/blowing conditions during commute hours, these conditions are favorable for significant disruptions. Based on this forecast setup, the probability of a full snow day (closure) for Rockford-area schools on Monday, 2025-12-29 is **high (around 70–80%)**, with an additional chance of at least a **delay** if they do not fully close. The main drivers are hazardous roads from pre-dawn through midday, strong winds, and very poor visibility rather than extreme snow totals alone."
   },
   "history": {
     "similar_weather_patterns": [
       {
-        "pattern_description": "Wind-driven snow with 35–45+ mph gusts, temps in the 20s, visibility near zero at times, but total snow in the 3–6\" range and not extreme cold",
-        "historical_snow_day_rate": 0.5,
+        "pattern_description": "Strong clipper/lake-effect event with 2–5\" total snow, temps in the 20s, and frequent 35–45 mph gusts causing blowing/drifting and sub‑mile visibility during both commutes under a Winter Weather Advisory for Kent County, with nearby Winter Storm Warnings along the lake and just north/west",
+        "historical_snow_day_rate": 0.55,
         "confidence_level": "medium"
       },
       {
-        "pattern_description": "Winter storm watch the day before, heavy mixed precip overnight (rain → sleet → snow), rapidly falling temps during commute, hazardous bridges/overpasses",
+        "pattern_description": "High‑wind, marginal‑temp transition from rain to snow overnight, with roads starting wet and freezing toward the morning drive, advisory‑level snow (2–4\") plus 45–55 mph gusts producing rapid drops in visibility and scattered power/tree issues",
         "historical_snow_day_rate": 0.6,
         "confidence_level": "medium"
       },
       {
-        "pattern_description": "High-wind event with scattered tree limb damage and power outages, blowing/drifting snow but marginal accumulations in Kent County compared to lakeshore",
-        "historical_snow_day_rate": 0.3,
+        "pattern_description": "Late‑December event with moderate system snow plus intense lake‑effect enhancement west of US‑131, leading to highly variable banding—some zones near warning area verify near 5\"+ with whiteout bursts while others stay closer to 2\" but share the same 40–50 mph gusts",
+        "historical_snow_day_rate": 0.5,
         "confidence_level": "low"
       }
     ],
     "seasonal_context": {
-      "typical_conditions_for_date": "Late December in west-central Michigan (Kent County / Rockford) is peak winter-storm season. Climatologically, daytime highs are often upper 20s to lower 30s °F with frequent clipper systems, lake-effect bands, and occasional stronger synoptic storms. Mixed-precip events (rain to freezing rain to snow) and rapidly falling temperatures on the backside of a low are quite common this week of the year.",
+      "typical_conditions_for_date": "For Rockford and greater Kent County in late December, it is common to have snow on the ground, occasional lake‑effect bands, and routine light to moderate snow events. However, school closures historically tend to align with either (a) true blizzard/near‑blizzard conditions with persistent whiteouts or heavier totals (often 6–10\"+ with poor timing), (b) significant icing, or (c) extreme cold with wind chills below about -15°F. Advisory‑level 2–4\" events with 30–40 mph gusts occur multiple times most winters and do not automatically produce a snow day unless timing, visibility, and road prep all line up poorly.",
       "unusual_factors": [
-        "Forecast gusts near 55–60 mph are on the high side even for strong winter systems and raise concern for downed limbs and localized outages.",
-        "Forecast guidance is advertising very low visibilities (often 0–1 mile, sometimes effectively near whiteout) from roughly 3–14 UTC (10 PM–9 AM) Monday with sustained 25–30+ mph winds and blowing snow.",
-        "Modeled liquid equivalent (around 1.6–1.7\" on Monday with only around 1\" of modeled snow depth) suggests the guidance may be under-resolving snow accumulation potential given a rain→sleet→snow changeover; actual snow totals could end up in the mid single digits if the cold air undercuts faster."
+        "NWS has issued a Winter Weather Advisory specifically for Kent County highlighting 2–5\" totals, blowing snow, and gusts up to ~55 mph, which is on the higher end for typical advisory events.",
+        "Forecast guidance shows near‑zero modeled visibility for many morning and midday hours on December 29, indicating potential for whiteout‑like conditions even though total snowfall is not exceptionally high.",
+        "The event is synoptic snow transitioning into heavy lake‑effect/wrap‑around with very strong winds, which tends to produce rapidly changing, locally severe road conditions—especially on north–south and west–east rural routes and open stretches near US‑131."
       ],
       "seasonal_probability_adjustment": 0.15
     },
     "location_specific_factors": {
       "local_microclimates": [
-        "Rockford sits just inland from Lake Michigan influence but still within the west-michigan snowbelt; west/northwest flow behind a strong low often produces enhanced lake-effect and blowing/drifting issues on open stretches of US‑131 and local rural roads.",
-        "The Grand River and hilly terrain north of Grand Rapids can locally worsen drifting and reduce visibility near open fields compared to the urban core."
+        "Rockford sits in northern Kent County, close enough to the enhanced lake‑effect corridor coming off Lake Michigan that banding can push local totals toward the high end of a 2–5\" advisory, even when modeled grid totals look modest.",
+        "Rural roads, open fields, and higher spots north and east of Grand Rapids are prone to drifting and ground blizzards when west–northwest winds gust over 40 mph, even with relatively modest new snowfall.",
+        "Lake‑effect band placement is notoriously variable here; some years Rockford ends up in near‑warning conditions while official products still carry only an advisory for the county as a whole."
       ],
       "infrastructure_considerations": [
-        "Road crews in Kent County are experienced and well-resourced; 4–7\" type events alone are usually handled without a snow day unless timing is squarely on the morning commute or accompanied by ice or high winds.",
-        "Districts in this area have historically been more sensitive to combinations of high wind plus snow/ice (downed limbs, spotty outages, blocked rural roads, whiteouts) than to snow totals alone.",
-        "Bus routes that include rural, open-country roads north and east of Rockford are particularly vulnerable to drifting and low visibility with west/northwest winds of 30–40 mph."
+        "Kent County Road Commission and local municipalities are well‑equipped for winter events and can generally manage 2–5\" events overnight if winds and visibility allow crews to keep up.",
+        "However, events starting as rain then flipping to snow around/before the morning commute can leave an icy base under drifting snow, especially on side roads, hills, bridges, and neighborhood streets feeding into Rockford Public Schools bus routes.",
+        "Frequent 40–50+ mph gusts raise the risk of scattered power outages and downed branches, which sometimes leads districts to cancel or delay even if pure snow totals are not extraordinary."
       ],
-      "elevation_impact": "Rockford’s slightly higher terrain than downtown Grand Rapids can see marginally more snow and blowing/drifting under W–NW flow, but it is not mountainous; effects are modest, more about open exposure than elevation itself."
+      "elevation_impact": "Rockford’s slightly higher elevation relative to downtown Grand Rapids and its proximity to the lake‑effect axis can enhance localized snowfall rates and drifting versus areas farther inland or south, especially with strong W–NW flow."
     },
-    "confidence_assessment": "Based on the provided forecast and how schools in west Michigan historically respond, this setup checks several of the classic closure boxes even though pure snowfall totals may not be extreme. Key ingredients for Rockford on Monday, December 29, 2025: (1) Hazardous timing: The transition from rain/sleet to heavy, wind-driven snow with rapidly deteriorating visibility is forecast for roughly 2–8 AM, carrying directly into the 6–9 AM school-transport window. Many hourly periods in that window show ‘blowing snow’ with modeled visibilities effectively near zero, temps around 28–30 °F, and sustained winds near 30 mph with gusts in the 40–45+ mph range. Historically, when roads are actively being glazed and drifted at bus time rather than merely snow-covered from an earlier storm, Rockford and neighboring districts have leaned toward closures or at least delays. (2) Wind and whiteout risk: A Winter Storm Watch and High Wind Watch with potential gusts up to around 60 mph and language about whiteout, treacherous, and potentially life-threatening travel is very similar to past events that produced widespread closures across Kent and adjacent counties, even when final storm totals verified in the 3–6\" range rather than a blockbuster 10\"+. In this region, ‘blizzard-like’ conditions (near-zero visibility and drifting) have been a more reliable closure driver than depth alone. (3) Snow and ice combination: The forecast shows a warm, rainy lead‑in on Sunday with temps in the 40s and saturated surfaces, followed by a sharp overnight temperature drop into the 20s as precipitation flips to sleet then snow. This pattern often yields a thin underlying ice layer and very slick bridges/overpasses under the fresh snow and drifting. Events with this structure in late December have historically caused notable problems on US‑131 and secondary roads for the morning commute. (4) Cold but not extreme: Wind chills in the single digits to around -10 °F are uncomfortable but well above the -15 °F threshold that sometimes triggers closures in Michigan solely for cold. So in this case, cold is a contributing hazard (especially with wind) but probably not the primary closure driver. (5) Michigan decision culture: For west Michigan, including Kent County, a typical 4–7\" system with moderate winds and decent plow lead time does not reliably close schools. However, when a Winter Storm/High Wind headline explicitly highlights whiteouts, treacherous travel, dangerous morning commute impacts, and potential tree/line damage, districts in this corridor often move into ‘high likelihood’ closure territory—especially for a Monday where staff and students might already be on heightened alert from media coverage. Overall, using comparable late-December storms in west-central Michigan (synoptic snow plus lake enhancement, 35–45+ mph gusts, snow totals in the mid single digits, poor visibility at bus time), Rockford’s historical closure rate is meaningfully above average. Adjusting for the strong wording in the NWS watch and the direct hit on the morning commute, the probability of a snow day (full closure or at least widespread closures across the area) appears higher than in a routine event. Confidence is moderated by: (a) guidance uncertainty in exact snow totals and timing of the rain→snow flip, (b) the possibility that heaviest snow bands set up slightly north or west, leaving Rockford in more of a high‑wind / low‑snow scenario, and (c) the district’s demonstrated ability to operate in non‑zero‑visibility but still messy conditions if plows keep up. Nonetheless, from a historical-pattern standpoint, this is the type of system that has often produced a substantial number of closures in Kent County and neighboring snowbelt districts when it verifies as advertised."
+    "confidence_assessment": "Based on the provided forecast and historical behavior of districts in this part of Michigan, the pattern for Monday, December 29, 2025, aligns with some of the more disruptive late‑December advisory/warning events that have produced closures in the Rockford/Kent County area in past years—even when pure snow totals were only in the 3–5\" range. Key risk factors include: (1) timing—snow, sleet, and then blowing snow ramping up between roughly 2–8 AM during bus and commuter hours; (2) strong winds—frequent gusts near 40–45 mph, locally higher, capable of creating ground blizzard conditions and dropped visibilities under a mile (the gridded forecast is showing near‑zero visibility for many morning and midday hours); (3) a wet‑to‑frozen transition that can create an icy substrate before snow begins drifting; and (4) official NWS messaging calling out impacts to both the Monday morning and evening commutes in Kent County, while counties just west and north are already under Winter Storm Warnings. Historically in this corridor, districts like Rockford do not close for 2–4\" of snow alone, but they are much more likely to cancel or at least strongly consider it when advisory/near‑warning winds, blowing/drifting, and sub‑mile visibilities coincide with the morning commute. Taking all that into account, this setup looks historically similar to events where Rockford and nearby districts close roughly half the time. Conditions are marginal for a full‑day closure on snowfall alone but solidly in the range where a snow day or, at minimum, a delay becomes a realistic outcome, especially if overnight banding focuses over northern Kent County or if the worst visibility lines up squarely with the 6–9 AM window."
   },
   "safety": {
     "road_conditions": {
@@ -106,131 +101,146 @@
       "emergency_access_concern": true
     },
     "timing_analysis": {
-      "worst_conditions_start_time": "2025-12-29T03:00:00-05:00",
-      "worst_conditions_end_time": "2025-12-29T18:00:00-05:00",
+      "worst_conditions_start_time": "2025-12-29T02:00:00-05:00",
+      "worst_conditions_end_time": "2025-12-29T13:00:00-05:00",
       "morning_commute_impact": "severe",
-      "afternoon_impact": "severe"
+      "afternoon_impact": "significant"
     },
     "safety_recommendations": [
-      "Assume high likelihood of full closure for Rockford-area schools on Monday, 2025-12-29, given Winter Storm Watch, 4–7\" potential snow, and gusts near 60 mph during school hours.",
-      "Avoid transporting students during 6–9 AM: forecast shows blowing snow, near-freezing temps, and 30–40+ mph winds with near-zero visibility, creating whiteout potential despite Michigan plow capabilities.",
-      "Expect very poor visibility and drifting on both primary and secondary roads; even if plows keep highways passable, rural and subdivision routes will be hazardous for buses and teen drivers.",
-      "Prepare for slick/icy surfaces on bridges, overpasses, and untreated parking lots/sidewalks as temps fall from rain/sleet around 32°F into the 20s with heavy wind.",
-      "Plan for possible power outages and fallen tree branches impacting signals and blocked local streets; coordinate with emergency management and utilities overnight.",
-      "If any in-person operations are attempted, enforce strict speed reductions, staggered starts, and consider limiting to essential staff only; do not run normal bus routes during the peak of the storm.",
-      "Monitor NWS overnight updates: if the Watch is upgraded to a Warning with similar timing, treat that as a strong confirmation of the need to cancel classes for safety.",
-      "Communicate early (Sunday evening) that Monday travel may be treacherous to allow families to plan for likely closure or remote learning options."
+      "Expect a rapid change from heavy rain to sleet and snow between about 2:00–4:00 AM, with temps falling to around 29°F; refreeze and flash-ice potential on any untreated surfaces is high.",
+      "Wind gusts 30–40+ mph with blowing snow and forecast visibility near zero through at least late morning create a high risk of whiteout conditions on open stretches and rural routes.",
+      "NWS products (Winter Weather Advisory for Kent County and nearby, Winter Storm Warning just to the west/northwest) explicitly mention hazardous conditions impacting the Monday morning and evening commutes; districts should treat this as a strong signal to consider closure or at minimum a full-system delay.",
+      "Even with Michigan’s robust plow operations, continuous precip, strong winds, and near-zero visibility from 3:00–9:00 AM mean plows will struggle to keep secondary roads, bridges, and overpasses in good condition for a 6–8 AM school commute.",
+      "Sidewalks, bus stops, and parking lots are likely to be very slick from the overnight rain-to-snow transition and subsequent drifting; extra time and staffing would be needed to salt/sand and clear them before arrival.",
+      "If school operates, consider cancelling all early-morning activities, delaying start well past 9:30–10:00 AM, and coordinating closely with road commissions and law enforcement on whiteout-prone corridors."
     ],
     "risk_level": "severe"
   },
   "news": {
     "local_news": [
       {
-        "source": "Rockford Public Schools – District Academic Calendar",
-        "headline": "NO SCHOOL – Winter Break through Jan. 2; School Resumes Jan. 5",
-        "summary": "The Rockford Public Schools academic calendar shows Dec. 22–31, 2025 as NO SCHOOL – Winter Break, with a specific listing for Monday, Dec. 29, 2025 as “NO SCHOOL – Winter Break.” A separate event notes that school resumes on Jan. 5, 2026. This indicates that there are no classes scheduled on Monday, Dec. 29 for calendar reasons, not weather.",
+        "source": "The Weather Channel forecast for Rockford, MI",
+        "headline": "Winter Weather Advisory / Potential Winter Storm for Monday, Dec. 29",
+        "summary": "Forecast for Rockford (ZIP 49341) shows a Winter Weather Advisory with rain changing to snow late Sunday, followed by windy, snowy conditions Monday, Dec. 29. High around 29°F with strong NW winds (25–40 mph, gusts possibly higher), 80% chance of snow and around 1\" new accumulation plus blowing/drifting concerns. Travel may be difficult during the Monday morning period, but current projections show relatively modest snow totals near Rockford.",
+        "relevance": "high",
+        "url": "https://weather.com/weather/tenday/l/5d3d2c1c6c54103d65868400e859cd86c56f1f3e1529a2eb9b57d5150164c067"
+      },
+      {
+        "source": "Record Patriot / Michigan’s Thumb regional coverage",
+        "headline": "Lake Michigan coastal counties in for another winter storm Dec. 28–29",
+        "summary": "NWS graphic and analysis highlight another winter storm impacting the Great Lakes Dec. 28–29. Coastal Lake Michigan counties and snow belts of Lower Michigan are favored for heavier snow and blowing snow, with rain changing to snow Sunday night into Monday. West Michigan, including the Grand Rapids region, is in the zone for accumulating lake‑effect snow and hazardous travel, especially Monday morning.",
+        "relevance": "high",
+        "url": "https://www.recordpatriot.com/news/article/lake-michigan-coastal-counties-another-winter-21263047.php"
+      },
+      {
+        "source": "Record Patriot / Big Rapids News (NWS‑based)",
+        "headline": "Winter storm watches, advisories issued for Michigan; 3–6\" lake‑effect and 55 mph winds in West Michigan",
+        "summary": "A statewide piece notes winter storm watches across the west side of Michigan. For West Michigan, including areas near Grand Rapids and Big Rapids, forecast calls for roughly 3–5\" of snow in some inland locations with strong winds up to ~55 mph, leading to blowing/drifting snow and hazardous Monday travel. East of US‑127 amounts drop to about 1–3\".",
+        "relevance": "high",
+        "url": "https://www.bigrapidsnews.com/news/article/michigan-winter-storm-blizzard-winds-december-28-21264058.php"
+      },
+      {
+        "source": "Michigan’s Thumb / regional NWS roundup",
+        "headline": "Whiteouts, drifting snow, dangerous travel expected in parts of Michigan Dec. 29–30",
+        "summary": "Follow‑up NWS‑based story notes that northern Lake Michigan coastal counties have been upgraded from watches to winter storm warnings for Dec. 29–30 with whiteouts and dangerous travel. While this focuses on Manistee, Benzie, Mason and other northern counties, it reinforces that Monday’s system is significant statewide, with especially hazardous conditions in the lake‑effect belts.",
+        "relevance": "medium",
+        "url": "https://www.michigansthumb.com/news/article/storm-alerts-whiteouts-drifting-snow-dangerous-21264040.php"
+      },
+      {
+        "source": "Rockford Public Schools official site",
+        "headline": "District Academic Calendar – NO SCHOOL (Winter Break) Dec. 22, 2025 – Jan. 2, 2026",
+        "summary": "The official Rockford Public Schools academic calendar lists Dec. 22–31, 2025, as \"NO SCHOOL – Winter Break.\" An upcoming events banner shows \"NO SCHOOL – Winter Break\" running Dec. 29, 2025 through Jan. 2, 2026, with school resuming Jan. 5, 2026. This means there is no regular session on Monday, Dec. 29 regardless of weather, so a traditional \"snow day\" closure decision is not expected for that date.",
         "relevance": "high",
         "url": "https://www.rockfordschools.org/academics/"
-      },
-      {
-        "source": "Forest Hills Public Schools (Grand Rapids area) – District Site",
-        "headline": "Regular district news; no weather-related closure notice for Dec. 29, 2025",
-        "summary": "The Forest Hills Public Schools news page lists items about a Dec. 17 aquatic center groundbreaking and other general announcements but has no alerts or notices about weather-related closures or delays around Dec. 29, 2025.",
-        "relevance": "medium",
-        "url": "https://www.fhps.net/"
-      },
-      {
-        "source": "Forest Hills School District (out of state, not MI) – Events",
-        "headline": "Christmas/New Year Break listed through Dec. 29",
-        "summary": "An out-of-state Forest Hills School District events page shows “Christmas/New Year Break” running through Dec. 29. This is not the Forest Hills district near Rockford, MI but confirms that many districts nationally are on winter break that week rather than making weather-based closure calls.",
-        "relevance": "low",
-        "url": "https://www.fhrangers.org/apps/events/"
       }
     ],
     "school_district_signals": {
       "official_announcements": [
-        "Rockford Public Schools’ official academic calendar explicitly labels Monday, Dec. 29, 2025 as “NO SCHOOL – Winter Break,” with winter break spanning Dec. 22, 2025 through Jan. 2, 2026, and school resuming Jan. 5, 2026.",
-        "No separate Rockford Public Schools alert, banner, or social media post was found that suggests a weather-related closure, delay, or e-learning day specifically for Monday, Dec. 29, 2025.",
-        "Forest Hills Public Schools (neighbor district) shows only standard district news and does not display any weather/emergency closure alert for Dec. 29, 2025 on its main site."
+        "Rockford Public Schools’ academic calendar explicitly marks Monday, Dec. 29, 2025 as \"NO SCHOOL – Winter Break\" with winter break running Dec. 22, 2025 through Jan. 2, 2026; school resumes Jan. 5, 2026. No separate weather‑related closure or delay notices are posted for Dec. 29, likely because school is already not in session.",
+        "Cedar Springs Public Schools’ elementary calendar also shows Dec. 19, 2025 – Jan. 2, 2026 as Winter Break, including Monday, Dec. 29, indicating that district is not in session either.",
+        "No current weather‑related closure, delay, or \"all activities cancelled\" announcements were found on Kent ISD’s main site or the most visible public pages for Forest Hills, Sparta, Lowell, or Greenville for Monday, Dec. 29; most districts in the region appear to be in winter break during this period."
       ],
       "early_dismissal_history": false,
       "neighboring_district_closures": [
-        "No evidence found that Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, or Kent ISD have announced weather-related closures or delays for Monday, Dec. 29, 2025; several districts in the region appear to be on scheduled winter break during that week."
+        "Cedar Springs Public Schools: Winter Break listed for Dec. 19, 2025 – Jan. 2, 2026, covering Monday, Dec. 29.",
+        "Regional calendars (via GRKids aggregation and district sites) broadly indicate winter break across many Kent ISD districts during the last week of December 2025, so neighboring systems are generally not in session on Dec. 29 either rather than issuing weather closures."
       ]
     },
     "community_intel": {
-      "social_media_sentiment": "no_buzz",
+      "social_media_sentiment": "uncertain",
       "reported_road_conditions": [
-        "No targeted online reports were located indicating widespread hazardous road conditions, major crashes, or severe travel advisories in the Rockford/Kent County area specifically tied to Monday, Dec. 29, 2025.",
-        "No prominent winter storm or blizzard headlines for West Michigan tied to that date appeared on the first-pass search of major local outlets (WOOD TV8, WZZM 13, FOX 17, MLive)."
+        "Forecast guidance for Rockford and the greater Kent County/Grand Rapids area suggests rain changing to snow Sunday evening Dec. 28 with strong WSW to NW winds, potentially gusting 40–50+ mph overnight into Monday. Expect slick, snow‑covered roads early Monday and significant blowing/drifting, especially on open rural stretches north and east of Grand Rapids.",
+        "Regional NWS‑based reporting highlights that lake‑effect bands will likely impact West Michigan Monday with 3–6\" possible in favored belts and hazardous travel, though Rockford‑specific totals look closer to 1–3\" in standard forecasts as of Sunday afternoon, with biggest issue being wind and visibility rather than huge accumulation."
       ],
       "power_outage_reports": false,
       "local_event_cancellations": [
-        "No local Rockford-area event cancellations specifically attributed to winter weather on Monday, Dec. 29, 2025 were found in initial checks of news and community sources."
+        "Consumers Energy’s statewide outage center and map show scattered outages across Michigan but nothing indicating a large, Rockford‑focused outage event tied to this storm as of Sunday afternoon. No major Rockford‑area event or municipal closure notices specific to Dec. 29 weather surfaced in quick scans of local media and utility information."
       ]
     },
-    "key_findings_summary": "For Monday, Dec. 29, 2025, Rockford Public Schools is already scheduled to be on winter break, with the official district academic calendar marking that date as “NO SCHOOL – Winter Break” and indicating that school does not resume until Jan. 5, 2026. This means no separate weather-based closure decision is currently in play for that day. Searches of neighboring districts’ official sites, major local news outlets, and general web results did not surface any weather-related closure alerts, domino-effect closures, or strong community chatter about dangerous conditions or power outages in the Rockford/Kent County area tied specifically to Dec. 29. Overall, the available signals suggest that any lack of school on that Monday is due to the planned break, not to an anticipated snow day or emergency weather closure."
+    "key_findings_summary": "• For Monday, Dec. 29, 2025, Rockford Public Schools are already scheduled to be on Winter Break, with \"NO SCHOOL – Winter Break\" clearly listed on the official district academic calendar, and school not resuming until Jan. 5, 2026. This means no standard snow‑day decision is anticipated for that date; classes are not in session regardless of weather.\n\n• Neighboring districts in Kent ISD (e.g., Cedar Springs) also show Dec. 19, 2025 – Jan. 2, 2026 as Winter Break, so most nearby systems appear to be off on Dec. 29 as well. There are no public, weather‑specific closure announcements for that day – closures are baked into the calendar.\n\n• Weather‑wise, a significant system is crossing Michigan Dec. 28–29. Forecasts and NWS‑based coverage indicate rain changing to snow Sunday night, followed by lake‑effect snow and very strong winds Monday across West Michigan. Rockford’s Monday forecast calls for around an inch of new snow locally but with 25–40 mph NW winds and higher gusts, which can cause blowing/drifting and difficult travel at times, especially in rural areas.\n\n• Regional articles and NWS graphics emphasize heavier snow and even blizzard‑like conditions in some northern Lake Michigan coastal and snow‑belt counties, with winter storm watches/warnings and 3–6\"+ accumulations plus 50–60+ mph gusts there. Rockford is within the broader West Michigan impact zone but not in the bull’s‑eye for the heaviest snow based on current guidance.\n\n• Consumers Energy’s statewide outage tools show typical scattered outages but no evidence (as of Sunday afternoon, Dec. 28) of a large, localized Rockford outage event. No substantial community chatter or official alerts were found that would suggest extraordinary local disruption beyond the expected hazardous winter driving conditions.\n\nNet: Hazardous winter weather is likely around Rockford on Monday, Dec. 29, with strong winds and some snow, but Rockford Public Schools and most neighbors are already on winter break, so there is effectively no separate snow‑day decision in play for that date."
   },
   "final": {
     "snow_day_probability": 5,
     "confidence_level": "high",
     "primary_factors": [
-      "Rockford Public Schools calendar shows Dec. 29, 2025 as NO SCHOOL – Winter Break, so no weather-based decision is needed",
-      "No neighboring Kent County districts are issuing weather-related closure alerts for Dec. 29; many are also on break",
-      "Forecast snowfall near 3.5–4\" with strong winds and poor visibility, but this is within Michigan’s operational capabilities and is borderline for a closure if school were in session",
-      "Historical analogs for this type of storm show roughly a 50–60% closure rate when school is scheduled, but that history is irrelevant on a break day",
-      "Safety assessment is severe for travel, yet community/news intel show no active storm headlines or emergency messaging focused on that date"
+      "Rockford Public Schools are already on Winter Break (no classes scheduled on Monday, Dec. 29, 2025)",
+      "Neighboring districts (e.g., Cedar Springs and other Kent ISD schools) are also on Winter Break, so there is no active regional closure decision process",
+      "Meteorological setup features hazardous conditions (flash freeze risk, 2–4\" snow, 40–55 mph gusts, whiteout potential) but snowfall totals are advisory‑level, not a classic Michigan blizzard/ice storm threshold",
+      "Historical data show about a 50–60% closure rate for similar events when school is in session, but that precedent does not apply when the calendar already has NO SCHOOL",
+      "Safety analyst flags severe travel risk during the morning commute window, but this mainly affects any optional activities, staff travel, and residents rather than regular student attendance"
     ],
     "timeline": {
       "conditions_start": "2025-12-29T02:00:00-05:00",
-      "peak_impact_time": "2025-12-29T06:00:00-05:00 to 2025-12-29T18:00:00-05:00",
-      "conditions_improve": "2025-12-29T18:00:00-05:00 to 2025-12-29T22:00:00-05:00"
+      "peak_impact_time": "2025-12-29T03:00:00-05:00 to 2025-12-29T13:00:00-05:00",
+      "conditions_improve": "2025-12-29T13:00:00-05:00 onward, with gradual improvement though blowing/drifting and cold persist into the evening"
     },
-    "decision_rationale": "1. EXPERT AGREEMENT\n- Meteorology, history, and safety all agree this is a significant winter storm: mixed precip changing to snow, falling temps into the 20s, gusts potentially 40–60 mph, whiteout risk, and hazardous travel during both the morning and afternoon windows.\n- They agree timing is bad for a typical school day: worst conditions roughly 3 AM–6 PM, overlapping the entire bus and teen-driver window.\n- All three technical domains flag elevated risks: high ice risk, very poor visibility, drifting, and at least several inches of snow.\n- News Intelligence agrees that there is no active pattern of neighboring districts issuing weather closures for Dec. 29.\n\n2. EXPERT DISAGREEMENTS OR TENSIONS\n- Meteorologist and safety analyst implicitly treat Dec. 29 as a normal school day, giving an 80–90% closure likelihood based purely on weather and safety conditions.\n- Historian echoes: with school in session, this pattern often produces many closures (historical snow-day rate ~50–60% for similar storms).\n- News Intelligence directly contradicts the premise that a weather decision is on the table: Rockford Public Schools’ official calendar marks Dec. 29 as NO SCHOOL – Winter Break, with school not resuming until Jan. 5. Neighboring districts show similar breaks and no weather alerts.\n\n3. PLOW TIMING MATH\n- Worst conditions: ~3:00 AM to ~6:00 PM.\n- School start (if in session) would be ~7:40 AM. By then, snow and blowing snow are ongoing; there is effectively zero-hour gap between meaningful improvement and the start bell.\n- Snow and wind continue through the afternoon, so there’s no clear window for plows to fully “catch up” before either commute.\n- If school WERE in session, this timing strongly favors a closure from a safety perspective.\n\n4. ICE RISK\n- Meteorology: mixed precip (rain → sleet → snow) with temps dropping from upper 30s to the 20s; this setup strongly supports a thin underlying ice layer on roads, bridges, and parking lots.\n- Safety assessment explicitly rates ice formation risk as HIGH and notes very slick bridges/overpasses.\n- Ice plus strong winds and low visibility would normally push the closure probability into the upper Michigan range (≥60%) if classes were scheduled.\n\n5. NEIGHBORING DISTRICTS\n- News Intelligence finds:\n  - Rockford: official calendar shows winter break on Dec. 29; no special weather closure communications.\n  - Forest Hills Public Schools (nearby): no weather-related closure alerts for that date; also appears to be on winter break around then.\n  - Broader Kent County: no evidence of weather-based closure alerts or a domino effect of cancellations for Dec. 29.\n- Therefore, the \"3+ neighboring districts closed\" storm signal is NOT present. The lack of closure chatter is explained by most districts simply being on break, not by benign weather.\n\n6. WHAT WOULD MAKE THIS PREDICTION WRONG?\n- Two key failure modes:\n  (a) Administrative change: If Rockford unexpectedly had a special session, athletic practices, or mandatory in-person events on Dec. 29 that effectively function as school days, then the true ‘snow day’ decision context would exist, and weather-based closure probability would jump toward ~75–85%.\n  (b) Calendar misinterpretation: If the academic calendar or News Intelligence sources were outdated or incorrect and students were, in fact, scheduled for a normal school day on Dec. 29, then the low 5% probability would understate the real risk of a closure.\n- Based on the provided intel, both scenarios look unlikely: the calendar is explicit and marked as official, and no local news indicates school operations on that date.\n\n7. WEIGHTING OF EXPERTS (PER SPECIFIED PERCENTAGES)\n- Meteorology (35% weight): Pure-weather closure likelihood (if school were in session) is very high (≈80–90%) due to timing, wind, and visibility. This pushes the raw weather-based closure tendency strongly upward.\n- Safety (25%): Rates risk as SEVERE, with clear recommendations to avoid student transport during peak hours and to assume a high likelihood of full closure under normal operations. This reinforces the meteorological case for closure if school existed.\n- History (20%): Historical analogs for similar storms show ~50–60% closure rates, plus a 0.15 seasonal adjustment upward because this is classic late-December storm timing. History confirms this is a “closure-type” storm pattern in West Michigan when school is on.\n- News Intelligence (20% – the tie-breaker): Shows decisively that there is:\n  - No scheduled school on Dec. 29 (officially winter break).\n  - No neighboring-district weather closure wave.\n  - No social media buzz or major news coverage framing this as an active school-closure event.\n\n8. SYNTHESIZED DECISION\n- If the question were, “Would Rockford likely close on Dec. 29, 2025, IF school were in session?” the integrated expert signal (strong storm, bad timing, ice, whiteouts, Michigan thresholds) would support roughly a 75–85% closure probability.\n- However, the actual question is: “What is the probability of a WEATHER-BASED SNOW DAY for Rockford on Dec. 29, 2025?” Given the official calendar, there is effectively no opportunity for a snow-day decision; school is already off for winter break.\n- Therefore, the operative probability that students experience a *weather-caused* snow day is very low and mainly tied to tail scenarios where special sessions or miscommunications exist.\n- Balancing all this, I set the snow-day probability at 5% with HIGH confidence. The low number is not because the storm is weak, but because the institutional decision (no school due to break) is already made for non-weather reasons.\n",
+    "decision_rationale": "PRE‑DECISION CHECKLIST\n1. What do all four experts AGREE on?\n- Meteorologist, historian, safety analyst, and news intel all agree that:\n  • A significant winter event will impact Rockford early Monday, Dec. 29, with rain changing to snow overnight.\n  • Temperatures fall below freezing before and during the morning commute window, creating flash‑freeze/ice risk on previously wet surfaces.\n  • Winds are strong (25–30 mph sustained, gusts up to ~45–55 mph) with blowing and drifting snow and periods of very low visibility.\n  • Travel during the early‑morning through late‑morning period will be hazardous, especially on rural and open roads.\n  • Nearby counties to the west/north are under Winter Storm Warnings; Kent County (including Rockford) is under a Winter Weather Advisory.\n  • Crucially: Rockford Public Schools (and most neighboring districts) are on Winter Break on Dec. 29, so there is no normal school day to cancel.\n\n2. Where do they DISAGREE?\n- Meteorologist: Places the *weather‑based* closure probability around 70–80% if school were in session (weighing timing, wind, whiteouts heavily).\n- Historian: Historical analogs give about a 50–60% closure rate for similar events when school is in session.\n- Safety analyst: Rates risk level as \"severe\" for travel, strongly implying that a closure or long delay would be advisable *if* school were scheduled.\n- News intel: Emphasizes that there is NO SCHOOL due to Winter Break, and that neighboring districts are also on break—no live closure choices are being made.\n\nThe only real \"disagreement\" is conceptual: the first three implicitly assume a standard school day is possible; the news intel clarifies that operationally there is no snow‑day decision because the calendar already has no classes.\n\n3. What’s the plow timing math? (hours from snow end to 7:40 AM)\n- Worst conditions: ~2:00 AM – 1:00 PM.\n- Around Rockford, snow and heavy blowing/drifting are ongoing through and beyond the 7:40 AM start‑time proxy.\n- That means there are effectively 0 hours of post‑storm cleanup before the normal start of school; plows would be working *during* peak conditions (strong winds, near‑zero visibility, active snowfall/blowing).\n- In a normal session this would support a relatively high closure probability; but here it mainly informs travel advice rather than a snow‑day call.\n\n4. Is there ANY ice? (ice changes everything)\n- Yes: high ice/flash‑freeze risk.\n  • Wet roads from prior rain.\n  • Temperatures dropping into upper 20s by the commute.\n  • Safety analyst explicitly flags ice formation risk as \"high\" and notes flash‑ice potential on untreated surfaces.\n- This would substantially elevate closure odds in a normal school scenario.\n\n5. What are neighboring districts doing?\n- News intel shows:\n  • Rockford Public Schools: Official calendar says \"NO SCHOOL – Winter Break\" Dec. 22, 2025 – Jan. 2, 2026, including Monday, Dec. 29.\n  • Cedar Springs: Also on Winter Break through Jan. 2.\n  • Regional calendars for Kent ISD districts: Broadly indicate Winter Break during this week; no active snow‑day announcements, just scheduled no‑school days.\n- Therefore, there are effectively many neighboring districts \"closed,\" but for scheduled break, not as weather‑driven snow days. The Michigan thresholds rule about \"+15–20% for 3+ neighboring districts closed\" does **not** apply because the closures are not weather decisions.\n\n6. What would make me WRONG?\n- Overestimation risk (predicting a snow day that doesn’t exist):\n  • Ignoring the calendar and treating this as a standard session day would inflate the snow‑day probability toward 60–80%, which would be logically incorrect given that no snow‑day decision is being made.\n- Underestimation risk (missing a de facto closure):\n  • The district could, in theory, cancel scheduled events (practices, camps, extracurriculars) because of weather. But the question is about a **school snow day**, which is already overridden by Winter Break.\n\nSYNTHESIS AND WEIGHTING\n- Meteorology (35% weight): Weather alone strongly supports at least a delay and likely full closure if school were in session: 2–4\" of snow, flash freeze, whiteouts, Winter Weather Advisory during commute hours, and 40–55 mph gusts. This suggests a notional 70–80% *conditional* closure probability on a normal school day.\n- Safety (25%): Safety assessment marks road and walking conditions as severe, with high ice risk and poor visibility from before the morning commute into midday. That aligns with a strong recommendation to avoid normal school operations during that period.\n- History (20%): Historical analogs give roughly a 50–60% closure rate for similar patterns when school is in session, slightly moderating the meteorologist’s 70–80% estimate but still clearly in the closure‑is‑plausible range.\n- News Intelligence (20%): This is decisive for the **actual** question. It confirms there is no regular school scheduled (Winter Break) for Rockford and neighbors on Dec. 29, so the operational snow‑day probability collapses regardless of how likely a closure would be if school were in session.\n\nGiven the competition context (Brier score, being decisive), the correct interpretation is:\n- Conditional on school being in session: the probability of a closure would be high, roughly 65–75%.\n- Unconditional, given that school is *not* in session: the probability of an official snow day is effectively near 0. I assign 5% to cover edge‑case interpretations (e.g., the district branding cancellations of break‑week programs as a \"snow day\"), but for the standard K‑12 calendar definition this is essentially no snow day.\n\nTherefore, the final snow day probability is set to **5% with high confidence**, driven primarily by calendar status from News Intelligence, with meteorology, safety, and historical data reinterpreted as travel‑risk context rather than closure odds.",
     "alternative_scenarios": [
       {
-        "scenario": "Calendar is correct; no regular classes on Dec. 29, only optional activities (practices, events) that may be canceled for weather.",
-        "probability": 80,
-        "impact": "Students do not have school regardless; some extracurriculars, practices, or community events may be canceled or moved online due to poor travel conditions."
+        "scenario": "If Dec. 29 were a regular school day with the same forecast (2–4\" snow, flash freeze, 40–55 mph gusts, whiteout potential during 3–9 AM)",
+        "probability": 70,
+        "impact": "High likelihood of a full snow day or, at minimum, a significant delay; hazardous roads, poor visibility, and high ice risk would strongly justify closure by Rockford and neighboring districts."
       },
       {
-        "scenario": "Unexpected special instruction day or mandatory in-person program is scheduled on Dec. 29 (e.g., makeup day, special session) and must decide on weather closure.",
-        "probability": 10,
-        "impact": "Given forecasted ice, winds, and whiteouts during transport windows, the likelihood of canceling that day would jump into the ~75–85% range, with strong justification for full closure or remote-only operations."
+        "scenario": "Lake‑effect snow bands underperform near Rockford, with more like 1–2\" total and winds/gusts at the lower end of the forecast",
+        "probability": 15,
+        "impact": "Travel would still be slick and windy but closer to a typical Michigan advisory event; if school were in session, districts might lean toward remaining open with caution advisories rather than closing."
       },
       {
-        "scenario": "Forecast bust: storm underperforms significantly near Rockford (e.g., mainly rain and moderate winds, minimal snow and ice).",
-        "probability": 10,
-        "impact": "Even if school were scheduled, this outcome would support remaining open with caution. In reality, students are already on break, so the main effect would be easier travel and minimal disruption to any planned events."
+        "scenario": "Storm overperforms near Rockford, pushing totals toward 4–6\" with prolonged near‑zero visibility and scattered outages",
+        "probability": 15,
+        "impact": "In a non‑break situation, near‑certain closure (>85%) and possible cancellation of afternoon/evening activities as well; substantial regional disruption. Under current break conditions, more widespread event cancellations and travel disruptions for residents but still no formal snow day."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "No weather-based closure decision is required for Monday, Dec. 29, 2025, since Rockford Public Schools is already on winter break and the calendar lists that date as NO SCHOOL.",
-        "Use the storm threat as an opportunity to test and refine communication channels (email, SMS, robocalls, social media) without needing a last-minute closure call; clearly distinguish between ‘no school due to break’ and any separate weather advisories.",
-        "If any staff workdays, athletic practices, or extracurricular activities are scheduled, strongly consider canceling or moving them virtual between 3 AM and 6 PM due to severe travel and visibility risks.",
-        "Coordinate with facilities and maintenance teams to manage drifting snow and ice in parking lots and building entrances ahead of staff returning after break; prioritize clearing and treatment once winds and snowfall begin to ease Monday evening.",
-        "Monitor NWS updates in case the Watch is upgraded to a Warning and document how you would have handled a closure if this were a regular school day, as a training scenario for future storms."
+        "No formal snow‑day decision is needed for Monday, Dec. 29, 2025, because Rockford Public Schools are on Winter Break and already scheduled to be closed.",
+        "Review and, if necessary, pre‑emptively cancel or reschedule any optional on‑campus activities (athletics, practices, camps, custodial projects, meetings) scheduled between 2:00 AM and 1:00 PM Monday due to severe travel and wind/visibility concerns.",
+        "If any staff are expected to report, consider a late start (after 10:00 AM) or flexible/remote work options to avoid the worst driving window.",
+        "Coordinate with facilities crews to focus on icing in parking lots, sidewalks, and building entrances; plan salting/sanding operations once winds and visibility begin to improve late morning to midday.",
+        "Use this storm as a test for communication channels (email, SMS, website, social media) so that if a similar event occurs after break, snow‑day messaging can be issued quickly and clearly."
       ],
       "for_residents": [
-        "Avoid nonessential travel between roughly 3 AM and 6 PM Monday; expect periods of very poor visibility, blowing/drifting snow, and slick roads and bridges.",
-        "If you must drive, reduce speed, increase following distance, and be prepared for sudden whiteouts, especially on open stretches of US-131 and rural roads north and east of Rockford.",
-        "Pre-treat home walkways if possible Sunday evening before temps drop; expect refreeze and ice underneath fresh snow as rain transitions to sleet and snow.",
-        "Charge devices and prepare for possible scattered power outages given gusty winds; secure outdoor items that can blow around.",
-        "Use the fact that school is already out to keep teens and new drivers off the roads during peak conditions; discourage unnecessary trips to stores, gyms, or social events during the worst of the storm."
+        "Avoid non‑essential travel late Sunday night into late Monday morning, particularly along open, rural roads north and east of Grand Rapids where whiteouts and drifting are likely.",
+        "If you must travel Monday morning, reduce speed significantly, allow extra stopping distance, and watch for flash ice on bridges, overpasses, and untreated side streets.",
+        "Dress for dangerous wind chills (near or below 0°F at times) with multiple layers, hats, gloves, and face protection; limit time outside, especially for children and older adults.",
+        "Secure outdoor items (trash bins, decorations, light furniture) Sunday evening to prevent them from being blown around by 40–55 mph gusts.",
+        "Be prepared for scattered power outages: keep devices charged, have flashlights and extra blankets ready, and avoid using generators indoors.",
+        "Check on vulnerable neighbors or family members who may have difficulty managing in icy conditions or who rely on electricity‑dependent medical equipment."
       ],
       "for_authorities": [
-        "Treat Monday as a serious winter storm operations day even though schools are on break: prioritize main corridors and known trouble spots (bridges, hills, open rural stretches) during the 3 AM–9 AM window.",
-        "Coordinate with utilities and emergency management for potential downed limbs, localized outages, and blocked secondary roads; pre-stage crews where feasible given high wind forecasts.",
-        "Use public messaging to emphasize that the absence of school buses is due to planned winter break, not safe driving conditions; encourage residents to limit travel during the height of the storm.",
-        "Plan plow shifts so that crews can pivot from keeping primary routes marginally passable during the storm to more thorough cleanup once winds and snowfall rates diminish Monday evening.",
-        "Capture data on road performance, crash patterns, and response times during this event as a case study for future storm/closure decisions when school is in session with similar meteorological setups."
+        "Plan for challenging plow operations between roughly 2:00 AM and 1:00 PM Monday, with continuous blowing/drifting and periods of very low visibility; prioritize main corridors first but anticipate secondary roads remaining difficult through the morning.",
+        "Coordinate closely between road commissions, law enforcement, and emergency services to identify and monitor whiteout‑prone stretches (open fields, north–south and west–east rural routes) for drifting and potential closures or advisories.",
+        "Pre‑treat priority routes before the rain fully changes to snow where feasible, recognizing that flash‑freeze conditions may limit effectiveness and require rapid transition to plowing and salting once temps drop.",
+        "Issue clear public messaging Sunday night emphasizing that the **combination** of flash ice, high winds, and whiteouts—not just snow totals—will make Monday morning travel hazardous, even by Michigan standards.",
+        "Monitor for scattered power outages due to high winds and coordinate with utilities to prioritize restoration near critical facilities (hospitals, emergency services, senior housing).",
+        "After peak conditions pass, consider targeted enforcement or temporary advisories in areas prone to drifting and recurring whiteouts, especially if lake‑effect bands persist into the afternoon and evening."
       ]
     },
-    "updates_needed": true,
-    "next_evaluation_time": "2025-12-29T03:00:00-05:00"
+    "updates_needed": false,
+    "next_evaluation_time": "2025-12-29T06:00:00-05:00"
   },
-  "timestamp": "2025-12-28T18:12:50.525Z",
+  "timestamp": "2025-12-28T23:06:04.090Z",
   "targetDate": "2025-12-29",
   "targetDayName": "Monday",
   "daysAhead": 1,
@@ -243,43 +253,43 @@
       "lat": 43.1152000427246,
       "lon": -85.5136032104492,
       "tz_id": "America/Detroit",
-      "localtime_epoch": 1766945488,
-      "localtime": "2025-12-28 13:11"
+      "localtime_epoch": 1766963146,
+      "localtime": "2025-12-28 18:05"
     },
     "current": {
-      "last_updated_epoch": 1766944800,
-      "last_updated": "2025-12-28 13:00",
+      "last_updated_epoch": 1766962800,
+      "last_updated": "2025-12-28 18:00",
       "temp_c": 5.6,
       "temp_f": 42.1,
-      "is_day": 1,
+      "is_day": 0,
       "condition": {
-        "text": "Light rain",
-        "icon": "//cdn.weatherapi.com/weather/64x64/day/296.png",
-        "code": 1183
+        "text": "Overcast",
+        "icon": "//cdn.weatherapi.com/weather/64x64/night/122.png",
+        "code": 1009
       },
-      "wind_mph": 5.4,
-      "wind_kph": 8.6,
-      "wind_degree": 182,
-      "wind_dir": "S",
-      "pressure_mb": 1003,
-      "pressure_in": 29.62,
-      "precip_mm": 2.23,
-      "precip_in": 0.09,
-      "humidity": 100,
+      "wind_mph": 6.3,
+      "wind_kph": 10.1,
+      "wind_degree": 132,
+      "wind_dir": "SE",
+      "pressure_mb": 995,
+      "pressure_in": 29.37,
+      "precip_mm": 0.52,
+      "precip_in": 0.02,
+      "humidity": 96,
       "cloud": 100,
-      "feelslike_c": 3.7,
-      "feelslike_f": 38.6,
-      "windchill_c": 4.1,
-      "windchill_f": 39.4,
-      "heatindex_c": 6.2,
-      "heatindex_f": 43.1,
-      "dewpoint_c": 6.3,
-      "dewpoint_f": 43.3,
-      "vis_km": 2.4,
-      "vis_miles": 1,
-      "uv": 0.2,
-      "gust_mph": 11.3,
-      "gust_kph": 18.1
+      "feelslike_c": 3.4,
+      "feelslike_f": 38,
+      "windchill_c": 1.7,
+      "windchill_f": 35,
+      "heatindex_c": 4.6,
+      "heatindex_f": 40.2,
+      "dewpoint_c": 6.6,
+      "dewpoint_f": 43.9,
+      "vis_km": 16,
+      "vis_miles": 9,
+      "uv": 0,
+      "gust_mph": 13.2,
+      "gust_kph": 21.2
     },
     "forecast": {
       "forecastday": [
@@ -846,8 +856,8 @@
             {
               "time_epoch": 1766944800,
               "time": "2025-12-28 13:00",
-              "temp_c": 5.6,
-              "temp_f": 42.1,
+              "temp_c": 6.2,
+              "temp_f": 43.1,
               "is_day": 1,
               "condition": {
                 "text": "Light rain",
@@ -858,12 +868,12 @@
               "wind_kph": 8.6,
               "wind_degree": 182,
               "wind_dir": "S",
-              "pressure_mb": 1003,
-              "pressure_in": 29.62,
+              "pressure_mb": 1005,
+              "pressure_in": 29.67,
               "precip_mm": 2.23,
               "precip_in": 0.09,
               "snow_cm": 0,
-              "humidity": 100,
+              "humidity": 99,
               "cloud": 100,
               "feelslike_c": 4.1,
               "feelslike_f": 39.4,
@@ -877,8 +887,8 @@
               "chance_of_rain": 100,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 2.4,
-              "vis_miles": 1,
+              "vis_km": 7,
+              "vis_miles": 4,
               "gust_mph": 11.3,
               "gust_kph": 18.1,
               "uv": 0.2
@@ -1046,25 +1056,25 @@
             {
               "time_epoch": 1766962800,
               "time": "2025-12-28 18:00",
-              "temp_c": 4.6,
-              "temp_f": 40.2,
+              "temp_c": 5.6,
+              "temp_f": 42.1,
               "is_day": 0,
               "condition": {
-                "text": "Patchy light drizzle",
-                "icon": "//cdn.weatherapi.com/weather/64x64/night/263.png",
-                "code": 1150
+                "text": "Overcast",
+                "icon": "//cdn.weatherapi.com/weather/64x64/night/122.png",
+                "code": 1009
               },
               "wind_mph": 6.3,
               "wind_kph": 10.1,
               "wind_degree": 132,
               "wind_dir": "SE",
-              "pressure_mb": 999,
-              "pressure_in": 29.49,
+              "pressure_mb": 995,
+              "pressure_in": 29.37,
               "precip_mm": 0.52,
               "precip_in": 0.02,
               "snow_cm": 0,
               "humidity": 96,
-              "cloud": 52,
+              "cloud": 100,
               "feelslike_c": 1.7,
               "feelslike_f": 35,
               "windchill_c": 1.7,
@@ -1077,8 +1087,8 @@
               "chance_of_rain": 100,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 2,
-              "vis_miles": 1,
+              "vis_km": 16,
+              "vis_miles": 9,
               "gust_mph": 13.2,
               "gust_kph": 21.2,
               "uv": 0
@@ -2292,84 +2302,84 @@
     "alerts": {
       "alert": [
         {
-          "identifier": "2f1b6d63-e3e9-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Storm Watch issued December 28 at 4:06AM EST until December 29 at 10:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Severe",
-          "urgency": "Future",
-          "areas": "Mason; Oceana; Muskegon; Ottawa; Kent; Allegan; Barry; Van Buren; Kalamazoo",
-          "category": "Met",
-          "certainty": "Possible",
-          "event": "Winter Storm Watch",
-          "note": "",
-          "effective": "2025-12-28T04:06:00-05:00",
-          "expires": "2025-12-28T12:15:00-05:00",
-          "desc": "* WHAT...Heavy snow possible. Total snow accumulations between 4 and\n7 inches possible. Winds could gust as high as 60 mph.\n\n* WHERE...Portions of southwest and west central Michigan.\n\n* WHEN...From late tonight through Monday evening.\n\n* IMPACTS...Roads, and especially bridges and overpasses, will\nlikely become slick and hazardous. Visibilities may drop below 1/4\nmile due to falling and blowing snow. Whiteout conditions are\npossible and may make travel treacherous and potentially\nlife-threatening. Travel could be very difficult. The hazardous\nconditions could impact the Monday morning and evening commutes.\nGusty winds could bring down tree branches.\n",
-          "instruction": "Monitor the latest forecasts for updates on this situation."
-        },
-        {
-          "identifier": "2f4aa120-e3e9-11f0-8583-b63eaaffe11e",
-          "headline": "High Wind Watch issued December 28 at 4:06AM EST until December 29 at 10:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Severe",
-          "urgency": "Future",
-          "areas": "Osceola; Clare; Mecosta; Isabella; Montcalm; Gratiot; Ionia; Clinton; Eaton; Ingham; Calhoun; Jackson",
-          "category": "Met",
-          "certainty": "Possible",
-          "event": "High Wind Watch",
-          "note": "",
-          "effective": "2025-12-28T04:06:00-05:00",
-          "expires": "2025-12-28T12:15:00-05:00",
-          "desc": "* WHAT...West winds 25 to 35 mph with gusts up to 60 mph possible.\n\n* WHERE...Portions of central and south central Michigan.\n\n* WHEN...From late tonight through Monday evening.\n\n* IMPACTS...Damaging winds could blow down trees and power lines.\nWidespread power outages are possible. Travel could be difficult,\nespecially for high profile vehicles.\n",
-          "instruction": "Monitor the latest forecasts and warnings for updates."
-        },
-        {
-          "identifier": "2f755ee8-e3e9-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Storm Watch issued December 28 at 4:06AM EST until December 29 at 10:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
-          "severity": "Severe",
-          "urgency": "Future",
-          "areas": "Lake; Newaygo",
-          "category": "Met",
-          "certainty": "Possible",
-          "event": "Winter Storm Watch",
-          "note": "",
-          "effective": "2025-12-28T04:06:00-05:00",
-          "expires": "2025-12-28T12:15:00-05:00",
-          "desc": "* WHAT...For the Winter Weather Advisory, freezing rain. Additional\nice accumulations around a light glaze. For the Winter Storm\nWatch, heavy snow possible. Total snow accumulations between 4 and\n7 inches possible. Winds could gust as high as 60 mph.\n\n* WHERE...Lake and Newaygo Counties.\n\n* WHEN...For the Winter Weather Advisory, until 1 PM EST this\nafternoon. For the Winter Storm Watch, from late tonight through\nMonday evening.\n\n* IMPACTS...Travel could be very difficult. The hazardous conditions\ncould impact the Monday morning and evening commutes. Gusty winds\ncould bring down tree branches. Roads, and especially bridges and\noverpasses, will likely become slick and hazardous. Visibilities\nmay drop below 1/4 mile due to falling and blowing snow. Whiteout\nconditions are possible and may make travel treacherous and\npotentially life-threatening.\n",
-          "instruction": "Slow down and use caution while traveling. Prepare for possible\npower outages.\n\nMonitor the latest forecasts for updates on this situation."
-        },
-        {
-          "identifier": "2f9b1868-e3e9-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Weather Advisory issued December 28 at 4:06AM EST until December 28 at 1:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
+          "identifier": "7deb66b0-e41b-11f0-8583-b63eaaffe11e",
+          "headline": "Winter Weather Advisory issued December 28 at 10:43AM EST until December 29 at 7:00PM EST by NWS Grand Rapids MI",
+          "msgtype": "Alert",
           "severity": "Moderate",
           "urgency": "Expected",
-          "areas": "Lake; Newaygo",
+          "areas": "Kent; Barry",
           "category": "Met",
           "certainty": "Likely",
           "event": "Winter Weather Advisory",
           "note": "",
-          "effective": "2025-12-28T04:06:00-05:00",
-          "expires": "2025-12-28T12:15:00-05:00",
-          "desc": "* WHAT...For the Winter Weather Advisory, freezing rain. Additional\nice accumulations around a light glaze. For the Winter Storm\nWatch, heavy snow possible. Total snow accumulations between 4 and\n7 inches possible. Winds could gust as high as 60 mph.\n\n* WHERE...Lake and Newaygo Counties.\n\n* WHEN...For the Winter Weather Advisory, until 1 PM EST this\nafternoon. For the Winter Storm Watch, from late tonight through\nMonday evening.\n\n* IMPACTS...Travel could be very difficult. The hazardous conditions\ncould impact the Monday morning and evening commutes. Gusty winds\ncould bring down tree branches. Roads, and especially bridges and\noverpasses, will likely become slick and hazardous. Visibilities\nmay drop below 1/4 mile due to falling and blowing snow. Whiteout\nconditions are possible and may make travel treacherous and\npotentially life-threatening.\n",
-          "instruction": "Slow down and use caution while traveling. Prepare for possible\npower outages.\n\nMonitor the latest forecasts for updates on this situation."
+          "effective": "2025-12-28T10:43:00-05:00",
+          "expires": "2025-12-28T16:00:00-05:00",
+          "desc": "* WHAT...Snow and blowing snow expected. Total snow accumulations\nbetween 2 and 5 inches. Winds gusting as high as 55 mph.\n\n* WHERE...Barry and Kent Counties.\n\n* WHEN...From 1 AM to 7 PM EST Monday.\n\n* IMPACTS...Plan on slippery road conditions. The hazardous\nconditions could impact the Monday morning and evening commutes.\nGusty winds could bring down tree branches. Visibilities will be\nreduced to less than a mile at times.\n",
+          "instruction": "Slow down and use caution while traveling."
         },
         {
-          "identifier": "2fbda547-e3e9-11f0-8583-b63eaaffe11e",
-          "headline": "Winter Weather Advisory issued December 28 at 4:06AM EST until December 28 at 1:00PM EST by NWS Grand Rapids MI",
-          "msgtype": "Update",
+          "identifier": "7daab5d4-e41b-11f0-8583-b63eaaffe11e",
+          "headline": "Winter Weather Advisory issued December 28 at 10:43AM EST until December 29 at 7:00PM EST by NWS Grand Rapids MI",
+          "msgtype": "Alert",
           "severity": "Moderate",
           "urgency": "Expected",
-          "areas": "Osceola; Clare; Mecosta; Isabella",
+          "areas": "Montcalm; Ionia; Eaton; Calhoun",
           "category": "Met",
           "certainty": "Likely",
           "event": "Winter Weather Advisory",
           "note": "",
-          "effective": "2025-12-28T04:06:00-05:00",
-          "expires": "2025-12-28T12:15:00-05:00",
-          "desc": "* WHAT...Freezing rain. Additional ice accumulations around one\ntenth of an inch.\n\n* WHERE...Clare, Isabella, Mecosta, and Osceola Counties.\n\n* WHEN...Until 1 PM EST this afternoon.\n\n* IMPACTS...Difficult travel conditions are possible.\n",
-          "instruction": "Slow down and use caution while traveling. Prepare for possible\npower outages."
+          "effective": "2025-12-28T10:43:00-05:00",
+          "expires": "2025-12-28T16:00:00-05:00",
+          "desc": "* WHAT...Snow and blowing and drifting snow expected. Total snow\naccumulations between 2 and 4 inches. Winds gusting as high as 55\nmph.\n\n* WHERE...Montcalm, Calhoun, Eaton, and Ionia Counties.\n\n* WHEN...From 1 AM to 7 PM EST Monday.\n\n* IMPACTS...Plan on slippery road conditions. The hazardous\nconditions could impact the Monday morning and evening commutes.\nGusty winds could bring down tree branches. Blowing snow will\nreduce visibilities down to less than a mile at times.\n",
+          "instruction": "Slow down and use caution while traveling."
+        },
+        {
+          "identifier": "7e0b7539-e41b-11f0-8583-b63eaaffe11e",
+          "headline": "Winter Storm Warning issued December 28 at 10:43AM EST until December 29 at 7:00PM EST by NWS Grand Rapids MI",
+          "msgtype": "Alert",
+          "severity": "Severe",
+          "urgency": "Expected",
+          "areas": "Mason; Oceana; Muskegon; Ottawa; Allegan; Van Buren; Kalamazoo",
+          "category": "Met",
+          "certainty": "Likely",
+          "event": "Winter Storm Warning",
+          "note": "",
+          "effective": "2025-12-28T10:43:00-05:00",
+          "expires": "2025-12-28T16:00:00-05:00",
+          "desc": "* WHAT...Heavy snow and blowing and drifting snow expected. Total\nsnow accumulations between 4 and 8 inches. Winds gusting as high\nas 55 mph.\n\n* WHERE...Portions of southwest and west central Michigan.\n\n* WHEN...From 1 AM to 7 PM EST Monday.\n\n* IMPACTS...Roads, and especially bridges and overpasses, will\nlikely become slick and hazardous. Visibilities may drop below 1/4\nmile due to falling and blowing snow. Whiteout conditions are\nexpected and will make travel treacherous and potentially\nlife-threatening. Visibility and road conditions may change\nrapidly over short distances in lake effect snow.\n",
+          "instruction": "If you must travel, keep an extra flashlight, food, and water in\nyour vehicle in case of an emergency.\n\nPersons should consider delaying all travel. Motorists should use\nextreme caution if travel is absolutely necessary.\n\nPersons should consider delaying all travel. If travel is absolutely\nnecessary, drive with extreme caution. Consider taking a winter\nstorm kit along with you, including such items as tire chains,\nbooster cables, flashlight, shovel, blankets and extra clothing.\nAlso take water, a first aid kit, and anything else that would help\nyou survive in case you become stranded.\n\nDuring lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions."
+        },
+        {
+          "identifier": "7dccc751-e41b-11f0-8583-b63eaaffe11e",
+          "headline": "Winter Storm Warning issued December 28 at 10:43AM EST until December 29 at 7:00PM EST by NWS Grand Rapids MI",
+          "msgtype": "Alert",
+          "severity": "Severe",
+          "urgency": "Expected",
+          "areas": "Lake; Newaygo",
+          "category": "Met",
+          "certainty": "Likely",
+          "event": "Winter Storm Warning",
+          "note": "",
+          "effective": "2025-12-28T10:43:00-05:00",
+          "expires": "2025-12-28T16:00:00-05:00",
+          "desc": "* WHAT...For the Winter Weather Advisory, light freezing rain or\nfreezing drizzle will remain possible through early afternoon. For\nthe Winter Storm Warning, heavy snow and blowing and drifting snow\nexpected. Total snow accumulations between 4 and 7 inches. Winds\ngusting as high as 55 mph.\n\n* WHERE...Lake and Newaygo Counties.\n\n* WHEN...For the Winter Weather Advisory, until 1 PM EST this\nafternoon. For the Winter Storm Warning, from 1 AM to 7 PM EST\nMonday.\n\n* IMPACTS...Roads, and especially bridges and overpasses, will\nlikely become slick and hazardous. Visibilities may drop below 1/4\nmile due to falling and blowing snow. Whiteout conditions are\nexpected and will make travel treacherous and potentially\nlife-threatening. Visibility and road conditions may change\nrapidly over short distances in lake effect snow. Travel could be\nvery difficult. The hazardous conditions could impact the Monday\nmorning and evening commutes. Gusty winds could bring down tree\nbranches.\n",
+          "instruction": "If you must travel, keep an extra flashlight, food, and water in\nyour vehicle in case of an emergency.\n\nPersons should consider delaying all travel. Motorists should use\nextreme caution if travel is absolutely necessary.\n\nPersons should consider delaying all travel. If travel is absolutely\nnecessary, drive with extreme caution. Consider taking a winter\nstorm kit along with you, including such items as tire chains,\nbooster cables, flashlight, shovel, blankets and extra clothing.\nAlso take water, a first aid kit, and anything else that would help\nyou survive in case you become stranded.\n\nDuring lake effect snow, the weather can vary from bands of locally\nheavy snow to dry weather just a few miles away. Visibilities can\nalso vary greatly. Be prepared for rapid changes in weather,\nvisibility, and road conditions.\n\nSlow down and use caution while traveling."
+        },
+        {
+          "identifier": "7e30bc26-e41b-11f0-8583-b63eaaffe11e",
+          "headline": "Winter Weather Advisory issued December 28 at 10:43AM EST until December 29 at 7:00PM EST by NWS Grand Rapids MI",
+          "msgtype": "Alert",
+          "severity": "Moderate",
+          "urgency": "Expected",
+          "areas": "Osceola; Clare; Mecosta",
+          "category": "Met",
+          "certainty": "Likely",
+          "event": "Winter Weather Advisory",
+          "note": "",
+          "effective": "2025-12-28T10:43:00-05:00",
+          "expires": "2025-12-28T16:00:00-05:00",
+          "desc": "* WHAT...For the first Winter Weather Advisory, freezing rain.\nAdditional ice accumulations around a light glaze. For the second\nWinter Weather Advisory, snow and blowing snow expected. Total\nsnow accumulations between 2 and 5 inches. Winds gusting as high\nas 55 mph late tonight and Monday.\n\n* WHERE...Clare, Mecosta, and Osceola Counties.\n\n* WHEN...For the first Winter Weather Advisory, until 1 PM EST this\nafternoon. For the second Winter Weather Advisory, from 1 AM to 7\nPM EST Monday.\n\n* IMPACTS...Plan on slippery road conditions. The hazardous\nconditions could impact the Monday morning and evening commutes.\nBlowing snow will reduce visibilities down to less than a mile at\ntimes.\n",
+          "instruction": "Slow down and use caution while traveling.\n\nSlow down and use caution while traveling. Prepare for possible\npower outages."
         }
       ]
     }
