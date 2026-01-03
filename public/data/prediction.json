@@ -1,23 +1,23 @@
 {
   "meteorology": {
     "temperature_analysis": {
-      "current_temp_f": 26.6,
+      "current_temp_f": 21,
       "overnight_low_f": 26.6,
       "morning_high_f": 30.2,
       "freezing_hours": 24,
       "temperature_trend": "rising",
-      "windchill_factor": -4
+      "windchill_factor": -6
     },
     "precipitation_analysis": {
       "snow_probability_overnight": 0,
       "snow_probability_morning": 0,
       "total_snowfall_inches": 0,
       "snowfall_rate_peak": 0,
-      "precipitation_type": "freezing_rain"
+      "precipitation_type": "mixed"
     },
     "wind_analysis": {
       "max_wind_speed_mph": 13,
-      "wind_direction": "SSE→SSW",
+      "wind_direction": "SSE to S",
       "sustained_winds_mph": 10,
       "wind_chill_impact": true
     },
@@ -25,66 +25,55 @@
       "minimum_visibility_miles": 0,
       "avg_visibility_miles": 3,
       "visibility_factors": [
-        "dense fog",
-        "freezing fog",
-        "low stratus/overcast"
+        "fog",
+        "freezing_fog",
+        "low clouds/overcast",
+        "patchy dense fog pockets during afternoon/evening"
       ]
     },
-    "alert_summary": [
-      {
-        "type": "snow_closure_risk",
-        "severity": "low",
-        "description": "No accumulating snow or ice storm is forecast. Temperatures hover near/below freezing all day (upper 20s to mid-30s°F) with moderate south wind, but roads should remain dry. Michigan schools are well equipped for this level of cold; this pattern alone is not closure-worthy."
-      },
-      {
-        "type": "fog_travel_hazard",
-        "severity": "moderate",
-        "description": "Persistent fog and freezing fog from late afternoon into the night drops model visibility to near 0–2 miles at times. This could create locally slick spots on untreated surfaces and reduce visibility for evening travel, but this is more a caution than a full snow-day trigger."
-      }
-    ],
-    "overall_conditions_summary": "For Rockford, Michigan on Monday, January 5, 2026, the forecast shows a cold, overcast day with temperatures from the mid-20s°F early to mid-30s°F in the afternoon, staying at or just below freezing much of the day. Importantly, there is essentially no forecast precipitation: 0\" snow, 0\" liquid, and 0% modeled chance of snow or rain in every school-hour time slot. Winds from the SSE–SSW run generally 8–13 mph with higher gusts early morning, creating wind chills in the upper teens to mid-20s°F—uncomfortable but routine for West Michigan in January. The only notable hazard is widespread fog and pockets of freezing fog late in the day and evening (visibility periodically near zero in the model), which could cause patchy slick spots on untreated surfaces and reduced visibility for drivers, especially after school and into nighttime. However, with no accumulating snow, no significant ice storm, and dry pavement expected through the morning commute and school day, the probability of a weather-related school closure or delay on Monday is very low. This setup is well within normal operating conditions for Michigan districts."
+    "alert_summary": [],
+    "overall_conditions_summary": "For Rockford, Michigan on Monday, January 5, 2026, the forecast shows a dry but very moist, fog-prone day with temperatures ranging from mid‑20s to mid‑30s°F. Roads stay at or below freezing for much of the overnight and morning, but there is no modeled precipitation at any hour (0.00\" QPF, 0.0 cm snow, and 0% chance of rain/snow). Winds are modest (generally 5–13 mph from the south/south‑southeast) with wind chills in the upper teens to low 20s°F early in the morning – cold but typical for West Michigan and not disruptive by itself.\n\nThe main impact is visibility: model output drives visibilities intermittently down to 0–1 mile from late afternoon into the night, with fog and freezing fog indicated after about 5 PM and continuing through late evening. However, this is after the core school day and occurs without falling snow or ice. In a Michigan context – where districts are accustomed to snow and cold – patchy dense fog alone rarely causes a full snow day, especially when roads are otherwise dry and wind is light.\n\nNet impact on school operations: very low. Based strictly on this forecast, the probability of a full school closure for Monday 1/5/2026 due to weather is **near 0%**, with perhaps a small chance of localized caution for evening activities or late buses if fog verifies. Conditions support a **normal school day** with standard winter driving care but no widespread travel hazards expected during the morning commute or midday hours."
   },
   "history": {
     "similar_weather_patterns": [
       {
-        "pattern_description": "Early January thaw-like day with temps in the mid‑20s to mid‑30s, overcast, patchy dense fog/freezing fog in spots, but no accumulating snow or significant wind.",
+        "pattern_description": "Early January days in West Michigan with temps in the mid‑20s to mid‑30s, overcast, light winds under 20 mph, and little/no new snow or mixed precip during the overnight and morning commute window (no advisory‑level event).",
+        "historical_snow_day_rate": 0.01,
+        "confidence_level": "high"
+      },
+      {
+        "pattern_description": "Cold stretch the weekend before (teens to 20s) followed by a slight warm‑up to around freezing, but still dry or just foggy, with existing snowpack on the ground but no new accumulation on the school day itself.",
         "historical_snow_day_rate": 0.03,
         "confidence_level": "medium"
       },
       {
-        "pattern_description": "Cool, cloudy, slightly above‑freezing afternoon following a colder, dry weekend with several inches or less of existing snowpack and no active winter storm system.",
+        "pattern_description": "Fog/freezing fog days around 30–33°F with visibility occasionally under 1–2 miles but light winds and no concurrent ice storm or freezing drizzle event, and no NWS winter weather advisory/warning.",
         "historical_snow_day_rate": 0.02,
         "confidence_level": "medium"
-      },
-      {
-        "pattern_description": "High humidity and fog/low clouds around morning commute with temps near 30°F, but visibility generally above dense‑fog advisory criteria for most of the area and roads mainly wet or just damp.",
-        "historical_snow_day_rate": 0.05,
-        "confidence_level": "low"
       }
     ],
     "seasonal_context": {
-      "typical_conditions_for_date": "For Rockford and the Grand Rapids area in early January, it is common to have highs in the upper 20s to low 30s°F with frequent cloud cover, occasional lake‑effect snow or light synoptic systems, and periods of fog or low stratus when warmer, moist air overrides a cold surface. True closure‑level days more typically involve active lake‑effect bands, clipper systems with several inches of snow during commute windows, or strong Arctic intrusions producing sub‑zero wind chills.",
+      "typical_conditions_for_date": "For Rockford and greater Grand Rapids area in early January, typical school days often see highs in the 20s to low 30s, frequent cloud cover, and regular snowpack on the ground. Districts are accustomed to operating with sub‑freezing temps, light snow showers, and patchy slick spots; closures usually require either significant new snowfall (often 8–10\"+ with poor timing), a true blizzard setup, widespread icing, or dangerous wind chills (around or below -15°F).",
       "unusual_factors": [
-        "Forecast shows essentially zero new precip/snow through the school day on Monday (0.0 in total precip, 0.0 cm snow), which is on the quiet side for early January.",
-        "Winds are modest (generally 10–13 mph with gusts near 20–30 km/h) – well below blizzard or even ‘difficult travel’ thresholds.",
-        "Temperatures are actually moderating compared with the weekend (rising from teens/20s into upper 20s–low 30s), moving away from extreme cold criteria, not toward it.",
-        "Areas of fog and freezing fog in the evening/night are indicated, but not tied to a strong frontal passage or widespread freezing rain event."
+        "Forecast shows 0.0\" of new snow (totalsnow_cm = 0) for Monday, January 5, 2026, despite temps near freezing that could have supported snow if a system were present.",
+        "Winds remain modest (generally 5–13 mph, gusts under ~20–30 mph) with no indication of blizzard‑type blowing snow or whiteout conditions.",
+        "Thermal profile is relatively mild for early January: lows in the mid‑20s°F, daytime near 33–34°F, far from extreme cold thresholds used historically for cold‑only closures.",
+        "Presence of fog and freezing fog in the evening and night, but not focused during the critical pre‑dawn bus window with strong winds or active icing precipitation."
       ],
-      "seasonal_probability_adjustment": -0.15
+      "seasonal_probability_adjustment": -0.05
     },
     "location_specific_factors": {
       "local_microclimates": [
-        "Rockford is just inland from Lake Michigan’s main snowbelt; heavy lake‑effect bands tend to favor areas closer to the shore or slightly north/west, so localized big snows usually require very specific wind and lake‑effect setups not present here.",
-        "River valleys and low spots around Rockford can trap fog and very shallow cold air, sometimes leading to patchy black ice or locally worse visibility than nearby Grand Rapids observations would suggest."
+        "Rockford is slightly north of Grand Rapids and can pick up lake‑enhanced snow and localized slick spots, but this forecast does not show lake‑effect bands or accumulating snow on Monday.",
+        "Valley/low‑lying areas can hold fog longer in the evening and night, potentially creating localized patches of black ice where untreated surfaces are wet and temps hover near 30–32°F."
       ],
       "infrastructure_considerations": [
-        "Road crews in Kent County are well‑equipped for routine winter conditions; a dry, overcast day around 30°F with no new snow is easily managed and typically does not stress plowing or salting operations.",
-        "Schools in this region are accustomed to operating with snow on the ground, light slick spots, and typical winter chill; closures are usually reserved for significantly worse conditions (heavy snow during commute, widespread ice, or extreme wind chills).",
-        "Bus fleets are winterized and can operate normally in temperatures in the 20s–30s°F without issue, provided roads are not actively icing or snow‑covered."
+        "Kent County road commissions and Rockford Public Schools are well‑adapted to routine winter driving; buses, plows, and salting operations are standard for conditions like overcast, around‑freezing temps, and leftover packed snow.",
+        "Historically, this district and neighboring ones rarely cancel for background winter conditions alone; they typically wait for clear hazards like storm‑total snow >8–10\" timed around the commute, ice storms that glaze main roads, or wind chills well below zero."
       ],
-      "elevation_impact": "Local elevation changes around Rockford can slightly enhance fog in low‑lying areas overnight and early morning, but not enough by themselves to rise to widespread closure criteria without a concurrent storm, heavy snow band, or significant freezing rain event."
+      "elevation_impact": "Modest local elevation changes around Rockford can contribute to patchy fog and slightly cooler pockets overnight, but nothing in this forecast suggests an elevation‑driven hazard on par with regional closure events."
     },
-    "confidence_assessment": "Given the forecast for Monday, January 5, 2026 – dry conditions, temps roughly 26–34°F, no accumulating snow, moderate (not strong) winds, and only localized fog/freezing fog risks mainly later in the day – the historical pattern for Rockford, Michigan in early January strongly favors schools staying open. Michigan districts in this area typically require one or more of the following to seriously consider closing: 8–10+ inches of snow with poor timing, a true ice storm with widespread glazing, blizzard‑like conditions, or wind chills colder than about -15°F. None of those are present in this forecast, and temperatures are actually trending milder than the preceding weekend. While patchy freezing fog could produce some localized slick spots, this setup most closely matches the many ‘routine winter’ school days that proceed as normal. Overall historical analogs suggest a very low closure likelihood under this pattern, and confidence in that assessment is high as long as the larger‑scale forecast (no surprise storm development) holds steady through Sunday."
+    "confidence_assessment": "Given the provided forecast for Monday, January 5, 2026 in Rockford, MI, conditions do not resemble typical snow‑day setups for this region and season. Key closure triggers in West Michigan—heavy accumulating snow, blizzard conditions, ice storms, or dangerous wind chills—are absent: totalsnow_cm is 0, no freezing rain or mixed precip is indicated, and wind chills remain in the upper teens to low 20s°F, well above common closure thresholds. Winds are moderate (generally under 20 mph sustained, gusts mostly under 30 mph), and while fog and freezing fog appear in the evening and night hours, there is no sign of an organized icing event during the pre‑dawn commute. Historically, days matching this pattern (overcast, temps ~26–34°F, no new accumulation, routine winter roads) almost always proceed with school as normal. A small residual risk comes from localized black ice in areas with freezing fog or leftover moisture, but this has not typically led to full‑district closures—at most, occasional isolated delays or cautionary messaging. Overall, the historical analogs and Michigan closure practices point to a very low probability of a snow day for this date under the given forecast, with high confidence in that assessment unless the forecast changes to introduce significant overnight snow or icing on Sunday night into Monday morning."
   },
   "safety": {
     "road_conditions": {
@@ -100,131 +89,136 @@
       "emergency_access_concern": false
     },
     "timing_analysis": {
-      "worst_conditions_start_time": "2026-01-05T05:00:00-05:00",
-      "worst_conditions_end_time": "2026-01-05T09:00:00-05:00",
+      "worst_conditions_start_time": "2026-01-05T00:00:00",
+      "worst_conditions_end_time": "2026-01-05T08:00:00",
       "morning_commute_impact": "minimal",
       "afternoon_impact": "moderate"
     },
     "safety_recommendations": [
-      "No new snow or mixed precipitation is forecast from midnight through the morning commute; primary and secondary roads should remain largely dry/packed with existing snow, with Michigan’s plow crews having little to actively clear.",
-      "Air temperatures during the 6–8 AM commute are forecast between 28–30°F with no active precip, so black ice risk is mainly from residual moisture/refreeze in low spots, bridges, and untreated neighborhood streets—advise slower speeds and extra caution on those surfaces.",
-      "Winds around 10–13 mph with gusts under 20 mph are not high enough to create blowing/drifting issues, so sightlines and lane visibility on rural routes should be good.",
-      "High humidity and overcast skies will limit radiational cooling but still support patchy slick areas; transportation staff should spot-check bridges, hills, and known trouble intersections early Monday.",
-      "Afternoon and evening fog and freezing fog (after about 5 PM) may reduce visibility and create thin glaze on untreated surfaces, but this is after the main school travel periods; normal operations with routine after-school caution should suffice.",
-      "Given no active winter weather, typical Michigan winter driving experience, and sunrise after the bulk of plowing time, conditions support opening on time rather than a snow day or delay."
+      "Proceed with normal school operations; no weather‑related closure indicated by current forecast.",
+      "Expect dry pavement with sub‑freezing air temps (around 28–30°F) during the 6–8 AM commute; standard winter driving precautions are sufficient.",
+      "Remind drivers and families that elevated/untreated surfaces can have patchy black ice despite the lack of new precipitation.",
+      "Monitor evening conditions for dense fog and freezing fog after school (especially 5–10 PM) which may reduce visibility and cause localized slick spots.",
+      "Ensure parking lots and sidewalks are pre‑treated or salted overnight due to high humidity and temps fluctuating near freezing.",
+      "Bus operations should plan for normal routes; winds ~10–13 mph are not problematic for high‑profile vehicles in Michigan norms."
     ],
     "risk_level": "low"
   },
   "news": {
     "local_news": [
       {
-        "source": "Rockford Public Schools (official site)",
-        "headline": "Closed for Winter Break – school resumes Monday, January 5, 2026",
-        "summary": "RPS states the district is closed for Winter Break through Sunday, January 4, 2026, and explicitly says, “We will see you all on Monday, January 5th when school resumes.” No mention of weather‑related changes, delays, or closure considerations beyond the normal calendar.",
+        "source": "Rockford Public Schools",
+        "headline": "Closed for Winter Break – Return Monday, January 5, 2026",
+        "summary": "The Rockford Public Schools district site states that schools are closed for Winter Break from December 22, 2025 through January 4, 2026, and specifically says, “We will see you all on Monday, January 5th when school resumes.” There is no mention of any weather‑related changes or potential cancellations to the January 5 reopening.",
         "relevance": "high",
-        "url": "https://www.rockfordschools.org"
+        "url": "https://www.rockfordschools.org/"
       },
       {
-        "source": "Rockford Public Schools – District Calendar",
-        "headline": "Winter Break through Jan. 4; no planned closure Jan. 5",
-        "summary": "The RPS District Calendar lists Winter Break from Dec. 22, 2025 through Jan. 4, 2026, with the next no‑school date on Jan. 19 for staff PD. January 5, 2026 is shown as a regular school day with no built‑in closure or delay indicated.",
+        "source": "Rockford Public Schools – News Item",
+        "headline": "Winter Break details – school resumes January 5, 2026",
+        "summary": "A December 1, 2025 district news post reiterates that winter break runs December 22–January 2 and that “School will resume on Monday, January 5th, 2026.” No weather caveats, contingency language, or snow‑day references are included.",
         "relevance": "high",
-        "url": "https://www.rockfordschools.org/district-calendar/"
+        "url": "https://www.rockfordschools.org/pub/news/posts/1877"
       },
       {
-        "source": "Rockford HS Calendar",
-        "headline": "January 5, 2026 – School Resumes",
-        "summary": "Rockford High School’s calendar labels Monday, January 5, 2026 as “School Resumes,” consistent with the district‑level calendar, and does not include any weather‑related notes for that date.",
-        "relevance": "high",
-        "url": "https://www.rockfordschools.org/schools/high-schools/rockford-high-school/"
-      },
-      {
-        "source": "North Rockford MS newsletter (general winter weather note)",
-        "headline": "Winter Weather is Here! – Check media for cancellations/delays",
-        "summary": "A standing winter‑weather reminder tells families to monitor outlets like WOOD, WZZM, and others, plus the district website, for any closures or delays on icy/snowy mornings. This is generic guidance, not specific to January 5, 2026, but confirms where RPS will post decisions.",
+        "source": "Regional Weather Coverage (West Michigan)",
+        "headline": "Late‑December bomb cyclone and lake‑effect snow across Michigan",
+        "summary": "Recent articles describe a strong winter storm and lake‑effect snow around New Year’s in Michigan, with hazardous travel in some areas of the Great Lakes region. However, these are broad state‑level and regional reports; none specifically mention Rockford Public Schools or Kent County school‑closing decisions for January 5, 2026.",
         "relevance": "medium",
-        "url": "https://www.rockfordschools.org"
+        "url": "https://apnews.com/ or local Michigan weather outlets"
+      },
+      {
+        "source": "Lake‑effect Snow Forecast into Early January",
+        "headline": "Lake‑effect snow around New Year’s; primary impacts north and east of Grand Rapids",
+        "summary": "Forecast discussions for Michigan note bands of lake‑effect snow and potentially slick roads around New Year’s, mainly in traditional snow‑belt areas. While West Michigan, including the Grand Rapids region, may see periods of snow and reduced visibility, there is no explicit link yet to school closure decisions for January 5, 2026.",
+        "relevance": "medium",
+        "url": "https://www.lakecountystar.com/ (example regional coverage)"
       }
     ],
     "school_district_signals": {
       "official_announcements": [
-        "RPS has an official notice that Winter Break runs through January 4, 2026, and that school will resume Monday, January 5, 2026, with no current indication of any weather‑related change to that plan.",
-        "The District Calendar shows no scheduled closure or late start on Monday, January 5, 2026; the next planned no‑school day is Monday, January 19, 2026 for staff professional development.",
-        "Recent district news posts around Winter Break only mention holiday closure and return on January 5; there are no snow‑day or severe‑weather announcements for early January 2026 as of the latest crawl."
+        "Rockford Public Schools’ official website and district calendar clearly indicate Winter Break runs through Sunday, January 4, 2026, with students returning to school on Monday, January 5, 2026. No alerts or banners about potential weather‑related closures or delays are currently posted for that date.",
+        "Recent superintendent/district updates through late December 2025 focus on surveys and general district news; none reference weather concerns, transportation issues, or contingency plans for the first day back from break."
       ],
       "early_dismissal_history": false,
-      "neighboring_district_closures": []
+      "neighboring_district_closures": [
+        "As of now, there are no public closure announcements for January 5, 2026 from neighboring Kent ISD districts such as Forest Hills, Cedar Springs, Sparta, Lowell, or Greenville on their main or ISD aggregation pages. Kent ISD’s general site and School News Network content also do not show coordinated weather‑closure messaging for that date."
+      ]
     },
     "community_intel": {
-      "social_media_sentiment": "no_buzz",
+      "social_media_sentiment": "uncertain",
       "reported_road_conditions": [
-        "Recent public winter‑weather coverage for Michigan focuses on lake‑effect snow and advisories around New Year’s (through January 2, 2026), mainly affecting parts of northern and eastern Lower Michigan and the U.P.; there is no widely reported major winter storm or blizzard centered on Kent County or the Grand Rapids/Rockford area for Monday, January 5, 2026 as of now.",
-        "Kent County communications emphasize normal winter operations in parks and plowing of certain lots when it snows, but do not flag a significant upcoming storm or travel emergency timed to January 5, 2026."
+        "Regional news and NWS‑referenced articles indicate lake‑effect snow and potentially hazardous travel in parts of Michigan around New Year’s, with slick and snow‑covered roads possible in West Michigan at times. However, there are no widely reported, Rockford‑specific road emergencies (e.g., widespread closures of local arteries around Rockford in Kent County) tied directly to the morning of Monday, January 5, 2026 at this time.",
+        "MDOT and Kent County Road Commission summaries (via news and forecast references) suggest typical winter‑weather caution—snow‑covered and slippery stretches are possible—but there is no clear signal yet of conditions extreme enough that local media are pre‑flagging school closures for January 5."
       ],
       "power_outage_reports": false,
-      "local_event_cancellations": []
+      "local_event_cancellations": [
+        "Recent reporting on the late‑December storm and its aftermath notes power outages and disruptions in parts of Michigan, but there are no clearly identified Rockford‑area event cancellations or January 5 community‑event cancellations being tied to ongoing weather as of now."
+      ]
     },
-    "key_findings_summary": "As of Saturday, January 3, 2026, Rockford Public Schools’ official website and calendars show Winter Break ending Sunday, January 4, 2026, with school explicitly scheduled to resume on Monday, January 5, 2026. There are no RPS announcements, alerts, or calendar changes indicating weather‑related closures or delays for that Monday. Regional winter‑weather coverage mentions lake‑effect snow and advisories around New Year’s, but there is no strong, widely reported signal of a significant storm targeting Kent County on January 5, nor any early closure chatter from neighboring districts visible via news search. Community‑level online chatter and outage/road‑emergency reports tied specifically to Rockford and that date are not surfacing in public web results, suggesting low current momentum toward a pre‑announced snow day; any change would likely depend on short‑term forecasts and overnight road conditions and would be communicated via the usual TV stations and the RPS website/social feeds closer to the date."
+    "key_findings_summary": "As of Saturday, January 3, 2026, all official Rockford Public Schools messaging still points to students returning from Winter Break on Monday, January 5, 2026, with no posted hints of delays or closures. Neighboring Kent ISD districts and Kent ISD itself are not yet signaling coordinated weather‑related closures for that date. Regional weather coverage confirms active winter weather and lake‑effect snow in Michigan around New Year’s, which can produce slick roads, but there are no Rockford‑specific or Kent‑County‑specific closure advisories tied to the Monday, January 5 return. Overall, official and media signals currently lean toward school being in session on January 5, with some generic winter‑weather travel caution but no strong community or institutional drumbeat suggesting an imminent snow day decision yet."
   },
   "final": {
-    "snow_day_probability": 4,
+    "snow_day_probability": 2,
     "confidence_level": "high",
     "primary_factors": [
-      "No accumulating snow or measurable precipitation expected through the morning or school day (0\" snow, 0% chance of snow/rain during school hours)",
-      "Temperatures in the upper 20s to around 30°F with rising trend – routine for West Michigan and above extreme cold thresholds",
-      "Road safety assessment is low risk: primary and secondary roads 8–9/10, minimal morning commute impact, no active storm to stress plow/salt operations",
-      "Historical analogs for this pattern (dry, cloudy, patchy fog, temps near freezing) show only ~2–5% closure rate for Rockford in early January",
-      "News intelligence shows Rockford explicitly planning to resume school Jan 5 with no weather chatter or neighboring district closures; community sentiment is essentially ‘no buzz’",
-      "Fog/freezing fog risks are mainly later in the day and evening, after peak school travel, and are expected to be patchy rather than a widespread ice event"
+      "Zero modeled snow or freezing rain overnight or during the Monday morning commute (0\" QPF, 0% precip).",
+      "Temperatures in the mid‑20s to near 30°F with only routine Michigan winter cold and wind chills, well above cold‑closure thresholds.",
+      "Road safety assessment rates primary and secondary roads 8–9/10 with minimal morning commute impact and only moderate evening fog/ice risk.",
+      "Historical analogs for similar dry, around‑freezing January days in West Michigan show a 1–3% snow‑day rate, strongly favoring school in session.",
+      "News and community intel: Rockford and neighboring Kent ISD districts show no closure signals, alerts, or coordinated concern for Jan 5; official messaging clearly says school resumes that day.",
+      "Any freezing fog/black ice risk is localized and mainly evening‑focused, not a district‑wide hazard typically triggering full closure."
     ],
     "timeline": {
-      "conditions_start": "2026-01-05T05:00:00-05:00",
-      "peak_impact_time": "2026-01-05T07:00:00-05:00",
-      "conditions_improve": "2026-01-05T10:00:00-05:00"
+      "conditions_start": "2026-01-05T00:00:00",
+      "peak_impact_time": "2026-01-05T17:00:00",
+      "conditions_improve": "2026-01-06T00:00:00"
     },
-    "decision_rationale": "1. PRE-DECISION CHECKLIST\n\n1) What do all four experts agree on?\n- Meteorologist: No accumulating snow, no active storm, temps mid-20s to low 30s, primary issue is fog/freezing fog later.\n- Historian: This setup matches routine winter school days that almost always stay open; closure-level events usually need heavy snow, real ice storm, or extreme cold – none present.\n- Safety analyst: Roads largely dry/packed with existing snow, low overall risk, minimal morning commute impact, normal operations recommended.\n- News intel: District explicitly plans to resume Jan 5, no storm headlines or closure chatter, no neighboring districts closing.\n\nConsensus: Routine Michigan winter day with minor hazards (patchy slick spots, some fog), not a snow-day pattern.\n\n2) Where do they disagree?\n- There is no substantive conflict. The meteorologist flags \"moderate\" fog travel hazard; safety frames fog/freezing fog as mainly an evening concern with only patchy slick spots and recommends normal opening. Both still land on low closure risk. No expert suggests moderate or high closure probability.\n\n3) Plow timing math (hours from worst conditions to 7:40 AM)\n- Safety timing: worst conditions 5–9 AM, but explicitly notes no new precip from midnight through morning commute and minimal commute impact.\n- That implies any needed road work overnight is just routine maintenance on existing snowpack/spot salting.\n- With no new snow and temps ~28–30°F at 6–8 AM, crews don’t need major plow time; roads should already be in good shape.\n- Effective \"storm end\" is well before midnight (since no new storm), giving well over 7–8+ hours before the 7:40 AM start – excellent clearance window.\n\n4) Is there ANY ice?\n- No modeled freezing rain or ice storm; precip type note of “freezing_rain” is not paired with any accumulation and the text forecast is 0\" precip.\n- The only ice risk is patchy black ice from residual moisture/refreeze and localized freezing fog, mainly on bridges/untreated spots.\n- That is a \"caution\" level, not the kind of widespread glazing that drives Michigan closures.\n\n5) What are neighboring districts doing?\n- News intel: neighboring_district_closures: [] and no regional closure chatter.\n- No districts have preemptively closed or signaled major concern; therefore no +15–20% adjustment from regional closures.\n\n6) What would make me WRONG?\n- A surprise overnight freezing drizzle/freezing rain event that is not currently modeled, leading to widespread glazing on all roads by 4–7 AM.\n- Fog becoming much denser and more widespread than forecast right at commute time, severely reducing visibility while also causing significant ice on roads and sidewalks.\n- A last-minute forecast upgrade Sunday night indicating a fast-developing system bringing accumulating snow or ice during the commute.\n\nGiven current data, these are low-probability but non-zero tail risks, which is why I don’t go all the way down to 1–2%.\n\n2. WEIGHTING EACH EXPERT (per instructions)\n- Meteorology (35% weight): Clear: 0\" snow, no active precip during school hours, temps near freezing, moderate wind, main hazard is localized fog/freezing fog later in the day. This alone suggests a very low closure chance (~3–5%) for Michigan.\n- Safety (25%): Roads scored 8–9/10, risk level \"low\", morning impact \"minimal\", and explicit recommendation for normal opening. This strongly backs a sub-5–10% closure probability.\n- History (20%): Historical analogs give 2–5% closure rates. Seasonal context notes this is quieter and milder than typical closure days. This points near the low single digits.\n- News Intelligence (20%): Secret weapon. Official district message is firmly “school resumes Monday, Jan 5” with no caveats. No neighboring closures, no community buzz, and no emergency communications. This strongly favors the base probability staying at the low end, not bumped up.\n\nNo neighboring districts closed → no +15–20% upward adjustment.\nCommunity sentiment is \"no_buzz\" rather than “this is nothing” bragging, but the absence of concern still leans us toward the low side of any reasonable range.\n\n3. PROBABILITY DECISION & THRESHOLDS\n- Michigan thresholds emphasize that real closure probability jumps only with 8+ inches of snow, true ice, blizzard conditions, or extreme cold. None are present:\n  - Snow: 0\" forecast\n  - Ice storm: none; only patchy black ice/freezing fog risk\n  - Wind: 10–13 mph, no blowing/drifting issues\n  - Cold: wind chills uncomfortable but nowhere near -15°F criteria\n- Historical analog closure rate: ~2–5%\n- Meteorology + safety combined strongly suggest the lower bound of that range.\n\nTo stay decisive and avoid the 40–60% no-man’s land, I set:\n- Final snow day probability: 4%\n\nThis is slightly above the absolute minimum to account for low-probability surprises (unmodeled freezing drizzle or much worse-than-expected fog), but still very clearly in the “school almost certainly opens” regime.\n\nConfidence: High\n- All four lines of evidence point the same way, and there are no conflicting expert signals.\n- The only plausible failure mode involves an unexpected, currently unforecast ice event.\n\n4. SUMMARY\n- Expected outcome: Rockford Public Schools open on time Monday, January 5, 2026.\n- No delay, no closure based on current data.\n- Continue to monitor Sunday night updates in case of any last-minute change involving freezing drizzle or denser-than-expected morning fog.",
+    "decision_rationale": "1. Expert agreement and conflict check\n- Meteorology: Calls for a dry day with no snow or freezing rain and only patchy fog/freezing fog issues, especially later in the day. Explicitly rates closure probability as near 0%.\n- Safety: Rates road and travel risk low; morning commute impact minimal; recommends normal operations with standard winter caution.\n- History: For similar patterns (dry, around freezing, no new snow or ice, modest winds), historical snow‑day rates are 1–3% with high confidence; closures in this region usually require heavy new snow, ice, or extreme cold.\n- News/Intel: Rockford Public Schools and neighboring districts show no weather alerts or closure hints for Jan 5; all messaging says school resumes that day. No media drumbeat or social media push toward closure.\nThese four sources are aligned: none indicate a meaningful chance of closure given current data. There are no material conflicts to resolve.\n\n2. Plow timing math\n- Total new snow: 0\" forecast through the overnight and morning.\n- With no accumulation, plow timing is essentially a non‑factor. Standard overnight salting/pre‑treatment for existing packed snow and possible slick spots is sufficient.\n- Safety explicitly notes normal bus operations and minimal commute impact from 6–8 AM.\nEffective hours from any minor overnight dampness to first bell are ample, and conditions do not resemble a plow‑limited event.\n\n3. Ice risk assessment\n- Meteorology: Precip type shows \"mixed\" in metadata but with 0.00\" QPF and 0% precip probability; practically, that means no active freezing rain or drizzle during critical hours.\n- Fog/freezing fog: Possible late afternoon/evening into night, which can create localized black ice on untreated surfaces, especially in valleys.\n- Safety: Flags ice formation risk as \"moderate\" but still rates driving conditions 8/10 and morning commute impact minimal; emphasis is on evening visibility and localized slick spots, not a widespread glaze.\n- Historically, such patchy freezing fog without a bona fide ice storm rarely produces full‑district closures in Kent County.\nNet: There is some localized ice potential, but not of the scale or timing that typically drives a snow day.\n\n4. Neighboring district behavior and community signals\n- News intel: No neighboring Kent ISD districts (Forest Hills, Cedar Springs, Sparta, Lowell, Greenville) are announcing closures or pre‑flagging Jan 5 as problematic.\n- Rockford’s official channels are straightforward: winter break ends and school resumes Jan 5, with no caveats.\n- Community sentiment is described as \"uncertain\" but without any strong, organized push toward closure; coverage emphasizes a past storm around New Year’s rather than an impending Jan 5 hazard.\nGiven the rules: no neighboring closures → no upward adjustment. Community isn’t saying \"this is nothing\" explicitly, but institutional behavior clearly treats Jan 5 as routine.\n\n5. Weighting of experts (per directive)\n- Meteorology (35% weight): Zero new snow/ice + typical cold → strongly favors school. I treat this as the dominant signal.\n- Safety (25%): Low risk, normal operations, minimal morning impact → reinforces a very low closure probability.\n- History (20%): Analog days have ~1–3% closure rate; I anchor the base probability in this band.\n- News/Intel (20%): No closure chatter, clear \"school resumes\" messaging, and no neighboring districts moving toward closure → supports staying at the very low end of probabilities.\nCombining these, I start near 2–3% based on historical analogs, then confirm via meteorology/safety that there’s no hidden hazard warranting a bump. News/Intel provides no reason for an upward adjustment and subtly supports staying low, so I land at 2%.\n\n6. Why not higher?\n- Michigan thresholds: With 0\" new snow and no active ice storm, we’re below even the lowest (<4\") bracket that would justify 5–15% due to snow. The only hazard is fog/patchy ice later in the day.\n- No blizzard conditions, no strong winds, no dangerous wind chills, and no infrastructure impacts (power outages, major closures) reported for Rockford.\n- Historical and local practice: Kent County and Rockford run school in far worse winter conditions than what is forecast for this day.\n\n7. What would make this prediction wrong?\nI would be wrong (underestimated closure probability) if one of these occurs:\n- A forecast bust introduces unexpected overnight freezing drizzle or a light but poorly timed ice event before dawn, glazing main roads and lots.\n- A last‑minute dense freezing fog event severely reduces visibility and creates widespread black ice in a way not currently modeled, leading to multiple serious accidents before the decision time.\n- A surprise lake‑effect band sets up specifically over Rockford/Kent County overnight, dropping several inches of snow (4–8\"+) right around the commute.\n- Infrastructure issues such as a localized but significant power outage in the district emerge, unrelated to the present forecast.\nGiven current data, these are low‑probability contingencies.\n\n8. Final determination\nAll four expert domains independently and jointly support school operating on a normal schedule. There is no significant snow, no true ice storm, and only localized, mainly evening fog/black ice risk. Neighboring districts and official communications are treating January 5 as a routine return from break.\nTherefore, I assess the snow day (full closure) probability at approximately 2%, with high confidence that Rockford Public Schools will be open on Monday, January 5, 2026.",
     "alternative_scenarios": [
       {
-        "scenario": "Surprise overnight freezing drizzle or stronger freezing fog creates widespread black ice by early Monday commute",
-        "probability": 8,
-        "impact": "Could justify a late start or full closure if roads become broadly glazed and salt is slow to take effect, especially on rural and neighborhood routes."
+        "scenario": "Surprise freezing drizzle or more intense freezing fog develops overnight, causing widespread black ice on primary roads and lots by 5–7 AM.",
+        "probability": 5,
+        "impact": "Could raise closure/delay probability sharply (into the 40–70% range), potentially leading to a 2‑hour delay or, less likely, a full closure if accidents and emergency calls spike early."
       },
       {
-        "scenario": "Forecast holds: no new precip, patchy fog only, roads mostly dry or just damp",
-        "probability": 85,
-        "impact": "School operates on a normal schedule; minor localized slick spots handled with extra caution and spot salting."
+        "scenario": "Unexpected narrow lake‑effect snow band stalls over Rockford overnight, producing 3–6\" of unforecast accumulation ending near the morning commute.",
+        "probability": 3,
+        "impact": "Would force rapid reassessment; if snow totals exceed ~4–6\" with poor plow timing, closure probability could jump into the 30–50% range, especially for rural routes."
       },
       {
-        "scenario": "Localized dense fog pockets at bus times without major icing",
-        "probability": 7,
-        "impact": "Schools remain open; transportation advises slower speeds and possibly minor routing/stop adjustments, but not closure-worthy."
+        "scenario": "No weather deterioration, but significant non‑weather factor appears (e.g., power outage, building issue).",
+        "probability": 2,
+        "impact": "Could cause targeted school or district closure unrelated to road/weather conditions, despite otherwise normal winter weather."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "Plan for a normal on-time opening on Monday, January 5, 2026.",
-        "Have transportation staff and a supervisor spot-check bridges, hills, and known slick spots between 5:30–6:30 AM for any unexpected black ice or dense fog pockets.",
-        "Prepare standard cold-weather protocols: indoor waiting options for students where possible and reminders about dressing for mid-20s wind chills.",
-        "Communicate to families Sunday evening that, based on current forecasts, normal operations are expected, with a note that any unexpected overnight icing would be communicated early in the morning via usual channels.",
-        "Advise bus drivers to be alert for isolated slick patches on untreated residential streets and overpasses, and to drive slightly below typical winter speeds."
+        "Plan for a normal on‑time start on Monday, January 5, 2026.",
+        "Have maintenance/grounds crews pre‑treat key walking surfaces (sidewalks, steps, entrances, bus loops) overnight due to moderate black‑ice risk from high humidity and sub‑freezing temps.",
+        "Issue a brief reminder to staff, students, and families about standard winter driving caution: slightly longer commute times, slower speeds, and extra following distance, especially on untreated side roads.",
+        "Monitor NWS updates and local road reports Sunday evening and early Monday (e.g., by 4:30–5:30 AM) for any unexpected freezing drizzle or rapidly forming dense freezing fog; be prepared to pivot to a delay only if conditions materially worsen from current forecasts.",
+        "Coordinate with transportation to ensure drivers are aware of potential evening fog/freezing fog for extracurricular activity buses and late routes."
       ],
       "for_residents": [
-        "Expect a typical Michigan winter school day with cold, cloudy conditions and possible patchy slick spots on untreated surfaces.",
-        "Allow a few extra minutes for the Monday morning commute to adjust for potential black ice on bridges, overpasses, and side streets even if main roads look clear.",
-        "Use proper winter footwear and walk carefully on parking lots and sidewalks, especially in shaded or low-lying areas where thin ice may linger.",
-        "Monitor local forecasts Sunday night and early Monday for any last-minute changes involving freezing drizzle or denser fog than currently expected."
+        "Expect school to be in session; prepare for a routine winter morning with cold but typical conditions.",
+        "Drive cautiously on Monday morning, particularly on bridges, overpasses, and untreated neighborhood streets, where patchy black ice is possible despite the lack of new precipitation.",
+        "Allow extra time if traveling early or late in the day when fog or freezing fog pockets could reduce visibility.",
+        "Wear appropriate winter clothing for wind chills in the upper teens to low 20s°F while waiting at bus stops or walking to school.",
+        "Keep an eye on late‑evening conditions; if dense fog sets in, consider limiting nonessential driving or using low beams and slower speeds."
       ],
       "for_authorities": [
-        "No need for preemptive closure; maintain routine winter operations schedule for plowing and salting.",
-        "Have road crews spot-check known problem areas (bridges, low spots, curves on rural routes) early Monday for any thin ice from residual moisture or freezing fog.",
-        "Coordinate with school transportation to share any early-morning observations of unexpected slick conditions so they can adjust routes or communicate cautions to drivers if needed.",
-        "Keep an eye on updated model runs Sunday evening for any emerging signal of light freezing precipitation; if such a trend appears, be prepared for a rapid reassessment of morning risk."
+        "Continue standard winter maintenance: salt and sand priority routes and known slick spots overnight; no need for full storm‑response mobilization.",
+        "Have patrols or spot checks in low‑lying and rural areas early Monday to identify any localized black ice or dense fog pockets that may warrant targeted treatment.",
+        "Maintain communication lines between the road commission, law enforcement, and school transportation early Monday (4:30–6:30 AM) to quickly flag any unexpected icing or visibility issues.",
+        "Update public information channels (MDOT/Kent County Road Commission, local media) if conditions deviate from the current low‑impact expectation, especially regarding freezing fog or sudden slick spots.",
+        "No special parking or travel restrictions are needed beyond routine winter advisories for this date."
       ]
     },
     "updates_needed": true,
-    "next_evaluation_time": "2026-01-04T22:00:00-05:00"
+    "next_evaluation_time": "2026-01-04T23:30:00Z"
   },
-  "timestamp": "2026-01-03T14:04:38.368Z",
+  "timestamp": "2026-01-03T18:12:25.268Z",
   "targetDate": "2026-01-05",
   "targetDayName": "Monday",
   "daysAhead": 2,
@@ -237,43 +231,43 @@
       "lat": 43.1152000427246,
       "lon": -85.5136032104492,
       "tz_id": "America/Detroit",
-      "localtime_epoch": 1767449037,
-      "localtime": "2026-01-03 09:03"
+      "localtime_epoch": 1767463903,
+      "localtime": "2026-01-03 13:11"
     },
     "current": {
-      "last_updated_epoch": 1767448800,
-      "last_updated": "2026-01-03 09:00",
-      "temp_c": -7.2,
-      "temp_f": 19,
+      "last_updated_epoch": 1767463200,
+      "last_updated": "2026-01-03 13:00",
+      "temp_c": -6.1,
+      "temp_f": 21,
       "is_day": 1,
       "condition": {
-        "text": "Overcast",
-        "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-        "code": 1009
+        "text": "Patchy light snow",
+        "icon": "//cdn.weatherapi.com/weather/64x64/day/323.png",
+        "code": 1210
       },
-      "wind_mph": 3.4,
-      "wind_kph": 5.4,
-      "wind_degree": 285,
+      "wind_mph": 5.8,
+      "wind_kph": 9.4,
+      "wind_degree": 283,
       "wind_dir": "WNW",
-      "pressure_mb": 1016,
-      "pressure_in": 30,
+      "pressure_mb": 1017,
+      "pressure_in": 30.04,
       "precip_mm": 0,
       "precip_in": 0,
-      "humidity": 74,
+      "humidity": 88,
       "cloud": 100,
-      "feelslike_c": -10,
-      "feelslike_f": 14,
+      "feelslike_c": -10.4,
+      "feelslike_f": 13.3,
       "windchill_c": -8.8,
-      "windchill_f": 16.1,
-      "heatindex_c": -8.6,
-      "heatindex_f": 16.4,
-      "dewpoint_c": -12.3,
-      "dewpoint_f": 10,
-      "vis_km": 16,
-      "vis_miles": 9,
-      "uv": 0.2,
-      "gust_mph": 4.6,
-      "gust_kph": 7.4
+      "windchill_f": 16.2,
+      "heatindex_c": -5.1,
+      "heatindex_f": 22.9,
+      "dewpoint_c": -7.8,
+      "dewpoint_f": 18,
+      "vis_km": 2.4,
+      "vis_miles": 1,
+      "uv": 1.2,
+      "gust_mph": 7.2,
+      "gust_kph": 11.6
     },
     "forecast": {
       "forecastday": [
@@ -680,25 +674,25 @@
             {
               "time_epoch": 1767448800,
               "time": "2026-01-03 09:00",
-              "temp_c": -7.2,
-              "temp_f": 19,
+              "temp_c": -8.6,
+              "temp_f": 16.4,
               "is_day": 1,
               "condition": {
-                "text": "Overcast",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-                "code": 1009
+                "text": "Sunny",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/113.png",
+                "code": 1000
               },
               "wind_mph": 3.4,
               "wind_kph": 5.4,
               "wind_degree": 285,
               "wind_dir": "WNW",
-              "pressure_mb": 1016,
-              "pressure_in": 30,
+              "pressure_mb": 1018,
+              "pressure_in": 30.06,
               "precip_mm": 0,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 74,
-              "cloud": 100,
+              "humidity": 76,
+              "cloud": 15,
               "feelslike_c": -8.8,
               "feelslike_f": 16.1,
               "windchill_c": -8.8,
@@ -711,8 +705,8 @@
               "chance_of_rain": 0,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 16,
-              "vis_miles": 9,
+              "vis_km": 10,
+              "vis_miles": 6,
               "gust_mph": 4.6,
               "gust_kph": 7.4,
               "uv": 0.2
@@ -840,13 +834,13 @@
             {
               "time_epoch": 1767463200,
               "time": "2026-01-03 13:00",
-              "temp_c": -5.1,
-              "temp_f": 22.9,
+              "temp_c": -6.1,
+              "temp_f": 21,
               "is_day": 1,
               "condition": {
-                "text": "Partly Cloudy ",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
-                "code": 1003
+                "text": "Patchy light snow",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/323.png",
+                "code": 1210
               },
               "wind_mph": 5.8,
               "wind_kph": 9.4,
@@ -857,8 +851,8 @@
               "precip_mm": 0,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 81,
-              "cloud": 50,
+              "humidity": 88,
+              "cloud": 100,
               "feelslike_c": -8.8,
               "feelslike_f": 16.2,
               "windchill_c": -8.8,
@@ -871,8 +865,8 @@
               "chance_of_rain": 0,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 10,
-              "vis_miles": 6,
+              "vis_km": 2.4,
+              "vis_miles": 1,
               "gust_mph": 7.2,
               "gust_kph": 11.6,
               "uv": 1.2
