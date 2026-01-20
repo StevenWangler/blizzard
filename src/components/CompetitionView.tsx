@@ -120,13 +120,30 @@ export function CompetitionView() {
     load()
   }, [])
 
-  const blizzardStats = useMemo(() => 
-    calculateCompetitorStats(outcomes, o => o.modelProbability, 'Blizzard AI'),
+  // For fair comparison, only include days where BOTH made predictions (advisory days)
+  const competitionOutcomes = useMemo(() => 
+    outcomes.filter(o => {
+      const blizzard = normalizeProbability(o.modelProbability)
+      const rhs = normalizeProbability(o.rhsPrediction)
+      return blizzard !== null && rhs !== null
+    }),
     [outcomes]
   )
 
+  // Stats are calculated only from head-to-head matchups (advisory days)
+  const blizzardStats = useMemo(() => 
+    calculateCompetitorStats(competitionOutcomes, o => o.modelProbability, 'Blizzard AI'),
+    [competitionOutcomes]
+  )
+
   const rhsStats = useMemo(() => 
-    calculateCompetitorStats(outcomes, o => o.rhsPrediction, 'RHS Students'),
+    calculateCompetitorStats(competitionOutcomes, o => o.rhsPrediction, 'RHS Students'),
+    [competitionOutcomes]
+  )
+
+  // Count of all Blizzard predictions (for context)
+  const totalBlizzardPredictions = useMemo(() => 
+    outcomes.filter(o => normalizeProbability(o.modelProbability) !== null && !o.noSchoolScheduled).length,
     [outcomes]
   )
 
@@ -222,18 +239,20 @@ export function CompetitionView() {
             <Trophy size={64} className="mx-auto mb-4 text-muted-foreground/50" />
             <h3 className="text-xl font-semibold mb-2">No Competition Data Yet</h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Once you start logging outcomes with both Blizzard AI and RHS predictions, 
-              the competition leaderboard will light up here!
+              The competition occurs during <strong>winter weather advisories</strong> when RHS students make predictions.
+              Once both Blizzard AI and RHS have predictions for the same day, matchups will appear here!
             </p>
             <div className="flex items-center justify-center gap-8 mt-8">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Robot size={24} />
                 <span>Blizzard AI</span>
+                <Badge variant="outline" className="text-xs">Daily</Badge>
               </div>
               <span className="text-2xl font-bold text-muted-foreground">vs</span>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Users size={24} />
                 <span>RHS Students</span>
+                <Badge variant="outline" className="text-xs">Advisories Only</Badge>
               </div>
             </div>
           </CardContent>
@@ -262,6 +281,9 @@ export function CompetitionView() {
             <Trophy size={28} weight="fill" className="text-yellow-500" />
             Competition Leaderboard
           </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            Head-to-head comparison on winter weather advisory days ({headToHead.length} matchups)
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-8">
@@ -302,7 +324,7 @@ export function CompetitionView() {
                     <p className="font-semibold">{blizzardStats.avgError}%</p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Total Predictions</span>
+                    <span className="text-muted-foreground">Matchups</span>
                     <p className="font-semibold">{blizzardStats.totalPredictions}</p>
                   </div>
                   <div>
@@ -310,6 +332,9 @@ export function CompetitionView() {
                     <p className="font-semibold">{blizzardStats.perfectCalls}</p>
                   </div>
                 </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Blizzard runs daily ({totalBlizzardPredictions} total predictions)
+                </p>
               </div>
             </div>
 
@@ -350,7 +375,7 @@ export function CompetitionView() {
                     <p className="font-semibold">{rhsStats.avgError}%</p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Total Predictions</span>
+                    <span className="text-muted-foreground">Matchups</span>
                     <p className="font-semibold">{rhsStats.totalPredictions}</p>
                   </div>
                   <div>
@@ -358,6 +383,9 @@ export function CompetitionView() {
                     <p className="font-semibold">{rhsStats.perfectCalls}</p>
                   </div>
                 </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Students predict during winter weather advisories
+                </p>
               </div>
             </div>
           </div>

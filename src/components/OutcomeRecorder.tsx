@@ -6,6 +6,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
 import { 
   CalendarCheck, 
@@ -14,6 +18,7 @@ import {
   ClipboardText, 
   CloudSnow, 
   GithubLogo, 
+  Info,
   ListChecks, 
   Snowflake,
   Sun,
@@ -76,6 +81,30 @@ const NO_SCHOOL_REASONS = [
   { value: 'other', label: 'Other Holiday' },
 ]
 
+/** Generate school days between two dates, excluding weekends */
+const generateSchoolDays = (startDate: string, endDate: string): string[] => {
+  const dates: string[] = []
+  const current = new Date(startDate + 'T12:00:00')
+  const end = new Date(endDate + 'T12:00:00')
+  
+  while (current <= end) {
+    const dayOfWeek = current.getDay()
+    // Skip weekends (0 = Sunday, 6 = Saturday)
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      dates.push(current.toISOString().split('T')[0])
+    }
+    current.setDate(current.getDate() + 1)
+  }
+  
+  return dates
+}
+
+/** Get day of week name */
+const getDayName = (dateStr: string) => {
+  const date = new Date(dateStr + 'T12:00:00')
+  return date.toLocaleDateString(undefined, { weekday: 'short' })
+}
+
 const ghCommandFromForm = (form: OutcomeFormState) => {
   if (!form.outcome) return ''
   
@@ -115,11 +144,25 @@ interface OutcomeFormState {
   rhsPrediction: string
 }
 
+interface BatchDateEntry {
+  date: string
+  outcome: 'snow-day' | 'school-open' | 'no-school'
+  blizzardPrediction?: number | null
+}
+
+interface BatchFormState {
+  startDate: string
+  endDate: string
+  defaultOutcome: 'snow-day' | 'school-open' | 'no-school'
+  entries: BatchDateEntry[]
+}
+
 type QuickOutcome = 'snow-day' | 'school-open' | 'no-school'
 
 export function OutcomeRecorder() {
   const [outcomes, setOutcomes] = useState<SnowDayOutcome[]>([])
   const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState<'single' | 'batch'>('single')
   const [form, setForm] = useState<OutcomeFormState>({
     date: smartDefaultDate(),
     outcome: null,
@@ -128,12 +171,19 @@ export function OutcomeRecorder() {
     blizzardPrediction: '',
     rhsPrediction: ''
   })
+  const [batchForm, setBatchForm] = useState<BatchFormState>({
+    startDate: '',
+    endDate: '',
+    defaultOutcome: 'school-open',
+    entries: []
+  })
   const [error, setError] = useState<string | null>(null)
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showNoSchoolOptions, setShowNoSchoolOptions] = useState(false)
   const [copied, setCopied] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [deleteCopied, setDeleteCopied] = useState(false)
+  const [batchCopied, setBatchCopied] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -154,6 +204,42 @@ export function OutcomeRecorder() {
 
   const stats = useMemo(() => buildOutcomeStats(outcomes), [outcomes])
   const ghCommand = useMemo(() => ghCommandFromForm(form), [form])
+
+  // Generate batch entries when date range changes
+  useEffect(() => {
+    if (batchForm.startDate && batchForm.endDate && batchForm.startDate <= batchForm.endDate) {
+      const schoolDays = generateSchoolDays(batchForm.startDate, batchForm.endDate)
+      
+      // Map school days to entries, preserving existing predictions from outcomes ledger
+      const entries: BatchDateEntry[] = schoolDays.map(date => {
+        // Check if we have a pending entry with a prediction
+        const existingOutcome = outcomes.find(o => o.date?.trim() === date)
+        const prediction = existingOutcome?.modelProbability
+        
+        // Check if there's already an entry in batch form for this date (preserve user edits)
+        const existingEntry = batchForm.entries.find(e => e.date === date)
+        
+        return {
+          date,
+          outcome: existingEntry?.outcome ?? batchForm.defaultOutcome,
+          blizzardPrediction: prediction !== undefined ? normalizeProbability(prediction) : null
+        }
+      })
+      
+      setBatchForm(prev => ({ ...prev, entries }))
+    }
+  }, [batchForm.startDate, batchForm.endDate, batchForm.defaultOutcome, outcomes])
+
+  // Build exceptions object for batch workflow
+  const batchExceptions = useMemo(() => {
+    const exceptions: Record<string, string> = {}
+    for (const entry of batchForm.entries) {
+      if (entry.outcome !== batchForm.defaultOutcome) {
+        exceptions[entry.date] = entry.outcome
+      }
+    }
+    return Object.keys(exceptions).length > 0 ? JSON.stringify(exceptions) : ''
+  }, [batchForm.entries, batchForm.defaultOutcome])
 
   // Check for pending outcomes (last 7 days without records, excluding weekends)
   const pendingDates = useMemo(() => {
@@ -184,6 +270,37 @@ export function OutcomeRecorder() {
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       toast.error('Unable to copy command. Copy manually instead.')
+    }
+  }
+
+  const toggleBatchEntryOutcome = (date: string) => {
+    setBatchForm(prev => ({
+      ...prev,
+      entries: prev.entries.map(entry => {
+        if (entry.date !== date) return entry
+        // Cycle through: school-open -> snow-day -> school-open
+        const newOutcome = entry.outcome === 'school-open' ? 'snow-day' : 'school-open'
+        return { ...entry, outcome: newOutcome }
+      })
+    }))
+  }
+
+  const setAllBatchOutcomes = (outcome: 'snow-day' | 'school-open' | 'no-school') => {
+    setBatchForm(prev => ({
+      ...prev,
+      defaultOutcome: outcome,
+      entries: prev.entries.map(entry => ({ ...entry, outcome }))
+    }))
+  }
+
+  const copyBatchExceptions = async () => {
+    try {
+      await navigator.clipboard.writeText(batchExceptions)
+      setBatchCopied(true)
+      toast.success('Exceptions copied!')
+      setTimeout(() => setBatchCopied(false), 2000)
+    } catch (err) {
+      toast.error('Unable to copy. Copy manually instead.')
     }
   }
 
@@ -272,24 +389,30 @@ export function OutcomeRecorder() {
       {/* Quick Record Card */}
       <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <CalendarCheck size={20} />
-              Record Outcome
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">for</span>
-              <Input
-                type="date"
-                value={form.date}
-                onChange={(e) => handleDateChange(e.target.value)}
-                max={todayISO()}
-                className="w-auto"
-              />
-            </div>
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarCheck size={20} />
+            Record Outcome
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'single' | 'batch')} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="single">Single Day</TabsTrigger>
+              <TabsTrigger value="batch">Batch Entry</TabsTrigger>
+            </TabsList>
+            
+            {/* Single Day Tab */}
+            <TabsContent value="single" className="space-y-4 mt-4">
+              <div className="flex items-center justify-end gap-2">
+                <span className="text-sm text-muted-foreground">for</span>
+                <Input
+                  type="date"
+                  value={form.date}
+                  onChange={(e) => handleDateChange(e.target.value)}
+                  max={todayISO()}
+                  className="w-auto"
+                />
+              </div>
           {/* Main outcome buttons */}
           <div className="grid grid-cols-3 gap-3">
             <Button
@@ -480,6 +603,207 @@ export function OutcomeRecorder() {
               </Button>
             </div>
           )}
+            </TabsContent>
+            
+            {/* Batch Entry Tab */}
+            <TabsContent value="batch" className="space-y-4 mt-4">
+              {/* Date Range Selection */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="batch-start" className="text-sm font-medium">Start Date</Label>
+                  <Input
+                    id="batch-start"
+                    type="date"
+                    value={batchForm.startDate}
+                    onChange={(e) => setBatchForm(prev => ({ ...prev, startDate: e.target.value }))}
+                    max={todayISO()}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="batch-end" className="text-sm font-medium">End Date</Label>
+                  <Input
+                    id="batch-end"
+                    type="date"
+                    value={batchForm.endDate}
+                    onChange={(e) => setBatchForm(prev => ({ ...prev, endDate: e.target.value }))}
+                    max={todayISO()}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              
+              {/* Default outcome selector */}
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium">Default outcome:</span>
+                <div className="flex gap-2">
+                  <Button
+                    variant={batchForm.defaultOutcome === 'school-open' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAllBatchOutcomes('school-open')}
+                  >
+                    <Sun size={16} className="mr-1" />
+                    All School Open
+                  </Button>
+                  <Button
+                    variant={batchForm.defaultOutcome === 'snow-day' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setAllBatchOutcomes('snow-day')}
+                  >
+                    <Snowflake size={16} className="mr-1" />
+                    All Snow Days
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Entries table */}
+              {batchForm.entries.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      {batchForm.entries.length} school days (weekends excluded)
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Click a row to toggle outcome
+                    </span>
+                  </div>
+                  
+                  <div className="rounded-md border overflow-x-auto max-h-64 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-24">Date</TableHead>
+                          <TableHead className="w-16">Day</TableHead>
+                          <TableHead>Blizzard Prediction</TableHead>
+                          <TableHead className="w-32">Outcome</TableHead>
+                          <TableHead className="w-32">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="flex items-center gap-1 cursor-help">
+                                    RHS Students
+                                    <Info size={12} className="text-muted-foreground" />
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="max-w-xs text-xs">
+                                    Students only predict during winter weather advisories. 
+                                    Add their predictions later via individual edits.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {batchForm.entries.map(entry => (
+                          <TableRow 
+                            key={entry.date}
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => toggleBatchEntryOutcome(entry.date)}
+                          >
+                            <TableCell className="font-medium">{entry.date}</TableCell>
+                            <TableCell className="text-muted-foreground">{getDayName(entry.date)}</TableCell>
+                            <TableCell>
+                              {entry.blizzardPrediction !== null ? (
+                                <span className="flex items-center gap-1">
+                                  <Snowflake size={14} className="text-blue-500" />
+                                  {entry.blizzardPrediction}%
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground text-xs">
+                                  Will fetch from git history
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant={entry.outcome === 'snow-day' ? 'destructive' : 'secondary'}
+                                className="gap-1"
+                              >
+                                {entry.outcome === 'snow-day' ? (
+                                  <><Snowflake size={12} /> Snow Day</>
+                                ) : (
+                                  <><Sun size={12} /> Open</>
+                                )}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-xs text-muted-foreground italic">
+                                Add later
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  
+                  {/* Batch action */}
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <GithubLogo size={20} className="text-primary" />
+                      <span className="font-medium">Record via GitHub Workflow</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Open the batch workflow and fill in these values. Blizzard predictions will be 
+                      automatically retrieved from git history.
+                    </p>
+                    <div className="text-xs bg-muted rounded p-2 space-y-1">
+                      <div><span className="text-muted-foreground">start_date:</span> <code className="font-semibold">{batchForm.startDate}</code></div>
+                      <div><span className="text-muted-foreground">end_date:</span> <code className="font-semibold">{batchForm.endDate}</code></div>
+                      <div><span className="text-muted-foreground">default_outcome:</span> <code className="font-semibold">{batchForm.defaultOutcome}</code></div>
+                      {batchExceptions && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-muted-foreground">exceptions:</span>
+                          <code className="font-semibold text-xs break-all flex-1">{batchExceptions}</code>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={(e) => { e.stopPropagation(); copyBatchExceptions(); }}
+                            className="h-6 text-xs shrink-0"
+                          >
+                            {batchCopied ? <CheckCircle size={12} /> : <ClipboardText size={12} />}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <Button asChild className="w-full">
+                      <a
+                        href="https://github.com/StevenWangler/snowday-forecast/actions/workflows/log-outcomes-batch.yml"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <GithubLogo size={18} className="mr-2" />
+                        Open Batch Workflow Form
+                      </a>
+                    </Button>
+                    
+                    {/* Dry run suggestion */}
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Info size={12} />
+                      Tip: Check "dry_run" first to preview changes before committing
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {!batchForm.startDate || !batchForm.endDate ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CalendarCheck size={40} className="mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">Select a date range to get started</p>
+                  <p className="text-xs">Weekends will be automatically excluded</p>
+                </div>
+              ) : batchForm.entries.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Warning size={40} className="mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">No school days in selected range</p>
+                  <p className="text-xs">The range may only contain weekends</p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 

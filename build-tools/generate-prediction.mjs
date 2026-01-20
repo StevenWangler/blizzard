@@ -407,7 +407,7 @@ let _currentExpertAnalyses = {
 const meteorologistAgent = new Agent({
   name: 'Chief Meteorologist',
   instructions: meteorologistPrompt,
-  model: 'gpt-5.1',
+  model: 'gpt-5.2',
   tools: [webSearchTool(), codeInterpreterTool()],
   outputType: WeatherAnalysisSchema
 })
@@ -415,7 +415,7 @@ const meteorologistAgent = new Agent({
 const historianAgent = new Agent({
   name: 'Weather Pattern Historian',
   instructions: historianPrompt,
-  model: 'gpt-5.1',
+  model: 'gpt-5.2',
   tools: [webSearchTool(), codeInterpreterTool()],
   outputType: HistoricalAnalysisSchema
 })
@@ -423,7 +423,7 @@ const historianAgent = new Agent({
 const safetyAnalystAgent = new Agent({
   name: 'Transportation Safety Analyst',
   instructions: safetyAnalystPrompt,
-  model: 'gpt-5.1',
+  model: 'gpt-5.2',
   tools: [webSearchTool(), codeInterpreterTool()],
   outputType: SafetyAnalysisSchema
 })
@@ -431,7 +431,7 @@ const safetyAnalystAgent = new Agent({
 const newsIntelAgent = new Agent({
   name: 'Local News Intelligence',
   instructions: newsIntelPrompt,
-  model: 'gpt-5.1',
+  model: 'gpt-5.2',
   tools: [webSearchTool()],
   outputType: NewsAnalysisSchema
 })
@@ -583,7 +583,7 @@ You MUST respond with a JSON object matching this EXACT structure:
 
 DO NOT return temperature_analysis, precipitation_analysis, or raw weather data.
 Return ONLY the prediction decision structure above.`,
-  model: 'gpt-5.1',
+  model: 'gpt-5.2',
   tools: [askMeteorologist, askHistorian, askSafetyAnalyst, askNewsIntel, crossCheckExperts],
   outputType: FinalPredictionSchema
 })
