@@ -91,6 +91,15 @@ function parseCSV(csv) {
 }
 
 /**
+ * Validate date format (YYYY-MM-DD)
+ */
+function isValidDate(dateStr) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false
+  const date = new Date(dateStr + 'T12:00:00')
+  return !Number.isNaN(date.getTime())
+}
+
+/**
  * Parse date range input (START_DATE, END_DATE, DEFAULT_OUTCOME)
  */
 function parseDateRange() {
@@ -101,8 +110,28 @@ function parseDateRange() {
   
   if (!startDate || !endDate) return null
   
+  // Validate date formats
+  if (!isValidDate(startDate)) {
+    console.error(`Invalid START_DATE format: ${startDate} (expected YYYY-MM-DD)`)
+    process.exit(1)
+  }
+  if (!isValidDate(endDate)) {
+    console.error(`Invalid END_DATE format: ${endDate} (expected YYYY-MM-DD)`)
+    process.exit(1)
+  }
+  
   const schoolDays = generateSchoolDays(startDate, endDate)
-  const exceptionMap = exceptions ? JSON.parse(exceptions) : {}
+  
+  let exceptionMap = {}
+  if (exceptions) {
+    try {
+      exceptionMap = JSON.parse(exceptions)
+    } catch (e) {
+      console.error(`Invalid EXCEPTIONS JSON: ${e.message}`)
+      console.error('Expected format: {"2026-01-10": "snow-day", "2026-01-15": "no-school"}')
+      process.exit(1)
+    }
+  }
   
   return schoolDays.map(date => ({
     date,
@@ -113,7 +142,7 @@ function parseDateRange() {
 /**
  * Build outcome entry with historical prediction data
  */
-async function buildEntry(input, existingEntry = null) {
+function buildEntry(input, existingEntry = null) {
   const { date, outcome, noSchoolReason, notes, rhsPrediction } = input
   const isNoSchool = outcome === 'no-school'
   
@@ -208,7 +237,7 @@ async function main() {
     const existingEntry = existingLedger.find(e => e.date?.trim() === input.date.trim())
     
     // Build new entry with historical prediction
-    const newEntry = await buildEntry(input, existingEntry)
+    const newEntry = buildEntry(input, existingEntry)
     results.push(newEntry)
     
     // Log what we're doing

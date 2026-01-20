@@ -237,8 +237,11 @@ Options:
 // Export for use as module
 export { getHistoricalPrediction, generateSchoolDays }
 
-// Run if called directly
-main().catch(error => {
-  console.error(error)
-  process.exit(1)
-})
+// Run if called directly (not imported as module)
+const isMainModule = import.meta.url === `file://${process.argv[1]}`
+if (isMainModule) {
+  main().catch(error => {
+    console.error(error)
+    process.exit(1)
+  })
+}
