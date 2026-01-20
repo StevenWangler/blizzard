@@ -70,15 +70,15 @@ const formatDate = (dateStr: string) => {
 
 /** Holiday reason options */
 const NO_SCHOOL_REASONS = [
-  { value: 'weekend', label: 'Weekend' },
-  { value: 'thanksgiving', label: 'Thanksgiving' },
   { value: 'winter-break', label: 'Winter Break' },
+  { value: 'christmas', label: 'Christmas' },
+  { value: 'thanksgiving', label: 'Thanksgiving' },
   { value: 'spring-break', label: 'Spring Break' },
   { value: 'teacher-day', label: 'Teacher In-Service' },
   { value: 'mlk-day', label: 'MLK Day' },
   { value: 'presidents-day', label: 'Presidents Day' },
   { value: 'memorial-day', label: 'Memorial Day' },
-  { value: 'other', label: 'Other Holiday' },
+  { value: 'holiday', label: 'Other Holiday' },
 ]
 
 /** Generate school days between two dates, excluding weekends */
@@ -147,6 +147,7 @@ interface OutcomeFormState {
 interface BatchDateEntry {
   date: string
   outcome: 'snow-day' | 'school-open' | 'no-school'
+  noSchoolReason?: string
   blizzardPrediction?: number | null
 }
 
@@ -177,6 +178,7 @@ export function OutcomeRecorder() {
     defaultOutcome: 'school-open',
     entries: []
   })
+  const [batchNoSchoolReason, setBatchNoSchoolReason] = useState<string>('winter-break')
   const [error, setError] = useState<string | null>(null)
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showNoSchoolOptions, setShowNoSchoolOptions] = useState(false)
@@ -278,9 +280,18 @@ export function OutcomeRecorder() {
       ...prev,
       entries: prev.entries.map(entry => {
         if (entry.date !== date) return entry
-        // Cycle through: school-open -> snow-day -> school-open
-        const newOutcome = entry.outcome === 'school-open' ? 'snow-day' : 'school-open'
-        return { ...entry, outcome: newOutcome }
+        // Cycle through: school-open -> snow-day -> no-school -> school-open
+        let newOutcome: 'snow-day' | 'school-open' | 'no-school'
+        let newReason: string | undefined
+        if (entry.outcome === 'school-open') {
+          newOutcome = 'snow-day'
+        } else if (entry.outcome === 'snow-day') {
+          newOutcome = 'no-school'
+          newReason = batchNoSchoolReason
+        } else {
+          newOutcome = 'school-open'
+        }
+        return { ...entry, outcome: newOutcome, noSchoolReason: newReason }
       })
     }))
   }
@@ -289,7 +300,11 @@ export function OutcomeRecorder() {
     setBatchForm(prev => ({
       ...prev,
       defaultOutcome: outcome,
-      entries: prev.entries.map(entry => ({ ...entry, outcome }))
+      entries: prev.entries.map(entry => ({
+        ...entry,
+        outcome,
+        noSchoolReason: outcome === 'no-school' ? batchNoSchoolReason : undefined
+      }))
     }))
   }
 
@@ -634,25 +649,61 @@ export function OutcomeRecorder() {
               </div>
               
               {/* Default outcome selector */}
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium">Default outcome:</span>
-                <div className="flex gap-2">
-                  <Button
-                    variant={batchForm.defaultOutcome === 'school-open' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setAllBatchOutcomes('school-open')}
+              <div className="space-y-3">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <span className="text-sm font-medium">Default outcome:</span>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      variant={batchForm.defaultOutcome === 'school-open' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setAllBatchOutcomes('school-open')}
+                    >
+                      <Sun size={16} className="mr-1" />
+                      School Open
+                    </Button>
+                    <Button
+                      variant={batchForm.defaultOutcome === 'snow-day' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setAllBatchOutcomes('snow-day')}
+                    >
+                      <Snowflake size={16} className="mr-1" />
+                      Snow Day
+                    </Button>
+                    <Button
+                      variant={batchForm.defaultOutcome === 'no-school' ? 'secondary' : 'outline'}
+                      size="sm"
+                      onClick={() => setAllBatchOutcomes('no-school')}
+                    >
+                      <TreePalm size={16} className="mr-1" />
+                      No School
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* No school reason selector - shown when no-school is selected or available */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-xs text-muted-foreground">No-school reason:</span>
+                  <select
+                    value={batchNoSchoolReason}
+                    onChange={(e) => {
+                      setBatchNoSchoolReason(e.target.value)
+                      // Update any existing no-school entries with new reason
+                      setBatchForm(prev => ({
+                        ...prev,
+                        entries: prev.entries.map(entry => 
+                          entry.outcome === 'no-school' 
+                            ? { ...entry, noSchoolReason: e.target.value }
+                            : entry
+                        )
+                      }))
+                    }}
+                    className="text-sm border rounded px-2 py-1 bg-background"
                   >
-                    <Sun size={16} className="mr-1" />
-                    All School Open
-                  </Button>
-                  <Button
-                    variant={batchForm.defaultOutcome === 'snow-day' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setAllBatchOutcomes('snow-day')}
-                  >
-                    <Snowflake size={16} className="mr-1" />
-                    All Snow Days
-                  </Button>
+                    {NO_SCHOOL_REASONS.map(reason => (
+                      <option key={reason.value} value={reason.value}>{reason.label}</option>
+                    ))}
+                  </select>
+                  <span className="text-xs text-muted-foreground">(applies to all no-school days)</span>
                 </div>
               </div>
               
@@ -664,7 +715,7 @@ export function OutcomeRecorder() {
                       {batchForm.entries.length} school days (weekends excluded)
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      Click a row to toggle outcome
+                      Click a row to cycle: Open → Snow Day → No School
                     </span>
                   </div>
                   
@@ -719,11 +770,13 @@ export function OutcomeRecorder() {
                             </TableCell>
                             <TableCell>
                               <Badge 
-                                variant={entry.outcome === 'snow-day' ? 'destructive' : 'secondary'}
+                                variant={entry.outcome === 'snow-day' ? 'destructive' : entry.outcome === 'no-school' ? 'outline' : 'secondary'}
                                 className="gap-1"
                               >
                                 {entry.outcome === 'snow-day' ? (
                                   <><Snowflake size={12} /> Snow Day</>
+                                ) : entry.outcome === 'no-school' ? (
+                                  <><TreePalm size={12} /> {NO_SCHOOL_REASONS.find(r => r.value === entry.noSchoolReason)?.label || 'No School'}</>
                                 ) : (
                                   <><Sun size={12} /> Open</>
                                 )}
