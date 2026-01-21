@@ -2,223 +2,215 @@
   "meteorology": {
     "temperature_analysis": {
       "current_temp_f": 21,
-      "overnight_low_f": 12.9,
-      "morning_high_f": 18.2,
+      "overnight_low_f": 8.3,
+      "morning_high_f": 19.7,
       "freezing_hours": 24,
       "temperature_trend": "falling",
-      "windchill_factor": -1
+      "windchill_factor": 2.6
     },
     "precipitation_analysis": {
       "snow_probability_overnight": 100,
       "snow_probability_morning": 0,
       "total_snowfall_inches": 1.1,
-      "snowfall_rate_peak": 0.33,
+      "snowfall_rate_peak": 0.3,
       "precipitation_type": "snow"
     },
     "wind_analysis": {
       "max_wind_speed_mph": 16.3,
       "wind_direction": "W to WNW",
-      "sustained_winds_mph": 13.5,
+      "sustained_winds_mph": 12.5,
       "wind_chill_impact": true
     },
     "visibility_analysis": {
       "minimum_visibility_miles": 1,
       "avg_visibility_miles": 4,
       "visibility_factors": [
-        "Snow showers overnight (2–4 AM)",
-        "Blowing snow at times in the evening/night",
-        "Overcast/low clouds (may cause localized reductions even without active snow)"
+        "Overnight snow (2–4 AM) may briefly reduce visibility, especially in heavier bursts",
+        "Evening/night snow showers with pockets of blowing snow could intermittently drop visibility to ~1 mile"
       ]
     },
     "alert_summary": [
       {
         "type": "Winter Weather Advisory",
         "severity": "Moderate",
-        "description": "Advisory in effect until 10:00 AM EST Wed 2026-01-21 for nearby counties including Kent (where Rockford is), with 2–5 inches and reduced visibility impacting the Wed AM commute (this is prior to the target school day)."
-      },
-      {
-        "type": "Winter Storm Warning",
-        "severity": "Severe",
-        "description": "Warning until 10:00 AM EST Wed 2026-01-21 for lakeshore counties (Ottawa/Muskegon/Oceana) for heavy lake-effect snow and very low visibility; may influence regional travel/resources but is not centered on Rockford for Thu."
+        "description": "In effect Wednesday, 2026-01-21, until 10:00 AM EST (includes Kent County). Focused on morning snowfall/visibility impacts for Wednesday rather than Thursday."
       }
     ],
-    "overall_conditions_summary": "For Thu 2026-01-22 in Rockford: light accumulation overall (~1.1\" forecast for the day) with the most impactful snow occurring overnight between about 2–4 AM (moderate snow) and then ending before the core morning commute. That timing strongly favors plow cleanup before schools start. Temperatures fall through the morning (upper teens) with wind chills near/just below 0°F, but cold alone rarely closes Michigan schools. Winds 10–16 mph (gusts low 20s) could cause some drifting/blowing of existing snow, yet amounts and wind are not high enough for widespread whiteout conditions. Expect some slick spots and reduced visibility pockets early, but overall this setup looks more like a ‘normal winter day’ than a closure event in Michigan. Snow-day risk: low; at most a small chance of a delay if roads are locally slick or visibility briefly drops right around daybreak."
+    "overall_conditions_summary": "For Thursday, 2026-01-22 in Rockford, the main school-day-impacting snow is NOT during the morning commute: accumulating snow is concentrated overnight around ~2–4 AM with roughly ~1 inch possible, then conditions trend quieter/drier through the morning and daytime (temps in the teens, wind chills near/just below 0°F). With Michigan’s high snow tolerance and several hours for plows after snow ends (~after 4–5 AM), a full snow day is unlikely based on snow amounts alone. The bigger concern is localized low visibility and drifting later Thursday evening/night (patchy moderate snow/blowing snow), which would impact after-school/evening travel more than the Thursday morning commute. Overall: low-to-moderate disruption risk for opening on time; higher risk for slick spots and reduced visibility in spots, but not classic snow-day criteria unless snow bands overperform locally."
   },
   "history": {
     "similar_weather_patterns": [
       {
-        "pattern_description": "Post-system wraparound / lake-effect snow showers on W–WNW flow: light accumulations (around 1 inch) but periodic visibility drops in bands, especially evening/night. This often produces slick secondary roads without being a classic ‘snow day’ setup unless bands intensify right at the AM commute.",
+        "pattern_description": "Light-to-moderate overnight snow showers (around ~1 inch) ending before/near the morning commute, followed by a cold, mostly dry daytime. Roads can be slick early but conditions typically improve quickly once plows run and traffic packs lanes.",
         "historical_snow_day_rate": 0.12,
         "confidence_level": "medium"
       },
       {
-        "pattern_description": "Cold, windy day after an advisory-level event the prior morning: plows have usually caught up on main roads, but drifting and refreeze on untreated roads can remain a problem. Closures are more likely if there’s a flash-freeze after daytime melting; here, temps stay below freezing all day, so it’s more ‘steady winter road’ than ‘freeze-thaw ice’ disruption.",
-        "historical_snow_day_rate": 0.08,
+        "pattern_description": "Post-storm cleanup day: a notable advisory event impacts the prior morning (Wednesday), then the next day brings only minor additional accumulation. Districts in West Michigan commonly stay open the following day unless cleanup was incomplete or there are secondary hazards (ice, drifting).",
+        "historical_snow_day_rate": 0.18,
         "confidence_level": "medium"
       },
       {
-        "pattern_description": "Moderate snow bursts overnight with modest totals (generally 1–3 inches) combined with 15–25 mph winds and some blowing snow. In West Michigan, this tends to cause delays or localized cancellations (rural routes/hills) more than district-wide closures—unless snowfall rates exceed ~1 inch/hr near bus pickup windows.",
-        "historical_snow_day_rate": 0.18,
+        "pattern_description": "Cold + gusty with intermittent evening snow and localized blowing snow (reduced visibility in spots), but total daily snowfall stays low. This tends to cause isolated travel issues (open country roads, bridges) rather than districtwide closures in Kent County-area communities.",
+        "historical_snow_day_rate": 0.08,
         "confidence_level": "low"
       }
     ],
     "seasonal_context": {
-      "typical_conditions_for_date": "Late January in Rockford (Kent County area) is peak snow-season: subfreezing temperatures are common, and schools are generally equipped to operate through light/moderate snowfall. District-wide closures usually require either (a) a higher-end snowfall event with poor timing (often 8–10+ inches, especially overnight into the morning), (b) significant icing/freezing rain, or (c) extreme cold with wind chills near/below about -15°F.",
+      "typical_conditions_for_date": "Late January in Rockford (Kent County) is peak winter: cold mornings are normal, and districts are generally equipped for routine plowing/salting. Closures are more commonly driven by major overnight totals (often ~8–10+ inches with bad timing), significant ice accretion/freezing rain, true blizzard conditions with widespread near-zero visibility, or extreme cold where wind chills approach about -15°F or colder.",
       "unusual_factors": [
-        "While total snow for Thu 2026-01-22 is modest (~2.8 cm / ~1.1 in), the forecast includes periods of reduced visibility (down to ~1 mile at times, and ~1 mile again late evening) and ‘blowing snow’ signals in the evening/night—consistent with banded snow showers causing localized hazards.",
-        "Very cold wind chills during the school commute window: around 7–10 AM, wind chills are roughly near 0°F to single digits above 0°F (not the typical Michigan closure threshold, but it increases risk if students are outside for buses).",
-        "Road conditions may be influenced by the prior day’s advisory-level snow/freezing precipitation (Wed 2026-01-21), which can leave hardpack/icy patches on untreated roads even if totals on Thu are low."
+        "There is already a winter weather advisory in effect on Wednesday morning (2026-01-21) for the area, which can leave residual slick spots and slower cleanup into Thursday if snowfall and temperatures limit melting.",
+        "Thursday morning wind chills look near the 'very cold' range (roughly 0°F to slightly below around 9–11 AM), which can keep roads from improving quickly and can raise safety concerns at bus stops, but is not clearly in the typical closure-trigger range (near/below -15°F wind chill).",
+        "Patchy reduced visibility is possible at times (notably late evening per the forecast), but the highest-impact visibility issues are not concentrated in the Thursday morning commute window in the provided hourly data."
       ],
       "seasonal_probability_adjustment": -0.05
     },
     "location_specific_factors": {
       "local_microclimates": [
-        "West Michigan W/WNW flow can create narrow lake-effect bands that shift quickly; a small change in band placement can swing conditions from ‘fine’ to ‘near-whiteout’ over a few miles.",
-        "Rockford sits near river valleys/rolling terrain where untreated back roads and shaded stretches can stay slick longer, especially with temps staying below freezing all day."
+        "Rockford/NE Kent County can see localized lake-effect bands and sharp mile-to-mile differences; a narrow heavier band can overperform snowfall totals versus the daily forecast average.",
+        "Rural edges and north/south routes outside the immediate town can drift more readily with W/WNW winds, creating slick stretches even when in-town roads look fine."
       ],
       "infrastructure_considerations": [
-        "Kent County/GR metro-area road crews and school districts typically handle 1–3 inch snow events without closing, especially if the heaviest snow is not during the early-morning bus window.",
-        "Visibility-driven hazards (snow squalls/bands) are more disruptive than the total accumulation suggests; if a band sets up during 6–8 AM, that’s the main pathway to a delay."
+        "West Michigan districts and road commissions typically handle 1–3 inches routinely with normal bus operations, though secondary roads and longer rural routes are more sensitive.",
+        "The bigger operational risk here is a 'one-two punch'—Wednesday morning’s advisory snowfall + cold temperatures limiting cleanup—rather than Thursday’s new snowfall amount by itself."
       ],
-      "elevation_impact": "Minor-to-moderate: small elevation/terrain changes around Rockford can increase patchy drifting and localized slick spots, but not usually enough alone to force a widespread closure at ~1 inch totals."
+      "elevation_impact": "Minor rolling terrain changes can increase localized drifting/exposure on open stretches, but there is no major elevation-driven snow amplification like you’d see in mountainous areas."
     },
-    "confidence_assessment": "Overall signal favors NO full snow day for Rockford on Thu 2026-01-22 based on low total snow (~1.1 in) and absence of major icing or extreme wind chills. The main caveat is banded snow showers: a brief heavier burst during the morning commute could push conditions toward a DELAY or localized disruptions despite modest daily totals. Confidence: medium."
+    "confidence_assessment": "For Thursday 2026-01-22, the forecast supports a LOW snow-day likelihood based on snow amount alone (around 2.8 cm / ~1.1\" total) and the fact that the steadiest snow in the provided hourly data is mainly overnight (2–4 AM) with a cold but manageable daytime. The main watch-outs are residual impacts from Wednesday morning’s advisory snowfall (cleanup quality, untreated neighborhoods/side roads, refreeze) and localized blowing snow/visibility pockets later in the day. Overall, this setup is more consistent with 'school open, possibly slower buses / caution on secondary roads' than a districtwide closure."
   },
   "safety": {
     "road_conditions": {
-      "primary_roads_score": 7.8,
+      "primary_roads_score": 8.2,
       "secondary_roads_score": 6.6,
-      "parking_lots_score": 6.2,
+      "parking_lots_score": 6.9,
       "ice_formation_risk": "moderate"
     },
     "travel_safety": {
-      "walking_conditions_score": 6.3,
-      "driving_conditions_score": 7,
+      "walking_conditions_score": 6.6,
+      "driving_conditions_score": 7.1,
       "public_transport_impact": "minimal",
       "emergency_access_concern": false
     },
     "timing_analysis": {
       "worst_conditions_start_time": "2026-01-22 02:00",
-      "worst_conditions_end_time": "2026-01-22 05:00",
+      "worst_conditions_end_time": "2026-01-22 04:00",
       "morning_commute_impact": "moderate",
       "afternoon_impact": "minimal"
     },
     "safety_recommendations": [
-      "Main snow impact is overnight (roughly 2–5 AM). Expect plows to have a meaningful window before buses run, improving primary road conditions by 6–8 AM.",
-      "Despite little/no new precip shown during 6–8 AM, temperatures are well below freezing; watch for refreeze/black ice on bridges, overpasses, and untreated rural segments.",
-      "Secondary/subdivision roads and some bus turnarounds may still be snow-packed early; consider slower bus speeds and extra route time, especially on hills/curves.",
-      "Prioritize lot and sidewalk treatment before first arrivals: packed snow can glaze over in the single digits/teens with wind chills near/below 0°F.",
-      "Plan for reduced traction at stop locations and parent drop-off queues; encourage wider following distances and minimize sudden braking/turning."
+      "Overnight snow (roughly 02:00–04:00) may leave a thin/slushy layer before plows finish their first full pass—prioritize early AM bus routes on hills, bridges, and wind-exposed stretches.",
+      "Treat this primarily as a 'slick spots' morning: watch for refreeze on untreated surfaces because temperatures fall into the teens (°F) with wind chills near/under 0°F after sunrise.",
+      "Have facilities plan for mechanical clearing and spot-salting at school entrances, sidewalks, and drop-off loops before ~07:00; parking lots and compacted areas can stay slick even if main roads improve.",
+      "If you have rural/low-priority roads in your district, consider delaying bus pull-out times or consolidating stops where feasible to reduce stopping/starting on partially treated roads.",
+      "Communicate winter-walking precautions (slow down, traction footwear if available) due to cold + potential residual slickness, especially for students waiting at stops."
     ],
     "risk_level": "moderate"
   },
   "news": {
     "local_news": [
       {
-        "source": "Michigan Public (Michigan Public Radio)",
-        "headline": "I-196 shut down in west Michigan after 100-car pileup in whiteout conditions",
-        "summary": "A massive multi-vehicle pileup (reported as 100+ vehicles) on I-196 in Zeeland Township on Monday, Jan. 19, 2026 underscores how dangerous travel has been in the Grand Rapids–Holland corridor during recent lake-effect/blowing snow. While this occurred earlier in the week, it’s a strong signal that road conditions in the region have been deteriorating quickly during snow bands and low visibility—factors districts often weigh for next-day calls (Thu, Jan. 22).",
+        "source": "Big Rapids News",
+        "headline": "Winter Weather Advisory mentioned for Kent County region; additional snow and very cold wind chills expected into Thu/Fri",
+        "summary": "Coverage notes a Winter Weather Advisory affecting a broad area that includes Kent County, with snow creating slick travel and additional lake-effect snow possible through Friday, followed by very cold (subzero) temperatures and dangerous wind chills.",
         "relevance": "high",
-        "url": "https://www.michiganpublic.org/weather/2026-01-19/i-196-shut-down-in-west-michigan-after-100-car-pileup-in-whiteout-conditions"
+        "url": "https://www.bigrapidsnews.com/news/article/mecosta-winter-weather-advisory-21305293.php"
       },
       {
-        "source": "NBC (republished on NBC Chicago)",
-        "headline": "Pileup involving up to 100 cars reported on Michigan highway; 'Avoid driving today'",
-        "summary": "Coverage of the I-196 pileup includes a quoted NWS Grand Rapids warning about whiteouts, slide-offs, and multi-car accidents observed via MDOT webcams. This reinforces that official messaging has been emphasizing travel risk near/west of US-131 during active bands—relevant for Rockford-area commutes if similar bands redevelop overnight into Thursday.",
-        "relevance": "high",
-        "url": "https://www.nbcchicago.com/weather/pileup-involving-up-to-100-cars-reported-on-michigan-highway-avoid-driving-today/3878255/"
-      },
-      {
-        "source": "Big Rapids News (weather coverage citing NWS)",
-        "headline": "Advisories issued across Michigan for snow tonight through Wednesday morning",
-        "summary": "Report notes a broader lower-peninsula advisory setup with higher totals closer to Lake Michigan and lesser (but still impactful) totals inland; it’s consistent with a pattern of repeated snow episodes. For Rockford/Kent County, this kind of ‘persistent snow + cold’ pattern tends to keep roads slick (especially mornings/bridges) and can increase the chance of delays/closures if bands linger into Thursday.",
-        "relevance": "medium",
-        "url": "https://www.bigrapidsnews.com/news/article/michigan-snow-advisory-january-21-21305382.php"
-      },
-      {
-        "source": "Big Rapids News (weather coverage citing NWS)",
-        "headline": "Winter storm warnings in West Michigan as lake-effect snow, subzero wind chills hit",
-        "summary": "Highlights continued snow + arctic air with wind chills forecast to be well below zero (around -17°F mentioned by Thursday morning in the piece) and ongoing snow showers possible Thu/Fri, increasing slick-road risk. Extreme cold itself can contribute to closure decisions (especially if wind chills approach district thresholds) and also reduces effectiveness of some road treatments.",
+        "source": "Big Rapids News",
+        "headline": "Lake-effect snow continues; arctic air brings subzero wind chills (around -17°F noted) by Thursday morning",
+        "summary": "Story highlights continued snow and worsening cold, with slick bridges/overpasses and dangerous wind chills Thursday morning—conditions that commonly influence delay/closure decisions.",
         "relevance": "high",
         "url": "https://www.bigrapidsnews.com/news/article/west-michigan-winter-storm-21306619.php"
+      },
+      {
+        "source": "FOX 17 (West Michigan)",
+        "headline": "Rockford High School feature (context: recent snow impacts in Rockford area)",
+        "summary": "Weather-related feature indicates Rockford had recently been hit with a snow day after a storm brought significant snowfall (reported as over a foot in Rockford in that segment). Not a closure notice for Jan 22, but reinforces ongoing impactful winter pattern.",
+        "relevance": "medium",
+        "url": "https://www.fox17online.com/weather/weather-articles/humans-vs-the-machine-rockford-high-school-competes-with-ai-to-predict-snow-days"
+      },
+      {
+        "source": "WestMichiganWeather.net",
+        "headline": "School Closing Outlook includes Thursday 01/22/2026 in the outlook window; notes warnings/advisories & locally heavy snow zones (esp. lakeshore)",
+        "summary": "A local forecaster ‘school closing outlook’ discusses likely vs. elevated risk zones based on snow rates/totals and ongoing winter headlines. While not an official closure list, this is a strong ‘signal’ source people watch when anticipating next-day closures/delays.",
+        "relevance": "medium",
+        "url": "https://www.westmichiganweather.net/post/school-closings-outlooks-for-wednesday-01-21-2026-thursday-01-22-2026-and-friday-01-23-2026"
       }
     ],
     "school_district_signals": {
       "official_announcements": [
-        "Rockford Public Schools (MI) website: As of crawl time (Jan. 21, 2026), the RPS homepage showed general district updates and the January 2026 calendar, but no closure/delay post for Thu, Jan. 22, 2026 was visible in the captured page content. (Families should still monitor official RPS channels early morning on Jan. 22.)",
-        "Forest Hills Public Schools site shows Thu, Jan. 22 events posted (e.g., Pine Ridge Open House; Gone Boarding info night), and no closure notice for Jan. 22 was visible on the homepage at crawl time.",
-        "Forest Hills School District (fhrangers.org) posted a past weather action: 'Tuesday, January 20, 2026 – 2 Hour Delay' (cold-related). This indicates districts are actively using delays this week under the current cold/snow regime."
+        "Rockford Public Schools (Rockford, MI) website ‘RPS Announcements & Closings’ page shows general announcements as of Jan 20, 2026 but no specific closure/delay notice found for Thu, 2026-01-22 at time of search. (Check early morning Thu for updates.)",
+        "Forest Hills area districts have recently used weather adjustments (example: Forest Hills School District posted a 2-hour delay for Tue, Jan 20, 2026 due to cold), suggesting administrators are actively responding to conditions this week."
       ],
       "early_dismissal_history": true,
       "neighboring_district_closures": [
-        "No verified 'closed' postings for Thu, Jan. 22, 2026 were found in the sources captured during this scan for Rockford-area neighboring districts (Forest Hills, Sparta) at the time checked; however, Forest Hills did implement a 2-hour delay on Tue, Jan. 20, 2026 due to cold, signaling operational sensitivity this week."
+        "No clear official ‘Closed Thu Jan 22, 2026’ announcements located on the primary district sites checked (Rockford, Sparta, Lowell, Forest Hills) at time of search; however Forest Hills showed a recent weather delay (Tue Jan 20, 2026), which can be an early indicator of heightened sensitivity to ongoing conditions."
       ]
     },
     "community_intel": {
       "social_media_sentiment": "uncertain",
       "reported_road_conditions": [
-        "NWS/official messaging (via NBC coverage) warned of whiteouts, slide-offs, and multi-car accidents observed on major roads via MDOT webcams during lake-effect/blowing snow episodes earlier this week.",
-        "Regional reporting indicates road crews have been battling snow/ice and that extreme cold can limit de-icing effectiveness (reported in prior-season coverage context; not a same-day Kent-specific operations bulletin for Jan. 21, 2026 in the captured sources)."
+        "Reddit r/grandrapids road-conditions thread (Tue Jan 20, 2026) reported major icing on US-131 between Rockford and West River with multiple slide-offs/rollover reports; several commenters described highways ‘pure ice’ and urged back roads / slow travel."
       ],
       "power_outage_reports": false,
       "local_event_cancellations": []
     },
-    "key_findings_summary": "For Thu, Jan. 22, 2026 in the Rockford (MI) / Kent County area, the strongest closure-related ‘signals’ found in this scan are regional hazard indicators rather than direct district postings: (1) this week’s severe travel impacts in the metro area (notably the Jan. 19 I-196 100+ vehicle pileup in whiteout conditions), and (2) continued snow + arctic cold messaging (wind chills well below zero referenced by Thursday morning in weather coverage). As of the time checked (Jan. 21, 2026), Rockford Public Schools and key neighboring districts’ visible web postings did not show a confirmed Thu (Jan. 22) closure/delay announcement in the captured pages; Forest Hills did have a recent 2-hour delay (Tue, Jan. 20) due to cold, suggesting districts are making weather-driven adjustments this week. Overall community chatter signals were inconclusive from the sources captured, and no specific Kent County power outage event was verified in this scan."
+    "key_findings_summary": "For Thu, Jan 22, 2026, the strongest signals around Rockford (Kent County) point to continued hazardous winter travel potential: local/regional reporting notes additional snow and an arctic air mass with very low wind chills by Thursday morning, and community chatter recently described severe icing on US-131 near Rockford with slide-offs. As of this search (Wed, Jan 21, 2026), Rockford Public Schools’ site did not show an official closure/delay notice for Thu 1/22, and neighboring district sites checked did not clearly post Thu closures either—so the ‘official’ posture is still TBD, but conditions and recent road reports elevate the risk for a delay or closure depending on overnight snow/ice and morning road treatment."
   },
   "final": {
-    "snow_day_probability": 12,
-    "confidence_level": "high",
+    "snow_day_probability": 14,
+    "confidence_level": "moderate",
     "primary_factors": [
-      "Low forecast accumulation for Rockford (~1.1\") with the main burst ending before daybreak (02:00–05:00)",
-      "Plow/treatment window before first bell is ~2.7 hours (05:00 → ~07:40), typically sufficient for primary roads in Kent County",
-      "No ice/freezing drizzle signal in the Thu AM commute window; primary risk is patchy slick/compacted snow and black ice on bridges/untreated roads",
-      "Winds (10–16 mph) can cause some drifting/blowing, but not a high-end whiteout setup for Rockford",
-      "No confirmed neighboring-district closures/delays for Thu 1/22 as of the latest checks; community buzz minimal",
-      "Main “could-be-wrong” factor: a narrow lake-effect band/snow squall shifting inland during 06:00–08:00 creating a sudden visibility drop and rapid road deterioration"
+      "Low forecast snowfall (~1.1\") concentrated 2–4 AM; Michigan tolerance is high for 1–3\" events",
+      "Plow-timing window exists: ~2.7–3.7 hours from snow end (~04:00–05:00) to first bell (~07:40), typically enough for primary roads",
+      "Main risk is refreeze/black ice (temps fall into teens; prior icing reports in the area), affecting bridges, shaded roads, parking lots, and secondary/rural routes",
+      "No confirmed neighboring-district closures/delays found as of Wed afternoon; weak real-time “closure signal” from local district pages/calendars",
+      "Wind chills near/just below 0°F are uncomfortable but not in the typical auto-closure range for Kent County"
     ],
     "timeline": {
-      "conditions_start": "2026-01-22T02:00:00-05:00",
-      "peak_impact_time": "2026-01-22T02:00:00-05:00 to 2026-01-22T05:00:00-05:00",
-      "conditions_improve": "2026-01-22T05:30:00-05:00 to 2026-01-22T08:00:00-05:00"
+      "conditions_start": "2026-01-22 02:00 EST (light accumulating snow begins)",
+      "peak_impact_time": "2026-01-22 02:00–04:30 EST (slick roads; brief visibility reductions possible)",
+      "conditions_improve": "2026-01-22 05:00–08:30 EST (plowing/salting + traffic improves primaries; patchy refreeze persists on secondaries/parking lots)"
     },
-    "decision_rationale": "PRE-DECISION CHECKLIST:\n1) Agreement across experts: All four sources converge on a low-accumulation event for Rockford with the most impactful snow overnight (roughly 2–5 AM) and little/no additional precip shown during the 6–8 AM commute window. All note cold/wind chills near 0°F and some risk of slick spots; none present a strong Kent County advisory/major storm signal for Thu AM.\n2) Disagreement: News intel emphasizes this week’s *regional* travel hazards (I-196 pileup earlier in the week; broader arctic messaging), which raises general caution but does not directly conflict with the point forecast showing minimal Thu AM snow. Meteorology/safety/history align that this is more “normal winter day” than closure.\n3) Plow timing math: Worst snow ends ~05:00 and first bell/bus window ~07:40 → ~2 hours 40 minutes (~2.7 hours) of cleanup/treatment time. This strongly favors open, with possible slow neighborhoods.\n4) Any ice?: No freezing rain/freezing drizzle indicated for 05:00–09:00; ice risk is “moderate” mainly from compaction/polishing/black ice on untreated surfaces (bridges, rural roads), not a glaze-ice event.\n5) Neighboring districts: Latest checks found no verified closure/delay announcements for Rockford-area districts (Rockford/Forest Hills/Northview/Sparta/Cedar Springs/Lowell/Kentwood) for Thu 1/22; closings aggregators also did not show postings.\n6) What would make this wrong?: A mesoscale lake-effect band/snow squall crossing Rockford during ~06:00–08:00 causing a sudden visibility crash and rapid slickening of secondary roads; or an under-forecast overnight burst that leaves more than ~3\" plus drifting.\n\nWEIGHTED SYNTHESIS (per directive):\n- Meteorology (35%): 1.1\" total, snow ends before commute; no Thu headline → strongly lowers closure odds.\n- Safety (25%): moderate patchy slickness; enough plow buffer; points to “open or possibly delay,” not closure.\n- History (20%): similar patterns yield low snow-day rates (~8–18%), more delays than closures; steady subfreezing reduces freeze-thaw ice risk.\n- News Intel (20%): no confirmed neighboring closures; regional hazard context increases vigilance but not enough to override low totals/timing.\n\nMichigan thresholds: <4\" typically 5–15%. With no verified neighboring closures (no +15–20% bump) and no ice storm signal, I place this near the upper end of that band due to patchy black ice + recent regional travel issues: 12% chance of a full snow day (closure).",
+    "decision_rationale": "PRE-DECISION CHECKLIST\n1) Agreement across experts: All four sources converge that new snow for Thu morning is light (~1\") and mainly pre-dawn (around 2–4 AM). Everyone flags that the bigger hazard is patchy slickness/refreeze rather than deep snow or a true whiteout. \n2) Disagreements/conflicts: News coverage emphasizes “dangerous wind chills/continued lake-effect,” which could imply higher disruption; Meteorology clarifies this isn’t contradictory—wind chills are harsh but the point forecast keeps meaningful snowfall out of the Thu morning commute (evening is more problematic). Safety/Historical upgrade the ICE/refreeze pathway versus the raw snow-total pathway.\n3) Plow timing math: Snow ends ~04:00–05:00; school start ~07:40 → ~2.7–3.7 hours. Safety analyst notes primaries often recover in ~1–2 hours post-snow; secondaries can take ~2–4 hours and remain variable at 07:40.\n4) Any ice? Yes, at least a meaningful refreeze/black-ice risk. Safety upgraded ice risk to HIGH due to falling temps and recent icing signals; meteorologist says freezing drizzle isn’t expected Thu AM, but residual moisture/slush can refreeze.\n5) Neighboring districts: News intel check found NO confirmed Thu 1/22 closures/delays posted on Rockford, Sparta, Cedar Springs, Northview, or Greenville surfaced pages; no “3+ neighboring districts closed” trigger.\n6) What would make me wrong? (a) A lake-effect band shifts inland earlier than forecast and drops several inches near dawn, reducing the plow window effectiveness; (b) widespread black ice/glazing is reported on bus routes pre-6 AM; (c) an overnight crash spike/official road advisory emerges.\n\nWEIGHTED SYNTHESIS (per directive):\n- Meteorology (35%): points to light snow ending before commute; low snow-day signal.\n- Safety (25%): moderate morning commute impact; refreeze risk could justify a delay in rural pockets but not a strong closure case.\n- History (20%): similar setups skew OPEN or DELAY; closures uncommon (~5–10%) unless widespread glazing is confirmed.\n- News intel (20%): no confirmed neighboring closures; some recent severe icing chatter raises caution but not enough for a closure call without current/official confirmation.\n\nBottom line: With only ~1\" new snow and a workable plow window, a full snow day is unlikely; the main credible impact is patchy black ice on secondary roads and lots. I’m setting a 14% snow-day probability (closure), with the more likely operational outcome being “open” or a short delay if early-morning road checks look poor on rural routes.",
     "alternative_scenarios": [
       {
-        "scenario": "2-hour delay due to slick secondary roads/black ice and slower bus routes (no active snow at pickup)",
-        "probability": 24,
-        "impact": "Later start improves safety on neighborhood roads and allows more time for lot/sidewalk treatment; school day proceeds with minimal disruption."
+        "scenario": "2-hour delay (not a closure) due to widespread slick secondary roads/parking lots at 6–7 AM",
+        "probability": 22,
+        "impact": "Buses run after additional treatment/daylight; improves safety on rural routes and school drop-off loops."
       },
       {
-        "scenario": "Lake-effect band/snow squall hits 06:00–08:00 with rapid visibility drop and quick accumulation",
-        "probability": 10,
-        "impact": "Could force a late-breaking delay or localized cancellation if visibility/road conditions deteriorate suddenly on bus routes."
+        "scenario": "Open on time (most likely) with isolated slick spots",
+        "probability": 64,
+        "impact": "Normal schedule; expect slower buses and extra caution on bridges/side streets."
       },
       {
-        "scenario": "Conditions better than expected (overnight snow ends earlier/lighter; roads mostly clear)",
-        "probability": 54,
-        "impact": "Normal opening; only isolated slick spots on bridges/untreated lots."
+        "scenario": "Heavier-than-forecast lake-effect band clips Rockford near/after 5 AM (3–5\" total)",
+        "probability": 14,
+        "impact": "Higher chance of closure or significant delay due to reduced treatment window and worse visibility."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "Plan to OPEN normally, but keep a delay option ready if early AM spot checks find widespread slick secondary roads.",
-        "Have transportation/maintenance do pre-dawn route checks focusing on hills/curves/bridges and rural feeder roads; adjust speeds and add route time if needed.",
-        "Prioritize sanding/salting bus loops, parent drop-off, and main walkways before first arrivals; re-treat known polished intersections."
+        "Plan for OPEN with enhanced early-AM treatment: prioritize bus lots, drop-off loops, sidewalks/steps, and known icy intersections by ~06:45–07:15",
+        "Have transportation run a 05:30–06:15 route check on rural/secondary roads; be ready to pivot to a short delay if multiple slick segments are reported",
+        "Send a parent message emphasizing black-ice risk (bridges/driveways/parking lots) and very cold wind chills at bus stops"
       ],
       "for_residents": [
-        "Assume patchy black ice between ~05:30–08:30, especially on bridges/overpasses and neighborhood streets; slow down and increase following distance.",
-        "If walking to bus stops, use traction-aware footwear and allow extra time; watch for wind chill exposure near 0°F.",
-        "Monitor official Rockford PS channels early morning for any last-minute delay decision."
+        "Assume patchy black ice even if roads look merely wet/dark; slow down on bridges, curves, and shaded roads",
+        "Allow extra stopping distance for the 06:30–08:00 window; watch for refreeze in parking lots",
+        "Dress for near/around 0°F wind chills at bus stops and during morning drop-off"
       ],
       "for_authorities": [
-        "Target early treatment on bridges, shaded segments, and higher-risk intersections; focus on secondary roads after arterials are stable.",
-        "Use traffic/road cameras to watch for a surprise inland-shifting snow band near daybreak and message quickly if visibility drops."
+        "Target pretreatment/salting on bridge decks, major intersections, and school approach roads ahead of 06:00",
+        "If feasible, publish early-morning condition updates for secondary/rural routes where refreeze is most likely",
+        "Monitor for inland-shifting lake-effect bands; be ready to surge plows if radar trends change pre-dawn"
       ]
     },
     "updates_needed": true,
-    "next_evaluation_time": "2026-01-22T04:45:00-05:00"
+    "next_evaluation_time": "2026-01-22T10:15:00Z"
   },
-  "timestamp": "2026-01-21T14:10:59.610Z",
+  "timestamp": "2026-01-21T14:14:52.843Z",
   "targetDate": "2026-01-22",
   "targetDayName": "Thursday",
   "daysAhead": 1,
@@ -231,8 +223,8 @@
       "lat": 43.1152000427246,
       "lon": -85.5136032104492,
       "tz_id": "America/Detroit",
-      "localtime_epoch": 1769004568,
-      "localtime": "2026-01-21 09:09"
+      "localtime_epoch": 1769004769,
+      "localtime": "2026-01-21 09:12"
     },
     "current": {
       "last_updated_epoch": 1769004000,
