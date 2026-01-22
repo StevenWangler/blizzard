@@ -35,7 +35,7 @@ const CONFIDENCE_LABELS: Record<AgentPrediction['final']['confidence_level'], st
   very_high: 'Very High'
 }
 
-type AgentId = 'meteorology' | 'history' | 'safety' | 'news' | 'infrastructure' | 'powerGrid' | 'final'
+type AgentId = 'meteorology' | 'history' | 'safety' | 'news' | 'infrastructure' | 'powerGrid' | 'webWeatherVerifier' | 'final'
 
 type AgentProfile = {
   id: AgentId
@@ -142,6 +142,19 @@ const agentProfiles: AgentProfile[] = [
     tone: 'Alert-driven + risk-focused',
     icon: Lightning,
     gradient: 'from-cyan-500/30 via-blue-400/15 to-transparent'
+  },
+  {
+    id: 'webWeatherVerifier',
+    name: 'Web Weather Verifier',
+    title: 'Data Cross-Reference Specialist',
+    mission: 'Independently verifies Weather API data by searching web sources. Critical for validating "feels like" temperature below -20°F (automatic closure threshold).',
+    focusAreas: ['Feels like temperature verification', 'Multi-source comparison', 'Discrepancy detection'],
+    tools: ['get_weather_data', 'web_search'],
+    deliverables: ['Weather source comparison', 'Critical threshold alerts', 'API vs web analysis'],
+    model: 'gpt-5.2',
+    tone: 'Skeptical + thorough',
+    icon: ArrowsClockwise,
+    gradient: 'from-purple-500/30 via-pink-400/15 to-transparent'
   },
   {
     id: 'final',
@@ -455,6 +468,44 @@ export function AgentsView() {
       }
     }
 
+    const { webWeatherVerifier } = prediction
+    if (webWeatherVerifier && !hasError(webWeatherVerifier)) {
+      const consensus = webWeatherVerifier.discrepancy_analysis?.consensus_level?.charAt(0).toUpperCase() + 
+        webWeatherVerifier.discrepancy_analysis?.consensus_level?.slice(1) || 'Unknown'
+      const recommendation = webWeatherVerifier.recommendation?.replace(/_/g, ' ').split(' ').map(w => 
+        w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Unknown'
+      const belowMinus20 = webWeatherVerifier.discrepancy_analysis?.feels_like_below_minus_20 ? 'YES ⚠️' : 'NO'
+      
+      result.webWeatherVerifier = {
+        headline: `${webWeatherVerifier.weather_sources?.length || 0} sources checked - ${consensus} consensus`,
+        summary: webWeatherVerifier.verification_summary,
+        callouts: [
+          {
+            label: 'Feels Like < -20°F',
+            value: belowMinus20
+          },
+          {
+            label: 'Temp Difference',
+            value: `${Math.abs(webWeatherVerifier.api_comparison?.difference_f || 0).toFixed(1)}°F`
+          },
+          {
+            label: 'Recommendation',
+            value: recommendation
+          },
+          {
+            label: 'Critical Alerts',
+            value: String(webWeatherVerifier.critical_alerts?.length || 0)
+          }
+        ]
+      }
+    } else if (webWeatherVerifier && hasError(webWeatherVerifier)) {
+      result.webWeatherVerifier = {
+        headline: 'Data temporarily unavailable',
+        summary: 'The web weather verifier encountered an issue. Will retry on next run.',
+        callouts: []
+      }
+    }
+
     if (final) {
       result.final = {
         headline: `${formatPercent(final.snow_day_probability)} chance • ${formatConfidence(final.confidence_level)}`,
@@ -678,6 +729,7 @@ function getAgentIcon(agentId: string): ComponentType<IconProps> {
     news: Newspaper,
     infrastructure: Truck,
     powerGrid: Lightning,
+    webWeatherVerifier: ArrowsClockwise,
     final: CirclesThreePlus
   }
   return iconMap[agentId] || Sparkle
@@ -691,7 +743,8 @@ function getAgentGradient(agentId: string): string {
     safety: 'from-emerald-500/30 via-teal-400/15 to-transparent',
     news: 'from-rose-500/30 via-red-400/15 to-transparent',
     infrastructure: 'from-yellow-500/30 via-amber-400/15 to-transparent',
-    powerGrid: 'from-cyan-500/30 via-blue-400/15 to-transparent'
+    powerGrid: 'from-cyan-500/30 via-blue-400/15 to-transparent',
+    webWeatherVerifier: 'from-purple-500/30 via-pink-400/15 to-transparent'
   }
   return gradientMap[agentId] || 'from-purple-500/30 via-fuchsia-400/15 to-transparent'
 }
