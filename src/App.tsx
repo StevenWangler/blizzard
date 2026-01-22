@@ -17,7 +17,7 @@ import { WeatherAtmosphere } from '@/components/WeatherAtmosphere'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -265,74 +265,66 @@ function App() {
                   <DrawerTitle>More Options</DrawerTitle>
                 </DrawerHeader>
                 <div className="p-4 pb-8 space-y-2">
-                  <DrawerClose asChild>
-                    <button
-                      onClick={() => handleDrawerTabSelect('agents')}
-                      className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
-                        activeTab === 'agents' 
-                          ? 'bg-primary/10 text-primary' 
-                          : 'hover:bg-muted text-foreground'
-                      }`}
-                    >
-                      <UsersThree size={24} weight={activeTab === 'agents' ? 'fill' : 'regular'} />
-                      <div className="text-left">
-                        <div className="font-medium">Agents</div>
-                        <div className="text-sm text-muted-foreground">AI agent details</div>
-                      </div>
-                    </button>
-                  </DrawerClose>
+                  <button
+                    onClick={() => handleDrawerTabSelect('agents')}
+                    className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
+                      activeTab === 'agents' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'hover:bg-muted text-foreground'
+                    }`}
+                  >
+                    <UsersThree size={24} weight={activeTab === 'agents' ? 'fill' : 'regular'} />
+                    <div className="text-left">
+                      <div className="font-medium">Agents</div>
+                      <div className="text-sm text-muted-foreground">AI agent details</div>
+                    </div>
+                  </button>
 
-                  <DrawerClose asChild>
-                    <button
-                      onClick={() => handleDrawerTabSelect('competition')}
-                      className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
-                        activeTab === 'competition' 
-                          ? 'bg-primary/10 text-primary' 
-                          : 'hover:bg-muted text-foreground'
-                      }`}
-                    >
-                      <Trophy size={24} weight={activeTab === 'competition' ? 'fill' : 'regular'} />
-                      <div className="text-left">
-                        <div className="font-medium">Competition</div>
-                        <div className="text-sm text-muted-foreground">Agent performance rankings</div>
-                      </div>
-                    </button>
-                  </DrawerClose>
+                  <button
+                    onClick={() => handleDrawerTabSelect('competition')}
+                    className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
+                      activeTab === 'competition' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'hover:bg-muted text-foreground'
+                    }`}
+                  >
+                    <Trophy size={24} weight={activeTab === 'competition' ? 'fill' : 'regular'} />
+                    <div className="text-left">
+                      <div className="font-medium">Competition</div>
+                      <div className="text-sm text-muted-foreground">Agent performance rankings</div>
+                    </div>
+                  </button>
                   
-                  <DrawerClose asChild>
-                    <button
-                      onClick={() => handleDrawerTabSelect('about')}
-                      className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
-                        activeTab === 'about' 
-                          ? 'bg-primary/10 text-primary' 
-                          : 'hover:bg-muted text-foreground'
-                      }`}
-                    >
-                      <Info size={24} weight={activeTab === 'about' ? 'fill' : 'regular'} />
-                      <div className="text-left">
-                        <div className="font-medium">About</div>
-                        <div className="text-sm text-muted-foreground">How predictions work</div>
-                      </div>
-                    </button>
-                  </DrawerClose>
+                  <button
+                    onClick={() => handleDrawerTabSelect('about')}
+                    className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
+                      activeTab === 'about' 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'hover:bg-muted text-foreground'
+                    }`}
+                  >
+                    <Info size={24} weight={activeTab === 'about' ? 'fill' : 'regular'} />
+                    <div className="text-left">
+                      <div className="font-medium">About</div>
+                      <div className="text-sm text-muted-foreground">How predictions work</div>
+                    </div>
+                  </button>
                   
                   {isAdmin && (
-                    <DrawerClose asChild>
-                      <button
-                        onClick={() => handleDrawerTabSelect('outcomes')}
-                        className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
-                          activeTab === 'outcomes' 
-                            ? 'bg-primary/10 text-primary' 
-                            : 'hover:bg-muted text-foreground'
-                        }`}
-                      >
-                        <ListChecks size={24} weight={activeTab === 'outcomes' ? 'fill' : 'regular'} />
-                        <div className="text-left">
-                          <div className="font-medium">Outcomes</div>
-                          <div className="text-sm text-muted-foreground">Record prediction results</div>
-                        </div>
-                      </button>
-                    </DrawerClose>
+                    <button
+                      onClick={() => handleDrawerTabSelect('outcomes')}
+                      className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
+                        activeTab === 'outcomes' 
+                          ? 'bg-primary/10 text-primary' 
+                          : 'hover:bg-muted text-foreground'
+                      }`}
+                    >
+                      <ListChecks size={24} weight={activeTab === 'outcomes' ? 'fill' : 'regular'} />
+                      <div className="text-left">
+                        <div className="font-medium">Outcomes</div>
+                        <div className="text-sm text-muted-foreground">Record prediction results</div>
+                      </div>
+                    </button>
                   )}
                 </div>
               </DrawerContent>
