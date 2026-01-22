@@ -1,5 +1,5 @@
 // Agent identifiers for collaboration tracking
-export type AgentId = 'meteorology' | 'history' | 'safety' | 'news' | 'infrastructure' | 'powerGrid' | 'final'
+export type AgentId = 'meteorology' | 'history' | 'safety' | 'news' | 'infrastructure' | 'powerGrid' | 'webWeatherVerifier' | 'final'
 
 // Collaboration types for multi-round debate system
 export interface DebatePosition {
@@ -225,6 +225,43 @@ export interface AgentPrediction {
     data_confidence: 'high' | 'moderate' | 'low' | 'very_low'
     data_sources: string[]
     special_alerts: string[]
+  }
+  webWeatherVerifier: {
+    weather_sources: Array<{
+      source_name: string
+      url: string
+      current_temp_f: number
+      feels_like_temp_f: number
+      forecast_feels_like_f: number
+      snowfall_forecast_inches: number
+      wind_speed_mph: number
+      alerts: string[]
+      data_timestamp: string
+      reliability: 'high' | 'medium' | 'low'
+    }>
+    api_comparison: {
+      api_feels_like_f: number
+      web_average_feels_like_f: number
+      difference_f: number
+      api_temp_f: number
+      web_average_temp_f: number
+      temp_difference_f: number
+      snowfall_difference_inches: number
+    }
+    critical_alerts: Array<{
+      severity: 'critical' | 'warning' | 'info'
+      message: string
+      affected_parameter: string
+    }>
+    discrepancy_analysis: {
+      major_discrepancies_found: boolean
+      feels_like_below_minus_20: boolean
+      consensus_level: 'strong' | 'moderate' | 'weak' | 'conflicting'
+      reliability_score: number
+      data_freshness: 'current' | 'recent' | 'stale' | 'unknown'
+    }
+    verification_summary: string
+    recommendation: 'trust_api' | 'trust_web' | 'investigate_further' | 'use_average'
   }
   final: {
     snow_day_probability: number
