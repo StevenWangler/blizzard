@@ -1,12 +1,12 @@
 {
   "meteorology": {
     "temperature_analysis": {
-      "current_temp_f": 16,
+      "current_temp_f": 19,
       "overnight_low_f": -13.9,
       "morning_high_f": 5.6,
       "freezing_hours": 24,
       "temperature_trend": "falling",
-      "windchill_factor": -26.7
+      "windchill_factor": -15.8
     },
     "precipitation_analysis": {
       "snow_probability_overnight": 0,
@@ -17,210 +17,210 @@
     },
     "wind_analysis": {
       "max_wind_speed_mph": 17.7,
-      "wind_direction": "NW",
-      "sustained_winds_mph": 14,
+      "wind_direction": "NW to WNW",
+      "sustained_winds_mph": 14.5,
       "wind_chill_impact": true
     },
     "visibility_analysis": {
       "minimum_visibility_miles": 0,
       "avg_visibility_miles": 4,
       "visibility_factors": [
-        "freezing fog potential late evening (around 11 PM)",
-        "periodic very low visibility readings overnight/late evening (0–1 mi reported in hourly data)",
-        "overcast/low clouds early overnight"
+        "Overcast/low clouds overnight",
+        "Potential dense/freezing fog late evening into overnight (0 mi reported several hours)"
       ]
     },
     "alert_summary": [
       {
         "type": "Cold Weather Advisory",
         "severity": "Moderate",
-        "description": "Very cold wind chills as low as 20 to 25 below expected Friday morning; in effect from 1 AM Friday to 10 AM Saturday."
+        "description": "Valid from 1 AM Friday to 10 AM Saturday with wind chills as low as 20 to 25 below zero expected Friday morning; frostbite risk on exposed skin in as little as 30 minutes."
       },
       {
         "type": "Extreme Cold Watch",
         "severity": "Extreme",
-        "description": "Dangerously cold wind chills as low as 25 below possible late Thursday night through Saturday morning (watch status)."
+        "description": "Late Thursday night through Saturday morning: dangerously cold wind chills as low as 25 below possible (watch-level)."
       },
       {
         "type": "Winter Weather Advisory (prior day)",
         "severity": "Moderate",
-        "description": "Advisory focused on snow/wind impacts through Thursday (Jan 22); not indicating additional snow on Friday in this dataset."
+        "description": "Ends Thursday evening (Jan 22). Snow impacts/cleanup from 2–5 inches tonight plus 1–3 inches Thursday may leave residual slick spots into Friday, especially on untreated roads."
       }
     ],
-    "overall_conditions_summary": "For Friday 2026-01-23 in Rockford, MI, the primary hazard is extreme cold (air temps near/below 0°F by evening and wind chills roughly -15°F to -27°F during the daytime, colder at times overnight). No accumulating snow is forecast (0\"), so this is not a classic Michigan snow-day setup. Winds are modest (NW ~10–18 mph) but sufficient to produce dangerous wind chills. The main school-impact risk is cold-related (bus stops, exposed skin) and potential localized freezing fog/near-zero visibility late evening/overnight; however, the worst visibility signals occur outside the typical morning commute window in this dataset. Overall: low snow-day probability from snowfall, but moderate risk of delays/closures driven by extreme wind chills and any patchy dense freezing fog."
+    "overall_conditions_summary": "For Rockford, MI on Friday 2026-01-23, this is primarily an extreme-cold day rather than a snow-day setup: forecast shows 0\" new snow and no precip, with temperatures staying well below freezing all day (morning near 5°F, falling to subzero by evening; low around -14°F). Winds NW/WNW 10–18 mph keep wind chills in the -15 to -25°F range during school commute hours, supported by an active Cold Weather Advisory. The main operational concern is dangerous wind chills and localized visibility reductions from freezing fog/low clouds (several hours show 0–1 mile visibility), which could create patchy slick spots despite no new precip. Michigan schools usually tolerate snow well; absent accumulating snow/ice, closures are less likely, but a delay/closure becomes more plausible if dense freezing fog is widespread at the morning commute and/or residual untreated roads from Thursday’s snow/ice refreeze in the extreme cold."
   },
   "history": {
     "similar_weather_patterns": [
       {
-        "pattern_description": "Arctic high pressure / cold-dry day: no accumulating snow, but daytime temps near 0–5°F with steady NW wind (10–20 mph) producing wind chills in the -10°F to -25°F range during the morning commute. These setups historically produce delays/closures only when a district uses a strict wind-chill policy or when transportation risk is high for walkers/bus stops.",
+        "pattern_description": "Arctic high pressure settling in behind a lake-effect/frontal snow event: skies mostly overcast to partly clear, little/no new snow, but temperatures plunge (single-digit highs) and wind chills fall into the -15°F to -25°F range around the morning commute. In Michigan, this is a classic 'cold-only' school-decision setup where closures are more likely tied to wind chill thresholds and student exposure than road impassability.",
+        "historical_snow_day_rate": 0.22,
+        "confidence_level": "medium"
+      },
+      {
+        "pattern_description": "Extreme-cold headline pattern (Cold Weather Advisory / Extreme Cold Watch) with modest winds (10–20 mph) and very low ambient temps: widespread but not blizzard-like impacts; roads may be mostly plowed, yet bus reliability (diesel gelling/starting), increased crash risk at intersections, and frostbite risk at stops becomes the operational concern. Historically, districts that close on these days often do so even with minimal new snow.",
+        "historical_snow_day_rate": 0.3,
+        "confidence_level": "medium"
+      },
+      {
+        "pattern_description": "Clear/partial clearing at night after snow leading to rapid radiational cooling and fog/freezing fog development late evening/night: can create surprise slick spots (bridge decks/untreated rural roads) even when measurable precip is zero. This is more likely to cause delays than full closures unless combined with extremely low wind chills at pickup time.",
         "historical_snow_day_rate": 0.12,
-        "confidence_level": "medium"
-      },
-      {
-        "pattern_description": "Post-lake-effect / post-advisory hangover: prior-day light snow/freezing precip with gusty winds, followed by a sharp temperature crash overnight. Even with little/no new snow on the target day, refreeze of slush + residual drifting in open rural areas can create isolated hazardous spots early (bridges, overpasses, country roads). Closures are more likely if the previous evening had untreated wet roads that freeze hard by dawn.",
-        "historical_snow_day_rate": 0.18,
-        "confidence_level": "medium"
-      },
-      {
-        "pattern_description": "Radiational cooling + freezing fog late evening: clear/light wind at night with temps falling below -5°F to -15°F and fog/freezing fog developing. This can create surprise “black ice” and near-zero visibility pockets, but typically impacts late-night travel more than the school morning commute unless fog persists past sunrise.",
-        "historical_snow_day_rate": 0.08,
         "confidence_level": "low"
       }
     ],
     "seasonal_context": {
-      "typical_conditions_for_date": "Late January in West Michigan is prime for lake-effect variability, but school closures in Rockford/Kent County are most commonly driven by (1) heavy snow at the wrong time (overnight into pre-dawn) and/or (2) ice. A cold, mostly dry day by itself is usually not enough unless wind chills are extreme or roads refreeze after prior precipitation.",
+      "typical_conditions_for_date": "Late January in West Michigan is climatologically the heart of winter: cold mornings are common and lake-effect can create localized travel issues, but schools in the Rockford/Grand Rapids area typically need either (1) significant overnight accumulation with poor timing (roughly 8–10+ inches or intense banding during the AM commute), (2) widespread glaze/ice, (3) blizzard conditions/near-whiteout, or (4) extreme wind chills (often near or below about -15°F, especially if sustained for the bus window) to justify closures.",
       "unusual_factors": [
-        "Very cold air mass for the date with forecast highs around 5°F and lows near -14°F.",
-        "Wind chills near the Thursday night/Friday morning period appear capable of approaching the -20°F to -25°F range (consistent with the Cold Weather Advisory timing).",
-        "No new snow is forecast for Friday (0.0\"), shifting the closure risk away from plowing capacity and toward cold exposure and refreeze/spot-ice risk."
+        "No new snow is forecast for Friday (0.0 in), so a classic 'snow amount' closure trigger is absent.",
+        "Cold is the dominant hazard: forecast temps around 2–6°F during the day with wind chills near -15°F to about -25°F during the morning hours (especially 6–10 AM).",
+        "Official cold headlines are present for the period (Cold Weather Advisory/Extreme Cold Watch), which historically raises the odds of at least some districts choosing a delay/closure even without snowfall.",
+        "Late-day/evening freezing fog signal in the hourly forecast suggests reduced visibility and possible slick micro-spots, but it appears after the school day."
       ],
-      "seasonal_probability_adjustment": 0.07
+      "seasonal_probability_adjustment": 0.08
     },
     "location_specific_factors": {
       "local_microclimates": [
-        "Kent County commonly sees lake-effect bands and sharp visibility changes, but Friday’s forecast profile is cold/dry—microclimate differences matter more for leftover drifting and localized slick spots than for new accumulation.",
-        "Rural edges and open corridors north and west of Rockford can see more drifting/packed snow issues than the denser core roads, especially after a windy advisory period."
+        "Rockford sits in the Greater Grand Rapids / Kent County region where lake-effect bands can be highly localized; however, Friday’s forecast shows no accumulating snow, reducing micro-scale snowfall uncertainty for the school commute.",
+        "Rural/wooded stretches and river/low-lying areas near Rockford can cool efficiently overnight, increasing the chance of localized slick spots (especially bridges and untreated side roads) even when main roads are fine."
       ],
       "infrastructure_considerations": [
-        "Michigan districts often remain open through moderate snow if roads are plowed; closures more often follow ice, whiteout conditions, or extreme cold that makes bus-stop exposure unsafe.",
-        "Bridges/overpasses and shaded secondary roads are the main hazard Friday given the hard freeze following Thursday’s wintry precip.",
-        "If your district has many walkers or long bus waits, the wind-chill-driven risk increases relative to snow-amount-driven risk."
+        "Michigan districts (including West Michigan) generally operate through cold and moderate snow; closures are more commonly driven by ice, whiteout/blowing snow, or extreme wind chill exposure at bus stops.",
+        "With prior snow/ice on Thursday (winter weather advisory in effect earlier), plowed roads can still have hard-pack or polished intersections; extreme cold can prevent salt from working effectively, increasing lingering slickness risk even with no new precipitation.",
+        "Bus operations in very cold air (near 0°F air temps and sub -15°F wind chills) can be stressed; districts with long rural routes and many outdoor wait times are more sensitive to this."
       ],
-      "elevation_impact": "Rockford is not a major elevation-driven snow microclimate, but small terrain and open-field exposures can enhance drifting and wind chill on rural routes; the bigger driver here is arctic cold plus any refreeze."
+      "elevation_impact": "Rockford is not high-elevation, but small elevation/terrain variations and open/windy areas can enhance wind chill exposure. The main practical 'elevation-like' effect is localized radiational cooling in low spots that can worsen morning cold and promote patchy fog/ice."
     },
-    "confidence_assessment": "For Friday 2026-01-23, the forecast shows no new snow, but a significant arctic cold day (high ~5°F, low ~-14°F) with morning wind chills around the mid -teens to possibly near -20°F or lower. In Michigan, that pattern alone usually yields a LOW-to-MODERATE closure probability; the most plausible triggers would be (a) wind chill policy thresholds being met around the morning commute and/or (b) widespread refreeze/black ice from Thursday’s freezing precip/snow. If roads are treated and wind chill stays above local closure thresholds, expect normal operations; if wind chills verify near -25°F at bus time or refreeze is widespread, odds of a delay/closure rise. Overall confidence: medium, with the biggest uncertainty being how much untreated moisture remains to refreeze and how low the wind chills get at 6–8 AM."
+    "confidence_assessment": "For Friday, 2026-01-23 in Rockford, MI, the forecast supports a 'cold hazard' decision rather than a 'snow hazard' decision: no new snowfall is expected, winds are moderate, and the key risk is morning wind chills roughly in the -15°F to -25°F range. Given Michigan’s typical closure behavior (rarely closing for snow amount alone, more likely for ice/blizzard/extreme cold), this setup modestly increases the chance of a delay or selective closure (especially for districts with extensive bus exposure), but it is not the classic high-probability snow-day pattern. Overall confidence: medium (because cold-driven decisions are more policy-dependent and district-specific than snow-amount thresholds)."
   },
   "safety": {
     "road_conditions": {
-      "primary_roads_score": 7.8,
+      "primary_roads_score": 8.2,
       "secondary_roads_score": 6.6,
-      "parking_lots_score": 5.8,
-      "ice_formation_risk": "moderate"
+      "parking_lots_score": 6.8,
+      "ice_formation_risk": "high"
     },
     "travel_safety": {
-      "walking_conditions_score": 4.2,
-      "driving_conditions_score": 6.4,
-      "public_transport_impact": "minimal",
+      "walking_conditions_score": 3.2,
+      "driving_conditions_score": 6.8,
+      "public_transport_impact": "moderate",
       "emergency_access_concern": false
     },
     "timing_analysis": {
-      "worst_conditions_start_time": "2026-01-23 06:00",
+      "worst_conditions_start_time": "2026-01-23 00:00",
       "worst_conditions_end_time": "2026-01-23 08:00",
-      "morning_commute_impact": "moderate",
+      "morning_commute_impact": "significant",
       "afternoon_impact": "minimal"
     },
     "safety_recommendations": [
-      "Primary operational risk is extreme cold/wind chill during bus-stop wait times (roughly 06:00–08:00). Consider adding/using heated indoor waiting options where feasible and minimizing outdoor exposure time.",
-      "Even with no new snow expected Friday, anticipate slick spots from refreeze of Thursday’s wintry precip—especially bridges/overpasses, shaded curves, rural two-tracks, and subdivision streets.",
-      "Have road crews spot-treat known icy locations before 05:30–06:00; salt effectiveness is reduced in single-digit °F temperatures, so prioritize abrasives/sand and targeted treatments.",
-      "Expect reduced visibility in pockets (some hours report near-zero vis in the feed). Use caution for bus routing; allow extra following distance and reduce speeds on secondary roads.",
-      "Run buses with cold-weather contingencies: verify block heaters/fuel additives, keep radios charged, and plan for longer warm-up/door-cycle times.",
-      "For students walking: require full winter gear (face covering, gloves, insulated boots). Frostbite risk increases quickly with wind chills near/below -20°F."
+      "Primary snow/ice accumulation is not expected on Friday (0 precip / 0 snow in the forecast), so widespread plow/salt response for new snow is less of the issue; the main hazard shifts to extreme cold plus leftover slick spots from Thursday’s wintry precipitation and any refreeze overnight into early Friday.",
+      "Expect a hard refreeze of any moisture/slush, especially on bridges/overpasses, shaded stretches, and untreated neighborhood roads. Treat this as a 'black ice' morning even without new precip.",
+      "For the 6–8 AM school travel window: temperatures near 5°F with wind chills around -12°F to -15°F and northwest winds ~13–14 mph mean increased risk for students waiting at bus stops and for frostbite/hypothermia if exposed skin is not covered. Ensure full winter gear and minimize time outside.",
+      "Bus operations: consider limiting/adjusting outdoor loading procedures (shorten wait time, keep doors closed until loading), verify buses start reliably (battery/gel issues), and confirm emergency cold-weather kits are on board.",
+      "Drivers should plan for reduced traction on secondary roads and in subdivisions; maintain longer following distances and reduce speed on ramps, intersections, and approaches to stop signs where polishing/ice is common.",
+      "Parking lots and sidewalks may be deceptively slick early; prioritize salting/sanding building entrances, drop-off loops, and bus loops before ~6:30 AM.",
+      "Visibility: although most of the morning hours show good visibility (generally ~6 miles), intermittent very low visibility is indicated in the overnight/late-evening data (including freezing fog later). Be prepared for localized fog/low vis pockets in low-lying areas; use headlights and slow down if encountered.",
+      "Decision focus for a 'snow day' is less about snowfall and more about cold exposure risk and morning patch-ice. Consider a delayed start or enhanced cold-weather precautions if students have long waits outdoors or if district has many rural/low-treatment roads."
     ],
-    "risk_level": "moderate"
+    "risk_level": "high"
   },
   "news": {
     "local_news": [
       {
-        "source": "Big Rapids News (winter weather advisory coverage)",
-        "headline": "Winter Weather Advisory mentions Kent County; lake-effect snow may persist through Friday with dangerous cold possible",
-        "summary": "A winter weather advisory story covering multiple West/Central Michigan counties explicitly lists Kent County among the impacted areas, with discussion of accumulating snow, slippery travel, and the possibility of lake-effect snow lingering into Friday plus dangerous subzero temps/wind chills later in the week. This is a broad regional signal rather than a Rockford-specific closure notice, but it supports elevated snow-day risk for Fri 2026-01-23 if the colder/windier conditions and continued snow materialize overnight.",
-        "relevance": "medium",
+        "source": "Big Rapids News (citing NWS Grand Rapids)",
+        "headline": "Winter weather advisory impacts include Kent County; snow + lake-effect possible through Friday; dangerous cold late week",
+        "summary": "A winter-weather advisory write-up notes 2–5 inches in parts of the region (and lists Kent County among impacted counties). It also highlights additional lake-effect snow potential through Friday and a turn to more dangerous cold with subzero temps possible late Friday into the weekend (example low cited around -11°F Friday night in the story’s forecast discussion).",
+        "relevance": "high",
         "url": "https://www.bigrapidsnews.com/news/article/mecosta-winter-weather-advisory-21305293.php"
       },
       {
-        "source": "FOX 17 West Michigan – Closings & Delays page",
-        "headline": "FOX 17 closings page shows many weather-related cancellations (mostly activities/organizations) dated Jan 21–22, 2026",
-        "summary": "FOX 17’s closings/delays feed shows a notable number of weather-related cancellations/early releases for organizations and at least one district activity adjustment (example: Belding Area Public Schools early release/no evening activities listed on Jan 22). While this is not a definitive indicator for Rockford Public Schools on Fri 1/23, the volume of cancellations is a ‘background’ signal that weather impacts are already prompting schedule changes in the region.",
-        "relevance": "medium",
-        "url": "https://www.fox17online.com/weather/school-closings-delays"
+        "source": "FOX 17 (Grand Rapids)",
+        "headline": "Kent County road crews ‘battling tough conditions right now’ (winter operations/road safety messaging)",
+        "summary": "FOX 17 relays Kent County Road Commission winter-storm guidance and operational expectations (e.g., network size, plow-cycle targets, and safety/emergency instructions). While it’s not a school-closure announcement, it’s a strong signal that road conditions/operations are currently stressed—often a key input to next-morning district decisions.",
+        "relevance": "high",
+        "url": "https://www.fox17online.com/news/local-news/kent/kent-county-road-crews-battling-tough-conditions-right-now"
       },
       {
-        "source": "Western Michigan University (WMU) News",
-        "headline": "WMU closed campuses on Jan. 22, 2026 due to severe weather (and also closed Jan. 20, 2026)",
-        "summary": "WMU posted that it closed all campuses and canceled classes on Jan 22, 2026 due to severe weather (and also had a closure on Jan 20, 2026). University closures don’t guarantee K-12 closures, but they are a strong regional severity signal that conditions have been disruptive in West Michigan this week leading into Friday 1/23.",
+        "source": "FOX 17 (Grand Rapids)",
+        "headline": "Kent County Road Commission seasonal weight/speed restrictions enacted early due to thaw/road fragility",
+        "summary": "KCRC and the City of Walker enacted seasonal weight and speed restrictions starting Jan. 10 due to an early thaw (35 mph on affected roads; loads reduced ~35%). This doesn’t directly equal closure risk, but it’s contextual evidence that road surfaces/conditions have been abnormal and may complicate winter operations when temps swing back colder.",
         "relevance": "medium",
-        "url": "https://wmich.edu/news/news/2026/01/closure-january-22-2026"
+        "url": "https://www.fox17online.com/news/local-news/kent/kent-county-road-commission-to-issue-hauling-weight-restrictions"
       },
       {
-        "source": "WestMichiganWeather.net (forecast/outlook blog)",
-        "headline": "School-closings outlook for Wed 01/21, Thu 01/22, Fri 01/23 discusses snow totals/rates and closure likelihood zones",
-        "summary": "A local weather blog posted a school-closings outlook spanning Wed 1/21 through Fri 1/23, describing expected snowfall totals and higher snowfall-rate corridors that could complicate the morning commute. This is not an official source, but it’s relevant as a ‘chatter/forecast’ signal that people are actively evaluating closure potential for Fri 1/23.",
-        "relevance": "low",
-        "url": "https://www.westmichiganweather.net/post/school-closings-outlooks-for-wednesday-01-21-2026-thursday-01-22-2026-and-friday-01-23-2026"
+        "source": "Yahoo (WOOD TV8 syndication)",
+        "headline": "Kent County enacts weight/speed restrictions months early; unusual warm streak cited",
+        "summary": "Syndicated WOOD TV8 reporting reiterates early seasonal restrictions and notes it’s unusual to do so in January (first time since 2017 per the report). This is background context on county road-condition management rather than an immediate closure list.",
+        "relevance": "medium",
+        "url": "https://www.yahoo.com/news/articles/kent-co-enact-weight-speed-153918105.html"
       }
     ],
     "school_district_signals": {
-      "official_announcements": [
-        "Rockford Public Schools (Rockford, MI) district homepage ‘Announcements & Closings’ did not show a weather-related closure/delay announcement for Friday, 2026-01-23 at time of check (most recent items were non-weather updates)."
-      ],
-      "early_dismissal_history": true,
+      "official_announcements": [],
+      "early_dismissal_history": false,
       "neighboring_district_closures": []
     },
     "community_intel": {
       "social_media_sentiment": "uncertain",
       "reported_road_conditions": [
-        "Reddit r/grandrapids thread (Jan 19, 2026) references hazardous conditions, plow catch-up, concerns about black ice, and cites a large multi-vehicle pileup as context; commenters also note that side roads/bus routes matter even when main roads look OK."
+        "Local reporting indicates Kent County road crews are actively in winter-storm mode and issuing safety guidance (suggesting ongoing difficult driving in parts of the area)."
       ],
       "power_outage_reports": false,
-      "local_event_cancellations": [
-        "FOX 17 closings feed shows multiple Kent-area churches/organizations canceling evening activities on Jan 21–22, 2026 (indicative of ongoing weather disruption)."
-      ]
+      "local_event_cancellations": []
     },
-    "key_findings_summary": "For Rockford, Michigan (Rockford Public Schools) specifically, I did not find a direct, official closure/delay announcement yet for Friday, 2026-01-23 on the district’s main ‘Announcements & Closings’ area at the time of this scan. However, there are several regional severity signals leading into Friday: (1) broad-area winter weather coverage that includes Kent County and mentions snow plus dangerous cold lingering into Friday; (2) a high volume of cancellations/adjustments appearing on West Michigan closings pages; and (3) institutional closures like WMU (Jan 20 and Jan 22, 2026) suggesting this week’s conditions have been significant. Community chatter (notably on r/grandrapids) is focused on hazardous travel, especially untreated side roads and potential black ice—factors that often drive bus-route-based decisions. Net: no confirmed Rockford Friday closure yet, but the ‘risk backdrop’ for a snow day/delay on Fri 1/23 appears elevated if overnight snow/ice and extreme wind chills persist."
+    "key_findings_summary": "For Friday, 2026-01-23 (Rockford, MI 49341), I did not find a confirmed Rockford Public Schools closure/delay announcement or a clear domino pattern of neighboring district closures in the sources surfaced. However, multiple West Michigan/Kent County signals point to elevated risk conditions: (1) regional reporting tied to NWS Grand Rapids describes snow continuing with lake-effect potential through Friday and a shift toward dangerous cold/subzero temps late Friday into the weekend, and (2) Kent County Road Commission/FOX 17 messaging indicates crews are battling tough conditions and emphasizing winter-storm operations and safety. Net: no official closure posts located yet, but road-condition stress + cold/snow signals suggest closure/delay potential remains material pending Thursday night/early Friday morning district decisions."
   },
   "final": {
-    "snow_day_probability": 23,
+    "snow_day_probability": 12,
     "confidence_level": "moderate",
     "primary_factors": [
-      "No accumulating snow forecast Friday (0\") — removes the primary Michigan closure trigger",
-      "Dangerous cold: NWS Cold Weather Advisory; 6–9 AM wind chills forecast roughly -12°F to -15°F (cold, but not in the ≤ -20°F near-guarantee tier)",
-      "Patchy refreeze/black-ice risk from prior-day wintry precip, mainly on secondary roads/bridges/parking lots; salt effectiveness reduced in single digits",
-      "Visibility/fog risk appears minimal during 6–9 AM (forecast ~6 mi); worst dense/freezing fog signals are overnight/late evening",
-      "No confirmed weather-related closures for Rockford or nearby districts at time of check (neighboring closure found was non-weather related)"
+      "No meaningful new snowfall expected during the 5–9 AM commute (only ~10% chance of ≥0.1\"; most likely trace–0.2\")",
+      "Extreme cold/wind chills during bus window (wind chill roughly -15°F to potentially -25°F) increase student exposure risk and can strain bus operations",
+      "High refreeze/black-ice risk from Thursday’s snow ending ~7 PM plus plunging temps; salt effectiveness reduced in single digits/subzero pavement temps",
+      "Visibility: widespread dense fog is not favored 6–9 AM (modeled ~6 mi), but localized overnight freezing fog/rime could worsen spot-ice",
+      "No confirmed neighboring district closure/delay announcements found yet (no “domino effect” boost)"
     ],
     "timeline": {
-      "conditions_start": "2026-01-23 00:00 (temps falling; refreeze potential increases overnight)",
-      "peak_impact_time": "2026-01-23 06:00–08:30 (cold exposure + patchy ice risk during bus/commute window)",
-      "conditions_improve": "2026-01-23 09:00–12:00 (still very cold, but daylight and traffic improve visibility/traction; afternoon impacts minimal)"
+      "conditions_start": "2026-01-23 01:00 (hard refreeze + dangerous wind chills begin to dominate)",
+      "peak_impact_time": "2026-01-23 06:00–08:30 (bus/commute window: cold exposure + patch ice)",
+      "conditions_improve": "2026-01-23 09:30–12:00 (daylight and traffic improve conditions; cold persists)"
     },
-    "decision_rationale": "PRE-DECISION CHECKLIST:\n1) AGREEMENT: All experts agree Friday is a cold-driven day with essentially no new snow; main risks are wind chill exposure and patchy refreeze/black ice. Also agreement that a delay is more plausible than a full closure.\n2) DISAGREEMENT: News sources suggested snow might linger into Friday regionally, but the meteorological dataset/hours show 0% precip and good 6–9 AM visibility; I weight the explicit hourly forecast higher. Visibility “0 mi” readings look confined to overnight/late evening rather than commute time.\n3) Plow timing math: If Thu operations wrap ~19:00, there are ~12h40m until a 07:40 start (and ~11h until ~06:00 first pickups). Even if final spot-treat starts ~23:00, there are ~8h40m to 07:40 (~7h to 06:00). Best window is ~03:30–05:30 for fresh treatment. This supports manageability absent new snow.\n4) ANY ice? Yes, but likely patchy not widespread: moderate refreeze risk (bridges, shaded secondaries, lots). Salt is less effective in single digits, so abrasives/targeting matter; this raises delay odds more than full-closure odds.\n5) Neighboring districts: No confirmed weather-related closures/delays for Rockford or listed neighbors at time checked; one neighboring closure (Northview) was for a non-weather reason, so no +15–20% “wave” adjustment.\n6) What would make me WRONG? (a) Wind chills verify closer to -20°F to -25°F at 6–8 AM (policy-trigger territory), (b) refreeze proves widespread on bus routes (not patchy), or (c) an unmodeled lake-effect band/visibility crash develops pre-dawn.\n\nWEIGHTED SYNTHESIS (per system weights):\n- Meteorology (30%): cold advisory but 6–9 AM wind chill ~-12 to -15 and no snow; lowers closure probability.\n- Safety (20% incl. infra/power): moderate patchy ice + extreme cold exposure; supports some chance of delay/closure.\n- History (15%): cold-only closures are uncommon unless thresholds met; antecedent refreeze can drive “sneaky delay.”\n- News intel (15%): no confirmed closure wave; reduces odds.\n\nGiven Michigan thresholds and lack of snow/ice storm signals, I set full snow-day/closure probability at 23% (leaning ‘open, possible delay’ rather than ‘closed’).",
+    "decision_rationale": "Pre-decision checklist:\n1) Agreement: All experts agree Friday is primarily an extreme-cold + refreeze day, not a fresh-snow day; closures (if any) are more likely policy/exposure-driven and/or driven by patch ice, with delays more likely than full closure.\n2) Disagreement: News/NWS-area products mention snow showers/lake-effect lingering into Friday, while the point/hourly signal for Rockford is near-zero accumulation. Meteorologist reconciled this as a low (10–15%) chance of measurable snow for Rockford, most likely trace–0.2\".\n3) Plow timing math: Thurs advisory impacts through ~7:00 PM; from 7:00 PM to 7:40 AM is ~12h 40m of cleanup time—favorable for primaries and many secondaries. Remaining risk is spot ice/polished intersections, not widespread impassability.\n4) Any ice?: Yes—ice formation/refreeze risk is HIGH (black ice from residual moisture + reduced salt effectiveness). However, it is expected to be patchy rather than a widespread glaze event.\n5) Neighboring districts: No confirmed closures/delays found for Rockford or nearby districts in the latest news-intel check, so no +15–20% neighbor adjustment.\n6) What would make me wrong?: (a) a lake-effect band sets up over inland Kent County during 5–9 AM producing quick 1–3\" and reduced visibility, (b) a flash-freeze leaves widespread untreated-road icing beyond “spot” levels, or (c) Rockford/area districts apply a strict wind-chill closure threshold (e.g., closing near/at -20°F) and decide proactively.\n\nWeighting the four inputs per system guidance: Meteorology (30%) strongly argues against a snow-day due to near-zero accumulation and limited commute fog risk, but flags extreme wind chills. Safety (20%) raises operational risk (refreeze + exposure), but also notes the long cleanup window makes full closure less likely than delay. History (15%) supports meaningful—but not dominant—cold-driven closure odds; however, the safety analyst’s regional rule-of-thumb suggests full closures in this setup are typically in the ~5–15% range. News intelligence (15%) finds no closure signals and confirms NWS products mention snow showers, but without a closure domino pattern.\n\nGiven Michigan thresholds: this is <4\" new snow (effectively ~0\"), so the snow-amount-based baseline is very low. Wind chill in the -15°F to -25°F range raises concern, but cold alone in West Michigan more often yields delays than closures unless wind chills are persistently ≤ -20°F at pickup times district-wide. Net: I set full snow-day/closure probability at 12% (delay probability would be notably higher, but the question here is closure).",
     "alternative_scenarios": [
       {
-        "scenario": "Winds a bit stronger and temps a bit lower than forecast; wind chills at/under -20°F for multiple hours during pickups",
-        "probability": 18,
-        "impact": "Delay or cold-based closure becomes much more likely (bus-stop exposure risk dominates)."
+        "scenario": "Lake-effect band clips Rockford during 5–9 AM producing 1–3\" with reduced visibility and rapid slickening",
+        "probability": 8,
+        "impact": "Closure probability jumps to ~45–60% (or high chance of delay) due to active snowfall during commute + harder plowing"
       },
       {
-        "scenario": "Refreeze is widespread on secondary roads/bridges and multiple bus routes report slick travel by ~05:30–06:00",
+        "scenario": "Patch-ice only, temps/wind chills as forecast; roads mostly treated by morning",
+        "probability": 70,
+        "impact": "Most likely outcome: school runs (possibly with heightened precautions); closure probability near 5–10%"
+      },
+      {
+        "scenario": "District applies strict wind-chill policy (≤ -20°F at bus time) and chooses proactive closure despite passable roads",
         "probability": 22,
-        "impact": "2-hour delay likely; isolated areas could push toward closure if treatment can’t keep up in single-digit temps."
-      },
-      {
-        "scenario": "Forecast verifies as expected: good visibility 6–9 AM, roads mostly dry/treated with only isolated slick spots",
-        "probability": 60,
-        "impact": "School open; at most minor route adjustments and increased cold-safety protocols."
+        "impact": "Closure probability rises to ~30–40%, especially if rural routes/long bus-stop waits are common"
       }
     ],
     "recommendations": {
       "for_schools": [
-        "Plan for OPEN with enhanced cold protocols; be prepared to pivot to a 2-hour delay if route checks find widespread slick spots by ~05:30–06:00.",
-        "Run early-morning verification loops on known trouble spots (bridges/ramps, shaded subdivisions, rural edges) and require drivers to report traction/visibility in real time.",
-        "Mitigate cold exposure: minimize outdoor wait times, allow early building entry where possible, and message families about face/hand protection."
+        "Plan for NORMAL operations with contingency for a 1–2 hour DELAY decision (more likely than full closure).",
+        "If buses run: minimize outdoor wait time (hold buses until near pickup time where feasible; keep students indoors until bus arrival at schools).",
+        "Pre-6:30 AM: spot-treat bus loops, drop-off loops, entrances, and known trouble intersections/bridges for black ice; don’t rely on salt alone—use abrasives where needed.",
+        "Communicate wind-chill safety (full face/hand coverage) and remind families about frostbite risk during waits.",
+        "Have transportation verify cold-start readiness (batteries, fuel, air systems) and route drivers briefed on ‘spot ice’ braking distances."
       ],
       "for_residents": [
-        "Dress for dangerous wind chills at stops (cover exposed skin; limit wait time).",
-        "Assume patchy black ice on neighborhood streets/bridges; slow down and increase following distance even if main roads look fine.",
-        "Start vehicles early; keep emergency cold kit/blanket in car."
+        "Assume black ice on secondary roads, bridges, and shaded curves; slow down and increase following distance.",
+        "Dress for wind chills potentially near -20°F or colder during early morning; limit exposed skin time at bus stops.",
+        "Allow extra warm-up time for vehicles and carry a winter kit; watch for slick parking lots/sidewalks at schools and workplaces."
       ],
       "for_authorities": [
-        "Spot-treat bridges, hills, curves, and stop-controlled approaches with abrasives/sand; don’t rely on salt alone in single digits.",
-        "Prioritize 03:30–05:30 treatment window to be freshest for 06:00–08:00 travel.",
-        "Push clear public messaging: ‘cold + patchy ice’ rather than ‘snowstorm’ to reduce complacency."
+        "Prioritize sanding/abrasives on bridges, overpasses, hills, and stop-controlled intersections before 6:30 AM; salt performance may be limited.",
+        "Push targeted messaging: ‘spot ice + extreme cold’ rather than ‘heavy snow’ to match conditions and reduce complacency.",
+        "Monitor for any brief lake-effect banding inland overnight; be ready to surge response if radar shows a band setting up over Kent County near dawn."
       ]
     },
     "updates_needed": true,
-    "next_evaluation_time": "2026-01-23T10:30:00Z"
+    "next_evaluation_time": "2026-01-23T03:30:00-05:00"
   },
   "collaboration": {
     "totalRounds": 1,
@@ -231,185 +231,187 @@
     "rounds": [
       {
         "round": 1,
-        "timestamp": "2026-01-22T13:14:26.051Z",
+        "timestamp": "2026-01-22T14:05:04.601Z",
         "positions": [
           {
             "agentId": "meteorology",
             "probability": 18,
             "confidence": 62,
-            "rationale": "For Friday, Jan 23, 2026 in Rockford, MI, the forecast is a classic arctic, mostly-dry day: extremely cold but with no additional accumulation. In most Michigan districts, that usually does NOT produce a full closure unless wind chills hit district thresholds and/or there’s a secondary hazard (widespread refreeze/black ice or persistent dense freezing fog at bus time). Given the explicit Cold Weather Advisory timing (1 AM Fri–10 AM Sat) and modeled wind chills approaching -25°F Friday morning, I put meaningful but still sub-50% odds on a closure; however, with 0\" new snow forecast, my baseline stays on the low-to-moderate side. Net: more likely ‘open (maybe a delay)’ than ‘closed.’",
+            "rationale": "Meteorologically, Friday (2026-01-23) looks like an **arctic high / post-snow-event cold day**: very cold, dry, and breezy—more likely to produce **wind-chill and refreeze issues** than fresh snow/ice accumulation. In West Michigan, that typically yields **higher delay risk than full closure**, unless the district has strict wind-chill thresholds or widespread untreated-road ice persists. I land at **18%** for a full snow day (closure) given the lack of new snow, but acknowledge upside risk if Thursday’s event leaves widespread slickness and/or if dense fog/near-zero visibility shows up during the morning commute.",
             "keyFactors": [
-              "No new precip expected Friday (0\" snow; 0% precip chances). That removes the #1 driver of K-12 closures (plowing/whiteout/ice accretion during the commute).",
-              "Extreme cold is the main hazard: air temps around 5°F late morning with a plunge toward ~-14°F overnight; wind chills roughly -20°F to -27°F during the day and near bus-stop time (6–9 AM). This can trigger cold/wind-chill policy closures in some districts.",
-              "Wind is noticeable but not blizzard-grade: sustained ~10–18 mph with gusts ~20–26 mph early. Enough for dangerous wind chill, but not enough (by itself) for blowing/drifting shutdowns without falling snow.",
-              "Visibility flags are the wildcard: multiple hourly entries show 0–1 mile/0 km visibility, and “freezing fog” appears late evening. If dense freezing fog or low stratus persists into 6–8 AM, that can create a localized delay/closure scenario even without snow.",
-              "“Post-event” risk: Thursday’s winter weather advisory implies prior snow/ice and gusts. With a hard freeze overnight, any residual moisture/slush can refreeze into black ice on secondary roads/bridges before treatment is effective in single-digit temps."
+              "**No new precip/snow expected Friday**: forecast is 0\" new snow / 0 precip with daily snow chance 0%, so the classic accumulation-driven closure trigger is absent.",
+              "**Cold is the primary hazard**: temps near ~3–6°F around the morning commute with **wind chills roughly -15°F to -25°F** (fits the Cold Weather Advisory messaging). This can drive closures in some districts, but it’s policy-dependent and less consistent than snow/ice events.",
+              "**Moderate winds, not a blizzard setup**: sustained ~13–16 mph with gusts ~20–26 mph—enough to worsen wind chill but generally not enough (with zero new snow) to create widespread blowing/drifting problems.",
+              "**Residual impacts from Thu (Jan 22)**: the prior Winter Weather Advisory and ongoing wintry precip today imply plowed-but-not-perfect conditions; the **hard refreeze** overnight can leave slick secondary roads/parking lots and polished intersections, raising risk for AM buses even with no new snowfall.",
+              "**Visibility/fog signal is messy**: several hours show 0 mi visibility, and there’s a freezing fog flag late evening. If that low-visibility/ice fog verifies **into the 6–8 AM bus window**, odds of a delay/closure rise; but the strongest fog indicator appears later (near 11 PM) and some zero-vis entries look internally inconsistent with “no precip.”"
             ]
           },
           {
             "agentId": "history",
-            "probability": 22,
-            "confidence": 58,
-            "rationale": "From a historical/operations perspective, Rockford/Kent-area closures are most strongly tied to heavy snow timing and ice. Friday’s forecast is atypical: extreme cold without new snow. That shifts the decision to policy thresholds (wind chill) and transportation safety (refreeze on secondary roads). Given (1) no accumulating snow forecast Friday, (2) cold advisories indicating potentially hazardous wind chills during the morning commute, and (3) the likelihood of some refreeze after Thursday’s wintry precip, I land in a **low–moderate** closure range. I’m setting **22%** as the probability of a *full snow day/closure* (with a higher implied probability of a *delay* than a full closure).",
+            "probability": 28,
+            "confidence": 62,
+            "rationale": "Historically, for the Rockford/Grand Rapids-area pattern, a day with **no accumulating snow** but **headline-level dangerous wind chills** raises cancellation odds into a “meaningful but not dominant” range. The most likely administrative response, if anything, is a **delayed start** to reduce bus-stop exposure and allow crews to address refreeze/spot-ice. I’m setting the snow-day (closure) probability at **28%**: higher than a normal cold January day, but below 50% because roads should be improving (no new precip) and many Michigan districts run in single-digit temps unless wind chills are persistently extreme or widespread travel hazards develop.",
             "keyFactors": [
-              "**Cold-driven operations (not snow-driven):** Friday 2026-01-23 has *0\" new snow forecast* but very low temps (high ~5°F, low ~-14°F) and wind chills that get into the **-20°F to -25°F** territory during the morning hours (supported by the Cold Weather Advisory timing). Districts historically close for cold less often than for snow/ice—so this raises risk, but usually into the *delay/limited* zone unless thresholds are clearly exceeded.",
-              "**“Hangover” risk from Thursday’s event:** A Winter Weather Advisory is active Thursday (Jan 22) and the region has active disruptions. Even if precip ends, the sharp temperature drop means **refreeze of slush/treated meltwater** and **residual drifting/packed snow** on secondary/rural roads can matter more than the clean Friday forecast. Historically, these setups produce *some* closures, but more commonly isolated slick spots and a few delays.",
-              "**Morning-commute specificity:** The most decision-relevant window is **~6–8 AM Friday**. If wind chills verify closer to -25°F *at bus-stop time* (and/or if freezing fog/visibility issues occur near sunrise rather than late evening), closure odds jump. If conditions are “just very cold” with decent visibility and treated roads, many MI districts stay open.",
-              "**Institutional/behavioral backdrop:** Regional cancellations/closures earlier in the week (per News agent) suggest heightened sensitivity and possible staffing/transport strain; that can slightly increase the chance of a Friday closure even without fresh snow."
+              "This is a **cold-driven** decision day: forecast high ~5°F, morning temps ~3–6°F, and wind chills roughly **-15°F to -25°F** during the bus/AM commute window (supported by the **Cold Weather Advisory**).",
+              "**No new snow is forecast Friday (0\")**, so the most common West Michigan closure trigger (overnight accumulation + bad timing) is absent.",
+              "**Residual impacts from Thursday’s snow/ice + hard refreeze**: even if mains are plowed, secondary roads, intersections, and bridge decks can stay slick because very cold temps reduce salt effectiveness; this often produces **delays** more than full closures.",
+              "Operational/history angle: districts *sometimes* close on “extreme cold headline” mornings even with clear roads, but it’s **policy-dependent** and not as consistent as heavy snow/ice triggers.",
+              "Visibility/fog is a wildcard: the forecast shows **periods of very low visibility (0–1 mi) overnight**, but the strongest freezing-fog signal looks **late (near 11 PM)** and not clearly centered on the AM bus window—so I treat it as a smaller contributor for Friday’s closure call."
             ]
           },
           {
             "agentId": "safety",
-            "probability": 22,
-            "confidence": 58,
-            "rationale": "From a safety/operations standpoint, Friday (2026-01-23) looks like a *cold-driven* risk day rather than a snow-driven one. The forecast indicates extremely cold morning wind chills (dangerous for students waiting at stops and for walkers), but there is no accumulating snow expected Friday, and winds are not at blizzard/whiteout levels. That combination typically produces either normal operations or a *delay* rather than a full closure—unless the district has explicit wind-chill closure thresholds or visibility/black-ice becomes more widespread than expected. Given the data, I put closure probability in the low-to-moderate range rather than high.",
+            "probability": 28,
+            "confidence": 62,
+            "rationale": "From a safety lens, Friday 2026-01-23 in Rockford, MI looks like a **cold + refreeze** decision day rather than a snowfall decision day. With 0\" forecast, I don’t expect system-wide impassable roads. However, the combination of (a) a hard overnight refreeze after Thursday’s wintry weather, (b) limited salt performance in single-digit temps, and (c) hazardous wind chills during the morning commute creates a meaningful (but not majority) chance of a closure—often more plausibly a delay or selective (rural-route) cancellation. Net: moderate risk, driven more by exposure and patch ice than accumulation.",
             "keyFactors": [
-              "**Primary safety driver is extreme cold, not snow:** Friday AM wind chills are in the dangerous range (roughly -15°F to -27°F in the hourly data), aligning with the Cold Weather Advisory timing (1 AM Fri–10 AM Sat). That can trigger cold-exposure operational decisions (bus stops, walkers), but many districts still operate unless thresholds are stricter or compounded by other hazards.",
-              "**No new snow forecast Friday (0\") lowers classic closure odds:** With precip and snowfall at/near zero, the usual “can we plow in time?” driver is absent.",
-              "**Refreeze/black-ice risk is plausible but not clearly “widespread” from the data:** Thursday includes wintry precip/snow (and an advisory). A sharp temperature drop into single digits/subzero increases the chance of residual moisture refreezing on bridges, shaded roads, and untreated subdivision/rural segments—more likely to cause *isolated* hazards and perhaps a delay than a full closure.",
-              "**Visibility anomalies are a wildcard:** The hourly feed reports several near-zero visibility values overnight/early morning despite no precip, and “freezing fog” appears late evening. If dense fog/freezing fog were to coincide with the bus window (roughly 6–8 AM), that would materially increase closure/delay odds. Right now, it’s not clearly centered on the commute window.",
-              "**Road treatment effectiveness reduced:** In single digits/subzero, salt effectiveness drops; if crews are behind from Thursday’s event, untreated spots become more consequential for buses."
+              "No new precip/snow expected Friday (0.0\"), so the usual \"can we clear roads\" snow-day trigger is absent; primary roads likely passable.",
+              "Safety risk shifts to **extreme cold exposure**: during the bus-stop window (~6–9 AM) temps are ~4–6°F with wind chills roughly **-12 to -16°F** (and NWS headlines suggest pockets approaching **-20 to -25°F**). This can drive closures in districts with long outdoor waits/long rural routes.",
+              "**Refreeze/black-ice risk is high** after Thursday’s snow/freezing rain + plunging temps; salt effectiveness drops sharply in single digits, so polished intersections/bridges/untreated neighborhood roads can stay slick even with \"no new snow.\"",
+              "Visibility flags are messy but concerning: several overnight hours show **0–1 mi** visibility and “freezing fog” appears late (23:00). Even if not widespread at 6–8 AM, any localized dense fog + ice film raises crash risk on secondary roads.",
+              "Operational risk to buses/vehicles in extreme cold (start reliability, battery/diesel issues) is a smaller but real contributor—more likely to cause a **delay** than a full closure."
             ]
           },
           {
             "agentId": "news",
-            "probability": 18,
-            "confidence": 62,
-            "rationale": "From a news/operations standpoint, the strongest “go/no-go” indicator would be an official Rockford Public Schools announcement or a wave of neighboring K-12 districts preemptively closing for Fri 2026-01-23. We don’t have that here. The local-news items mostly describe broader west/central Michigan impacts and activity cancellations tied to Thu 1/22 conditions, which can create a perception that Friday is a high-closure day.\n\nHowever, the actual Friday forecast in the provided dataset is cold and dry with no accumulating snow expected. That usually shifts decisions to (a) wind-chill policy thresholds and (b) whether refreeze/black ice is widespread enough to disrupt bus routes. Given the advisory timing and the potential for untreated surfaces to refreeze hard, I land on a low-to-moderate probability overall—closer to “possible delay” than “likely full closure.”",
+            "probability": 22,
+            "confidence": 55,
+            "rationale": "From a news/decision-signals perspective, there’s a disconnect: the *official hazard messaging* is strong (cold headlines, “dangerously cold wind chills”), and local coverage emphasizes stressed road operations and late-week danger, but the *forecast for Friday itself* shows no new snow and no precip. That usually reduces full closure probability in West Michigan unless districts have explicit wind-chill-based closure policies or widespread morning refreeze/fog creates notable crash risk. Netting those together, I land at a **low-to-moderate** closure probability (with delays more likely than a full snow day).",
             "keyFactors": [
-              "No new precip forecast for Fri 2026-01-23 (0\" snow / 0\" liquid) makes a full snow day less likely than the “news noise” might suggest.",
-              "Cold is the main operational hazard: air temps in the single digits (high ~5°F) with morning wind chills roughly around -15°F to -25°F range (Cold Weather Advisory window 1 AM Fri–10 AM Sat). This raises risk for a *delay* more than a closure, especially for long bus-stop exposure.",
-              "“Post-event hangover” risk: Thursday’s snow/freezing precip + falling temps can refreeze slush into black ice on side streets, bridges, and rural bus routes. Even without new snow, this can push districts toward a 2-hour delay if conditions are widespread at 5–7 AM.",
-              "Visibility flags in the hourly feed (some 0 mi readings; freezing fog noted late) introduce a small tail risk—if dense fog/freezing fog lingers into early morning, travel safety concerns could escalate quickly.",
-              "News/operational backdrop: regional cancellations and WMU closure on Thu 2026-01-22 signal this week has been disruptive, but they’re not deterministic for Rockford Public Schools on Fri 2026-01-23; no Rockford-specific Friday closure announcement found in the provided news scan."
+              "No official Rockford Public Schools closure/delay signal found yet; also no clear “domino” pattern of nearby district closures reported.",
+              "Friday (2026-01-23) is forecast to have **0 new snow/0 precip**, so the most common closure trigger (fresh accumulation/impassable roads during the bus window) is missing.",
+              "However, there are strong *headline/communications* signals that can influence superintendent decisions: an **NWS Cold Weather Advisory from 1 AM Friday to 10 AM Saturday** and an **Extreme Cold Watch** language for the broader period—i.e., this is being framed publicly as a high-impact cold event.",
+              "Commute-hour wind chills in the peer meteorology analysis are in the **~ -15°F to -25°F** range, which can push some districts toward a **delay** or targeted closure (especially for long bus routes / outdoor waits), even when roads are mostly passable.",
+              "Residual impacts from Thursday’s wintry weather + road-crew “tough conditions” messaging suggests **cleanup + refreeze** could elevate morning risk on secondary roads/bridges, increasing the chance of a *delay* more than a full closure.",
+              "Visibility flags (freezing fog / near-zero visibility at some hours) are a wildcard; if that verifies during the early commute rather than late-night, it can become a last-minute decision driver."
             ]
           }
         ],
-        "probabilitySpread": 4,
+        "probabilitySpread": 10,
         "consensusReached": true,
         "debates": [
           {
             "round": 1,
-            "topic": "Some cited ‘risk backdrop’ signals (regional cancellations, a local blog mentioning lake-effect lingering into Friday) conflict with the provided hour-by-hour forecast showing 0% snow chances Friday. I’d weight the explicit hourly precip/temps higher for the Fri decision, unless we see updated model guidance indicating lake-effect redevelopment.",
-            "challenger": "meteorology",
-            "challenged": "news",
-            "challenge": "Some cited ‘risk backdrop’ signals (regional cancellations, a local blog mentioning lake-effect lingering into Friday) conflict with the provided hour-by-hour forecast showing 0% snow chances Friday. I’d weight the explicit hourly precip/temps higher for the Fri decision, unless we see updated model guidance indicating lake-effect redevelopment.",
-            "response": "",
-            "resolution": "disagreed",
-            "probabilityShift": 0
-          },
-          {
-            "round": 1,
-            "topic": "The safety window (06:00–08:00) makes sense, but the near-zero visibility readings in the hourly feed are inconsistent (0 km at times with no precip) and occur at several non-commute hours too; we should treat that as ‘possible patchy fog/low stratus’ rather than guaranteed widespread whiteout. Overstating visibility certainty could inflate closure odds.",
+            "topic": "Your risk level is labeled “high,” which may be operationally fair, but it implicitly leans toward closure. Meteorologically, with **0\" new snow** and only moderate wind, I’d separate **‘high personal cold exposure risk’** from **‘high travel-impassability risk.’** Can you quantify how often your cited refreeze scenario alone produces closures vs delays in this region?",
             "challenger": "meteorology",
             "challenged": "safety",
-            "challenge": "The safety window (06:00–08:00) makes sense, but the near-zero visibility readings in the hourly feed are inconsistent (0 km at times with no precip) and occur at several non-commute hours too; we should treat that as ‘possible patchy fog/low stratus’ rather than guaranteed widespread whiteout. Overstating visibility certainty could inflate closure odds.",
+            "challenge": "Your risk level is labeled “high,” which may be operationally fair, but it implicitly leans toward closure. Meteorologically, with **0\" new snow** and only moderate wind, I’d separate **‘high personal cold exposure risk’** from **‘high travel-impassability risk.’** Can you quantify how often your cited refreeze scenario alone produces closures vs delays in this region?",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           },
           {
             "round": 1,
-            "topic": "The historical closure rates cited (0.12–0.18) are plausible, but the ‘cold-only’ closure probability is highly policy-dependent. If Rockford Public Schools has a strict wind-chill threshold (e.g., around -20°F to -25°F), the probability could be materially higher than historical averages; without that policy detail, we should avoid anchoring too hard to past rates.",
+            "topic": "The news summary mentions lake-effect potential through Friday, but the provided point forecast for Rockford shows **0 snow / 0 precip Friday**. That discrepancy matters—are those stories regional/general, or do they indicate a realistic chance Rockford gets an unexpected band? Without reconciling, the news signal could overweight snowfall risk.",
+            "challenger": "meteorology",
+            "challenged": "news",
+            "challenge": "The news summary mentions lake-effect potential through Friday, but the provided point forecast for Rockford shows **0 snow / 0 precip Friday**. That discrepancy matters—are those stories regional/general, or do they indicate a realistic chance Rockford gets an unexpected band? Without reconciling, the news signal could overweight snowfall risk.",
+            "response": "",
+            "resolution": "disagreed",
+            "probabilityShift": 0
+          },
+          {
+            "round": 1,
+            "topic": "The historical closure rates (0.22–0.30) seem a bit high for a **no-new-snow** day in a snow-savvy Michigan district unless the dataset heavily includes ‘extreme cold closure policy’ districts. What’s the reference set—West Michigan public districts, statewide, or mixed rural?",
             "challenger": "meteorology",
             "challenged": "history",
-            "challenge": "The historical closure rates cited (0.12–0.18) are plausible, but the ‘cold-only’ closure probability is highly policy-dependent. If Rockford Public Schools has a strict wind-chill threshold (e.g., around -20°F to -25°F), the probability could be materially higher than historical averages; without that policy detail, we should avoid anchoring too hard to past rates.",
+            "challenge": "The historical closure rates (0.22–0.30) seem a bit high for a **no-new-snow** day in a snow-savvy Michigan district unless the dataset heavily includes ‘extreme cold closure policy’ districts. What’s the reference set—West Michigan public districts, statewide, or mixed rural?",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           },
           {
             "round": 1,
-            "topic": "Your visibility section flags several hours with **0 mi** visibility readings, but many of those appear outside the core commute window and may reflect feed artifacts. Can you isolate the most plausible **6–9 AM** visibility/fog risk (persistence past sunrise) vs. late-evening freezing fog? This materially affects closure odds.",
+            "topic": "The visibility analysis lists a minimum visibility of 0 miles, but it’s not clearly tied to the **6–8 AM** commute window. Can you specify which hours around sunrise show the lowest vis? If the 6–9 AM period also drops near ~0–1 mile broadly, my closure probability would rise.",
             "challenger": "history",
             "challenged": "meteorology",
-            "challenge": "Your visibility section flags several hours with **0 mi** visibility readings, but many of those appear outside the core commute window and may reflect feed artifacts. Can you isolate the most plausible **6–9 AM** visibility/fog risk (persistence past sunrise) vs. late-evening freezing fog? This materially affects closure odds.",
+            "challenge": "The visibility analysis lists a minimum visibility of 0 miles, but it’s not clearly tied to the **6–8 AM** commute window. Can you specify which hours around sunrise show the lowest vis? If the 6–9 AM period also drops near ~0–1 mile broadly, my closure probability would rise.",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           },
           {
             "round": 1,
-            "topic": "You rate ice risk as ‘moderate’ and note salt effectiveness issues in single digits (true), but the forecast shows **0 precip Friday** and winds not extreme. Can you clarify whether you’re assuming **wet roads Thursday evening** (leading to widespread refreeze) vs. mostly dry roads after plowing? The assumed *extent* of refreeze is the biggest swing factor.",
+            "topic": "Your risk_level is ‘high’ (reasonable for exposure + refreeze), but the scoring doesn’t distinguish well between **delay vs full closure** outcomes. Can you estimate what fraction of similar ‘high refreeze + extreme cold’ mornings typically produce delays rather than cancellations in this region?",
             "challenger": "history",
             "challenged": "safety",
-            "challenge": "You rate ice risk as ‘moderate’ and note salt effectiveness issues in single digits (true), but the forecast shows **0 precip Friday** and winds not extreme. Can you clarify whether you’re assuming **wet roads Thursday evening** (leading to widespread refreeze) vs. mostly dry roads after plowing? The assumed *extent* of refreeze is the biggest swing factor.",
+            "challenge": "Your risk_level is ‘high’ (reasonable for exposure + refreeze), but the scoring doesn’t distinguish well between **delay vs full closure** outcomes. Can you estimate what fraction of similar ‘high refreeze + extreme cold’ mornings typically produce delays rather than cancellations in this region?",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           },
           {
             "round": 1,
-            "topic": "Some cited signals (blogs, broad regional stories) may over-weight ‘closure chatter.’ The most predictive historical indicator is **district-specific patterns** and adjacent K-12 decisions. Do we have any verified *neighboring district* Friday announcements or just general cancellations (activities/orgs)?",
+            "topic": "The news summary mentions lake-effect potential ‘through Friday,’ which conflicts with the provided point forecast showing **0\" snow on Friday**. If there’s credible indication of renewed morning lake-effect bands near Rockford/Kent County, that would materially change the odds.",
             "challenger": "history",
             "challenged": "news",
-            "challenge": "Some cited signals (blogs, broad regional stories) may over-weight ‘closure chatter.’ The most predictive historical indicator is **district-specific patterns** and adjacent K-12 decisions. Do we have any verified *neighboring district* Friday announcements or just general cancellations (activities/orgs)?",
+            "challenge": "The news summary mentions lake-effect potential ‘through Friday,’ which conflicts with the provided point forecast showing **0\" snow on Friday**. If there’s credible indication of renewed morning lake-effect bands near Rockford/Kent County, that would materially change the odds.",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           },
           {
             "round": 1,
-            "topic": "The visibility section treats the near-zero visibility readings as meaningful, but several hours show 0 mi visibility without precip and with mixed visibility values adjacent (e.g., 5–10 km). We need to sanity-check whether this is a sensor/model artifact vs. true dense fog impacting 6–8 AM. If it’s real and overlaps the commute, my probability should rise significantly.",
+            "topic": "Visibility analysis may be overweighting the ‘0 mi’ hourly values—those could be artifact/patchy fog. We need clarity on whether dense/freezing fog is expected specifically **6–9 AM** vs mainly late evening/night. If it’s not in the commute window, closure odds drop.",
             "challenger": "safety",
             "challenged": "meteorology",
-            "challenge": "The visibility section treats the near-zero visibility readings as meaningful, but several hours show 0 mi visibility without precip and with mixed visibility values adjacent (e.g., 5–10 km). We need to sanity-check whether this is a sensor/model artifact vs. true dense fog impacting 6–8 AM. If it’s real and overlaps the commute, my probability should rise significantly.",
+            "challenge": "Visibility analysis may be overweighting the ‘0 mi’ hourly values—those could be artifact/patchy fog. We need clarity on whether dense/freezing fog is expected specifically **6–9 AM** vs mainly late evening/night. If it’s not in the commute window, closure odds drop.",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           },
           {
             "round": 1,
-            "topic": "The historical snow-day rates (0.12–0.18) are helpful, but they may underweight the *severity* of the wind chill hazard on a day with an active Cold Weather Advisory. District policy thresholds (e.g., wind chill cutoffs for bussing/walkers) can dominate outcomes here and vary widely—so history should be conditioned on local policy if known.",
-            "challenger": "safety",
-            "challenged": "history",
-            "challenge": "The historical snow-day rates (0.12–0.18) are helpful, but they may underweight the *severity* of the wind chill hazard on a day with an active Cold Weather Advisory. District policy thresholds (e.g., wind chill cutoffs for bussing/walkers) can dominate outcomes here and vary widely—so history should be conditioned on local policy if known.",
-            "response": "",
-            "resolution": "disagreed",
-            "probabilityShift": 0
-          },
-          {
-            "round": 1,
-            "topic": "Regional cancellations/WMU closure are useful ‘backdrop’ signals, but they can inflate perceived risk for Friday specifically. The hard decision should hinge on Friday AM bus-route conditions (refreeze + visibility + wind chill) rather than the fact that Thursday was disruptive.",
+            "topic": "Local-news signals cite lake-effect ‘possible through Friday,’ but the provided point forecast shows **0 precip** Friday. Treat media phrasing as regional/conditional unless it matches the Rockford-hourly precip fields; otherwise it can inflate snow-day expectations.",
             "challenger": "safety",
             "challenged": "news",
-            "challenge": "Regional cancellations/WMU closure are useful ‘backdrop’ signals, but they can inflate perceived risk for Friday specifically. The hard decision should hinge on Friday AM bus-route conditions (refreeze + visibility + wind chill) rather than the fact that Thursday was disruptive.",
+            "challenge": "Local-news signals cite lake-effect ‘possible through Friday,’ but the provided point forecast shows **0 precip** Friday. Treat media phrasing as regional/conditional unless it matches the Rockford-hourly precip fields; otherwise it can inflate snow-day expectations.",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           },
           {
             "round": 1,
-            "topic": "The visibility section shows multiple hours with 0 mi visibility, but several of those are at night/late evening; we need to be careful not to overweight ‘0 mi’ readings outside the school commute window. Also, clarify the 6–8 AM visibility expectation specifically (that’s what drives decisions).",
+            "topic": "Historical closure rates for ‘cold-only’ setups are highly district-policy dependent. If Rockford typically stays open until wind chills are ≤ -20°F or lower, the probability should be trimmed; if they close nearer -15°F, it should rise. We need the implied/known local threshold behavior.",
+            "challenger": "safety",
+            "challenged": "history",
+            "challenge": "Historical closure rates for ‘cold-only’ setups are highly district-policy dependent. If Rockford typically stays open until wind chills are ≤ -20°F or lower, the probability should be trimmed; if they close nearer -15°F, it should rise. We need the implied/known local threshold behavior.",
+            "response": "",
+            "resolution": "disagreed",
+            "probabilityShift": 0
+          },
+          {
+            "round": 1,
+            "topic": "You note several hours with 0–1 mile visibility and even 0 mi; clarify whether those lowest-visibility hours align with the **6–8 AM** commute window (highest decision leverage) versus late-night artifacts. If mostly late evening/night, it should carry less weight for closures.",
             "challenger": "news",
             "challenged": "meteorology",
-            "challenge": "The visibility section shows multiple hours with 0 mi visibility, but several of those are at night/late evening; we need to be careful not to overweight ‘0 mi’ readings outside the school commute window. Also, clarify the 6–8 AM visibility expectation specifically (that’s what drives decisions).",
+            "challenge": "You note several hours with 0–1 mile visibility and even 0 mi; clarify whether those lowest-visibility hours align with the **6–8 AM** commute window (highest decision leverage) versus late-night artifacts. If mostly late evening/night, it should carry less weight for closures.",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           },
           {
             "round": 1,
-            "topic": "The historical closure rates (0.12–0.18) are plausible, but could be double-counting the same driver as the ‘seasonal_probability_adjustment.’ Recommend explicitly separating (1) base-rate for similar cold/dry days vs (2) incremental risk from prior-day icing/refreeze.",
-            "challenger": "news",
-            "challenged": "history",
-            "challenge": "The historical closure rates (0.12–0.18) are plausible, but could be double-counting the same driver as the ‘seasonal_probability_adjustment.’ Recommend explicitly separating (1) base-rate for similar cold/dry days vs (2) incremental risk from prior-day icing/refreeze.",
-            "response": "",
-            "resolution": "disagreed",
-            "probabilityShift": 0
-          },
-          {
-            "round": 1,
-            "topic": "Safety notes salt effectiveness reductions in single digits (true), but it doesn’t automatically imply closures; many districts mitigate with sand/abrasives and route adjustments. Suggest quantifying: is the refreeze risk expected to be isolated (spots) or systemic (widespread), since that’s the closure pivot.",
+            "topic": "Risk level is labeled “high,” but the forecast shows **0 new precip** Friday. Can you separate (a) hazard severity for exposed students (wind chill) from (b) likelihood of widespread impassable travel? Without that split, “high risk” may overstate full-closure odds.",
             "challenger": "news",
             "challenged": "safety",
-            "challenge": "Safety notes salt effectiveness reductions in single digits (true), but it doesn’t automatically imply closures; many districts mitigate with sand/abrasives and route adjustments. Suggest quantifying: is the refreeze risk expected to be isolated (spots) or systemic (widespread), since that’s the closure pivot.",
+            "challenge": "Risk level is labeled “high,” but the forecast shows **0 new precip** Friday. Can you separate (a) hazard severity for exposed students (wind chill) from (b) likelihood of widespread impassable travel? Without that split, “high risk” may overstate full-closure odds.",
+            "response": "",
+            "resolution": "disagreed",
+            "probabilityShift": 0
+          },
+          {
+            "round": 1,
+            "topic": "Historical closure rates cited (0.22–0.30) may be contextually plausible, but we need to anchor them to Rockford-area district behavior (e.g., whether they’ve recently closed for cold-only days). Otherwise, policy variance could make those priors too aggressive.",
+            "challenger": "news",
+            "challenged": "history",
+            "challenge": "Historical closure rates cited (0.22–0.30) may be contextually plausible, but we need to anchor them to Rockford-area district behavior (e.g., whether they’ve recently closed for cold-only days). Otherwise, policy variance could make those priors too aggressive.",
             "response": "",
             "resolution": "disagreed",
             "probabilityShift": 0
           }
         ],
-        "roundSummary": "Round 1: Spread 4.0% | CONSENSUS REACHED"
+        "roundSummary": "Round 1: Spread 10.0% | CONSENSUS REACHED"
       }
     ],
     "confidenceJourney": [
@@ -418,100 +420,100 @@
         "initialProbability": 18,
         "finalProbability": 18,
         "totalShift": 0,
-        "shiftReason": "For Friday, Jan 23, 2026 in Rockford, MI, the forecast is a classic arctic, mostly-dry day: extremely cold but with no additional accumulation. In most Michigan districts, that usually does NOT produce a full closure unless wind chills hit district thresholds and/or there’s a secondary hazard (widespread refreeze/black ice or persistent dense freezing fog at bus time). Given the explicit Cold Weather Advisory timing (1 AM Fri–10 AM Sat) and modeled wind chills approaching -25°F Friday morning, I put meaningful but still sub-50% odds on a closure; however, with 0\" new snow forecast, my baseline stays on the low-to-moderate side. Net: more likely ‘open (maybe a delay)’ than ‘closed.’"
+        "shiftReason": "Meteorologically, Friday (2026-01-23) looks like an **arctic high / post-snow-event cold day**: very cold, dry, and breezy—more likely to produce **wind-chill and refreeze issues** than fresh snow/ice accumulation. In West Michigan, that typically yields **higher delay risk than full closure**, unless the district has strict wind-chill thresholds or widespread untreated-road ice persists. I land at **18%** for a full snow day (closure) given the lack of new snow, but acknowledge upside risk if Thursday’s event leaves widespread slickness and/or if dense fog/near-zero visibility shows up during the morning commute."
       },
       {
         "agentId": "history",
-        "initialProbability": 22,
-        "finalProbability": 22,
+        "initialProbability": 28,
+        "finalProbability": 28,
         "totalShift": 0,
-        "shiftReason": "From a historical/operations perspective, Rockford/Kent-area closures are most strongly tied to heavy snow timing and ice. Friday’s forecast is atypical: extreme cold without new snow. That shifts the decision to policy thresholds (wind chill) and transportation safety (refreeze on secondary roads). Given (1) no accumulating snow forecast Friday, (2) cold advisories indicating potentially hazardous wind chills during the morning commute, and (3) the likelihood of some refreeze after Thursday’s wintry precip, I land in a **low–moderate** closure range. I’m setting **22%** as the probability of a *full snow day/closure* (with a higher implied probability of a *delay* than a full closure)."
+        "shiftReason": "Historically, for the Rockford/Grand Rapids-area pattern, a day with **no accumulating snow** but **headline-level dangerous wind chills** raises cancellation odds into a “meaningful but not dominant” range. The most likely administrative response, if anything, is a **delayed start** to reduce bus-stop exposure and allow crews to address refreeze/spot-ice. I’m setting the snow-day (closure) probability at **28%**: higher than a normal cold January day, but below 50% because roads should be improving (no new precip) and many Michigan districts run in single-digit temps unless wind chills are persistently extreme or widespread travel hazards develop."
       },
       {
         "agentId": "safety",
-        "initialProbability": 22,
-        "finalProbability": 22,
+        "initialProbability": 28,
+        "finalProbability": 28,
         "totalShift": 0,
-        "shiftReason": "From a safety/operations standpoint, Friday (2026-01-23) looks like a *cold-driven* risk day rather than a snow-driven one. The forecast indicates extremely cold morning wind chills (dangerous for students waiting at stops and for walkers), but there is no accumulating snow expected Friday, and winds are not at blizzard/whiteout levels. That combination typically produces either normal operations or a *delay* rather than a full closure—unless the district has explicit wind-chill closure thresholds or visibility/black-ice becomes more widespread than expected. Given the data, I put closure probability in the low-to-moderate range rather than high."
+        "shiftReason": "From a safety lens, Friday 2026-01-23 in Rockford, MI looks like a **cold + refreeze** decision day rather than a snowfall decision day. With 0\" forecast, I don’t expect system-wide impassable roads. However, the combination of (a) a hard overnight refreeze after Thursday’s wintry weather, (b) limited salt performance in single-digit temps, and (c) hazardous wind chills during the morning commute creates a meaningful (but not majority) chance of a closure—often more plausibly a delay or selective (rural-route) cancellation. Net: moderate risk, driven more by exposure and patch ice than accumulation."
       },
       {
         "agentId": "news",
-        "initialProbability": 18,
-        "finalProbability": 18,
+        "initialProbability": 22,
+        "finalProbability": 22,
         "totalShift": 0,
-        "shiftReason": "From a news/operations standpoint, the strongest “go/no-go” indicator would be an official Rockford Public Schools announcement or a wave of neighboring K-12 districts preemptively closing for Fri 2026-01-23. We don’t have that here. The local-news items mostly describe broader west/central Michigan impacts and activity cancellations tied to Thu 1/22 conditions, which can create a perception that Friday is a high-closure day.\n\nHowever, the actual Friday forecast in the provided dataset is cold and dry with no accumulating snow expected. That usually shifts decisions to (a) wind-chill policy thresholds and (b) whether refreeze/black ice is widespread enough to disrupt bus routes. Given the advisory timing and the potential for untreated surfaces to refreeze hard, I land on a low-to-moderate probability overall—closer to “possible delay” than “likely full closure.”"
+        "shiftReason": "From a news/decision-signals perspective, there’s a disconnect: the *official hazard messaging* is strong (cold headlines, “dangerously cold wind chills”), and local coverage emphasizes stressed road operations and late-week danger, but the *forecast for Friday itself* shows no new snow and no precip. That usually reduces full closure probability in West Michigan unless districts have explicit wind-chill-based closure policies or widespread morning refreeze/fog creates notable crash risk. Netting those together, I land at a **low-to-moderate** closure probability (with delays more likely than a full snow day)."
       }
     ],
     "keyDisagreements": [
       {
-        "topic": "Some cited ‘risk backdrop’ signals (regional cancellations, a local blog mentioning lake-effect lingering into Friday) conflict with the provided hour-by-hour forecast showing 0% snow chances Friday. I’d weight the explicit hourly precip/temps higher for the Fri decision, unless we see updated model guidance indicating lake-effect redevelopment.",
+        "topic": "Your risk level is labeled “high,” which may be operationally fair, but it implicitly leans toward closure. Meteorologically, with **0\" new snow** and only moderate wind, I’d separate **‘high personal cold exposure risk’** from **‘high travel-impassability risk.’** Can you quantify how often your cited refreeze scenario alone produces closures vs delays in this region?",
+        "agents": [
+          "meteorology",
+          "safety"
+        ],
+        "positions": [
+          "Your risk level is labeled “high,” which may be operationally fair, but it implicitly leans toward closure. Meteorologically, with **0\" new snow** and only moderate wind, I’d separate **‘high personal cold exposure risk’** from **‘high travel-impassability risk.’** Can you quantify how often your cited refreeze scenario alone produces closures vs delays in this region?",
+          ""
+        ],
+        "resolution": "disagreed",
+        "impact": "medium"
+      },
+      {
+        "topic": "The news summary mentions lake-effect potential through Friday, but the provided point forecast for Rockford shows **0 snow / 0 precip Friday**. That discrepancy matters—are those stories regional/general, or do they indicate a realistic chance Rockford gets an unexpected band? Without reconciling, the news signal could overweight snowfall risk.",
         "agents": [
           "meteorology",
           "news"
         ],
         "positions": [
-          "Some cited ‘risk backdrop’ signals (regional cancellations, a local blog mentioning lake-effect lingering into Friday) conflict with the provided hour-by-hour forecast showing 0% snow chances Friday. I’d weight the explicit hourly precip/temps higher for the Fri decision, unless we see updated model guidance indicating lake-effect redevelopment.",
+          "The news summary mentions lake-effect potential through Friday, but the provided point forecast for Rockford shows **0 snow / 0 precip Friday**. That discrepancy matters—are those stories regional/general, or do they indicate a realistic chance Rockford gets an unexpected band? Without reconciling, the news signal could overweight snowfall risk.",
           ""
         ],
         "resolution": "disagreed",
         "impact": "medium"
       },
       {
-        "topic": "The safety window (06:00–08:00) makes sense, but the near-zero visibility readings in the hourly feed are inconsistent (0 km at times with no precip) and occur at several non-commute hours too; we should treat that as ‘possible patchy fog/low stratus’ rather than guaranteed widespread whiteout. Overstating visibility certainty could inflate closure odds.",
-        "agents": [
-          "meteorology",
-          "safety"
-        ],
-        "positions": [
-          "The safety window (06:00–08:00) makes sense, but the near-zero visibility readings in the hourly feed are inconsistent (0 km at times with no precip) and occur at several non-commute hours too; we should treat that as ‘possible patchy fog/low stratus’ rather than guaranteed widespread whiteout. Overstating visibility certainty could inflate closure odds.",
-          ""
-        ],
-        "resolution": "disagreed",
-        "impact": "medium"
-      },
-      {
-        "topic": "The historical closure rates cited (0.12–0.18) are plausible, but the ‘cold-only’ closure probability is highly policy-dependent. If Rockford Public Schools has a strict wind-chill threshold (e.g., around -20°F to -25°F), the probability could be materially higher than historical averages; without that policy detail, we should avoid anchoring too hard to past rates.",
+        "topic": "The historical closure rates (0.22–0.30) seem a bit high for a **no-new-snow** day in a snow-savvy Michigan district unless the dataset heavily includes ‘extreme cold closure policy’ districts. What’s the reference set—West Michigan public districts, statewide, or mixed rural?",
         "agents": [
           "meteorology",
           "history"
         ],
         "positions": [
-          "The historical closure rates cited (0.12–0.18) are plausible, but the ‘cold-only’ closure probability is highly policy-dependent. If Rockford Public Schools has a strict wind-chill threshold (e.g., around -20°F to -25°F), the probability could be materially higher than historical averages; without that policy detail, we should avoid anchoring too hard to past rates.",
+          "The historical closure rates (0.22–0.30) seem a bit high for a **no-new-snow** day in a snow-savvy Michigan district unless the dataset heavily includes ‘extreme cold closure policy’ districts. What’s the reference set—West Michigan public districts, statewide, or mixed rural?",
           ""
         ],
         "resolution": "disagreed",
         "impact": "medium"
       },
       {
-        "topic": "Your visibility section flags several hours with **0 mi** visibility readings, but many of those appear outside the core commute window and may reflect feed artifacts. Can you isolate the most plausible **6–9 AM** visibility/fog risk (persistence past sunrise) vs. late-evening freezing fog? This materially affects closure odds.",
+        "topic": "The visibility analysis lists a minimum visibility of 0 miles, but it’s not clearly tied to the **6–8 AM** commute window. Can you specify which hours around sunrise show the lowest vis? If the 6–9 AM period also drops near ~0–1 mile broadly, my closure probability would rise.",
         "agents": [
           "history",
           "meteorology"
         ],
         "positions": [
-          "Your visibility section flags several hours with **0 mi** visibility readings, but many of those appear outside the core commute window and may reflect feed artifacts. Can you isolate the most plausible **6–9 AM** visibility/fog risk (persistence past sunrise) vs. late-evening freezing fog? This materially affects closure odds.",
+          "The visibility analysis lists a minimum visibility of 0 miles, but it’s not clearly tied to the **6–8 AM** commute window. Can you specify which hours around sunrise show the lowest vis? If the 6–9 AM period also drops near ~0–1 mile broadly, my closure probability would rise.",
           ""
         ],
         "resolution": "disagreed",
         "impact": "medium"
       },
       {
-        "topic": "You rate ice risk as ‘moderate’ and note salt effectiveness issues in single digits (true), but the forecast shows **0 precip Friday** and winds not extreme. Can you clarify whether you’re assuming **wet roads Thursday evening** (leading to widespread refreeze) vs. mostly dry roads after plowing? The assumed *extent* of refreeze is the biggest swing factor.",
+        "topic": "Your risk_level is ‘high’ (reasonable for exposure + refreeze), but the scoring doesn’t distinguish well between **delay vs full closure** outcomes. Can you estimate what fraction of similar ‘high refreeze + extreme cold’ mornings typically produce delays rather than cancellations in this region?",
         "agents": [
           "history",
           "safety"
         ],
         "positions": [
-          "You rate ice risk as ‘moderate’ and note salt effectiveness issues in single digits (true), but the forecast shows **0 precip Friday** and winds not extreme. Can you clarify whether you’re assuming **wet roads Thursday evening** (leading to widespread refreeze) vs. mostly dry roads after plowing? The assumed *extent* of refreeze is the biggest swing factor.",
+          "Your risk_level is ‘high’ (reasonable for exposure + refreeze), but the scoring doesn’t distinguish well between **delay vs full closure** outcomes. Can you estimate what fraction of similar ‘high refreeze + extreme cold’ mornings typically produce delays rather than cancellations in this region?",
           ""
         ],
         "resolution": "disagreed",
         "impact": "medium"
       }
     ],
-    "collaborationSummary": "Agents reached consensus after 1 round(s) with 4.0% spread. Average probability: 20%."
+    "collaborationSummary": "Agents reached consensus after 1 round(s) with 10.0% spread. Average probability: 24%."
   },
-  "timestamp": "2026-01-22T13:15:44.218Z",
+  "timestamp": "2026-01-22T14:06:17.696Z",
   "targetDate": "2026-01-23",
   "targetDayName": "Friday",
   "daysAhead": 1,
@@ -524,43 +526,43 @@
       "lat": 43.1152000427246,
       "lon": -85.5136032104492,
       "tz_id": "America/Detroit",
-      "localtime_epoch": 1769087584,
-      "localtime": "2026-01-22 08:13"
+      "localtime_epoch": 1769090645,
+      "localtime": "2026-01-22 09:04"
     },
     "current": {
-      "last_updated_epoch": 1769086800,
-      "last_updated": "2026-01-22 08:00",
-      "temp_c": -6.1,
-      "temp_f": 21,
+      "last_updated_epoch": 1769090400,
+      "last_updated": "2026-01-22 09:00",
+      "temp_c": -7.2,
+      "temp_f": 19,
       "is_day": 1,
       "condition": {
-        "text": "Patchy light snow",
-        "icon": "//cdn.weatherapi.com/weather/64x64/day/323.png",
-        "code": 1210
+        "text": "Light snow",
+        "icon": "//cdn.weatherapi.com/weather/64x64/day/326.png",
+        "code": 1213
       },
-      "wind_mph": 13.2,
-      "wind_kph": 21.2,
+      "wind_mph": 13,
+      "wind_kph": 20.9,
       "wind_degree": 276,
       "wind_dir": "W",
-      "pressure_mb": 1016,
-      "pressure_in": 29.99,
+      "pressure_mb": 1017,
+      "pressure_in": 30.02,
       "precip_mm": 0,
       "precip_in": 0,
-      "humidity": 84,
+      "humidity": 67,
       "cloud": 100,
-      "feelslike_c": -13.2,
-      "feelslike_f": 8.3,
-      "windchill_c": -15.4,
-      "windchill_f": 4.2,
-      "heatindex_c": -8.3,
-      "heatindex_f": 17,
-      "dewpoint_c": -13.9,
-      "dewpoint_f": 7.1,
-      "vis_km": 2.4,
-      "vis_miles": 1,
-      "uv": 0,
-      "gust_mph": 21.9,
-      "gust_kph": 35.3
+      "feelslike_c": -14.5,
+      "feelslike_f": 5.9,
+      "windchill_c": -15.9,
+      "windchill_f": 3.4,
+      "heatindex_c": -8.4,
+      "heatindex_f": 16.9,
+      "dewpoint_c": -13.5,
+      "dewpoint_f": 7.6,
+      "vis_km": 1.2,
+      "vis_miles": 0,
+      "uv": 0.3,
+      "gust_mph": 19.8,
+      "gust_kph": 31.9
     },
     "forecast": {
       "forecastday": [
@@ -927,24 +929,24 @@
             {
               "time_epoch": 1769086800,
               "time": "2026-01-22 08:00",
-              "temp_c": -6.1,
-              "temp_f": 21,
-              "is_day": 1,
+              "temp_c": -8.3,
+              "temp_f": 17,
+              "is_day": 0,
               "condition": {
-                "text": "Patchy light snow",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/323.png",
-                "code": 1210
+                "text": "Overcast ",
+                "icon": "//cdn.weatherapi.com/weather/64x64/night/122.png",
+                "code": 1009
               },
               "wind_mph": 13.2,
               "wind_kph": 21.2,
               "wind_degree": 276,
               "wind_dir": "W",
-              "pressure_mb": 1016,
-              "pressure_in": 29.99,
+              "pressure_mb": 1019,
+              "pressure_in": 30.08,
               "precip_mm": 0,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 84,
+              "humidity": 60,
               "cloud": 100,
               "feelslike_c": -15.4,
               "feelslike_f": 4.2,
@@ -958,8 +960,8 @@
               "chance_of_rain": 0,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 2.4,
-              "vis_miles": 1,
+              "vis_km": 10,
+              "vis_miles": 6,
               "gust_mph": 21.9,
               "gust_kph": 35.3,
               "uv": 0
@@ -967,24 +969,24 @@
             {
               "time_epoch": 1769090400,
               "time": "2026-01-22 09:00",
-              "temp_c": -8.4,
-              "temp_f": 16.9,
+              "temp_c": -7.2,
+              "temp_f": 19,
               "is_day": 1,
               "condition": {
-                "text": "Overcast ",
-                "icon": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-                "code": 1009
+                "text": "Light snow",
+                "icon": "//cdn.weatherapi.com/weather/64x64/day/326.png",
+                "code": 1213
               },
               "wind_mph": 13,
               "wind_kph": 20.9,
               "wind_degree": 276,
               "wind_dir": "W",
-              "pressure_mb": 1019,
-              "pressure_in": 30.1,
+              "pressure_mb": 1017,
+              "pressure_in": 30.02,
               "precip_mm": 0,
               "precip_in": 0,
               "snow_cm": 0,
-              "humidity": 68,
+              "humidity": 67,
               "cloud": 100,
               "feelslike_c": -15.9,
               "feelslike_f": 3.4,
@@ -998,8 +1000,8 @@
               "chance_of_rain": 0,
               "will_it_snow": 0,
               "chance_of_snow": 0,
-              "vis_km": 10,
-              "vis_miles": 6,
+              "vis_km": 1.2,
+              "vis_miles": 0,
               "gust_mph": 19.8,
               "gust_kph": 31.9,
               "uv": 0.3
