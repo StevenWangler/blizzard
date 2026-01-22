@@ -12,10 +12,19 @@ import {
   ShieldCheck,
   CirclesThreePlus,
   Sparkle,
-  Newspaper
+  Newspaper,
+  Truck,
+  Lightning,
+  ChatTeardropDots,
+  ArrowsClockwise,
+  CheckCircle,
+  WarningCircle,
+  TrendUp,
+  TrendDown,
+  Minus
 } from '@phosphor-icons/react'
 import type { IconProps } from '@phosphor-icons/react'
-import type { AgentPrediction } from '@/types/agentPrediction'
+import type { AgentPrediction, AgentCollaboration, CollaborationRound, DebatePosition } from '@/types/agentPrediction'
 import { fetchData } from '@/lib/dataPath'
 
 const CONFIDENCE_LABELS: Record<AgentPrediction['final']['confidence_level'], string> = {
@@ -26,7 +35,7 @@ const CONFIDENCE_LABELS: Record<AgentPrediction['final']['confidence_level'], st
   very_high: 'Very High'
 }
 
-type AgentId = 'meteorology' | 'history' | 'safety' | 'news' | 'final'
+type AgentId = 'meteorology' | 'history' | 'safety' | 'news' | 'infrastructure' | 'powerGrid' | 'final'
 
 type AgentProfile = {
   id: AgentId
@@ -109,6 +118,32 @@ const agentProfiles: AgentProfile[] = [
     gradient: 'from-rose-500/30 via-red-400/15 to-transparent'
   },
   {
+    id: 'infrastructure',
+    name: 'Regional Infrastructure Monitor',
+    title: 'Road Ops Ground Truth',
+    mission: 'Tracks real-time plow fleet status, MDOT conditions, and county road clearing progress to validate whether roads will actually be passable.',
+    focusAreas: ['Plow operations', 'Road clearing timeline', 'Salt/sand resources'],
+    tools: ['web_search'],
+    deliverables: ['Road clearing status by type', 'Municipal response level', 'Hours-to-clear estimates'],
+    model: 'gpt-5.2',
+    tone: 'Operational + time-sensitive',
+    icon: Truck,
+    gradient: 'from-yellow-500/30 via-amber-400/15 to-transparent'
+  },
+  {
+    id: 'powerGrid',
+    name: 'Power Grid Analyst',
+    title: 'Utility Status Watchdog',
+    mission: 'Monitors power outages, grid stress, and utility restoration timelines that could force closures regardless of road conditions.',
+    focusAreas: ['Outage tracking', 'Grid stress', 'School facility power'],
+    tools: ['web_search'],
+    deliverables: ['Outage counts & trends', 'Restoration estimates', 'School-specific risk assessment'],
+    model: 'gpt-5.2',
+    tone: 'Alert-driven + risk-focused',
+    icon: Lightning,
+    gradient: 'from-cyan-500/30 via-blue-400/15 to-transparent'
+  },
+  {
     id: 'final',
     name: 'Decision Coordinator',
     title: 'Consensus Builder',
@@ -147,6 +182,18 @@ const workflowSteps: WorkflowStep[] = [
     description: 'The News Intelligence agent searches local news, social media, and community chatter for real-time signals.',
     handoff: 'Delivers news digest, community sentiment, and neighboring district closure alerts.',
     icon: Newspaper
+  },
+  {
+    title: 'Verify road clearing ops',
+    description: 'The Infrastructure Monitor checks MDOT, county road commissions, and plow fleet status for ground truth on road conditions.',
+    handoff: 'Reports actual clearing progress, resource levels, and hours-until-passable estimates.',
+    icon: Truck
+  },
+  {
+    title: 'Scan the power grid',
+    description: 'The Power Grid Analyst monitors utility outage maps and grid stress to catch infrastructure failures that could force closures.',
+    handoff: 'Flags outage counts, restoration timelines, and school facility power risks.',
+    icon: Lightning
   },
   {
     title: 'Coordinate the final call',
@@ -338,6 +385,76 @@ export function AgentsView() {
       }
     }
 
+    const { infrastructure } = prediction
+    if (infrastructure && !hasError(infrastructure)) {
+      const responseLevel = infrastructure.municipal_response_level?.charAt(0).toUpperCase() + 
+        infrastructure.municipal_response_level?.slice(1) || 'Unknown'
+      
+      result.infrastructure = {
+        headline: `Municipal response: ${responseLevel}`,
+        summary: infrastructure.overall_clearing_assessment,
+        callouts: [
+          {
+            label: 'County Roads',
+            value: infrastructure.road_clearing_status?.county_roads?.status?.replace('_', ' ') || 'Unknown'
+          },
+          {
+            label: 'Hours to Bus Routes',
+            value: typeof infrastructure.clearing_timeline?.hours_until_bus_routes === 'number' 
+              ? `${infrastructure.clearing_timeline.hours_until_bus_routes.toFixed(1)} hrs`
+              : 'Calculating'
+          },
+          {
+            label: 'Data Confidence',
+            value: infrastructure.data_confidence?.charAt(0).toUpperCase() + 
+              infrastructure.data_confidence?.slice(1) || 'Unknown'
+          }
+        ]
+      }
+    } else if (infrastructure && hasError(infrastructure)) {
+      result.infrastructure = {
+        headline: 'Data temporarily unavailable',
+        summary: 'The infrastructure monitor encountered an issue. Will retry on next run.',
+        callouts: []
+      }
+    }
+
+    const { powerGrid } = prediction
+    if (powerGrid && !hasError(powerGrid)) {
+      const gridStress = powerGrid.grid_stress_level?.charAt(0).toUpperCase() + 
+        powerGrid.grid_stress_level?.slice(1) || 'Unknown'
+      const riskLevel = powerGrid.school_facility_risk?.risk_level?.charAt(0).toUpperCase() +
+        powerGrid.school_facility_risk?.risk_level?.slice(1) || 'Unknown'
+      
+      result.powerGrid = {
+        headline: `Grid stress: ${gridStress}`,
+        summary: powerGrid.overall_grid_assessment,
+        callouts: [
+          {
+            label: 'Customers Affected',
+            value: typeof powerGrid.current_outages?.total_customers_affected === 'number'
+              ? powerGrid.current_outages.total_customers_affected.toLocaleString()
+              : 'Unknown'
+          },
+          {
+            label: 'School Risk',
+            value: riskLevel
+          },
+          {
+            label: 'Outage Trend',
+            value: powerGrid.outage_trend?.charAt(0).toUpperCase() + 
+              powerGrid.outage_trend?.slice(1) || 'Unknown'
+          }
+        ]
+      }
+    } else if (powerGrid && hasError(powerGrid)) {
+      result.powerGrid = {
+        headline: 'Data temporarily unavailable',
+        summary: 'The power grid analyst encountered an issue. Will retry on next run.',
+        callouts: []
+      }
+    }
+
     if (final) {
       result.final = {
         headline: `${formatPercent(final.snow_day_probability)} chance • ${formatConfidence(final.confidence_level)}`,
@@ -363,9 +480,9 @@ export function AgentsView() {
         <CardHeader className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-primary">Meet the automation crew</p>
-            <CardTitle className="mt-2 text-2xl sm:text-3xl">Five specialists, one crystal-clear call</CardTitle>
+            <CardTitle className="mt-2 text-2xl sm:text-3xl">Seven specialists, one crystal-clear call</CardTitle>
             <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-              Every forecast run is a round-table between meteorology, historical context, safety, local news intelligence, and decision science.
+              Every forecast run is a round-table between meteorology, historical context, safety, local news intelligence, infrastructure monitoring, power grid analysis, and decision science.
             </p>
           </div>
           <div className="rounded-2xl border border-primary/40 bg-background/70 px-5 py-4 text-right">
@@ -543,6 +660,294 @@ export function AgentsView() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Deliberation Section - Shows collaboration data */}
+      {prediction?.collaboration && (
+        <DeliberationSection collaboration={prediction.collaboration} />
+      )}
     </div>
+  )
+}
+
+// Helper to get agent icon
+function getAgentIcon(agentId: string): ComponentType<IconProps> {
+  const iconMap: Record<string, ComponentType<IconProps>> = {
+    meteorology: CloudSnow,
+    history: Books,
+    safety: ShieldCheck,
+    news: Newspaper,
+    infrastructure: Truck,
+    powerGrid: Lightning,
+    final: CirclesThreePlus
+  }
+  return iconMap[agentId] || Sparkle
+}
+
+// Helper to get agent gradient
+function getAgentGradient(agentId: string): string {
+  const gradientMap: Record<string, string> = {
+    meteorology: 'from-sky-500/30 via-blue-400/15 to-transparent',
+    history: 'from-amber-500/30 via-orange-400/15 to-transparent',
+    safety: 'from-emerald-500/30 via-teal-400/15 to-transparent',
+    news: 'from-rose-500/30 via-red-400/15 to-transparent',
+    infrastructure: 'from-yellow-500/30 via-amber-400/15 to-transparent',
+    powerGrid: 'from-cyan-500/30 via-blue-400/15 to-transparent'
+  }
+  return gradientMap[agentId] || 'from-purple-500/30 via-fuchsia-400/15 to-transparent'
+}
+
+// Deliberation Section Component
+function DeliberationSection({ collaboration }: { collaboration: AgentCollaboration }) {
+  const [expandedRound, setExpandedRound] = useState<string | undefined>(
+    collaboration.rounds.length > 0 ? `round-${collaboration.rounds.length}` : undefined
+  )
+
+  const averageProbability = collaboration.rounds.length > 0
+    ? Math.round(
+        collaboration.rounds[collaboration.rounds.length - 1].positions
+          .reduce((sum, p) => sum + p.probability, 0) / 
+        collaboration.rounds[collaboration.rounds.length - 1].positions.length
+      )
+    : 0
+
+  return (
+    <Card className="rounded-2xl border border-primary/20 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 gap-10">
+      <CardHeader className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <ChatTeardropDots size={20} className="text-primary" />
+            <p className="text-xs uppercase tracking-[0.3em] text-primary">Agent Deliberation</p>
+          </div>
+          <CardTitle className="text-2xl sm:text-3xl">How the team reached consensus</CardTitle>
+          <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
+            Watch how agents debated, challenged each other, and evolved their positions through {collaboration.totalRounds} round{collaboration.totalRounds !== 1 ? 's' : ''} of collaboration.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-primary/40 bg-background/70 px-5 py-4 text-right">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Consensus status</p>
+          <div className="flex items-center justify-end gap-2 mt-1">
+            {collaboration.finalConsensus ? (
+              <CheckCircle size={24} weight="duotone" className="text-green-500" />
+            ) : (
+              <WarningCircle size={24} weight="duotone" className="text-amber-500" />
+            )}
+            <p className="text-xl font-semibold">
+              {collaboration.finalConsensus ? 'Reached' : 'Partial'}
+            </p>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {collaboration.totalRounds} of {collaboration.maxRoundsAllowed} rounds
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Exit: {collaboration.exitReason}
+          </p>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-8">
+        {/* Summary Stats */}
+        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
+            <p className="text-xs text-muted-foreground uppercase">Final Avg Probability</p>
+            <p className="text-2xl font-semibold text-primary">{averageProbability}%</p>
+          </div>
+          <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
+            <p className="text-xs text-muted-foreground uppercase">Final Spread</p>
+            <p className="text-2xl font-semibold">
+              {collaboration.rounds.length > 0 
+                ? `±${Math.round(collaboration.rounds[collaboration.rounds.length - 1].probabilitySpread / 2)}%`
+                : '—'}
+            </p>
+          </div>
+          <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
+            <p className="text-xs text-muted-foreground uppercase">Consensus Threshold</p>
+            <p className="text-2xl font-semibold">±{collaboration.consensusThreshold}%</p>
+          </div>
+          <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
+            <p className="text-xs text-muted-foreground uppercase">Key Disagreements</p>
+            <p className="text-2xl font-semibold">{collaboration.keyDisagreements.length}</p>
+          </div>
+        </div>
+
+        {/* Confidence Journey */}
+        {collaboration.confidenceJourney.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <ArrowsClockwise size={20} className="text-primary" />
+              Position Shifts
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {collaboration.confidenceJourney.map((journey) => {
+                const Icon = getAgentIcon(journey.agentId)
+                const gradient = getAgentGradient(journey.agentId)
+                const ShiftIcon = journey.totalShift > 0 ? TrendUp : journey.totalShift < 0 ? TrendDown : Minus
+                const shiftColor = journey.totalShift > 0 ? 'text-green-500' : journey.totalShift < 0 ? 'text-red-500' : 'text-muted-foreground'
+                
+                return (
+                  <div key={journey.agentId} className="rounded-xl border border-border/60 bg-card/80 p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`rounded-xl bg-gradient-to-br ${gradient} p-2 text-primary`}>
+                        <Icon size={18} weight="duotone" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium capitalize">{journey.agentId}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>{journey.initialProbability}%</span>
+                          <span>→</span>
+                          <span className="font-medium text-foreground">{journey.finalProbability}%</span>
+                        </div>
+                      </div>
+                      <div className={`flex items-center gap-1 ${shiftColor}`}>
+                        <ShiftIcon size={16} weight="bold" />
+                        <span className="text-sm font-medium">
+                          {journey.totalShift > 0 ? '+' : ''}{journey.totalShift}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Debate Rounds */}
+        <Accordion 
+          type="single" 
+          collapsible 
+          value={expandedRound}
+          onValueChange={setExpandedRound}
+          className="space-y-3"
+        >
+          {collaboration.rounds.map((round) => (
+            <AccordionItem 
+              key={`round-${round.round}`} 
+              value={`round-${round.round}`}
+              className="border border-border/60 rounded-xl overflow-hidden bg-card/50"
+            >
+              <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/30">
+                <div className="flex items-center justify-between w-full pr-4">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                      Round {round.round}
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      Spread: {round.probabilitySpread.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {round.consensusReached ? (
+                      <Badge variant="secondary" className="bg-green-500/20 text-green-600">
+                        <CheckCircle size={14} className="mr-1" /> Consensus
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="bg-amber-500/20 text-amber-600">
+                        Continuing
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-5 pb-5">
+                <div className="space-y-4">
+                  {/* Agent Positions */}
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {round.positions.map((position) => {
+                      const Icon = getAgentIcon(position.agentId)
+                      const gradient = getAgentGradient(position.agentId)
+                      
+                      return (
+                        <div 
+                          key={position.agentId} 
+                          className="rounded-xl border border-border/60 bg-background/60 p-4 space-y-3"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className={`rounded-lg bg-gradient-to-br ${gradient} p-1.5 text-primary`}>
+                                <Icon size={14} weight="duotone" />
+                              </div>
+                              <span className="text-sm font-medium capitalize">{position.agentId}</span>
+                            </div>
+                            <div className="text-lg font-bold text-primary">{position.probability}%</div>
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2">{position.rationale}</p>
+                          {position.keyFactors.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {position.keyFactors.slice(0, 3).map((factor, i) => (
+                                <Badge key={i} variant="outline" className="text-xs">
+                                  {factor.length > 25 ? factor.slice(0, 25) + '...' : factor}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Debates in this round */}
+                  {round.debates.length > 0 && (
+                    <div className="space-y-3 pt-3 border-t border-border/40">
+                      <p className="text-xs uppercase text-muted-foreground font-medium">Challenges raised</p>
+                      {round.debates.map((debate, i) => (
+                        <div key={i} className="rounded-lg bg-muted/30 p-3 space-y-2">
+                          <div className="flex items-center gap-2 text-sm">
+                            <Badge variant="outline" className="capitalize">{debate.challenger}</Badge>
+                            <span className="text-muted-foreground">→</span>
+                            <Badge variant="outline" className="capitalize">{debate.challenged}</Badge>
+                          </div>
+                          <p className="text-sm">{debate.challenge}</p>
+                          {debate.response && (
+                            <p className="text-sm text-muted-foreground pl-4 border-l-2 border-border">
+                              {debate.response}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+
+        {/* Key Disagreements */}
+        {collaboration.keyDisagreements.length > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <WarningCircle size={20} className="text-amber-500" />
+              Key Disagreements
+            </h3>
+            <div className="grid gap-3">
+              {collaboration.keyDisagreements.map((disagreement, i) => (
+                <div key={i} className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium">{disagreement.topic}</p>
+                    <Badge variant="outline" className={
+                      disagreement.impact === 'high' ? 'border-red-500/50 text-red-600' :
+                      disagreement.impact === 'medium' ? 'border-amber-500/50 text-amber-600' :
+                      'border-muted-foreground/50'
+                    }>
+                      {disagreement.impact} impact
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="capitalize">{disagreement.agents.join(' vs ')}</span>
+                    <span>•</span>
+                    <span className="capitalize">{disagreement.resolution}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Collaboration Summary */}
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-5">
+          <p className="text-sm text-muted-foreground">{collaboration.collaborationSummary}</p>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

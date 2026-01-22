@@ -1,5 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useWeatherTheme } from '../hooks/useWeatherTheme'
+import { useDevicePerformance } from '../hooks/use-mobile'
 
 interface Particle {
   x: number
@@ -20,10 +21,12 @@ export function WeatherAtmosphere() {
   const animationRef = useRef<number | undefined>(undefined)
   const particlesRef = useRef<Particle[]>([])
   const { currentTheme, getCurrentTheme, isDarkMode } = useWeatherTheme()
+  const { performanceMultiplier, isLowEnd } = useDevicePerformance()
   const theme = getCurrentTheme()
 
   const config = useMemo(() => {
     // Configuration based on current theme
+    // Particle counts are base values - they get multiplied by performanceMultiplier
     const configs: Record<string, {
       particleCount: number
       particleTypes: Particle['type'][]
@@ -205,8 +208,16 @@ export function WeatherAtmosphere() {
         glowIntensity: 0.85
       }
     }
-    return configs[currentTheme] || configs.clear
-  }, [currentTheme, isDarkMode])
+    
+    // Get base config and apply performance multiplier to particle count
+    const baseConfig = configs[currentTheme] || configs.clear
+    return {
+      ...baseConfig,
+      particleCount: Math.floor(baseConfig.particleCount * performanceMultiplier),
+      // Disable glow effects on low-end devices (GPU intensive)
+      hasGlow: baseConfig.hasGlow && !isLowEnd
+    }
+  }, [currentTheme, isDarkMode, performanceMultiplier, isLowEnd])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -251,12 +262,15 @@ export function WeatherAtmosphere() {
 
     // Aurora wave state
     let auroraPhase = 0
+    
+    // Capture isLowEnd for use in animate function
+    const skipGlow = isLowEnd
 
     const animate = (time: number) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Draw aurora effect for aurora theme
-      if (currentTheme === 'aurora') {
+      // Draw aurora effect for aurora theme (skip on very low-end devices)
+      if (currentTheme === 'aurora' && !skipGlow) {
         drawAurora(ctx, canvas.width, canvas.height, auroraPhase)
         auroraPhase += 0.005
       }
@@ -285,7 +299,7 @@ export function WeatherAtmosphere() {
 
         switch (p.type) {
           case 'snow':
-            drawSnowflake(ctx, p.size, theme?.particleColor || 'rgba(255,255,255,0.9)')
+            drawSnowflake(ctx, p.size, theme?.particleColor || 'rgba(255,255,255,0.9)', skipGlow)
             break
           case 'ice':
             drawIceCrystal(ctx, p.size, theme?.particleColor || 'rgba(200,230,255,0.8)')
@@ -294,7 +308,7 @@ export function WeatherAtmosphere() {
             drawRaindrop(ctx, p.size, theme?.particleColor || 'rgba(150,180,220,0.7)')
             break
           case 'star':
-            drawStar(ctx, p.size, theme?.particleColor || 'rgba(255,255,200,0.8)')
+            drawStar(ctx, p.size, theme?.particleColor || 'rgba(255,255,200,0.8)', skipGlow)
             break
           case 'aurora':
             drawAuroraParticle(ctx, p.size, time)
@@ -315,7 +329,7 @@ export function WeatherAtmosphere() {
       }
       window.removeEventListener('resize', resizeCanvas)
     }
-  }, [currentTheme, config, theme, isDarkMode])
+  }, [currentTheme, config, theme, isDarkMode, isLowEnd])
 
   // Don't render for themes with no particles and no special effects
   if (config.particleCount === 0 && currentTheme !== 'overcast') {
@@ -370,12 +384,14 @@ export function WeatherAtmosphere() {
 }
 
 // Drawing functions
-function drawSnowflake(ctx: CanvasRenderingContext2D, size: number, color: string) {
+function drawSnowflake(ctx: CanvasRenderingContext2D, size: number, color: string, skipGlow = false) {
   ctx.beginPath()
   ctx.fillStyle = color
-  // Simple circle snowflake with slight glow
-  ctx.shadowColor = 'rgba(255,255,255,0.5)'
-  ctx.shadowBlur = size
+  // Simple circle snowflake with slight glow (skip glow on low-end devices)
+  if (!skipGlow) {
+    ctx.shadowColor = 'rgba(255,255,255,0.5)'
+    ctx.shadowBlur = size
+  }
   ctx.arc(0, 0, size, 0, Math.PI * 2)
   ctx.fill()
   ctx.shadowBlur = 0
@@ -404,11 +420,13 @@ function drawRaindrop(ctx: CanvasRenderingContext2D, size: number, color: string
   ctx.fill()
 }
 
-function drawStar(ctx: CanvasRenderingContext2D, size: number, color: string) {
+function drawStar(ctx: CanvasRenderingContext2D, size: number, color: string, skipGlow = false) {
   ctx.beginPath()
   ctx.fillStyle = color
-  ctx.shadowColor = color
-  ctx.shadowBlur = size * 2
+  if (!skipGlow) {
+    ctx.shadowColor = color
+    ctx.shadowBlur = size * 2
+  }
   ctx.arc(0, 0, size * 0.5, 0, Math.PI * 2)
   ctx.fill()
   ctx.shadowBlur = 0

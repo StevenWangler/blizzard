@@ -4,13 +4,15 @@
   "description": "AI-powered snow day predictions for Rockford, Michigan",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
       "src": "/favicon-32x32.png",
@@ -20,7 +22,25 @@
     {
       "src": "/apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Today's Forecast",
+      "short_name": "Forecast",
+      "description": "Check today's snow day prediction",
+      "url": "/?tab=prediction",
+      "icons": [{ "src": "/favicon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Prediction History",
+      "short_name": "History",
+      "description": "View past predictions and outcomes",
+      "url": "/?tab=history",
+      "icons": [{ "src": "/favicon.svg", "sizes": "96x96" }]
+    }
+  ],
+  "categories": ["weather", "education", "utilities"]
 }
