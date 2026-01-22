@@ -3,11 +3,7 @@
 /**
  * Deployment Configuration Validator
  * 
- * Checks if your Snow Day Pred  console.log('📚 Documentation:')
-  console.log('- docs/DEPLOYMENT_GUIDE.md - Complete setup instructions')
-  console.log('- docs/PAGES_SETUP.md - Quick setup checklist')
-  console.log('- docs/WEATHER_API_README.md - Weather API documentation')
-  console.log('- docs/README.md - Documentation index')r is ready for GitHub Pages deployment
+ * Checks if your Snow Day Predictor is ready for GitHub Pages deployment
  */
 
 import { readFileSync, existsSync } from 'fs'
@@ -32,7 +28,7 @@ function validateDeployment() {
   // Check 2: Vite config has base path ready
   if (existsSync('vite.config.ts')) {
     const viteConfig = readFileSync('vite.config.ts', 'utf-8')
-    if (viteConfig.includes('base:') && viteConfig.includes('/snowday-forecast/')) {
+    if (viteConfig.includes('base:') && viteConfig.includes('/blizzard/')) {
       console.log('✅ Vite base path configured for GitHub Pages')
     } else if (viteConfig.includes('// base:')) {
       console.log('⚠️  Vite base path commented out (uncomment for GitHub Pages)')
@@ -98,7 +94,7 @@ function validateDeployment() {
   console.log('2. Go to Settings → Pages → Source: GitHub Actions')
   console.log('3. Add WEATHER_API_KEY to GitHub Secrets')
   console.log('4. Wait for first workflow run to complete')
-  console.log('5. Visit https://StevenWangler.github.io/snowday-forecast')
+  console.log('5. Visit https://StevenWangler.github.io/blizzard')
 
   console.log('\n📚 Documentation:')
   console.log('- docs/DEPLOYMENT_GUIDE.md - Complete setup instructions')

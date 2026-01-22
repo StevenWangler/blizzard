@@ -1300,7 +1300,30 @@ async function main() {
 }
 
 // Run the script
-main().catch(error => {
-  console.error('💥 Unhandled error:', error)
-  process.exit(1)
-})
+main()
+  .then(async () => {
+    // After successful prediction generation, trigger deploy (unless --no-deploy flag)
+    if (!args.includes('--no-deploy') && !isLocalMode) {
+      console.log('\n🚀 Triggering deployment...')
+      const { spawn } = await import('child_process')
+      
+      const deploy = spawn('npm', ['run', 'deploy:github'], {
+        cwd: projectRoot,
+        stdio: 'inherit',
+        shell: true
+      })
+      
+      deploy.on('close', (code) => {
+        if (code === 0) {
+          console.log('✅ Deployment complete!')
+        } else {
+          console.error(`❌ Deployment failed with code ${code}`)
+          process.exit(code)
+        }
+      })
+    }
+  })
+  .catch(error => {
+    console.error('💥 Unhandled error:', error)
+    process.exit(1)
+  })
