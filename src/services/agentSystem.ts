@@ -52,6 +52,7 @@ import safetyAnalystPrompt from './prompts/safety-analyst.txt?raw'
 import newsIntelPrompt from './prompts/news-intel.txt?raw'
 import infrastructurePrompt from './prompts/infrastructure.txt?raw'
 import powerGridPrompt from './prompts/power-grid.txt?raw'
+import webWeatherVerifierPrompt from './prompts/web-weather-verifier.txt?raw'
 import decisionCoordinatorPrompt from './prompts/decision-coordinator.txt?raw'
 
 // ============================================================================
@@ -98,6 +99,7 @@ export interface AgentSystemConfig {
   newsIntel: AgentConfig
   infrastructureMonitor: AgentConfig
   powerGridAnalyst: AgentConfig
+  webWeatherVerifier: AgentConfig
   decisionCoordinator: AgentConfig
 }
 
@@ -109,6 +111,7 @@ export const defaultAgentConfig: AgentSystemConfig = {
   newsIntel: { model: 'gpt-5.2', reasoningEffort: 'medium' },
   infrastructureMonitor: { model: 'gpt-5.2', reasoningEffort: 'medium' },
   powerGridAnalyst: { model: 'gpt-5.2', reasoningEffort: 'medium' },
+  webWeatherVerifier: { model: 'gpt-5.2', reasoningEffort: 'high' },
   decisionCoordinator: { model: 'gpt-5.2', reasoningEffort: 'high' }
 }
 
@@ -139,11 +142,15 @@ function ensureWeatherApiConfigured(): void {
 const WeatherAnalysisSchema = z.object({
   temperature_analysis: z.object({
     current_temp_f: z.number(),
+    current_feels_like_f: z.number(),
     overnight_low_f: z.number(),
+    overnight_feels_like_f: z.number(),
     morning_high_f: z.number(),
+    morning_feels_like_f: z.number(),
     freezing_hours: z.number(),
     temperature_trend: z.enum(['rising', 'falling', 'steady']),
-    windchill_factor: z.number()
+    windchill_factor: z.number(),
+    feels_like_below_minus_20: z.boolean()
   }),
   precipitation_analysis: z.object({
     snow_probability_overnight: z.number().min(0).max(100),
@@ -336,6 +343,44 @@ const PowerGridAnalysisSchema = z.object({
   special_alerts: z.array(z.string())
 })
 
+const WebWeatherVerifierSchema = z.object({
+  weather_sources: z.array(z.object({
+    source_name: z.string(),
+    url: z.string(),
+    current_temp_f: z.number(),
+    feels_like_temp_f: z.number(),
+    forecast_feels_like_f: z.number(),
+    snowfall_forecast_inches: z.number(),
+    wind_speed_mph: z.number(),
+    alerts: z.array(z.string()),
+    data_timestamp: z.string(),
+    reliability: z.enum(['high', 'medium', 'low'])
+  })),
+  api_comparison: z.object({
+    api_feels_like_f: z.number(),
+    web_average_feels_like_f: z.number(),
+    difference_f: z.number(),
+    api_temp_f: z.number(),
+    web_average_temp_f: z.number(),
+    temp_difference_f: z.number(),
+    snowfall_difference_inches: z.number()
+  }),
+  critical_alerts: z.array(z.object({
+    severity: z.enum(['critical', 'warning', 'info']),
+    message: z.string(),
+    affected_parameter: z.string()
+  })),
+  discrepancy_analysis: z.object({
+    major_discrepancies_found: z.boolean(),
+    feels_like_below_minus_20: z.boolean(),
+    consensus_level: z.enum(['strong', 'moderate', 'weak', 'conflicting']),
+    reliability_score: z.number().min(0).max(100),
+    data_freshness: z.enum(['current', 'recent', 'stale', 'unknown'])
+  }),
+  verification_summary: z.string(),
+  recommendation: z.enum(['trust_api', 'trust_web', 'investigate_further', 'use_average'])
+})
+
 // Schema for agents to provide probability estimates during debate rounds
 const DebatePositionSchema = z.object({
   snow_day_probability: z.number().min(0).max(100).describe('Your current probability estimate'),
@@ -343,7 +388,7 @@ const DebatePositionSchema = z.object({
   key_factors: z.array(z.string()).describe('Top 3-5 factors driving your estimate'),
   rationale: z.string().describe('Brief explanation of your reasoning'),
   challenges: z.array(z.object({
-    target_agent: z.enum(['meteorology', 'history', 'safety', 'news', 'infrastructure', 'powerGrid']).describe('Which agent you are challenging'),
+    target_agent: z.enum(['meteorology', 'history', 'safety', 'news', 'infrastructure', 'powerGrid', 'webWeatherVerifier']).describe('Which agent you are challenging'),
     challenge: z.string().describe('What you disagree with or want clarification on'),
     impact: z.enum(['high', 'medium', 'low']).describe('How much this affects your estimate')
   })).optional().describe('Any challenges or questions for other agents'),
@@ -444,6 +489,15 @@ const powerGridAnalystAgent = new Agent({
   outputType: PowerGridAnalysisSchema
 })
 
+const webWeatherVerifierAgent = new Agent({
+  name: 'Web Weather Verification Specialist',
+  instructions: webWeatherVerifierPrompt,
+  model: agentConfig.webWeatherVerifier.model,
+  modelSettings: { reasoningEffort: agentConfig.webWeatherVerifier.reasoningEffort },
+  tools: [weatherDataTool, webSearchTool()],
+  outputType: WebWeatherVerifierSchema
+})
+
 // ============================================================================
 // AGENTS-AS-TOOLS: Coordinator can consult specialists on-demand
 // ============================================================================
@@ -457,6 +511,7 @@ let _currentExpertAnalyses: {
   news?: z.infer<typeof NewsAnalysisSchema>
   infrastructure?: z.infer<typeof InfrastructureAnalysisSchema>
   powerGrid?: z.infer<typeof PowerGridAnalysisSchema>
+  webWeatherVerifier?: z.infer<typeof WebWeatherVerifierSchema>
 } = {}
 
 const askMeteorologist = tool({
@@ -582,6 +637,21 @@ const askPowerGridAnalyst = tool({
   }
 })
 
+const askWebWeatherVerifier = tool({
+  name: 'ask_web_weather_verifier',
+  description: 'Ask the Web Weather Verifier to cross-check Weather API data against web sources like Weather.com, Weather.gov, and local news. CRITICAL for verifying "feels like" temperature below -20°F (automatic closure threshold). Use when you need to validate API data or find discrepancies.',
+  parameters: z.object({
+    question: z.string().describe('The specific question about weather data verification or comparison')
+  }),
+  execute: async ({ question }) => {
+    const context = _currentExpertAnalyses.webWeatherVerifier 
+      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.webWeatherVerifier, null, 2)}\n\n`
+      : ''
+    const result = await run(webWeatherVerifierAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
 // ============================================================================
 // DECISION COORDINATOR (with agents-as-tools)
 // ============================================================================
@@ -600,6 +670,7 @@ You have direct access to consult your specialist team for follow-up questions:
 - **ask_news_intel**: Search for latest local news, district announcements, community buzz
 - **ask_infrastructure_monitor**: Get real-time plow fleet status, road clearing progress, MDOT conditions
 - **ask_power_grid_analyst**: Check power outages, grid stress, utility restoration timelines
+- **ask_web_weather_verifier**: Cross-check Weather API data against web sources, verify "feels like" temperature
 - **cross_check_experts**: Have experts validate each other's analyses
 
 USE THESE TOOLS when:
@@ -608,24 +679,27 @@ USE THESE TOOLS when:
 3. You want to validate your reasoning
 4. Something doesn't add up and you need clarification
 5. You want to confirm neighboring district status is current
+6. You need to verify critical temperature thresholds like "feels like" below -20°F
 
 Example uses:
 - "ask_safety_analyst: If snow ends at 4 AM, how many plow hours before 7:40 AM buses?"
 - "ask_news_intel: Check if Forest Hills or Cedar Springs have announced closures"
 - "ask_infrastructure_monitor: What's the current plow activity on county roads? Are they keeping up?"
 - "ask_power_grid_analyst: Any power outages in the Rockford area? Is the grid under stress?"
+- "ask_web_weather_verifier: What does Weather.com show for feels like temperature tomorrow morning?"
+- "ask_web_weather_verifier: Cross-check the API snowfall forecast against web sources"
 - "cross_check_experts: meteorologist + safety_analyst - does the ice timing align with commute impact?"
 - "cross_check_experts: infrastructure_monitor + safety_analyst - do actual road conditions match safety's assumptions?"
 
 You are IN CONTROL. Use these tools to build confidence in your decision.`,
   model: agentConfig.decisionCoordinator.model,
   modelSettings: { reasoningEffort: agentConfig.decisionCoordinator.reasoningEffort },
-  tools: [askMeteorologist, askHistorian, askSafetyAnalyst, askNewsIntel, askInfrastructureMonitor, askPowerGridAnalyst, crossCheckExperts],
+  tools: [askMeteorologist, askHistorian, askSafetyAnalyst, askNewsIntel, askInfrastructureMonitor, askPowerGridAnalyst, askWebWeatherVerifier, crossCheckExperts],
   outputType: FinalPredictionSchema
 })
 
 // Export specialist agents for direct use if needed
-export { meteorologistAgent, historianAgent, safetyAnalystAgent, newsIntelAgent, infrastructureMonitorAgent, powerGridAnalystAgent }
+export { meteorologistAgent, historianAgent, safetyAnalystAgent, newsIntelAgent, infrastructureMonitorAgent, powerGridAnalystAgent, webWeatherVerifierAgent }
 
 // ============================================================================
 // COLLABORATIVE DEBATE SYSTEM
@@ -709,6 +783,20 @@ function extractProbabilityFromAnalysis(agentId: AgentId, analysis: unknown): nu
       const powerRiskMap: Record<string, number> = { low: 10, moderate: 35, high: 65, severe: 90 }
       return powerRiskMap[schoolRisk] || 20
 
+    case 'webWeatherVerifier':
+      // Use discrepancy analysis and critical alerts
+      const discrepancy = a.discrepancy_analysis as Record<string, unknown> | undefined
+      const criticalAlerts = a.critical_alerts as Array<Record<string, unknown>> | undefined
+      
+      // If feels like is below -20, that's automatic closure consideration
+      if (discrepancy?.feels_like_below_minus_20) return 85
+      
+      // If major discrepancies found, increase probability
+      if (discrepancy?.major_discrepancies_found) return 60
+      
+      // Otherwise, neutral
+      return 50
+
     default:
       return 50
   }
@@ -740,7 +828,7 @@ async function runDebateRound(
   weatherContext: string,
   expertAnalyses: Record<string, unknown>
 ): Promise<{ positions: DebatePosition[], debates: DebateExchange[] }> {
-  const agentIds: AgentId[] = ['meteorology', 'history', 'safety', 'news', 'infrastructure', 'powerGrid']
+  const agentIds: AgentId[] = ['meteorology', 'history', 'safety', 'news', 'infrastructure', 'powerGrid', 'webWeatherVerifier']
   
   // Build peer context for this round
   const peerContext = previousPositions.length > 0 
@@ -955,6 +1043,7 @@ export async function runSnowDayPrediction(): Promise<{
   news: z.infer<typeof NewsAnalysisSchema>
   infrastructure: z.infer<typeof InfrastructureAnalysisSchema>
   powerGrid: z.infer<typeof PowerGridAnalysisSchema>
+  webWeatherVerifier: z.infer<typeof WebWeatherVerifierSchema>
   final: z.infer<typeof FinalPredictionSchema>
   collaboration?: AgentCollaboration
   timestamp: string
@@ -974,14 +1063,15 @@ export async function runSnowDayPrediction(): Promise<{
     _currentWeatherContext = `Location: ${location}\nWeather Data: ${JSON.stringify(weatherData, null, 2)}`
     
     // Run specialist agents in parallel for initial analysis
-    console.log('🔄 Running expert analysis agents (6 specialists)...')
-    const [meteorologyResult, historyResult, safetyResult, newsResult, infrastructureResult, powerGridResult] = await Promise.all([
+    console.log('🔄 Running expert analysis agents (7 specialists)...')
+    const [meteorologyResult, historyResult, safetyResult, newsResult, infrastructureResult, powerGridResult, webWeatherVerifierResult] = await Promise.all([
       run(meteorologistAgent, `Analyze the current weather forecast and conditions for snow day prediction. Focus on overnight and morning conditions that would impact school operations and transportation safety.`),
       run(historianAgent, `Provide historical context and pattern analysis for the current weather situation. Compare to similar past events and provide climatological perspective for this time of year and location: ${location}.`),
       run(safetyAnalystAgent, `Evaluate transportation safety and travel conditions based on the forecasted weather. Assess risks for school transportation, student/staff commuting, and campus operations.`),
       run(newsIntelAgent, `Search for any local news, social media signals, school district announcements, or community chatter about weather conditions and potential school closures in Rockford, Michigan and surrounding areas. Look for signals from neighboring districts, local news stations, and community sentiment.`),
       run(infrastructureMonitorAgent, `Search for current road clearing operations and plow fleet status in Kent County and surrounding Michigan areas. Check MDOT road conditions, county road commission updates, and municipal response levels. Focus on whether roads will be passable by 6:30 AM when school buses start routes.`),
-      run(powerGridAnalystAgent, `Search for current power outage information in the Rockford, Michigan and Kent County area. Check Consumers Energy outage maps, grid stress levels, and any utility statements. Assess whether power infrastructure will support normal school operations.`)
+      run(powerGridAnalystAgent, `Search for current power outage information in the Rockford, Michigan and Kent County area. Check Consumers Energy outage maps, grid stress levels, and any utility statements. Assess whether power infrastructure will support normal school operations.`),
+      run(webWeatherVerifierAgent, `Cross-reference the Weather API data against multiple web sources including Weather.com, Weather.gov, AccuWeather, and local news weather pages for ${location}. CRITICAL: Verify "feels like" temperature data - if any source shows below -20°F, this triggers automatic closure consideration. Compare API forecasts with what the public is seeing on their weather apps.`)
     ])
     
     // Store expert analyses for agent tools to reference
@@ -991,7 +1081,8 @@ export async function runSnowDayPrediction(): Promise<{
       safety: safetyResult.finalOutput,
       news: newsResult.finalOutput,
       infrastructure: infrastructureResult.finalOutput,
-      powerGrid: powerGridResult.finalOutput
+      powerGrid: powerGridResult.finalOutput,
+      webWeatherVerifier: webWeatherVerifierResult.finalOutput
     }
 
     // Run collaborative debate if enabled
@@ -1044,13 +1135,16 @@ ${JSON.stringify(infrastructureResult.finalOutput, null, 2)}
 
 POWER GRID & UTILITY STATUS (Weight: 5%):
 ${JSON.stringify(powerGridResult.finalOutput, null, 2)}
+
+WEB WEATHER VERIFICATION (Critical Cross-Check):
+${JSON.stringify(webWeatherVerifierResult.finalOutput, null, 2)}
 ${collaborationContext}
 LOCATION: ${location}
 ANALYSIS TIMESTAMP: ${new Date().toISOString()}
 
 ---
 REMINDER: You have tools to consult specialists for follow-up questions if needed:
-- ask_meteorologist, ask_historian, ask_safety_analyst, ask_news_intel, ask_infrastructure_monitor, ask_power_grid_analyst, cross_check_experts
+- ask_meteorologist, ask_historian, ask_safety_analyst, ask_news_intel, ask_infrastructure_monitor, ask_power_grid_analyst, ask_web_weather_verifier, cross_check_experts
 Use them if you need clarification or see conflicts in the analyses above.
 `
     
@@ -1081,6 +1175,7 @@ ${expertAnalyses}`
       news: newsResult.finalOutput || {} as z.infer<typeof NewsAnalysisSchema>,
       infrastructure: infrastructureResult.finalOutput || {} as z.infer<typeof InfrastructureAnalysisSchema>,
       powerGrid: powerGridResult.finalOutput || {} as z.infer<typeof PowerGridAnalysisSchema>,
+      webWeatherVerifier: webWeatherVerifierResult.finalOutput || {} as z.infer<typeof WebWeatherVerifierSchema>,
       final: finalResult.finalOutput || {} as z.infer<typeof FinalPredictionSchema>,
       collaboration,
       timestamp: new Date().toISOString(),
