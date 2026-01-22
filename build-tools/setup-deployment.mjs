@@ -3,10 +3,7 @@
 /**
  * Deployment Setup Script
  * 
- * Prepares your Snow Day Pre  console.log('📚 Documentation:')
-  console.log('- docs/DEPLOYMENT_GUIDE.md - Complete setup instructions')
-  console.log('- docs/WEATHER_API_README.md - Weather API documentation')
-  console.log('- docs/PAGES_SETUP.md - GitHub Pages setup')or for GitHub Pages deployment
+ * Prepares your Snow Day Predictor for GitHub Pages deployment
  */
 
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs'

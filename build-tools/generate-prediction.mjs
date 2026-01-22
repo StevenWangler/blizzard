@@ -1100,6 +1100,62 @@ ${expertAnalyses}`
     validatedFinal = parseResult.data
   }
   
+  // =========================================================================
+  // EXTREME COLD OVERRIDE - Programmatic floor for wind chill closures
+  // =========================================================================
+  // Michigan schools close for extreme cold regardless of snow amounts.
+  // This check ensures the model can't underestimate cold-only closure scenarios.
+  
+  const meteorologyData = meteorologyResult.finalOutput
+  const windchillFactor = meteorologyData?.temperature_analysis?.windchill_factor
+  const overnightLow = meteorologyData?.temperature_analysis?.overnight_low_f
+  const morningFeelsLike = meteorologyData?.temperature_analysis?.morning_feels_like_f
+  const extremeColdFlag = meteorologyData?.temperature_analysis?.feels_like_below_minus_20
+  
+  console.log(`🌡️ Cold detection: windchill_factor=${windchillFactor}, overnight_low=${overnightLow}, morning_feels_like=${morningFeelsLike}, flag=${extremeColdFlag}`)
+  
+  // Determine extreme cold condition from ANY available source
+  const hasExtremeCold = 
+    extremeColdFlag === true ||
+    (morningFeelsLike !== undefined && morningFeelsLike <= -20) ||
+    (windchillFactor !== undefined && windchillFactor <= -20) ||
+    (overnightLow !== undefined && overnightLow <= -15) // Very cold overnight = dangerous morning wind chill
+  
+  const hasDangerousCold = 
+    (morningFeelsLike !== undefined && morningFeelsLike <= -15) ||
+    (windchillFactor !== undefined && windchillFactor <= -15) ||
+    (overnightLow !== undefined && overnightLow <= -10)
+  
+  // Apply floor if ANY source indicates extreme cold (≤ -20°F wind chill)
+  if (hasExtremeCold) {
+    const currentProb = validatedFinal.snow_day_probability || 0
+    if (currentProb < 95) {
+      console.log(`🥶 EXTREME COLD OVERRIDE: Raising probability from ${currentProb}% to 95% (wind chill ≤ -20°F = automatic closure)`)
+      validatedFinal = {
+        ...validatedFinal,
+        snow_day_probability: 95,
+        primary_factors: [
+          'EXTREME COLD: Wind chill ≤ -20°F triggers AUTOMATIC closure - buses cannot operate safely',
+          ...(validatedFinal.primary_factors || []).filter(f => !f.includes('EXTREME COLD'))
+        ]
+      }
+    }
+  } else if (hasDangerousCold) {
+    // -15°F to -20°F floor at 50%
+    const currentProb = validatedFinal.snow_day_probability || 0
+    if (currentProb < 50) {
+      console.log(`❄️ DANGEROUS COLD OVERRIDE: Raising probability from ${currentProb}% to 50% (wind chill -15°F to -20°F)`)
+      validatedFinal = {
+        ...validatedFinal,
+        snow_day_probability: 50,
+        primary_factors: [
+          'DANGEROUS COLD: Wind chill -15°F to -20°F - many districts close proactively',
+          ...(validatedFinal.primary_factors || []).filter(f => !f.includes('DANGEROUS COLD'))
+        ]
+      }
+    }
+  }
+  
   console.log('✅ Multi-agent analysis complete!')
   
   return {
@@ -1244,7 +1300,30 @@ async function main() {
 }
 
 // Run the script
-main().catch(error => {
-  console.error('💥 Unhandled error:', error)
-  process.exit(1)
-})
+main()
+  .then(async () => {
+    // After successful prediction generation, trigger deploy (unless --no-deploy flag)
+    if (!args.includes('--no-deploy') && !isLocalMode) {
+      console.log('\n🚀 Triggering deployment...')
+      const { spawn } = await import('child_process')
+      
+      const deploy = spawn('npm', ['run', 'deploy:github'], {
+        cwd: projectRoot,
+        stdio: 'inherit',
+        shell: true
+      })
+      
+      deploy.on('close', (code) => {
+        if (code === 0) {
+          console.log('✅ Deployment complete!')
+        } else {
+          console.error(`❌ Deployment failed with code ${code}`)
+          process.exit(code)
+        }
+      })
+    }
+  })
+  .catch(error => {
+    console.error('💥 Unhandled error:', error)
+    process.exit(1)
+  })
