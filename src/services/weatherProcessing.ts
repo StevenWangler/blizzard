@@ -76,8 +76,9 @@ export function getHourlyForecastData(
       const groundFactor = (hour.humidity / 100.0) * 0.5 + 
                           Math.max(0, (1020 - hour.pressure_mb) / 50) * 0.5
 
-      // Calculate overall hour probability
-      let hourProbability = (
+      // Calculate overall hour probability based on weather factors
+      // Note: This is informational data for the agents - they make the final decision
+      const hourProbability = (
         snowFactor * weights.snow +
         tempFactor * weights.temperature +
         windFactor * weights.wind +
@@ -85,19 +86,9 @@ export function getHourlyForecastData(
         groundFactor * weights.ground_conditions
       )
 
-      // EXTREME COLD OVERRIDE: Wind chill is an independent closure trigger
-      // Michigan schools close for extreme cold regardless of snow amounts
+      // Calculate wind chill for informational purposes (agents decide how to weigh this)
       const windChill = calculateWindChill(hour.temp_f, hour.wind_mph)
-      if (windChill <= -20) {
-        // ≤ -20°F wind chill = AUTOMATIC closure (95%)
-        hourProbability = Math.max(hourProbability, 0.95)
-      } else if (windChill <= -15) {
-        // -15°F to -20°F = many districts close proactively (50-70%)
-        hourProbability = Math.max(hourProbability, 0.55)
-      } else if (windChill <= -10) {
-        // -10°F to -15°F = concerning, watch closely (25-40%)
-        hourProbability = Math.max(hourProbability, 0.30)
-      }
+      relevantData[`hour_${hourOfDay}_windchill_calculated`] = Math.round(windChill * 100) / 100
 
       totalSnowProbability += hourProbability
       snowProbabilities.push(hourProbability * 100)

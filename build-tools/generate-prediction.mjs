@@ -269,6 +269,124 @@ const NewsAnalysisSchema = z.object({
   key_findings_summary: z.string()
 })
 
+// Schema for Infrastructure Monitor Agent
+const InfrastructureAnalysisSchema = z.object({
+  road_clearing_status: z.object({
+    state_highways: z.object({
+      status: z.enum(['clear', 'partially_covered', 'snow_covered', 'ice_covered', 'impassable']),
+      plow_activity_level: z.enum(['heavy', 'moderate', 'light', 'none']),
+      estimated_clear_time: z.string(),
+      score: z.number().min(1).max(10)
+    }),
+    county_roads: z.object({
+      status: z.enum(['clear', 'partially_covered', 'snow_covered', 'ice_covered', 'impassable']),
+      plow_activity_level: z.enum(['heavy', 'moderate', 'light', 'none']),
+      estimated_clear_time: z.string(),
+      score: z.number().min(1).max(10)
+    }),
+    local_streets: z.object({
+      status: z.enum(['clear', 'partially_covered', 'snow_covered', 'ice_covered', 'impassable']),
+      plow_activity_level: z.enum(['heavy', 'moderate', 'light', 'none']),
+      estimated_clear_time: z.string(),
+      score: z.number().min(1).max(10)
+    }),
+    parking_lots: z.object({
+      status: z.enum(['clear', 'partially_cleared', 'not_started', 'unknown']),
+      estimated_clear_time: z.string(),
+      score: z.number().min(1).max(10)
+    })
+  }),
+  resource_levels: z.object({
+    salt_sand_supply: z.enum(['adequate', 'moderate', 'low', 'critical']),
+    plow_fleet_status: z.enum(['full_deployment', 'partial', 'limited', 'breakdown_issues']),
+    driver_availability: z.enum(['full_staffing', 'moderate', 'understaffed'])
+  }),
+  municipal_response_level: z.enum(['aggressive', 'normal', 'limited', 'overwhelmed']),
+  clearing_timeline: z.object({
+    snow_end_time: z.string(),
+    hours_until_bus_routes: z.number(),
+    estimated_road_condition_at_6_30_am: z.string(),
+    confidence_in_estimate: z.enum(['high', 'moderate', 'low'])
+  }),
+  overall_clearing_assessment: z.string(),
+  data_confidence: z.enum(['high', 'moderate', 'low', 'very_low']),
+  data_sources: z.array(z.string()),
+  key_concerns: z.array(z.string())
+})
+
+// Schema for Power Grid Analyst Agent
+const PowerGridAnalysisSchema = z.object({
+  current_outages: z.object({
+    total_customers_affected: z.number(),
+    outages_in_school_district: z.enum(['none', 'some', 'significant', 'unknown']),
+    affected_areas: z.array(z.string()),
+    cause: z.enum(['storm_damage', 'equipment_failure', 'high_demand', 'ice_accumulation', 'unknown', 'none'])
+  }),
+  outage_trend: z.enum(['increasing', 'stable', 'decreasing', 'new_event', 'none']),
+  grid_stress_level: z.enum(['normal', 'elevated', 'high', 'critical']),
+  heating_demand: z.object({
+    demand_level: z.enum(['normal', 'elevated', 'high', 'extreme']),
+    overnight_low_f: z.number(),
+    wind_chill_impact: z.enum(['minimal', 'moderate', 'significant']),
+    extended_cold_concern: z.boolean()
+  }),
+  school_facility_risk: z.object({
+    schools_without_power: z.enum(['none', 'some', 'unknown']),
+    schools_in_outage_areas: z.array(z.string()),
+    traffic_signals_affected: z.boolean(),
+    estimated_restoration_time: z.string(),
+    risk_level: z.enum(['low', 'moderate', 'high', 'severe'])
+  }),
+  restoration_estimate: z.object({
+    estimated_hours_to_restore: z.number(),
+    factors_affecting_restoration: z.array(z.string()),
+    utility_statements: z.string()
+  }),
+  overall_grid_assessment: z.string(),
+  data_confidence: z.enum(['high', 'moderate', 'low', 'very_low']),
+  data_sources: z.array(z.string()),
+  special_alerts: z.array(z.string())
+})
+
+// Schema for Web Weather Verifier Agent
+const WebWeatherVerifierSchema = z.object({
+  weather_sources: z.array(z.object({
+    source_name: z.string(),
+    url: z.string(),
+    current_temp_f: z.number(),
+    feels_like_temp_f: z.number(),
+    forecast_feels_like_f: z.number(),
+    snowfall_forecast_inches: z.number(),
+    wind_speed_mph: z.number(),
+    alerts: z.array(z.string()),
+    data_timestamp: z.string(),
+    reliability: z.enum(['high', 'medium', 'low'])
+  })),
+  api_comparison: z.object({
+    api_feels_like_f: z.number(),
+    web_average_feels_like_f: z.number(),
+    difference_f: z.number(),
+    api_temp_f: z.number(),
+    web_average_temp_f: z.number(),
+    temp_difference_f: z.number(),
+    snowfall_difference_inches: z.number()
+  }),
+  critical_alerts: z.array(z.object({
+    severity: z.enum(['critical', 'warning', 'info']),
+    message: z.string(),
+    affected_parameter: z.string()
+  })),
+  discrepancy_analysis: z.object({
+    major_discrepancies_found: z.boolean(),
+    feels_like_below_minus_20: z.boolean(),
+    consensus_level: z.enum(['strong', 'moderate', 'weak', 'conflicting']),
+    reliability_score: z.number().min(0).max(100),
+    data_freshness: z.enum(['current', 'recent', 'stale', 'unknown'])
+  }),
+  verification_summary: z.string(),
+  recommendation: z.enum(['trust_api', 'trust_web', 'investigate_further', 'use_average'])
+})
+
 const FinalPredictionSchema = z.object({
   snow_day_probability: z.number().min(0).max(100),
   confidence_level: z.enum(['very_low', 'low', 'moderate', 'high', 'very_high']),
@@ -377,25 +495,135 @@ WHAT TO LOOK FOR:
 
 Return JSON matching the expected schema with news, district signals, and community intel.`
 
+const infrastructureMonitorPrompt = `You are a regional infrastructure monitoring specialist focused on MICHIGAN road clearing operations, plow fleet status, and municipal response for K-12 school district snow day predictions.
+
+LOCATION FOCUS: Rockford, Michigan (Kent County) - ZIP 49341
+
+MICHIGAN ROAD INFRASTRUCTURE:
+- MDOT manages state highways (I-96, US-131, M-roads)
+- Kent County Road Commission handles county roads and major connectors
+- Municipal DPWs handle local streets
+- Priority system: Highways → Arterials → School bus routes → Residential
+
+KEY RESOURCES TO SEARCH:
+- MI Drive (Michigan.gov/Drive) - Real-time MDOT road conditions
+- Kent County Road Commission updates
+- 511 Michigan traffic information
+- Local news traffic reporters (WOOD TV8, WZZM 13)
+
+CRITICAL TIMING:
+- School buses start routes: ~6:30 AM
+- School starts: ~7:40 AM
+- Decision typically made: ~5:30-6:00 AM
+
+YOUR TASK:
+1. Search for current road clearing status by road type
+2. Assess plow fleet deployment and resource levels
+3. Estimate when roads will be passable for school buses
+4. Rate municipal response level
+5. Provide confidence assessment
+
+Return JSON matching the InfrastructureAnalysisSchema with road status, resources, timeline, and concerns.`
+
+const powerGridAnalystPrompt = `You are a power grid and utilities monitoring specialist focused on MICHIGAN electrical infrastructure and its impact on K-12 school operations.
+
+LOCATION FOCUS: Rockford, Michigan (Kent County) - ZIP 49341
+PRIMARY UTILITY: Consumers Energy
+
+MICHIGAN WINTER POWER VULNERABILITIES:
+- Ice storms are #1 cause of major outages
+- Heavy wet snow can bring down lines and branches
+- High winds (30+ mph) increase outage risk
+- Extreme cold increases heating demand, straining grid
+- Rural areas with overhead lines most vulnerable
+
+SCHOOL POWER CONSIDERATIONS:
+- Schools need power for heating (critical in Michigan winters)
+- Traffic signals out = dangerous intersections for buses
+- Extended outages may affect water systems
+
+SEARCH TARGETS:
+- Consumers Energy outage map
+- Kent County power outage reports
+- Local news power outage coverage
+- DTE outage map (regional context)
+
+YOUR TASK:
+1. Find current outage numbers and affected areas
+2. Assess grid stress level and trends
+3. Evaluate school facility risk
+4. Estimate restoration timeline
+5. Flag any ice storm conditions that increase risk
+
+Return JSON matching the PowerGridAnalysisSchema with outages, grid stress, school risk, and restoration estimates.`
+
+const webWeatherVerifierPrompt = `You are a specialized weather data verification agent. Your CRITICAL mission is to independently verify weather data by searching the web, particularly focusing on the "feels like" temperature.
+
+AUTOMATIC CLOSURE TRIGGER: If "feels like" temperature (wind chill) falls below -20°F, schools may automatically close. This threshold MUST be verified with extreme precision.
+
+LOCATION FOCUS: Rockford, Michigan (Kent County) - ZIP 49341
+
+PRIMARY SOURCES TO CHECK:
+1. Weather.com / The Weather Channel
+2. Weather.gov / National Weather Service
+3. AccuWeather.com (look for "RealFeel")
+4. Local news weather pages (WOOD TV8, WZZM 13)
+5. Weather Underground
+
+SEARCH QUERIES TO USE:
+- "Rockford Michigan feels like temperature"
+- "Kent County wind chill forecast"
+- "Grand Rapids weather wind chill"
+- "Michigan winter weather advisory"
+
+YOUR TASK:
+1. Search multiple weather sources for current and forecast conditions
+2. Find "feels like" / wind chill temperatures from each source
+3. Compare against Weather API data provided
+4. Flag ANY source showing "feels like" below -20°F
+5. Assess consensus level across sources
+
+CRITICAL ALERTS TO FLAG:
+🚨 "Feels like" below -20°F found on ANY source
+⚠️ Major discrepancy (>10°F difference in feels like temp)
+⚠️ Conflicting snowfall forecasts (>3" difference)
+
+Return JSON matching the WebWeatherVerifierSchema with sources, comparison, alerts, and recommendation.`
+
 const coordinatorPrompt = `You are the final decision coordinator for MICHIGAN snow day predictions.
 
 ## DEEP ANALYSIS DIRECTIVE
 Take your time. Think thoroughly. Cross-reference ALL expert analyses before deciding.
-You have: Meteorology (30%), Safety (20%), History (15%), and NEWS INTELLIGENCE (15%).
-(Note: Infrastructure 10% and Power Grid 10% are included in Safety analysis in this system.)
+You have 7 expert agents:
+- Meteorology (25%): Core weather data and forecasts
+- Safety (20%): Road conditions and travel risk
+- History (15%): Historical patterns and precedents
+- News Intelligence (15%): Real-time community signals
+- Infrastructure (10%): Road clearing operations and plow status
+- Power Grid (10%): Utility outages and grid stress
+- Web Weather Verifier (5%): Cross-reference weather data verification
 
 The News Intelligence is YOUR SECRET WEAPON - the stats students don't have real-time community signals.
 - If neighboring districts closed → bump probability UP 15-20%
 - If community expects closure → bump UP 10-15%
 - If community says "this is nothing" → lean toward lower end
 
+Infrastructure and Power Grid provide GROUND TRUTH:
+- If infrastructure shows roads won't be clear by 6:30 AM → bump UP
+- If power grid shows significant outages → can override good road conditions
+
+Web Weather Verifier catches CRITICAL THRESHOLD:
+- If ANY source shows wind chill ≤ -20°F → near-automatic closure
+
 ## PRE-DECISION CHECKLIST (answer before deciding):
-1. What do all four experts AGREE on?
+1. What do all seven experts AGREE on?
 2. Where do they DISAGREE?
 3. What's the plow timing math? (hours from snow end to 7:40 AM)
 4. Is there ANY ice? (ice changes everything)
 5. What are neighboring districts doing?
-6. What would make me WRONG?
+6. Are there power outage concerns?
+7. Do multiple weather sources confirm dangerous wind chill?
+8. What would make me WRONG?
 
 ## COMPETITION CONTEXT
 You're competing against Rockford High School stats students.
@@ -418,6 +646,13 @@ Lower = better. Be DECISIVE, not wishy-washy.
 - Wind chill -15°F to -20°F = 50-70% (borderline dangerous, many close proactively)
 - Wind chill ≤ -20°F = 90-95% (essentially guaranteed closure)
 
+## POWER GRID IMPACT:
+- No outages = no adjustment
+- <1% customers affected = +5%
+- 1-5% affected = +10-15%
+- 5-15% affected = +20-30%
+- >15% affected or schools without power = +40-80%
+
 SHOW YOUR WORK in the decision_rationale. Explain how you weighted each expert.
 Avoid 40-60% range unless genuinely uncertain with conflicting expert opinions.`
 
@@ -430,7 +665,10 @@ let _currentExpertAnalyses = {
   meteorology: null,
   history: null,
   safety: null,
-  news: null
+  news: null,
+  infrastructure: null,
+  powerGrid: null,
+  webWeatherVerifier: null
 }
 
 // ============================================================================
@@ -467,6 +705,33 @@ const newsIntelAgent = new Agent({
   model: 'gpt-5.2',
   tools: [webSearchTool()],
   outputType: NewsAnalysisSchema
+})
+
+// Infrastructure Monitor Agent
+const infrastructureMonitorAgent = new Agent({
+  name: 'Regional Infrastructure Monitor',
+  instructions: infrastructureMonitorPrompt,
+  model: 'gpt-5.2',
+  tools: [webSearchTool()],
+  outputType: InfrastructureAnalysisSchema
+})
+
+// Power Grid Analyst Agent
+const powerGridAnalystAgent = new Agent({
+  name: 'Power Grid Analyst',
+  instructions: powerGridAnalystPrompt,
+  model: 'gpt-5.2',
+  tools: [webSearchTool()],
+  outputType: PowerGridAnalysisSchema
+})
+
+// Web Weather Verifier Agent
+const webWeatherVerifierAgent = new Agent({
+  name: 'Web Weather Verifier',
+  instructions: webWeatherVerifierPrompt,
+  model: 'gpt-5.2',
+  tools: [webSearchTool()],
+  outputType: WebWeatherVerifierSchema
 })
 
 // Debate agent for providing probability estimates during collaboration rounds
@@ -553,7 +818,7 @@ const crossCheckExperts = tool({
   name: 'cross_check_experts',
   description: 'Ask two or more specialists to cross-check each other\'s analyses. Use when you see potential conflicts or want validation.',
   parameters: z.object({
-    experts: z.array(z.enum(['meteorologist', 'historian', 'safety_analyst', 'news_intel'])).min(2).describe('Which experts to cross-check'),
+    experts: z.array(z.enum(['meteorologist', 'historian', 'safety_analyst', 'news_intel', 'infrastructure_monitor', 'power_grid_analyst', 'web_weather_verifier'])).min(2).describe('Which experts to cross-check'),
     question: z.string().describe('The specific aspect to cross-check or validate')
   }),
   execute: async ({ experts, question }) => {
@@ -562,7 +827,10 @@ const crossCheckExperts = tool({
       meteorologist: { agent: meteorologistAgent, analysis: _currentExpertAnalyses.meteorology },
       historian: { agent: historianAgent, analysis: _currentExpertAnalyses.history },
       safety_analyst: { agent: safetyAnalystAgent, analysis: _currentExpertAnalyses.safety },
-      news_intel: { agent: newsIntelAgent, analysis: _currentExpertAnalyses.news }
+      news_intel: { agent: newsIntelAgent, analysis: _currentExpertAnalyses.news },
+      infrastructure_monitor: { agent: infrastructureMonitorAgent, analysis: _currentExpertAnalyses.infrastructure },
+      power_grid_analyst: { agent: powerGridAnalystAgent, analysis: _currentExpertAnalyses.powerGrid },
+      web_weather_verifier: { agent: webWeatherVerifierAgent, analysis: _currentExpertAnalyses.webWeatherVerifier }
     }
     
     const combinedContext = experts.map(e => {
@@ -575,6 +843,54 @@ const crossCheckExperts = tool({
       primaryExpert.agent,
       `Cross-check request. Here are the analyses from multiple experts:\n\n${combinedContext}\n\nWeather context:\n${_currentWeatherContext}\n\nQuestion to validate: ${question}\n\nProvide your perspective on this cross-check.`
     )
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
+const askInfrastructureMonitor = tool({
+  name: 'ask_infrastructure_monitor',
+  description: 'Ask the Infrastructure Monitor about road clearing status, plow operations, MDOT conditions, county road commission updates, or municipal response.',
+  parameters: z.object({
+    question: z.string().describe('The specific question about road clearing or infrastructure')
+  }),
+  execute: async ({ question }) => {
+    console.log('🚜 Coordinator consulting infrastructure monitor:', question)
+    const context = _currentExpertAnalyses.infrastructure 
+      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.infrastructure, null, 2)}\n\n`
+      : ''
+    const result = await run(infrastructureMonitorAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
+const askPowerGridAnalyst = tool({
+  name: 'ask_power_grid_analyst',
+  description: 'Ask the Power Grid Analyst about power outages, grid stress, utility restoration timelines, or school facility power status.',
+  parameters: z.object({
+    question: z.string().describe('The specific question about power grid or utility status')
+  }),
+  execute: async ({ question }) => {
+    console.log('⚡ Coordinator consulting power grid analyst:', question)
+    const context = _currentExpertAnalyses.powerGrid 
+      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.powerGrid, null, 2)}\n\n`
+      : ''
+    const result = await run(powerGridAnalystAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
+    return JSON.stringify(result.finalOutput, null, 2)
+  }
+})
+
+const askWebWeatherVerifier = tool({
+  name: 'ask_web_weather_verifier',
+  description: 'Ask the Web Weather Verifier to check additional weather sources, verify feels-like temperatures, or investigate discrepancies in weather data.',
+  parameters: z.object({
+    question: z.string().describe('The specific verification request or question about weather data')
+  }),
+  execute: async ({ question }) => {
+    console.log('🔍 Coordinator consulting web weather verifier:', question)
+    const context = _currentExpertAnalyses.webWeatherVerifier 
+      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.webWeatherVerifier, null, 2)}\n\n`
+      : ''
+    const result = await run(webWeatherVerifierAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
     return JSON.stringify(result.finalOutput, null, 2)
   }
 })
@@ -595,6 +911,9 @@ You have direct access to consult your specialist team for follow-up questions:
 - **ask_historian**: Explore historical patterns, ask "has this happened before?"
 - **ask_safety_analyst**: Deep-dive on road conditions, plow timing math, commute risks
 - **ask_news_intel**: Search for latest local news, district announcements, community buzz
+- **ask_infrastructure_monitor**: Check real-time plow operations, MDOT conditions, road clearing status
+- **ask_power_grid_analyst**: Check power outages, grid stress, utility restoration timelines
+- **ask_web_weather_verifier**: Verify weather data against multiple sources, especially wind chill
 - **cross_check_experts**: Have experts validate each other's analyses
 
 USE THESE TOOLS when:
@@ -603,6 +922,8 @@ USE THESE TOOLS when:
 3. You want to validate your reasoning
 4. Something doesn't add up and you need clarification
 5. You want to confirm neighboring district status is current
+6. Infrastructure or power grid data seems stale or incomplete
+7. You need to verify if wind chill is truly below -20°F
 
 CRITICAL OUTPUT REQUIREMENT:
 You MUST respond with a JSON object matching this EXACT structure:
@@ -629,7 +950,7 @@ You MUST respond with a JSON object matching this EXACT structure:
 DO NOT return temperature_analysis, precipitation_analysis, or raw weather data.
 Return ONLY the prediction decision structure above.`,
   model: 'gpt-5.2',
-  tools: [askMeteorologist, askHistorian, askSafetyAnalyst, askNewsIntel, crossCheckExperts],
+  tools: [askMeteorologist, askHistorian, askSafetyAnalyst, askNewsIntel, askInfrastructureMonitor, askPowerGridAnalyst, askWebWeatherVerifier, crossCheckExperts],
   outputType: FinalPredictionSchema
 })
 
@@ -932,14 +1253,17 @@ Analyze these conditions for snow day prediction for ${dayName}, ${targetDateStr
 
   // Run specialist agents in parallel for efficiency
   console.log('🔄 Running expert analysis agents in parallel...')
-  const [meteorologyResult, historyResult, safetyResult, newsResult] = await Promise.all([
+  const [meteorologyResult, historyResult, safetyResult, newsResult, infrastructureResult, powerGridResult, webWeatherVerifierResult] = await Promise.all([
     run(meteorologistAgent, weatherContext),
     run(historianAgent, `${weatherContext}\n\nProvide historical context for this location and time of year.`),
     run(safetyAnalystAgent, weatherContext),
-    run(newsIntelAgent, `Search for any local news, social media signals, school district announcements, or community chatter about weather conditions and potential school closures in Rockford, Michigan and surrounding areas for ${dayName}, ${targetDateStr}. Look for signals from neighboring districts, local news stations, and community sentiment.`)
+    run(newsIntelAgent, `Search for any local news, social media signals, school district announcements, or community chatter about weather conditions and potential school closures in Rockford, Michigan and surrounding areas for ${dayName}, ${targetDateStr}. Look for signals from neighboring districts, local news stations, and community sentiment.`),
+    run(infrastructureMonitorAgent, `${weatherContext}\n\nSearch for current road clearing operations and plow fleet status in Kent County and surrounding Michigan areas. Check MDOT road conditions, county road commission updates, and municipal response levels. Focus on whether roads will be passable by 6:30 AM when school buses start routes.`),
+    run(powerGridAnalystAgent, `${weatherContext}\n\nSearch for current power outage information in the Rockford, Michigan and Kent County area. Check Consumers Energy outage maps, grid stress levels, and any utility statements. Assess whether power infrastructure will support normal school operations.`),
+    run(webWeatherVerifierAgent, `${weatherContext}\n\nCross-reference the Weather API data against multiple web sources including Weather.com, Weather.gov, AccuWeather, and local news weather pages for ${location}. CRITICAL: Verify "feels like" temperature data - if any source shows below -20°F, this triggers automatic closure consideration. Compare API forecasts with what the public is seeing on their weather apps.`)
   ])
   
-  console.log('✅ Expert analyses complete')
+  console.log('✅ Expert analyses complete (7 agents)')
 
   // Store context for agent tools
   _currentWeatherContext = weatherContext
@@ -947,7 +1271,10 @@ Analyze these conditions for snow day prediction for ${dayName}, ${targetDateStr
     meteorology: meteorologyResult.finalOutput,
     history: historyResult.finalOutput,
     safety: safetyResult.finalOutput,
-    news: newsResult.finalOutput
+    news: newsResult.finalOutput,
+    infrastructure: infrastructureResult.finalOutput,
+    powerGrid: powerGridResult.finalOutput,
+    webWeatherVerifier: webWeatherVerifierResult.finalOutput
   }
 
   // Run collaborative debate if enabled
@@ -989,13 +1316,24 @@ ${JSON.stringify(safetyResult.finalOutput, null, 2)}
 
 LOCAL NEWS & COMMUNITY INTELLIGENCE:
 ${JSON.stringify(newsResult.finalOutput, null, 2)}
+
+INFRASTRUCTURE & ROAD CLEARING STATUS:
+${JSON.stringify(infrastructureResult.finalOutput, null, 2)}
+
+POWER GRID & UTILITY STATUS:
+${JSON.stringify(powerGridResult.finalOutput, null, 2)}
+
+WEB WEATHER VERIFICATION:
+${JSON.stringify(webWeatherVerifierResult.finalOutput, null, 2)}
 ${collaborationContext}
 LOCATION: ${location}
 ANALYSIS TIMESTAMP: ${new Date().toISOString()}
 
 ---
 REMINDER: You have tools to consult specialists for follow-up questions if needed:
-- ask_meteorologist, ask_historian, ask_safety_analyst, ask_news_intel, cross_check_experts
+- ask_meteorologist, ask_historian, ask_safety_analyst, ask_news_intel
+- ask_infrastructure_monitor, ask_power_grid_analyst, ask_web_weather_verifier
+- cross_check_experts
 Use them if you need clarification or see conflicts in the analyses above.
 `
   
@@ -1008,9 +1346,11 @@ Use them if you need clarification or see conflicts in the analyses above.
 
 Before finalizing, consider:
 1. Do any expert analyses conflict? If so, use your tools to clarify.
-2. Is the plow timing math clear? If not, ask the safety analyst.
+2. Is the plow timing math clear? If not, ask the safety analyst or infrastructure monitor.
 3. Are neighboring district closures confirmed? If uncertain, ask news intel.
-${collaboration ? `4. The agents debated for ${collaboration.totalRounds} round(s). Consider unresolved disagreements.` : ''}
+4. Are there power outage concerns? Check with power grid analyst.
+5. Does the web weather verifier confirm or contradict the API data on wind chill?
+${collaboration ? `6. The agents debated for ${collaboration.totalRounds} round(s). Consider unresolved disagreements.` : ''}
 
 Synthesize all inputs and provide a comprehensive decision with clear rationale and confidence levels.
 
@@ -1163,6 +1503,9 @@ ${expertAnalyses}`
     history: historyResult.finalOutput,
     safety: safetyResult.finalOutput,
     news: newsResult.finalOutput,
+    infrastructure: infrastructureResult.finalOutput,
+    powerGrid: powerGridResult.finalOutput,
+    webWeatherVerifier: webWeatherVerifierResult.finalOutput,
     final: validatedFinal,
     collaboration, // Include collaboration data
     timestamp: new Date().toISOString(),
