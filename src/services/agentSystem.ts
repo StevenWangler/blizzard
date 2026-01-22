@@ -511,6 +511,7 @@ let _currentExpertAnalyses: {
   news?: z.infer<typeof NewsAnalysisSchema>
   infrastructure?: z.infer<typeof InfrastructureAnalysisSchema>
   powerGrid?: z.infer<typeof PowerGridAnalysisSchema>
+  webWeatherVerifier?: z.infer<typeof WebWeatherVerifierSchema>
 } = {}
 
 const askMeteorologist = tool({
