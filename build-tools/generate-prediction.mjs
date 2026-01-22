@@ -1303,7 +1303,10 @@ async function main() {
 main()
   .then(async () => {
     // After successful prediction generation, trigger deploy (unless --no-deploy flag)
-    if (!args.includes('--no-deploy') && !isLocalMode) {
+    // Skip in CI environments - GitHub Actions handles deployment in a separate job
+    const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true'
+    
+    if (!args.includes('--no-deploy') && !isLocalMode && !isCI) {
       console.log('\n🚀 Triggering deployment...')
       const { spawn } = await import('child_process')
       
