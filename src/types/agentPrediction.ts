@@ -59,11 +59,15 @@ export interface AgentPrediction {
   meteorology: {
     temperature_analysis: {
       current_temp_f: number
+      current_feels_like_f: number
       overnight_low_f: number
+      overnight_feels_like_f: number
       morning_high_f: number
+      morning_feels_like_f: number
       freezing_hours: number
       temperature_trend: 'rising' | 'falling' | 'steady'
       windchill_factor: number
+      feels_like_below_minus_20: boolean
     }
     precipitation_analysis: {
       snow_probability_overnight: number

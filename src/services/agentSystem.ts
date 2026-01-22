@@ -142,11 +142,15 @@ function ensureWeatherApiConfigured(): void {
 const WeatherAnalysisSchema = z.object({
   temperature_analysis: z.object({
     current_temp_f: z.number(),
+    current_feels_like_f: z.number(),
     overnight_low_f: z.number(),
+    overnight_feels_like_f: z.number(),
     morning_high_f: z.number(),
+    morning_feels_like_f: z.number(),
     freezing_hours: z.number(),
     temperature_trend: z.enum(['rising', 'falling', 'steady']),
-    windchill_factor: z.number()
+    windchill_factor: z.number(),
+    feels_like_below_minus_20: z.boolean()
   }),
   precipitation_analysis: z.object({
     snow_probability_overnight: z.number().min(0).max(100),
