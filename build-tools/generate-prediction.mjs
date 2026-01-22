@@ -294,6 +294,30 @@ const FinalPredictionSchema = z.object({
 })
 
 // ============================================================================
+// COLLABORATION CONFIGURATION
+// ============================================================================
+
+const COLLABORATION_CONFIG = {
+  maxRounds: 5,           // Hard cap on debate rounds
+  consensusThreshold: 10, // Agents within ±10% = consensus
+  enableDebate: true      // Enable multi-round debate
+}
+
+// Schema for agents to provide probability estimates during debate rounds
+const DebatePositionSchema = z.object({
+  snow_day_probability: z.number().min(0).max(100).describe('Your current probability estimate'),
+  confidence: z.number().min(0).max(100).describe('How confident are you in this estimate (0-100)'),
+  key_factors: z.array(z.string()).describe('Top 3-5 factors driving your estimate'),
+  rationale: z.string().describe('Brief explanation of your reasoning'),
+  challenges: z.array(z.object({
+    target_agent: z.enum(['meteorology', 'history', 'safety', 'news']).describe('Which agent you are challenging'),
+    challenge: z.string().describe('What you disagree with or want clarification on'),
+    impact: z.enum(['high', 'medium', 'low']).describe('How much this affects your estimate')
+  })).optional().describe('Any challenges or questions for other agents'),
+  adjustments_from_peer_input: z.string().optional().describe('How peer analyses changed your thinking this round')
+})
+
+// ============================================================================
 // AGENT PROMPTS (Michigan-calibrated)
 // ============================================================================
 
@@ -356,8 +380,9 @@ Return JSON matching the expected schema with news, district signals, and commun
 const coordinatorPrompt = `You are the final decision coordinator for MICHIGAN snow day predictions.
 
 ## DEEP ANALYSIS DIRECTIVE
-Take your time. Think thoroughly. Cross-reference ALL FOUR expert analyses before deciding.
-You have: Meteorology (35%), Safety (25%), History (20%), and NEWS INTELLIGENCE (20%).
+Take your time. Think thoroughly. Cross-reference ALL expert analyses before deciding.
+You have: Meteorology (30%), Safety (20%), History (15%), and NEWS INTELLIGENCE (15%).
+(Note: Infrastructure 10% and Power Grid 10% are included in Safety analysis in this system.)
 
 The News Intelligence is YOUR SECRET WEAPON - the stats students don't have real-time community signals.
 - If neighboring districts closed → bump probability UP 15-20%
@@ -380,10 +405,18 @@ Lower = better. Be DECISIVE, not wishy-washy.
 ## MICHIGAN THRESHOLDS (higher than national):
 - <4" snow = 5-15% (routine for Michigan)
 - 4-6" snow = 15-35%  
-- 6-8" with good timing = 35-50%
-- 8+ inches OR ice = 60-85%
-- Blizzard/ice storm = 80-95%
+- 6-8" = 35-55% (depends on timing)
+- 8-10" = 55-75% (likely closure)
+- 10+\" = 75-90%
+- Ice storm / freezing rain = 80-95% (ice is the great equalizer)
+- Blizzard (heavy snow + high winds) = 85-95%
 - 3+ neighboring districts closed = +15-20% adjustment
+
+## WIND CHILL THRESHOLDS (critical for bus safety):
+- Wind chill above -10°F = no cold-based adjustment
+- Wind chill -10°F to -15°F = 25-40% (uncomfortable, districts watching)
+- Wind chill -15°F to -20°F = 50-70% (borderline dangerous, many close proactively)
+- Wind chill ≤ -20°F = 90-95% (essentially guaranteed closure)
 
 SHOW YOUR WORK in the decision_rationale. Explain how you weighted each expert.
 Avoid 40-60% range unless genuinely uncertain with conflicting expert opinions.`
@@ -434,6 +467,18 @@ const newsIntelAgent = new Agent({
   model: 'gpt-5.2',
   tools: [webSearchTool()],
   outputType: NewsAnalysisSchema
+})
+
+// Debate agent for providing probability estimates during collaboration rounds
+const debateAgent = new Agent({
+  name: 'Debate Position Agent',
+  instructions: `You are participating in a collaborative debate about snow day probability.
+Review the weather data and peer analyses, then provide your position with a probability estimate.
+Be willing to adjust your estimate based on peer input and challenges.
+Focus on constructive disagreement - challenge assumptions, not conclusions.`,
+  model: 'gpt-5.2',
+  tools: [webSearchTool()],
+  outputType: DebatePositionSchema
 })
 
 // ============================================================================
@@ -589,6 +634,274 @@ Return ONLY the prediction decision structure above.`,
 })
 
 // ============================================================================
+// COLLABORATIVE DEBATE SYSTEM
+// ============================================================================
+
+/**
+ * Extract probability estimate from agent analysis
+ */
+function extractProbabilityFromAnalysis(agentId, analysis) {
+  if (!analysis || typeof analysis !== 'object') return 50 // Default uncertainty
+
+  switch (agentId) {
+    case 'meteorology':
+      const precip = analysis.precipitation_analysis
+      if (precip) {
+        const snowProb = precip.snow_probability_morning || precip.snow_probability_overnight || 0
+        const snowfall = precip.total_snowfall_inches || 0
+        if (snowfall >= 8) return Math.min(snowProb + 30, 95)
+        if (snowfall >= 6) return Math.min(snowProb + 15, 85)
+        return snowProb || 50
+      }
+      return 50
+
+    case 'history':
+      const patterns = analysis.similar_weather_patterns
+      if (patterns && patterns.length > 0) {
+        return patterns[0].historical_snow_day_rate || 50
+      }
+      return 50
+
+    case 'safety':
+      const riskLevel = analysis.risk_level
+      const riskMap = { low: 15, moderate: 40, high: 70, severe: 90 }
+      return riskMap[riskLevel] || 50
+
+    case 'news':
+      const sentiment = analysis.community_intel?.social_media_sentiment
+      const sentimentMap = {
+        expecting_closure: 75,
+        uncertain: 50,
+        expecting_school: 25,
+        no_buzz: 40
+      }
+      const closures = analysis.school_district_signals?.neighboring_district_closures?.length || 0
+      const closureBoost = closures * 10
+      return Math.min((sentimentMap[sentiment] || 50) + closureBoost, 95)
+
+    default:
+      return 50
+  }
+}
+
+/**
+ * Calculate probability spread across all agent positions
+ */
+function calculateProbabilitySpread(positions) {
+  if (positions.length === 0) return 0
+  const probs = positions.map(p => p.probability)
+  return Math.max(...probs) - Math.min(...probs)
+}
+
+/**
+ * Check if consensus has been reached
+ */
+function checkConsensus(positions, threshold) {
+  const spread = calculateProbabilitySpread(positions)
+  return spread <= threshold * 2 // ±threshold means total spread of 2*threshold
+}
+
+/**
+ * Run a single debate round where agents review peer analyses and provide updated positions
+ */
+async function runDebateRound(roundNumber, previousPositions, weatherContext, expertAnalyses) {
+  const agentIds = ['meteorology', 'history', 'safety', 'news']
+  
+  const peerContext = previousPositions.length > 0 
+    ? `\n\nPREVIOUS ROUND POSITIONS:\n${previousPositions.map(p => 
+        `- ${p.agentId}: ${p.probability}% (confidence: ${p.confidence}%) - ${p.rationale}`
+      ).join('\n')}`
+    : ''
+
+  const positionPromises = agentIds.map(async (agentId) => {
+    const agentAnalysis = expertAnalyses[agentId]
+    const prompt = `DEBATE ROUND ${roundNumber}
+
+You are the ${agentId.toUpperCase()} specialist. Review all analyses and provide your snow day probability estimate.
+
+WEATHER CONTEXT:
+${weatherContext}
+
+YOUR ANALYSIS:
+${JSON.stringify(agentAnalysis, null, 2)}
+
+ALL EXPERT ANALYSES:
+${Object.entries(expertAnalyses).map(([id, analysis]) => 
+  `${id.toUpperCase()}:\n${JSON.stringify(analysis, null, 2)}`
+).join('\n\n')}
+${peerContext}
+
+Based on your expertise and the peer analyses, provide:
+1. Your probability estimate (0-100%)
+2. Your confidence in that estimate (0-100%)
+3. Key factors driving your estimate
+4. Any challenges for other agents whose analyses concern you
+
+${roundNumber > 1 ? 'Consider how peer positions might inform your estimate. Be willing to adjust if others raise valid points.' : ''}`
+
+    try {
+      const result = await run(debateAgent, prompt)
+      const output = result.finalOutput
+      return {
+        agentId,
+        probability: output.snow_day_probability,
+        confidence: output.confidence,
+        rationale: output.rationale,
+        keyFactors: output.key_factors,
+        challenges: output.challenges || []
+      }
+    } catch (error) {
+      console.warn(`⚠️ Debate agent failed for ${agentId}, using fallback:`, error.message)
+      const prob = extractProbabilityFromAnalysis(agentId, agentAnalysis)
+      return {
+        agentId,
+        probability: prob,
+        confidence: 60,
+        rationale: `Based on ${agentId} analysis`,
+        keyFactors: ['Derived from primary analysis'],
+        challenges: []
+      }
+    }
+  })
+
+  const positionsWithChallenges = await Promise.all(positionPromises)
+  
+  const debates = []
+  for (const position of positionsWithChallenges) {
+    if (position.challenges && position.challenges.length > 0) {
+      for (const challenge of position.challenges) {
+        debates.push({
+          round: roundNumber,
+          topic: challenge.challenge,
+          challenger: position.agentId,
+          challenged: challenge.target_agent,
+          challenge: challenge.challenge,
+          response: '',
+          resolution: 'disagreed',
+          probabilityShift: 0
+        })
+      }
+    }
+  }
+
+  const positions = positionsWithChallenges.map(p => ({
+    agentId: p.agentId,
+    probability: p.probability,
+    confidence: p.confidence,
+    rationale: p.rationale,
+    keyFactors: p.keyFactors
+  }))
+
+  return { positions, debates }
+}
+
+/**
+ * Run the full collaborative debate system with consensus detection
+ */
+async function runCollaborativeDebate(weatherContext, expertAnalyses) {
+  const { maxRounds, consensusThreshold } = COLLABORATION_CONFIG
+  const rounds = []
+  let previousPositions = []
+  let consensusReached = false
+  let exitReason = 'max_rounds'
+
+  console.log(`🤝 Starting collaborative debate (max ${maxRounds} rounds, consensus at ±${consensusThreshold}%)...`)
+
+  const initialPositions = {}
+
+  for (let round = 1; round <= maxRounds; round++) {
+    console.log(`📢 Debate round ${round}/${maxRounds}...`)
+    
+    try {
+      const { positions, debates } = await runDebateRound(
+        round,
+        previousPositions,
+        weatherContext,
+        expertAnalyses
+      )
+
+      if (round === 1) {
+        positions.forEach(p => {
+          initialPositions[p.agentId] = p.probability
+        })
+      }
+
+      const spread = calculateProbabilitySpread(positions)
+      consensusReached = checkConsensus(positions, consensusThreshold)
+
+      const roundData = {
+        round,
+        timestamp: new Date().toISOString(),
+        positions,
+        probabilitySpread: spread,
+        consensusReached,
+        debates,
+        roundSummary: `Round ${round}: Spread ${spread.toFixed(1)}% | ${consensusReached ? 'CONSENSUS REACHED' : 'Continuing debate'}`
+      }
+
+      rounds.push(roundData)
+      previousPositions = positions
+
+      console.log(`   Spread: ${spread.toFixed(1)}% | Consensus: ${consensusReached ? 'YES ✓' : 'NO'}`)
+
+      if (consensusReached) {
+        exitReason = 'consensus'
+        console.log(`✅ Consensus reached after ${round} round(s)!`)
+        break
+      }
+    } catch (error) {
+      console.error(`❌ Debate round ${round} failed:`, error)
+      exitReason = 'error'
+      break
+    }
+  }
+
+  const lastPositions = previousPositions.length > 0 ? previousPositions : []
+  const confidenceJourney = lastPositions.map(p => ({
+    agentId: p.agentId,
+    initialProbability: initialPositions[p.agentId] || p.probability,
+    finalProbability: p.probability,
+    totalShift: p.probability - (initialPositions[p.agentId] || p.probability),
+    shiftReason: p.rationale
+  }))
+
+  const keyDisagreements = rounds
+    .flatMap(r => r.debates)
+    .filter(d => d.probabilityShift !== 0 || d.resolution === 'disagreed')
+    .slice(0, 5)
+    .map(d => ({
+      topic: d.topic,
+      agents: [d.challenger, d.challenged],
+      positions: [d.challenge, d.response],
+      resolution: d.resolution,
+      impact: 'medium'
+    }))
+
+  const avgProbability = lastPositions.length > 0
+    ? lastPositions.reduce((sum, p) => sum + p.probability, 0) / lastPositions.length
+    : 50
+  const finalSpread = calculateProbabilitySpread(lastPositions)
+
+  const collaborationSummary = exitReason === 'consensus'
+    ? `Agents reached consensus after ${rounds.length} round(s) with ${finalSpread.toFixed(1)}% spread. Average probability: ${avgProbability.toFixed(0)}%.`
+    : exitReason === 'max_rounds'
+    ? `Debate completed after ${maxRounds} rounds without full consensus. Final spread: ${finalSpread.toFixed(1)}%. Average probability: ${avgProbability.toFixed(0)}%.`
+    : `Debate ended due to error after ${rounds.length} round(s).`
+
+  return {
+    totalRounds: rounds.length,
+    maxRoundsAllowed: maxRounds,
+    consensusThreshold,
+    finalConsensus: consensusReached,
+    exitReason,
+    rounds,
+    confidenceJourney,
+    keyDisagreements,
+    collaborationSummary
+  }
+}
+
+// ============================================================================
 // MULTI-AGENT ORCHESTRATION
 // ============================================================================
 
@@ -627,6 +940,41 @@ Analyze these conditions for snow day prediction for ${dayName}, ${targetDateStr
   ])
   
   console.log('✅ Expert analyses complete')
+
+  // Store context for agent tools
+  _currentWeatherContext = weatherContext
+  _currentExpertAnalyses = {
+    meteorology: meteorologyResult.finalOutput,
+    history: historyResult.finalOutput,
+    safety: safetyResult.finalOutput,
+    news: newsResult.finalOutput
+  }
+
+  // Run collaborative debate if enabled
+  let collaboration = null
+  if (COLLABORATION_CONFIG.enableDebate) {
+    collaboration = await runCollaborativeDebate(weatherContext, _currentExpertAnalyses)
+  }
+  
+  // Include collaboration results in the coordinator's context
+  const collaborationContext = collaboration 
+    ? `\n\n## COLLABORATIVE DEBATE RESULTS
+Rounds completed: ${collaboration.totalRounds}
+Consensus reached: ${collaboration.finalConsensus ? 'YES' : 'NO'}
+Exit reason: ${collaboration.exitReason}
+Summary: ${collaboration.collaborationSummary}
+
+Agent positions after debate:
+${collaboration.rounds[collaboration.rounds.length - 1]?.positions.map(p => 
+  `- ${p.agentId}: ${p.probability}% (${p.rationale})`
+).join('\n') || 'No positions recorded'}
+
+Key disagreements to resolve:
+${collaboration.keyDisagreements.map(d => 
+  `- ${d.topic} (${d.agents.join(' vs ')})`
+).join('\n') || 'None identified'}
+`
+    : ''
   
   // Prepare context for decision coordinator
   const expertAnalyses = `
@@ -641,7 +989,7 @@ ${JSON.stringify(safetyResult.finalOutput, null, 2)}
 
 LOCAL NEWS & COMMUNITY INTELLIGENCE:
 ${JSON.stringify(newsResult.finalOutput, null, 2)}
-
+${collaborationContext}
 LOCATION: ${location}
 ANALYSIS TIMESTAMP: ${new Date().toISOString()}
 
@@ -650,15 +998,6 @@ REMINDER: You have tools to consult specialists for follow-up questions if neede
 - ask_meteorologist, ask_historian, ask_safety_analyst, ask_news_intel, cross_check_experts
 Use them if you need clarification or see conflicts in the analyses above.
 `
-
-  // Store context for agent tools
-  _currentWeatherContext = weatherContext
-  _currentExpertAnalyses = {
-    meteorology: meteorologyResult.finalOutput,
-    history: historyResult.finalOutput,
-    safety: safetyResult.finalOutput,
-    news: newsResult.finalOutput
-  }
   
   console.log('🎯 Running decision coordinator (with agent consultation tools)...')
   
@@ -671,6 +1010,7 @@ Before finalizing, consider:
 1. Do any expert analyses conflict? If so, use your tools to clarify.
 2. Is the plow timing math clear? If not, ask the safety analyst.
 3. Are neighboring district closures confirmed? If uncertain, ask news intel.
+${collaboration ? `4. The agents debated for ${collaboration.totalRounds} round(s). Consider unresolved disagreements.` : ''}
 
 Synthesize all inputs and provide a comprehensive decision with clear rationale and confidence levels.
 
@@ -768,6 +1108,7 @@ ${expertAnalyses}`
     safety: safetyResult.finalOutput,
     news: newsResult.finalOutput,
     final: validatedFinal,
+    collaboration, // Include collaboration data
     timestamp: new Date().toISOString(),
     targetDate: targetDateStr,
     targetDayName: dayName,
@@ -816,6 +1157,10 @@ async function main() {
     console.log(`🎯 Snow day probability: ${prediction.final.snow_day_probability}%`)
     console.log(`🔍 Confidence: ${prediction.final.confidence_level}`)
     console.log(`📍 Location: ${prediction.location}`)
+    if (prediction.collaboration) {
+      console.log(`🤝 Debate rounds: ${prediction.collaboration.totalRounds}`)
+      console.log(`✅ Consensus: ${prediction.collaboration.finalConsensus ? 'YES' : 'NO'}`)
+    }
 
     // Also create a simple summary for quick access
     const summary = {
@@ -827,7 +1172,14 @@ async function main() {
       targetDate: prediction.targetDate,
       targetDayName: prediction.targetDayName,
       daysAhead: prediction.daysAhead,
-      location: prediction.location
+      location: prediction.location,
+      // Collaboration summary
+      collaboration: prediction.collaboration ? {
+        rounds: prediction.collaboration.totalRounds,
+        consensus: prediction.collaboration.finalConsensus,
+        exitReason: prediction.collaboration.exitReason,
+        summary: prediction.collaboration.collaborationSummary
+      } : null
     }
 
     writeFileSync(

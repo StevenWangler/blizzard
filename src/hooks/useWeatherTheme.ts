@@ -82,16 +82,41 @@ function clampOklchLightness(
 
 function applyDarkContrastSafety(theme: WeatherTheme): WeatherTheme {
   // Keep night palettes moody while enforcing a minimum contrast for legibility.
+  // WCAG AA requires 4.5:1 for normal text, 3:1 for large text
   return {
     ...theme,
-    background: clampOklchLightness(theme.background, { minLightness: 0.14, minChroma: 0.04 }),
-    card: clampOklchLightness(theme.card, { minLightness: 0.18, minChroma: 0.04 }),
-    secondary: clampOklchLightness(theme.secondary, { minLightness: 0.2, minChroma: 0.04 }),
-    muted: clampOklchLightness(theme.muted, { minLightness: 0.2, minChroma: 0.04 }),
-    border: clampOklchLightness(theme.border, { minLightness: 0.32, minChroma: 0.04 }),
-    primary: clampOklchLightness(theme.primary, { minLightness: 0.55, minChroma: 0.12 }),
-    accent: clampOklchLightness(theme.accent, { minLightness: 0.58, minChroma: 0.12 }),
-    foreground: clampOklchLightness(theme.foreground, { minLightness: 0.92, minChroma: 0.02 })
+    background: clampOklchLightness(theme.background, { minLightness: 0.12, maxLightness: 0.18, minChroma: 0.03 }),
+    card: clampOklchLightness(theme.card, { minLightness: 0.15, maxLightness: 0.22, minChroma: 0.03 }),
+    secondary: clampOklchLightness(theme.secondary, { minLightness: 0.18, maxLightness: 0.28, minChroma: 0.03 }),
+    muted: clampOklchLightness(theme.muted, { minLightness: 0.18, maxLightness: 0.25, minChroma: 0.03 }),
+    border: clampOklchLightness(theme.border, { minLightness: 0.30, minChroma: 0.03 }),
+    primary: clampOklchLightness(theme.primary, { minLightness: 0.58, minChroma: 0.12 }),
+    accent: clampOklchLightness(theme.accent, { minLightness: 0.60, minChroma: 0.12 }),
+    foreground: clampOklchLightness(theme.foreground, { minLightness: 0.90, minChroma: 0.01 })
+  }
+}
+
+function applyLightContrastSafety(theme: WeatherTheme): WeatherTheme {
+  // Ensure readable text contrast on light backgrounds (especially for whiteout theme)
+  // WCAG AA requires 4.5:1 for normal text, 3:1 for large text
+  return {
+    ...theme,
+    // Background should stay light but not pure white for visual interest
+    background: clampOklchLightness(theme.background, { minLightness: 0.94, maxLightness: 0.99 }),
+    // Card backgrounds slightly different from main background
+    card: clampOklchLightness(theme.card, { minLightness: 0.96, maxLightness: 1.0 }),
+    // Foreground text needs to be dark enough for readability (max lightness 0.25)
+    foreground: clampOklchLightness(theme.foreground, { maxLightness: 0.22, minChroma: 0.05 }),
+    // Primary should be visible against light backgrounds
+    primary: clampOklchLightness(theme.primary, { maxLightness: 0.48, minChroma: 0.12 }),
+    // Accent needs contrast too
+    accent: clampOklchLightness(theme.accent, { maxLightness: 0.52, minChroma: 0.12 }),
+    // Secondary text/elements need definition
+    secondary: clampOklchLightness(theme.secondary, { maxLightness: 0.90, minLightness: 0.82 }),
+    // Borders need to be clearly visible
+    border: clampOklchLightness(theme.border, { maxLightness: 0.82, minLightness: 0.70 }),
+    // Muted areas need some definition but stay subtle
+    muted: clampOklchLightness(theme.muted, { maxLightness: 0.88, minLightness: 0.80 })
   }
 }
 
@@ -279,16 +304,16 @@ export const weatherThemes: Record<string, WeatherTheme> = {
   whiteout: {
     name: 'Whiteout',
     emoji: '⬜',
-    primary: 'oklch(0.35 0.12 270)',      // Barely visible blue
-    secondary: 'oklch(0.88 0.04 270)',    // Near-white gray
-    accent: 'oklch(0.5 0.1 270)',         // Muted accent
-    background: 'oklch(0.98 0.02 270)',   // Near white
-    foreground: 'oklch(0.3 0.06 270)',    // Faded text
-    card: 'oklch(0.995 0.01 270)',        // Almost invisible
-    border: 'oklch(0.92 0.02 270)',       // Faint border
-    muted: 'oklch(0.94 0.02 270)',        // Very muted
-    gradient: 'linear-gradient(180deg, oklch(0.97 0.02 275) 0%, oklch(0.99 0.01 270) 50%, oklch(0.98 0.015 265) 100%)',
-    glowColor: 'oklch(0.95 0.03 270)',
+    primary: 'oklch(0.42 0.14 270)',      // Visible blue-violet
+    secondary: 'oklch(0.85 0.04 270)',    // Light gray
+    accent: 'oklch(0.48 0.12 270)',       // Contrasting accent
+    background: 'oklch(0.97 0.02 270)',   // Near white
+    foreground: 'oklch(0.22 0.08 270)',   // Dark readable text
+    card: 'oklch(0.99 0.01 270)',         // Very light card
+    border: 'oklch(0.82 0.04 270)',       // Visible border
+    muted: 'oklch(0.88 0.03 270)',        // Subtle but visible muted
+    gradient: 'linear-gradient(180deg, oklch(0.95 0.03 275) 0%, oklch(0.98 0.02 270) 50%, oklch(0.96 0.025 265) 100%)',
+    glowColor: 'oklch(0.85 0.06 270)',
     particleColor: 'rgba(255, 255, 255, 1)',
     atmosphereIntensity: 0.7,
     shimmer: true,
@@ -589,16 +614,16 @@ export const darkWeatherThemes: Record<string, WeatherTheme> = {
   whiteout: {
     name: 'Whiteout Night',
     emoji: '⬜',
-    primary: 'oklch(0.45 0.1 270)',       // Night barely visible
-    secondary: 'oklch(0.35 0.05 270)',    // Faded gray
-    accent: 'oklch(0.55 0.08 270)',       // Muted night accent
-    background: 'oklch(0.25 0.04 270)',   // Night near-white (bright for whiteout effect)
-    foreground: 'oklch(0.7 0.03 270)',    // Faded night text
-    card: 'oklch(0.3 0.035 270)',         // Night whiteout card
-    border: 'oklch(0.38 0.04 270)',       // Faint night border
-    muted: 'oklch(0.32 0.035 270)',       // Night muted
-    gradient: 'linear-gradient(180deg, oklch(0.28 0.04 275) 0%, oklch(0.22 0.035 268) 100%)',
-    glowColor: 'oklch(0.5 0.05 270)',
+    primary: 'oklch(0.65 0.12 270)',      // Brighter primary for visibility
+    secondary: 'oklch(0.25 0.05 270)',    // Darker secondary for contrast
+    accent: 'oklch(0.70 0.10 270)',       // Brighter accent
+    background: 'oklch(0.14 0.04 270)',   // Darker background for proper contrast
+    foreground: 'oklch(0.92 0.02 270)',   // Light text for dark background
+    card: 'oklch(0.18 0.04 270)',         // Card slightly lighter than bg
+    border: 'oklch(0.32 0.05 270)',       // Visible border
+    muted: 'oklch(0.22 0.04 270)',        // Proper muted tone
+    gradient: 'linear-gradient(180deg, oklch(0.16 0.05 275) 0%, oklch(0.12 0.04 268) 100%)',
+    glowColor: 'oklch(0.6 0.08 270)',
     particleColor: 'rgba(255, 255, 255, 0.95)',
     atmosphereIntensity: 0.75,
     shimmer: true,
@@ -874,7 +899,7 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
     const theme = selectedTheme
       ? isDarkMode
         ? applyDarkContrastSafety(selectedTheme)
-        : selectedTheme
+        : applyLightContrastSafety(selectedTheme)
       : undefined
     
     if (theme) {

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useDevicePerformance } from '@/hooks/use-mobile'
 
 interface SnowflakeParticle {
   x: number
@@ -35,6 +36,7 @@ export function SnowfallCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationFrameRef = useRef<number | undefined>(undefined)
   const snowflakesRef = useRef<SnowflakeParticle[]>([])
+  const { performanceMultiplier, isLowEnd } = useDevicePerformance()
 
   useEffect(() => {
     // Respect user's motion preferences
@@ -67,10 +69,10 @@ export function SnowfallCanvas({
     window.addEventListener('resize', resizeCanvas)
 
     // Calculate particle count based on intensity (1-8 inches = 20-100 particles)
+    // Apply performance multiplier for mobile/low-end devices
     const baseCount = Math.min(Math.floor(intensity * 12), 180)
-    const particleCount = theme === 'blizzard' || theme === 'whiteout' 
-      ? baseCount * 2 
-      : baseCount
+    const themeMultiplier = theme === 'blizzard' || theme === 'whiteout' ? 2 : 1
+    const particleCount = Math.floor(baseCount * themeMultiplier * performanceMultiplier)
     
     // Calculate drift based on wind speed (0-50 mph = 0-5 drift)
     const windDrift = Math.min(windSpeed / 8, 6)
@@ -186,8 +188,8 @@ export function SnowfallCanvas({
           ctx.arc(flake.x + oscillation, flake.y, flake.radius, 0, Math.PI * 2)
           ctx.fillStyle = getSnowColor(flake.opacity * sparkleBoost)
           
-          // Add glow for larger flakes
-          if (flake.radius > 1.5 && (theme === 'blizzard' || theme === 'ice_storm')) {
+          // Add glow for larger flakes (skip on low-end devices to save GPU)
+          if (!isLowEnd && flake.radius > 1.5 && (theme === 'blizzard' || theme === 'ice_storm')) {
             ctx.shadowColor = 'rgba(255, 255, 255, 0.5)'
             ctx.shadowBlur = flake.radius * 2
           }
@@ -209,7 +211,7 @@ export function SnowfallCanvas({
       }
       window.removeEventListener('resize', resizeCanvas)
     }
-  }, [intensity, windSpeed, respectReducedMotion, theme])
+  }, [intensity, windSpeed, respectReducedMotion, theme, performanceMultiplier, isLowEnd])
 
   // Don't render if no snow predicted
   if (intensity < 1) {
