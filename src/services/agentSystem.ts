@@ -1166,6 +1166,66 @@ Synthesize all inputs and provide a comprehensive decision with clear rationale 
 ${expertAnalyses}`
     )
     
+    // Apply extreme cold floor to final probability
+    // This is a hard programmatic constraint - extreme cold guarantees high closure probability
+    let finalPrediction = finalResult.finalOutput || {} as z.infer<typeof FinalPredictionSchema>
+    
+    // Check for extreme cold from multiple sources
+    const meteorologyData = meteorologyResult.finalOutput as z.infer<typeof WeatherAnalysisSchema> | undefined
+    const webVerifierData = webWeatherVerifierResult.finalOutput as z.infer<typeof WebWeatherVerifierSchema> | undefined
+    
+    const extremeColdFromMeteorology = meteorologyData?.temperature_analysis?.feels_like_below_minus_20
+    const extremeColdFromWebVerifier = webVerifierData?.discrepancy_analysis?.feels_like_below_minus_20
+    const morningFeelsLike = meteorologyData?.temperature_analysis?.morning_feels_like_f
+    const windchillFactor = meteorologyData?.temperature_analysis?.windchill_factor
+    const overnightLow = meteorologyData?.temperature_analysis?.overnight_low_f
+    
+    // Determine extreme cold condition from ANY available source
+    const hasExtremeCold = 
+      extremeColdFromMeteorology === true ||
+      extremeColdFromWebVerifier === true ||
+      (morningFeelsLike !== undefined && morningFeelsLike <= -20) ||
+      (windchillFactor !== undefined && windchillFactor <= -20) ||
+      (overnightLow !== undefined && overnightLow <= -15) // Very cold overnight = dangerous morning wind chill
+    
+    const hasDangerousCold = 
+      (morningFeelsLike !== undefined && morningFeelsLike <= -15) ||
+      (windchillFactor !== undefined && windchillFactor <= -15) ||
+      (overnightLow !== undefined && overnightLow <= -10)
+    
+    // Log detected values for debugging
+    console.log(`🌡️ Cold detection: windchill_factor=${windchillFactor}, overnight_low=${overnightLow}, morning_feels_like=${morningFeelsLike}`)
+    
+    // Apply floor if ANY source indicates extreme cold (≤ -20°F)
+    if (hasExtremeCold) {
+      const currentProb = finalPrediction.snow_day_probability || 0
+      if (currentProb < 95) {
+        console.log(`🥶 EXTREME COLD OVERRIDE: Raising probability from ${currentProb}% to 95% (wind chill ≤ -20°F = automatic closure)`)
+        finalPrediction = {
+          ...finalPrediction,
+          snow_day_probability: 95,
+          primary_factors: [
+            'EXTREME COLD: Wind chill ≤ -20°F triggers AUTOMATIC closure - buses cannot operate safely',
+            ...(finalPrediction.primary_factors || []).filter(f => !f.includes('EXTREME COLD'))
+          ]
+        }
+      }
+    } else if (hasDangerousCold) {
+      // -15°F to -20°F floor at 50%
+      const currentProb = finalPrediction.snow_day_probability || 0
+      if (currentProb < 50) {
+        console.log(`❄️ DANGEROUS COLD OVERRIDE: Raising probability from ${currentProb}% to 50% (wind chill -15°F to -20°F)`)
+        finalPrediction = {
+          ...finalPrediction,
+          snow_day_probability: 50,
+          primary_factors: [
+            'DANGEROUS COLD: Wind chill -15°F to -20°F - many districts close proactively',
+            ...(finalPrediction.primary_factors || []).filter(f => !f.includes('DANGEROUS COLD'))
+          ]
+        }
+      }
+    }
+    
     console.log('✅ Multi-agent analysis complete!')
     
     return {
@@ -1176,7 +1236,7 @@ ${expertAnalyses}`
       infrastructure: infrastructureResult.finalOutput || {} as z.infer<typeof InfrastructureAnalysisSchema>,
       powerGrid: powerGridResult.finalOutput || {} as z.infer<typeof PowerGridAnalysisSchema>,
       webWeatherVerifier: webWeatherVerifierResult.finalOutput || {} as z.infer<typeof WebWeatherVerifierSchema>,
-      final: finalResult.finalOutput || {} as z.infer<typeof FinalPredictionSchema>,
+      final: finalPrediction,
       collaboration,
       timestamp: new Date().toISOString(),
       location
