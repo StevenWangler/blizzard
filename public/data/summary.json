@@ -1,16 +1,16 @@
 {
-  "probability": 6,
+  "probability": 10,
   "confidence": "high",
   "primary_factors": [
-    "No accumulating snow/precip forecast for Monday (roads not expected to deteriorate overnight)",
-    "Wind chills for the 6–9 AM window appear near 0°F to a few degrees above/below—NOT near the -20°F closure trigger (verified vs Weather.com canonical)",
-    "Road clearing capacity and main corridors expected clear/salty by 6:30 AM; no plow-timing constraint",
-    "Primary hazard is isolated slick spots/black ice on bridges, shaded areas, and some neighborhood streets (not widespread)",
-    "No confirmed neighboring-district closures/delays for Mon 1/26 found; no strong real-time closure trend signal",
-    "Power outages currently negligible systemwide; no evidence of local school facility power loss"
+    "No accumulating snow or precip expected Monday (0\" forecast): main closure trigger absent",
+    "Verified wind chill not near the ≤ -20°F automatic-closure threshold (NWS indicates wind chills as low as ~-7°F)",
+    "Road network expected to be generally passable by bus time; biggest risk is isolated slick/packed spots on neighborhood/secondary roads in extreme cold",
+    "Patchy fog/ice fog possible pre-dawn with localized visibility drops; should improve toward commute but could still create pockets of hazard",
+    "No confirmed Mon 1/26 closures/delays for Rockford or nearby districts; closings activity earlier in the week is not Mon-specific",
+    "Power outages appear low systemwide and not confirmed to impact Rockford school facilities specifically"
   ],
-  "decision_rationale": "Pre-decision checklist synthesis:\n1) Agreement: All experts converge on “cold but dry” with 0\" snow, non-extreme wind chills for Monday morning, and a low closure likelihood. Infrastructure and safety agree roads should be serviceable; risk is mainly localized slick spots.\n2) Disagreement: Web verifier flagged one -23°F feels-like value, but that came from a date-mismatched Weather.com locale page; the credible cross-check (WeatherAPI vs Weather.com canonical) supports feels-like near ~0–2°F during 6–9 AM. Safety’s “moderate” ice risk is clarified as isolated patches (5–15% of route mileage intermittent slickness), not widespread glaze.\n3) Plow timing math: Snow end time is effectively “no event.” Hours from ‘snow end’ to 7:40 AM is not limiting; major roads expected clear/salty by 6:30 AM. Neighborhood streets may remain packed/variable but generally passable.\n4) Ice? No new freezing rain/sleet indicated. Ice concern is pre-existing/spot refreeze, not systemic.\n5) Neighboring districts: No confirmed Mon 1/26 closures/delays located across key neighbors in this scan; that removes the +15–20% bump.\n6) Power: Systemwide outages are single digits; no sign of local outage-driven closure.\n7) Wind chill verification: No credible source supports ≤ -20°F for Mon 1/26 AM; therefore no cold-trigger override.\n8) What would make this wrong: (a) a late-developing lake-effect streamer depositing quick snow bursts pre-dawn, (b) widespread freezing fog/black ice forming more broadly than expected, or (c) an unexpected sharp drop in wind chill toward policy thresholds.\n\nWeighting (per directive): Meteorology (25%) + Safety (20%) + History (15%) + News (15%) + Infrastructure (10%) + Power (10%) + Web verification (5%) all point to a very low closure risk. With no active storm/ice and no neighbor-closure trend, I hold close to the debate consensus: 6%.",
-  "timestamp": "2026-01-24T18:14:22.504Z",
+  "decision_rationale": "Pre-decision checklist synthesis:\n1) Agreement: All experts align that Monday is cold but dry with 0\" new snow and no freezing rain signal; closure risk is mainly from localized black ice and possible patchy ice fog, not snowfall.\n2) Disagreement: The only meaningful conflict was web wind-chill data (some weather.com snapshots suggesting much colder). Web verification follow-up supports using WeatherAPI + NWS: NWS point forecast for Monday states wind chills as low as ~-7°F, and no reliable source confirms ≤ -20°F for the Mon 1/26 bus window.\n3) Plow timing math: With no snow event to end (0\" forecast), there’s no “snow-end-to-7:40 AM” recovery window needed. Infrastructure expects state highways clear and county/local roads passable by ~6:30 AM, though not necessarily bare pavement on neighborhood streets.\n4) Ice: No freezing rain indicated. Ice risk is residual/refreeze/packed-snow persistence in extreme cold (moderate but localized), plus possible ice-fog deposition.\n5) Neighboring districts: News intel follow-up found no Mon 1/26 closure/delay posts for Rockford or nearby districts in accessible sources; earlier-week closures exist but are not Mon-specific, so no +15–20% neighbor adjustment.\n6) Power outages: Consumers Energy shows low systemwide outages (tens of customers affected) with no confirmed Rockford facility impact; this is not a strong closure driver right now.\n7) Wind chill cross-check: NWS + WeatherAPI both stay well above the -20°F threshold; therefore no cold-based near-automatic closure.\n8) What would make this wrong: (a) Dense ice fog persists into 6–8 AM broadly (not just valleys) causing widespread low visibility on bus routes, (b) an unforecast freezing drizzle/light snow creates a thin glaze overnight, or (c) a localized power outage hits one or more key school buildings early Monday.\n\nWeighting (per directive): Meteorology 25% + Safety 20% + History 15% + News 15% + Infrastructure 10% + Power 10% + Web verifier 5%. Most components point strongly to “open” with a small tail risk for a DELAY; that keeps full snow-day probability low. Given Michigan’s higher tolerance and lack of active precip, I set 10% (slightly above the debate average 9%) to account for the fog/black-ice tail risk and uncertainty in live road-condition verification.",
+  "timestamp": "2026-01-24T23:07:35.917Z",
   "targetDate": "2026-01-26",
   "targetDayName": "Monday",
   "daysAhead": 2,
@@ -19,6 +19,6 @@
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 1.0% spread. Average probability: 6%."
+    "summary": "Agents reached consensus after 1 round(s) with 5.0% spread. Average probability: 9%."
   }
 }
