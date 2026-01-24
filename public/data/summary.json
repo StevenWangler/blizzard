@@ -1,15 +1,16 @@
 {
-  "probability": 11,
+  "probability": 6,
   "confidence": "high",
   "primary_factors": [
-    "No new snow/precip expected (0\" forecast); no ice/freezing rain signal",
-    "Wind chills for Mon 6–9 AM most likely near 0°F (not at common cold-closure thresholds) after verifier re-check found ≤-20°F evidence was stale/non-target-date",
-    "Road risk is mainly residual hard-pack/black ice on residential/subdivision streets and bridge decks; main routes likely passable by ~6:30 AM",
-    "No confirmed neighboring-district closures/delays yet for Mon Jan 26; no community buzz indicating an imminent closure call",
-    "Power outage risk appears low systemwide with no verified local outage pocket affecting Rockford facilities"
+    "No accumulating snow/precip forecast for Monday (roads not expected to deteriorate overnight)",
+    "Wind chills for the 6–9 AM window appear near 0°F to a few degrees above/below—NOT near the -20°F closure trigger (verified vs Weather.com canonical)",
+    "Road clearing capacity and main corridors expected clear/salty by 6:30 AM; no plow-timing constraint",
+    "Primary hazard is isolated slick spots/black ice on bridges, shaded areas, and some neighborhood streets (not widespread)",
+    "No confirmed neighboring-district closures/delays for Mon 1/26 found; no strong real-time closure trend signal",
+    "Power outages currently negligible systemwide; no evidence of local school facility power loss"
   ],
-  "decision_rationale": "Pre-decision checklist synthesis:\n1) Agreement: All experts align that Monday is a “cold + lingering slick spots” morning, not a storm (no accumulating snow, no freezing rain). Main hazards are patchy black ice and a brief early visibility dip.\n2) Disagreement: Only major conflict was the web verifier’s earlier apparent ≤-20°F feels-like trigger from Weather.com. Fresh verifier follow-up indicates those Weather.com values were tied to earlier dates (stale/cached) and are not credible evidence for Mon 1/26 6–9 AM. With that resolved, the consensus remains low closure odds.\n3) Plow timing math: With no new snowfall, there’s no ‘snow end → plow buffer’ constraint. Infrastructure indicates priority routes likely in best shape by ~05:30–06:30; residential loops may still have packed/icy patches at 06:30.\n4) Any ice? Yes—moderate risk of patchy black ice/refreeze on untreated/shaded surfaces and bridge decks, but not a widespread glaze event.\n5) Neighboring districts: News intel found no confirmed Monday closures/delays for Rockford or nearby districts at this time.\n6) Power: Power-grid check shows very low systemwide outages and no verified Rockford-specific facility outages.\n7) Wind chill trigger: Not confirmed for Monday; most likely near 0°F during bus hours.\n8) What would make me wrong: (a) a surprise episode of freezing fog/ice fog producing widespread glaze, (b) an unforecast burst of light snow/lake-effect reducing traction/visibility, (c) a localized but significant Rockford-area power outage impacting school buildings.\n\nWeighting (per directive): Meteorology 25% + Web verification 5% → strongly against closure (dry, modest winds; cold but not threshold). Safety 20% + Infrastructure 10% → supports only a small tail risk (patchy ice on residential routes). News 15% → no closure signals to bump up. History 15% → analogs suggest ~3–6% closure; adjusted slightly upward due to residual ice/visibility window. Power 10% → no outage-driven override. Net: 11% snow day probability (more likely normal opening; small chance of a 2-hour delay if black ice/fog verifies worse than expected).",
-  "timestamp": "2026-01-24T14:06:22.724Z",
+  "decision_rationale": "Pre-decision checklist synthesis:\n1) Agreement: All experts converge on “cold but dry” with 0\" snow, non-extreme wind chills for Monday morning, and a low closure likelihood. Infrastructure and safety agree roads should be serviceable; risk is mainly localized slick spots.\n2) Disagreement: Web verifier flagged one -23°F feels-like value, but that came from a date-mismatched Weather.com locale page; the credible cross-check (WeatherAPI vs Weather.com canonical) supports feels-like near ~0–2°F during 6–9 AM. Safety’s “moderate” ice risk is clarified as isolated patches (5–15% of route mileage intermittent slickness), not widespread glaze.\n3) Plow timing math: Snow end time is effectively “no event.” Hours from ‘snow end’ to 7:40 AM is not limiting; major roads expected clear/salty by 6:30 AM. Neighborhood streets may remain packed/variable but generally passable.\n4) Ice? No new freezing rain/sleet indicated. Ice concern is pre-existing/spot refreeze, not systemic.\n5) Neighboring districts: No confirmed Mon 1/26 closures/delays located across key neighbors in this scan; that removes the +15–20% bump.\n6) Power: Systemwide outages are single digits; no sign of local outage-driven closure.\n7) Wind chill verification: No credible source supports ≤ -20°F for Mon 1/26 AM; therefore no cold-trigger override.\n8) What would make this wrong: (a) a late-developing lake-effect streamer depositing quick snow bursts pre-dawn, (b) widespread freezing fog/black ice forming more broadly than expected, or (c) an unexpected sharp drop in wind chill toward policy thresholds.\n\nWeighting (per directive): Meteorology (25%) + Safety (20%) + History (15%) + News (15%) + Infrastructure (10%) + Power (10%) + Web verification (5%) all point to a very low closure risk. With no active storm/ice and no neighbor-closure trend, I hold close to the debate consensus: 6%.",
+  "timestamp": "2026-01-24T18:14:22.504Z",
   "targetDate": "2026-01-26",
   "targetDayName": "Monday",
   "daysAhead": 2,
@@ -18,6 +19,6 @@
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 6.0% spread. Average probability: 9%."
+    "summary": "Agents reached consensus after 1 round(s) with 1.0% spread. Average probability: 6%."
   }
 }
