@@ -237,6 +237,27 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
           </Badge>
         </motion.div>
 
+        {/* Last updated timestamp */}
+        {prediction?.timestamp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="mb-3 text-xs text-muted-foreground/70 flex items-center justify-center gap-1"
+          >
+            <Clock size={12} />
+            <span>
+              Updated {new Date(prediction.timestamp).toLocaleString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+              })}
+            </span>
+          </motion.div>
+        )}
+
         {/* AI Orb probability display */}
         <div className="relative w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] mx-auto py-4">
           <HeroProbabilityDisplay value={probability} duration={2.5} />
