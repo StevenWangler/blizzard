@@ -596,11 +596,11 @@ const coordinatorPrompt = `You are the final decision coordinator for MICHIGAN s
 Take your time. Think thoroughly. Cross-reference ALL expert analyses before deciding.
 You have 7 expert agents:
 - Meteorology (25%): Core weather data and forecasts
-- Safety (20%): Road conditions and travel risk
+- Safety (25%): Road conditions and travel risk - CRITICAL for borderline calls
 - History (15%): Historical patterns and precedents
 - News Intelligence (15%): Real-time community signals
 - Infrastructure (10%): Road clearing operations and plow status
-- Power Grid (10%): Utility outages and grid stress
+- Power Grid (5%): Utility outages and grid stress
 - Web Weather Verifier (5%): Cross-reference weather data verification
 
 The News Intelligence is YOUR SECRET WEAPON - the stats students don't have real-time community signals.
@@ -630,19 +630,24 @@ You're competing against Rockford High School stats students.
 Brier Score: (predicted_probability - actual_outcome)²
 Lower = better. Be DECISIVE, not wishy-washy.
 
-## MICHIGAN THRESHOLDS (higher than national):
+## MICHIGAN THRESHOLDS (calibrated for accuracy):
 - <4" snow = 5-15% (routine for Michigan)
-- 4-6" snow = 15-35%  
-- 6-8" = 35-55% (depends on timing)
-- 8-10" = 55-75% (likely closure)
-- 10+\" = 75-90%
+- 4-6" snow = 25-45% (timing and conditions matter)
+- 6-8" = 45-65% (depends on timing)
+- 8-10" = 65-80% (likely closure)
+- 10+" = 80-95%
 - Ice storm / freezing rain = 80-95% (ice is the great equalizer)
 - Blizzard (heavy snow + high winds) = 85-95%
 - 3+ neighboring districts closed = +15-20% adjustment
 
+## TIMING-SENSITIVE MODIFIERS (critical):
+- Snow actively falling at bus time (6-7 AM): +15% adjustment regardless of total accumulation
+- Roads already deteriorated night before: +10-15% adjustment
+- Plows cannot keep up with snowfall rate: +10-20% adjustment
+
 ## WIND CHILL THRESHOLDS (critical for bus safety):
 - Wind chill above -10°F = no cold-based adjustment
-- Wind chill -10°F to -15°F = 25-40% (uncomfortable, districts watching)
+- Wind chill -10°F to -15°F = 35-50% (uncomfortable, districts monitoring closely)
 - Wind chill -15°F to -20°F = 50-70% (borderline dangerous, many close proactively)
 - Wind chill ≤ -20°F = 90-95% (essentially guaranteed closure)
 
@@ -654,7 +659,7 @@ Lower = better. Be DECISIVE, not wishy-washy.
 - >15% affected or schools without power = +40-80%
 
 SHOW YOUR WORK in the decision_rationale. Explain how you weighted each expert.
-Avoid 40-60% range unless genuinely uncertain with conflicting expert opinions.`
+Moderate probabilities (40-60%) are valid when conditions are genuinely borderline - don't force artificial certainty.`
 
 // ============================================================================
 // AGENTS-AS-TOOLS CONTEXT (module-level state for tool callbacks)
@@ -1454,19 +1459,13 @@ ${expertAnalyses}`
   
   console.log(`🌡️ Cold detection: windchill_factor=${windchillFactor}, overnight_low=${overnightLow}, morning_feels_like=${morningFeelsLike}, flag=${extremeColdFlag}`)
   
-  // Determine extreme cold condition from ANY available source
+  // Determine extreme cold condition: Only -20°F or below matters for automatic closure
   const hasExtremeCold = 
     extremeColdFlag === true ||
     (morningFeelsLike !== undefined && morningFeelsLike <= -20) ||
-    (windchillFactor !== undefined && windchillFactor <= -20) ||
-    (overnightLow !== undefined && overnightLow <= -15) // Very cold overnight = dangerous morning wind chill
+    (windchillFactor !== undefined && windchillFactor <= -20)
   
-  const hasDangerousCold = 
-    (morningFeelsLike !== undefined && morningFeelsLike <= -15) ||
-    (windchillFactor !== undefined && windchillFactor <= -15) ||
-    (overnightLow !== undefined && overnightLow <= -10)
-  
-  // Apply floor if ANY source indicates extreme cold (≤ -20°F wind chill)
+  // Apply floor only if wind chill is ≤ -20°F (the actual closure threshold)
   if (hasExtremeCold) {
     const currentProb = validatedFinal.snow_day_probability || 0
     if (currentProb < 95) {
@@ -1480,17 +1479,72 @@ ${expertAnalyses}`
         ]
       }
     }
-  } else if (hasDangerousCold) {
-    // -15°F to -20°F floor at 50%
+  }
+  // Note: Wind chill between -15°F and -20°F is handled by the agents in their probability bands,
+  // no programmatic floor needed - let the model make the call based on full context
+  
+  // =========================================================================
+  // ROAD CONDITION OVERRIDE - Programmatic floor for hazardous roads
+  // =========================================================================
+  // If safety analyst reports severely hazardous road conditions (score 8+),
+  // apply a floor to prevent underestimating travel danger.
+  
+  const safetyData = safetyResult.finalOutput
+  const primaryRoadsScore = safetyData?.road_conditions?.primary_roads_score
+  const secondaryRoadsScore = safetyData?.road_conditions?.secondary_roads_score
+  const safetyRiskLevel = safetyData?.risk_level
+  
+  // Average road condition score (higher = worse)
+  const avgRoadScore = (primaryRoadsScore && secondaryRoadsScore) 
+    ? (primaryRoadsScore + secondaryRoadsScore) / 2 
+    : (primaryRoadsScore || secondaryRoadsScore || 0)
+  
+  console.log(`🛣️ Road detection: primary=${primaryRoadsScore}, secondary=${secondaryRoadsScore}, avg=${avgRoadScore}, risk=${safetyRiskLevel}`)
+  
+  // Apply floor if roads are severely hazardous (score 8+ means significant accumulation/hazardous)
+  if (avgRoadScore >= 8 || safetyRiskLevel === 'severe') {
     const currentProb = validatedFinal.snow_day_probability || 0
     if (currentProb < 50) {
-      console.log(`❄️ DANGEROUS COLD OVERRIDE: Raising probability from ${currentProb}% to 50% (wind chill -15°F to -20°F)`)
+      console.log(`🛣️ HAZARDOUS ROADS OVERRIDE: Raising probability from ${currentProb}% to 50% (road condition score ${avgRoadScore}/10)`)
       validatedFinal = {
         ...validatedFinal,
         snow_day_probability: 50,
         primary_factors: [
-          'DANGEROUS COLD: Wind chill -15°F to -20°F - many districts close proactively',
-          ...(validatedFinal.primary_factors || []).filter(f => !f.includes('DANGEROUS COLD'))
+          `HAZARDOUS ROADS: Road condition score ${avgRoadScore.toFixed(1)}/10 - severely hazardous travel conditions`,
+          ...(validatedFinal.primary_factors || []).filter(f => !f.includes('HAZARDOUS ROADS'))
+        ]
+      }
+    }
+  }
+  
+  // =========================================================================
+  // ICE OVERRIDE - Programmatic floor for ice/freezing rain
+  // =========================================================================
+  // Ice is the "great equalizer" - even Michigan closes for ice storms.
+  // Apply a floor when freezing rain or ice conditions are predicted.
+  
+  const precipType = meteorologyData?.precipitation_analysis?.precipitation_type
+  const iceFormationRisk = safetyData?.road_conditions?.ice_formation_risk
+  
+  console.log(`🧊 Ice detection: precip_type=${precipType}, ice_risk=${iceFormationRisk}`)
+  
+  const hasIceConditions = 
+    precipType === 'freezing_rain' ||
+    precipType === 'sleet' ||
+    precipType === 'mixed' ||
+    iceFormationRisk === 'severe' ||
+    iceFormationRisk === 'high'
+  
+  if (hasIceConditions) {
+    const currentProb = validatedFinal.snow_day_probability || 0
+    if (currentProb < 50) {
+      console.log(`🧊 ICE OVERRIDE: Raising probability from ${currentProb}% to 50% (ice/freezing rain conditions)`)
+      validatedFinal = {
+        ...validatedFinal,
+        snow_day_probability: 50,
+        primary_factors: [
+          `ICE CONDITIONS: ${precipType || 'Ice formation'} predicted - ice is the great equalizer for closures`,
+          ...(validatedFinal.primary_factors || []).filter(f => !f.includes('ICE CONDITIONS'))
         ]
       }
     }
