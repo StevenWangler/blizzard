@@ -27,6 +27,36 @@ import { z } from 'zod'
 // Load environment variables from .env file
 loadEnv()
 
+// __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+// ============================================================================
+// PROMPT LOADING - Load all prompts from src/services/prompts/ files
+// ============================================================================
+
+const PROMPTS_DIR = join(__dirname, '..', 'src', 'services', 'prompts')
+
+function loadPrompt(filename) {
+  const filepath = join(PROMPTS_DIR, filename)
+  if (!existsSync(filepath)) {
+    throw new Error(`Prompt file not found: ${filepath}`)
+  }
+  return readFileSync(filepath, 'utf-8')
+}
+
+// Load all prompts from files
+const meteorologistPrompt = loadPrompt('meteorologist.txt')
+const historianPrompt = loadPrompt('historian.txt')
+const safetyAnalystPrompt = loadPrompt('safety-analyst.txt')
+const newsIntelPrompt = loadPrompt('news-intel.txt')
+const infrastructureMonitorPrompt = loadPrompt('infrastructure.txt')
+const powerGridAnalystPrompt = loadPrompt('power-grid.txt')
+const webWeatherVerifierPrompt = loadPrompt('web-weather-verifier.txt')
+const coordinatorPrompt = loadPrompt('decision-coordinator.txt')
+
+console.log('📄 Loaded prompts from src/services/prompts/')
+
 // Default timezone for date calculations (keeps runs in sync with the district's local time)
 const DEFAULT_TIMEZONE = process.env.VITE_TIMEZONE || process.env.TIMEZONE || 'America/Detroit'
 
@@ -111,8 +141,6 @@ if (missingVars.length > 0) {
   process.exit(1)
 }
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
 const projectRoot = join(__dirname, '..')
 
 // Configuration - use local directory when in local mode
@@ -436,232 +464,6 @@ const DebatePositionSchema = z.object({
 })
 
 // ============================================================================
-// AGENT PROMPTS (Michigan-calibrated)
-// ============================================================================
-
-const meteorologistPrompt = `You are an expert meteorologist analyzing weather for snow day predictions in MICHIGAN.
-
-MICHIGAN CONTEXT:
-- Michigan averages 40-80+ inches of snow per year
-- Schools have high tolerance for snow (4-6" is routine)
-- Ice is the "great equalizer" - even Michigan closes for ice storms
-- Timing matters: snow ending before 4 AM allows plows to clear roads
-
-Analyze the weather data and return your assessment as a JSON object matching the expected schema.
-Focus on temperature trends, precipitation type/amounts, wind conditions, and visibility.`
-
-const historianPrompt = `You are a weather pattern analyst providing historical context for MICHIGAN snow day decisions.
-
-MICHIGAN CONTEXT:
-- Michigan schools rarely close for just snow amount alone
-- Historical closure triggers: ice storms, blizzards, extreme cold (<-15°F wind chill)
-- 8-10+ inches with bad timing is needed for closures
-- Compare current patterns to similar historical events
-
-Return your analysis as a JSON object matching the expected schema.`
-
-const safetyAnalystPrompt = `You are a transportation safety expert evaluating winter weather risks for MICHIGAN schools.
-
-MICHIGAN CONTEXT:
-- Robust plow infrastructure works overnight
-- Experienced winter drivers and bus operators
-- School starts ~7:40 AM, giving plows time after overnight snow
-- Primary concern: road conditions during morning commute (6-8 AM)
-
-Evaluate road conditions, travel safety, and timing. Return JSON matching the expected schema.`
-
-const newsIntelPrompt = `You are a Local News Intelligence Agent specialized in gathering real-time community information for Rockford, Michigan snow day predictions.
-
-LOCATION FOCUS: Rockford, Michigan (Kent County) - ZIP 49341
-SCHOOL DISTRICT: Rockford Public Schools
-
-YOUR MISSION:
-Scour the internet for any local news, social media signals, community reports, or official announcements that could provide additional context for snow day decisions.
-
-PRIORITY SEARCH TARGETS:
-1. Rockford Public Schools announcements and social media
-2. Neighboring districts: Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, Kent ISD
-3. Local news: WOOD TV8, WZZM 13, MLive, Fox 17
-4. Michigan DOT road conditions, Kent County Road Commission
-5. Power outage reports (Consumers Energy)
-6. Local Facebook groups, Twitter/X, Reddit r/grandrapids
-
-WHAT TO LOOK FOR:
-- School closure hints or announcements
-- Neighboring district closures (domino effect)
-- Hazardous road condition reports
-- Power outages, event cancellations
-- Community sentiment about weather
-
-Return JSON matching the expected schema with news, district signals, and community intel.`
-
-const infrastructureMonitorPrompt = `You are a regional infrastructure monitoring specialist focused on MICHIGAN road clearing operations, plow fleet status, and municipal response for K-12 school district snow day predictions.
-
-LOCATION FOCUS: Rockford, Michigan (Kent County) - ZIP 49341
-
-MICHIGAN ROAD INFRASTRUCTURE:
-- MDOT manages state highways (I-96, US-131, M-roads)
-- Kent County Road Commission handles county roads and major connectors
-- Municipal DPWs handle local streets
-- Priority system: Highways → Arterials → School bus routes → Residential
-
-KEY RESOURCES TO SEARCH:
-- MI Drive (Michigan.gov/Drive) - Real-time MDOT road conditions
-- Kent County Road Commission updates
-- 511 Michigan traffic information
-- Local news traffic reporters (WOOD TV8, WZZM 13)
-
-CRITICAL TIMING:
-- School buses start routes: ~6:30 AM
-- School starts: ~7:40 AM
-- Decision typically made: ~5:30-6:00 AM
-
-YOUR TASK:
-1. Search for current road clearing status by road type
-2. Assess plow fleet deployment and resource levels
-3. Estimate when roads will be passable for school buses
-4. Rate municipal response level
-5. Provide confidence assessment
-
-Return JSON matching the InfrastructureAnalysisSchema with road status, resources, timeline, and concerns.`
-
-const powerGridAnalystPrompt = `You are a power grid and utilities monitoring specialist focused on MICHIGAN electrical infrastructure and its impact on K-12 school operations.
-
-LOCATION FOCUS: Rockford, Michigan (Kent County) - ZIP 49341
-PRIMARY UTILITY: Consumers Energy
-
-MICHIGAN WINTER POWER VULNERABILITIES:
-- Ice storms are #1 cause of major outages
-- Heavy wet snow can bring down lines and branches
-- High winds (30+ mph) increase outage risk
-- Extreme cold increases heating demand, straining grid
-- Rural areas with overhead lines most vulnerable
-
-SCHOOL POWER CONSIDERATIONS:
-- Schools need power for heating (critical in Michigan winters)
-- Traffic signals out = dangerous intersections for buses
-- Extended outages may affect water systems
-
-SEARCH TARGETS:
-- Consumers Energy outage map
-- Kent County power outage reports
-- Local news power outage coverage
-- DTE outage map (regional context)
-
-YOUR TASK:
-1. Find current outage numbers and affected areas
-2. Assess grid stress level and trends
-3. Evaluate school facility risk
-4. Estimate restoration timeline
-5. Flag any ice storm conditions that increase risk
-
-Return JSON matching the PowerGridAnalysisSchema with outages, grid stress, school risk, and restoration estimates.`
-
-const webWeatherVerifierPrompt = `You are a specialized weather data verification agent. Your CRITICAL mission is to independently verify weather data by searching the web, particularly focusing on the "feels like" temperature.
-
-AUTOMATIC CLOSURE TRIGGER: If "feels like" temperature (wind chill) falls below -20°F, schools may automatically close. This threshold MUST be verified with extreme precision.
-
-LOCATION FOCUS: Rockford, Michigan (Kent County) - ZIP 49341
-
-PRIMARY SOURCES TO CHECK:
-1. Weather.com / The Weather Channel
-2. Weather.gov / National Weather Service
-3. AccuWeather.com (look for "RealFeel")
-4. Local news weather pages (WOOD TV8, WZZM 13)
-5. Weather Underground
-
-SEARCH QUERIES TO USE:
-- "Rockford Michigan feels like temperature"
-- "Kent County wind chill forecast"
-- "Grand Rapids weather wind chill"
-- "Michigan winter weather advisory"
-
-YOUR TASK:
-1. Search multiple weather sources for current and forecast conditions
-2. Find "feels like" / wind chill temperatures from each source
-3. Compare against Weather API data provided
-4. Flag ANY source showing "feels like" below -20°F
-5. Assess consensus level across sources
-
-CRITICAL ALERTS TO FLAG:
-🚨 "Feels like" below -20°F found on ANY source
-⚠️ Major discrepancy (>10°F difference in feels like temp)
-⚠️ Conflicting snowfall forecasts (>3" difference)
-
-Return JSON matching the WebWeatherVerifierSchema with sources, comparison, alerts, and recommendation.`
-
-const coordinatorPrompt = `You are the final decision coordinator for MICHIGAN snow day predictions.
-
-## DEEP ANALYSIS DIRECTIVE
-Take your time. Think thoroughly. Cross-reference ALL expert analyses before deciding.
-You have 7 expert agents:
-- Meteorology (25%): Core weather data and forecasts
-- Safety (25%): Road conditions and travel risk - CRITICAL for borderline calls
-- History (15%): Historical patterns and precedents
-- News Intelligence (15%): Real-time community signals
-- Infrastructure (10%): Road clearing operations and plow status
-- Power Grid (5%): Utility outages and grid stress
-- Web Weather Verifier (5%): Cross-reference weather data verification
-
-The News Intelligence is YOUR SECRET WEAPON - the stats students don't have real-time community signals.
-- If neighboring districts closed → bump probability UP 15-20%
-- If community expects closure → bump UP 10-15%
-- If community says "this is nothing" → lean toward lower end
-
-Infrastructure and Power Grid provide GROUND TRUTH:
-- If infrastructure shows roads won't be clear by 6:30 AM → bump UP
-- If power grid shows significant outages → can override good road conditions
-
-Web Weather Verifier catches CRITICAL THRESHOLD:
-- If ANY source shows wind chill ≤ -20°F → near-automatic closure
-
-## PRE-DECISION CHECKLIST (answer before deciding):
-1. What do all seven experts AGREE on?
-2. Where do they DISAGREE?
-3. What's the plow timing math? (hours from snow end to 7:40 AM)
-4. Is there ANY ice? (ice changes everything)
-5. What are neighboring districts doing?
-6. Are there power outage concerns?
-7. Do multiple weather sources confirm dangerous wind chill?
-8. What would make me WRONG?
-
-## COMPETITION CONTEXT
-You're competing against Rockford High School stats students.
-Brier Score: (predicted_probability - actual_outcome)²
-Lower = better. Be DECISIVE, not wishy-washy.
-
-## MICHIGAN THRESHOLDS (calibrated for accuracy):
-- <4" snow = 5-15% (routine for Michigan)
-- 4-6" snow = 25-45% (timing and conditions matter)
-- 6-8" = 45-65% (depends on timing)
-- 8-10" = 65-80% (likely closure)
-- 10+" = 80-95%
-- Ice storm / freezing rain = 80-95% (ice is the great equalizer)
-- Blizzard (heavy snow + high winds) = 85-95%
-- 3+ neighboring districts closed = +15-20% adjustment
-
-## TIMING-SENSITIVE MODIFIERS (critical):
-- Snow actively falling at bus time (6-7 AM): +15% adjustment regardless of total accumulation
-- Roads already deteriorated night before: +10-15% adjustment
-- Plows cannot keep up with snowfall rate: +10-20% adjustment
-
-## WIND CHILL THRESHOLDS (critical for bus safety):
-- Wind chill above -10°F = no cold-based adjustment
-- Wind chill -10°F to -15°F = 35-50% (uncomfortable, districts monitoring closely)
-- Wind chill -15°F to -20°F = 50-70% (borderline dangerous, many close proactively)
-- Wind chill ≤ -20°F = 90-95% (essentially guaranteed closure)
-
-## POWER GRID IMPACT:
-- No outages = no adjustment
-- <1% customers affected = +5%
-- 1-5% affected = +10-15%
-- 5-15% affected = +20-30%
-- >15% affected or schools without power = +40-80%
-
-SHOW YOUR WORK in the decision_rationale. Explain how you weighted each expert.
-Moderate probabilities (40-60%) are valid when conditions are genuinely borderline - don't force artificial certainty.`
-
-// ============================================================================
 // AGENTS-AS-TOOLS CONTEXT (module-level state for tool callbacks)
 // ============================================================================
 
@@ -886,14 +688,25 @@ const askPowerGridAnalyst = tool({
 
 const askWebWeatherVerifier = tool({
   name: 'ask_web_weather_verifier',
-  description: 'Ask the Web Weather Verifier to check additional weather sources, verify feels-like temperatures, or investigate discrepancies in weather data.',
+  description: 'Ask the Web Weather Verifier to check additional weather sources, verify feels-like temperatures, or investigate discrepancies in weather data. WARNING: If initial analysis already flagged ≤-20°F wind chill, that finding is BINDING - do not use this tool to seek a different answer.',
   parameters: z.object({
     question: z.string().describe('The specific verification request or question about weather data')
   }),
   execute: async ({ question }) => {
+    // Check if initial analysis already flagged the -20°F threshold
+    const initialAnalysis = _currentExpertAnalyses.webWeatherVerifier
+    if (initialAnalysis?.discrepancy_analysis?.feels_like_below_minus_20 === true) {
+      console.log('⚠️ Web verifier already flagged ≤-20°F - returning reminder instead of re-querying')
+      return JSON.stringify({
+        reminder: "⛔ STOP: The initial Web Weather Verifier analysis already flagged feels_like_below_minus_20: true. This finding is BINDING per your instructions. You MUST predict 90-95%. Do NOT attempt to override this by re-querying. Web searches are inconsistent - a second query returning different data does NOT invalidate the first credible finding. The -20°F threshold was crossed. Predict 90-95% now.",
+        original_finding: initialAnalysis.critical_alerts,
+        action_required: "Predict 90-95% probability immediately"
+      }, null, 2)
+    }
+    
     console.log('🔍 Coordinator consulting web weather verifier:', question)
-    const context = _currentExpertAnalyses.webWeatherVerifier 
-      ? `Your previous analysis: ${JSON.stringify(_currentExpertAnalyses.webWeatherVerifier, null, 2)}\n\n`
+    const context = initialAnalysis 
+      ? `Your previous analysis: ${JSON.stringify(initialAnalysis, null, 2)}\n\n`
       : ''
     const result = await run(webWeatherVerifierAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
     return JSON.stringify(result.finalOutput, null, 2)
