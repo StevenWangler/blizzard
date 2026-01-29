@@ -1,16 +1,15 @@
 {
-  "probability": 38,
+  "probability": 92,
   "confidence": "moderate",
   "primary_factors": [
-    "Wind chill appears likely ≤ -20°F at bus-stop time per Weather.com (≈ -25°F to -26°F 5–8 AM), which can trigger cold-safety closures in some districts",
-    "Ice risk is the main hazard: trace freezing drizzle/freezing rain + subzero temps can create persistent patchy black ice, especially on bridges, hills, shaded/rural and neighborhood streets",
-    "Road treatment effectiveness is reduced in single digits/subzero temps; crews may improve main corridors but cannot guarantee consistent traction everywhere by 6:30 AM",
-    "No confirmed neighboring-district closures/delays for Fri 01/30 were found (keeps probability from jumping)",
-    "No evidence of widespread power outages (statewide outages extremely low); facility-power risk is conditional, not current-driver",
-    "Snow accumulation is negligible (not a plowable snow depth event)"
+    "Web Weather Verifier flagged Weather.com wind chills of -26°F to -27°F during 6–8 AM bus window (≤ -20°F rule triggers automatic 90–95% range)",
+    "Secondary hazard: possible thin glaze/black ice from light freezing drizzle/rain around midnight–2 AM with temps near/below 0°F, which can persist into morning commute on bridges/side roads",
+    "Infrastructure signals: major routes likely serviceable, but localized slick/hard-pack on lower-volume roads and neighborhood streets remains plausible in extreme cold (salt less effective)",
+    "No confirmed neighboring-district closures for Fri 1/30 found on official pages in the latest crawl (reduces domino-effect pressure)",
+    "Power grid currently stable with minimal outages statewide; outage risk is a wildcard but not currently a primary closure driver"
   ],
-  "decision_rationale": "Pre-decision checklist synthesis:\n1) Agreements: All experts agree this is NOT a snowfall-driven snow day (near-zero snow). The main risks are (a) extreme cold and (b) patchy icing/black ice on secondary/local roads. Power outages are not currently widespread.\n2) Disagreements: The main conflict is wind chill magnitude (WeatherAPI ~-10 to -19°F vs Weather.com/NWS-referenced reporting ~-25°F) and how long the road hazard persists (not just when precip falls). Tools resolved this: Web verifier confirms Weather.com shows ~-25 to -26°F 5–8 AM; safety clarifies hazard window extends through the morning due to persistent cold.\n3) Plow timing math: This is not about “hours from snow end” because there’s little snow to plow; it’s about whether a thin glaze forms and then persists. Infrastructure + safety indicate main routes should be serviceable by ~6:30 AM, but residential/local streets remain the most variable through ~9 AM, and salt is less effective.\n4) Any ice? Yes—freezing drizzle/freezing rain signal plus high ice-formation risk; even tiny amounts can create unpredictable slick patches.\n5) Neighboring districts? News intel found no confirmed Fri 01/30 closures/delays in nearby districts at the time checked (no +15–20% bump).\n6) Power outage concerns? No evidence of a widespread outage event (very low statewide outages). No adjustment beyond baseline.\n7) Wind chill threshold verification? Yes—Weather.com indicates ≤ -20°F is likely, not marginal, during bus-stop hours; that elevates risk meaningfully.\n8) What would make me wrong? (a) If actual wind chills are closer to WeatherAPI (>-20°F) and roads are largely dry/treated, school likely opens normally → I’d be overestimating closure risk. (b) If even a trace glaze becomes widespread on neighborhood/bus-route roads or Rockford applies a strict cold policy at ≤ -20°F, a delay/closure becomes much more likely → I’d be underestimating.\n\nWeighting per directive: Meteorology (25%) + Safety (25%) drive the core call; history (15%) pulls probability down because trace-precip days usually stay open; news (15%) keeps it from jumping because no neighboring closures are confirmed; infrastructure (10%) supports “serviceable but variable”; power (5%) is neutral; web verifier (5%) pushes up due to wind-chill trigger. Net: I move above the agents’ ~21% average because the wind-chill trigger appears met and the safety window is longer than the initial 00:00–01:00 framing. Still, lack of confirmed neighboring closures and minimal precip keeps it below 50%.\n\nBottom line: higher-than-normal chance of disruption, with delay more likely than full closure; I set full-closure (“snow day”) probability at 38%.",
-  "timestamp": "2026-01-29T23:10:47.501Z",
+  "decision_rationale": "There is a major conflict in the wind-chill guidance: WeatherAPI suggests ~-10°F to -12°F feels-like during 6–8 AM, while the Web Weather Verifier found Weather.com showing -26°F to -27°F in the same window, plus regional NWS-referenced messaging discussing pockets near -25°F. Per the non-negotiable Extreme Cold Rules, ONE credible source at ≤ -20°F during bus hours forces a 90–95% closure probability because of student exposure at stops and operational bus-start concerns. \n\nEven setting cold aside, there is a credible (though likely patchy) black-ice/glaze risk from light freezing drizzle/freezing rain around midnight–2 AM, and in subzero air/pavement temperatures any slickness will not “improve quickly.” Infrastructure and safety inputs agree: main roads should generally be workable, but secondary/neighborhood roads can remain variable—this profile often leads to delays rather than full closure. However, the extreme wind-chill trigger dominates the closure decision under your rules, so the final probability is kept in the mandated 90–95% range.\n\nWhat could make this wrong (i.e., schools stay open): if the Weather.com wind chills are materially overstated and actual 6–8 AM wind chills verify closer to -10°F to -15°F, and if the overnight glaze is minimal/treated, Rockford could run on-time or with a delay. That is why confidence is only moderate despite the high probability (the high probability is rule-driven, not consensus-driven).",
+  "timestamp": "2026-01-29T23:41:38.810Z",
   "targetDate": "2026-01-30",
   "targetDayName": "Friday",
   "daysAhead": 1,
@@ -19,6 +18,6 @@
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 4.0% spread. Average probability: 21%."
+    "summary": "Agents reached consensus after 1 round(s) with 7.0% spread. Average probability: 30%."
   }
 }
