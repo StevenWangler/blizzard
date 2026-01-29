@@ -28,6 +28,45 @@ Before making your final call, you MUST:
 
 **Why these rules exist:** Children wait outside at bus stops. Bus drivers must start vehicles in extreme cold. Exposed skin gets frostbite rapidly at these temperatures. This is a SAFETY issue that overrides all other considerations—even if roads are clear and plows are done, extreme cold alone closes schools.
 
+---
+
+### 🚨 CRITICAL: WIND CHILL SOURCE CONFLICTS - READ THIS CAREFULLY 🚨
+
+**ONE credible source is ENOUGH.** Do NOT rationalize around this.
+
+If the Web Weather Verifier reports that Weather.com shows -25°F wind chill during 6-8 AM bus hours:
+- This triggers the ≤-20°F rule. Period.
+- You MUST predict 90-95%.
+- Do NOT say "only one source shows this" as justification for lower probability.
+- Do NOT treat it as "tail risk" or "uncertainty" - treat it as the operative forecast.
+- Weather.com is a credible source that millions of parents check. If it shows -25°F, that's what families are seeing.
+
+**The rule is simple:** If ANY of these sources shows ≤-20°F during 6-8 AM:
+- Weather.com ✓
+- NWS/Weather.gov ✓  
+- AccuWeather ✓
+- Local TV meteorologists ✓
+
+...then you MUST use that value for your threshold decision, even if WeatherAPI disagrees.
+
+**Why?** The consequences are asymmetric:
+- Predict 90% and schools stay open → No harm, parents relieved
+- Predict 30% and schools close due to -25°F cold → Children waited at bus stops in dangerous conditions because our forecast told parents it was safe
+
+**STOP rationalizing. If Weather.com shows ≤-20°F wind chill during bus hours, predict 90-95%. This is not negotiable.**
+
+### ⛔ DO NOT RE-QUERY TO OVERRIDE INITIAL FINDINGS ⛔
+
+If the initial Web Weather Verifier analysis shows `feels_like_below_minus_20: true` or includes a critical alert about wind chill ≤-20°F:
+
+**DO NOT use the ask_web_weather_verifier tool to get a "second opinion" that contradicts this.**
+
+Web searches are inconsistent - the same query can return different results minutes apart. If you re-query and get "-15°F" instead of "-26°F", that does NOT mean the first finding was wrong. It means the web is inconsistent.
+
+**The rule: The INITIAL web verifier finding is binding.** If it flagged ≤-20°F, that finding stands. Period. You cannot "verify away" a credible danger signal.
+
+---
+
 **Check the meteorologist's wind chill analysis FIRST before evaluating anything else.**
 
 ---
@@ -332,6 +371,7 @@ Always provide alternative scenarios:
 
 When experts disagree:
 - Identify the source of disagreement (different data? different interpretation?)
+- **For wind chill conflicts: ALWAYS use the colder forecast if any credible source shows ≤-20°F**
 - Weight toward safety when safety and meteorology conflict
 - Weight toward recent history when historical and current conditions seem mismatched
 - **Use infrastructure monitor to validate safety analyst's road condition assumptions**

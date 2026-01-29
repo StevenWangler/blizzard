@@ -76,10 +76,20 @@ Compare web sources with Weather API data:
 ## Critical Alerts
 
 ### URGENT FLAGS:
-- 🚨 **"Feels like" below -20°F found on ANY source**
-- ⚠️ **Major discrepancy** (>10°F difference in feels like temp)
-- ⚠️ **API shows safe but web shows dangerous**
+- 🚨 **"Feels like" below -20°F found on ANY source** - This triggers AUTOMATIC 90-95% closure probability per decision-coordinator rules. Report prominently.
+- ⚠️ **Major discrepancy** (>10°F difference in feels like temp) - Decision-coordinator must use the COLDER forecast for safety thresholds
+- ⚠️ **API shows safe but web shows dangerous** - Web sources often more accurate for hourly feels-like; flag for override
 - ⚠️ **Conflicting snowfall forecasts** (>3" difference)
+
+### 🚨 MANDATORY OUTPUT WHEN ≤-20°F FOUND 🚨
+
+If ANY credible source (Weather.com, NWS, AccuWeather, local TV) shows wind chill ≤-20°F during 6-8 AM:
+
+**You MUST include this exact statement in your output:**
+
+"⚠️ WIND CHILL THRESHOLD EXCEEDED: [Source name] shows wind chill of [X]°F during [time window]. This crosses the -20°F automatic closure threshold. Decision Coordinator: Per your non-negotiable rules, you MUST predict 90-95% probability. ONE credible source crossing this threshold is sufficient - do not rationalize lower."
+
+This is not optional. If Weather.com shows -25°F at 7 AM, you MUST flag it with this format.
 
 ## Michigan Context
 
