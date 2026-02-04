@@ -2,14 +2,14 @@
   "probability": 92,
   "confidence": "moderate",
   "primary_factors": [
-    "BINDING safety threshold: Web Weather Verifier flagged Weather.com wind chills ≤ -20°F (≈ -25°F to -26°F) during ~5–8 AM, which triggers the automatic 90–95% closure rule",
-    "Even though most other inputs (WeatherAPI + meteorology + infrastructure) indicate a normal open day, Michigan districts often react to what parents see on Weather.com; reputational/safety pressure strongly favors closure if that reading persists into the evening/morning",
-    "If wind chill truly is ≤ -20°F at bus-stop hours, buses can have start/reliability issues and frostbite risk becomes unacceptable regardless of road conditions",
-    "No confirmed neighboring district closures yet and roads/plowing outlook is generally fine—these would normally keep probability low, highlighting the single-point conflict driving uncertainty",
-    "Power grid/outages are minimal and not a closure driver"
+    "Binding extreme-cold trigger: Web Weather Verifier flagged Weather.com feels-like around -25°F to -26°F during ~5–8 AM (≤ -20°F rule → automatic 90–95% range)",
+    "Major inter-source conflict on wind chill (WeatherAPI ~+11°F feels-like vs Weather.com mirror ~-25°F) creates operational uncertainty; safety policy must follow the colder credible-source scenario",
+    "Even without snow, extreme wind chill during bus-stop hours is a standalone closure driver in Michigan (frostbite risk + bus reliability)",
+    "Secondary, non-decisive hazards: patchy fog/low visibility and spotty refreeze/black ice could add morning-commute risk if the extreme-cold scenario is real",
+    "News/community signals currently show no closure buzz and no posted closings—normally points to “open,” but cannot override the binding wind-chill rule"
   ],
-  "decision_rationale": "There is a major conflict between the WeatherAPI-driven meteorology package (temps ~21°F, wind chill ~+11°F, essentially no precip during 5–9 AM, and roads mostly clear) and the Web Weather Verifier’s Weather.com hourly scrape showing wind chills around -25°F to -26°F during 5–8 AM. Under the Extreme Cold Rules you provided, ONE credible source showing ≤ -20°F during bus hours is sufficient and is binding; it forces a 90–95% closure prediction regardless of other factors. \n\nCross-checking the other experts supports that, absent the extreme-cold signal, this would be a very low snow-day risk day (open with monitoring): no active snow/ice in the 5–9 AM window, modest winds, only patchy low visibility/black-ice concerns, and no neighboring closures posted yet. Power and infrastructure also do not support closure on their own. \n\nSo the probability is high not because roads/snow look bad, but because the operational decision environment in Michigan strongly prioritizes bus-stop safety at ≤ -20°F wind chills—and administrators/parents will treat Weather.com as authoritative if it continues to show that. Uncertainty remains moderate because the Weather.com data was noted as cached/out-of-sync; however, per your non-negotiable rule, that uncertainty cannot be used to lower the probability below the mandated range.",
-  "timestamp": "2026-02-04T15:37:01.801Z",
+  "decision_rationale": "Most experts (meteorology/history/safety/news) converged on a ‘non-event’ day with near-zero snow and modest winds—normally a 5–10% closure setup in West Michigan, with a slightly higher chance of a delay if fog/patchy black ice is observed.\n\nHowever, the Web Weather Verification includes a critical alert: a Weather.com hourly view (international/mirror) shows feels-like approximately -25°F to -26°F during ~5–8 AM. Per the Extreme Cold Rules provided, ANY credible source showing ≤ -20°F wind chill during bus hours forces a 90–95% closure prediction. This rule overrides the otherwise-low snow/road-impact forecast and also overrides the debate’s ~7% consensus (which appears to have treated the Weather.com value as a mismatch rather than binding).\n\nGiven the asymmetric risk (children waiting at bus stops + bus start reliability) and the explicit policy constraint, the final probability is set at 92% with only moderate confidence (moderate because the wind-chill sources conflict strongly; high in the sense that, if that Weather.com value is what parents see, districts often close to match safety expectations). Recommendation: plan for closure unless a trusted local/NWS check before ~5:30–6:00 AM clearly shows wind chill above -20°F across the district and the superintendent is comfortable reversing.",
+  "timestamp": "2026-02-04T18:27:49.502Z",
   "targetDate": "2026-02-05",
   "targetDayName": "Thursday",
   "daysAhead": 1,
@@ -18,6 +18,6 @@
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 12.0% spread. Average probability: 11%."
+    "summary": "Agents reached consensus after 1 round(s) with 2.0% spread. Average probability: 7%."
   }
 }
