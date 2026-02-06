@@ -108,7 +108,7 @@ function OrbParticles({ probability, isLowEnd }: { probability: number; isLowEnd
 
 export function HeroProbabilityDisplay({ value, duration = 2 }: HeroProbabilityDisplayProps) {
   const [displayValue, setDisplayValue] = useState(0)
-  const { isLowEnd } = useDevicePerformance()
+  const { isLowEnd, isMobile } = useDevicePerformance()
   
   // Spring animation for counting
   const spring = useSpring(0, {
@@ -166,7 +166,7 @@ export function HeroProbabilityDisplay({ value, duration = 2 }: HeroProbabilityD
   const pulseSpeed = value >= 70 ? 3 : value >= 50 ? 4 : 5
   
   return (
-    <div className="relative flex items-center justify-center w-full aspect-square max-w-[500px] mx-auto">
+    <div className="relative flex items-center justify-center w-full aspect-square max-w-[320px] sm:max-w-[500px] mx-auto">
       {/* Floating particles */}
       <OrbParticles probability={value} isLowEnd={isLowEnd} />
       
@@ -181,7 +181,7 @@ export function HeroProbabilityDisplay({ value, duration = 2 }: HeroProbabilityD
       )}
       
       {/* Secondary rotating ring (opposite direction) */}
-      {!isLowEnd && (
+      {!isLowEnd && !isMobile && (
         <motion.div
           className="absolute inset-[15%] rounded-full border opacity-20"
           style={{ borderColor: colors.ring }}
@@ -265,7 +265,7 @@ export function HeroProbabilityDisplay({ value, duration = 2 }: HeroProbabilityD
       </motion.div>
       
       {/* Dashed orbit ring with markers */}
-      {!isLowEnd && (
+      {!isLowEnd && !isMobile && (
         <svg className="absolute inset-[5%] w-[90%] h-[90%] opacity-20" viewBox="0 0 100 100">
           <circle
             cx="50"
@@ -318,7 +318,7 @@ export function HeroProbabilityDisplay({ value, duration = 2 }: HeroProbabilityD
           <span
             className={`
               font-black tracking-tight select-none leading-none
-              text-[18vw] sm:text-[14vw] md:text-[12vw] lg:text-[10rem]
+              text-[16vw] max-[360px]:text-[18vw] sm:text-[14vw] md:text-[12vw] lg:text-[10rem]
               ${colors.text}
               drop-shadow-lg
             `}
@@ -334,7 +334,7 @@ export function HeroProbabilityDisplay({ value, duration = 2 }: HeroProbabilityD
           </span>
           <span
             className={`
-              text-[5vw] sm:text-[4vw] md:text-[3vw] lg:text-[2.5rem]
+              text-[4.5vw] sm:text-[4vw] md:text-[3vw] lg:text-[2.5rem]
               font-semibold tracking-widest uppercase opacity-70
               ${colors.text}
             `}
@@ -348,7 +348,7 @@ export function HeroProbabilityDisplay({ value, duration = 2 }: HeroProbabilityD
       </motion.div>
       
       {/* High probability energy effect */}
-      {value >= 80 && !isLowEnd && (
+      {value >= 80 && !isLowEnd && !isMobile && (
         <motion.div
           className="absolute inset-[18%] rounded-full pointer-events-none"
           animate={{

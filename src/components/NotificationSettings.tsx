@@ -22,12 +22,14 @@ function NotificationContent({
   preferences, 
   permission, 
   toggleEnabled, 
-  updateThreshold 
+  updateThreshold,
+  isMobile = false
 }: {
   preferences: { enabled: boolean; threshold: number }
   permission: NotificationPermission | 'default'
   toggleEnabled: () => void
   updateThreshold: (value: number) => void
+  isMobile?: boolean
 }) {
   return (
     <div className="p-4 space-y-4">
@@ -35,7 +37,8 @@ function NotificationContent({
         <span className="text-sm font-medium">Status</span>
         <Button
           variant={preferences.enabled ? "default" : "outline"}
-          size="sm"
+          size={isMobile ? "default" : "sm"}
+          className={isMobile ? 'min-h-[44px] px-4' : undefined}
           onClick={toggleEnabled}
         >
           {preferences.enabled ? 'Enabled' : 'Disabled'}
@@ -88,7 +91,12 @@ export function NotificationSettings() {
   }
 
   const triggerButton = (
-    <Button variant="ghost" size="icon" className="relative">
+    <Button
+      variant="ghost"
+      size="icon"
+      className="relative h-11 w-11 min-h-[44px] min-w-[44px]"
+      aria-label="Notification settings"
+    >
       {preferences.enabled ? (
         <>
           <Bell size={20} />
@@ -116,8 +124,8 @@ export function NotificationSettings() {
             permission={permission}
             toggleEnabled={toggleEnabled}
             updateThreshold={updateThreshold}
+            isMobile={true}
           />
-          <div className="pb-6" /> {/* Extra padding for safe area */}
         </DrawerContent>
       </Drawer>
     )

@@ -90,8 +90,6 @@ function App() {
     setMoreDrawerOpen(false)
   }
 
-  // Primary tabs shown in bottom nav on mobile (4 max for comfortable touch)
-  const primaryTabs = ['home', 'details', 'accuracy', 'history']
   // Overflow tabs shown in "More" drawer on mobile
   const overflowTabs = ['agents', 'competition', 'about', ...(isAdmin ? ['outcomes'] : [])]
 
@@ -103,7 +101,7 @@ function App() {
       <WeatherAtmosphere />
       
       {/* Animated background blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
         <div className="absolute top-0 -right-4 w-72 h-72 bg-cyan-300/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob delay-2000"></div>
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob delay-4000"></div>
@@ -112,14 +110,22 @@ function App() {
       <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 max-w-6xl relative z-10 ${isMobile ? 'mb-bottom-nav' : ''}`}>
         <EnhancedHeader />
         
-        {/* Settings positioned in top right */}
-        <div className="absolute top-6 sm:top-10 right-4 sm:right-6 lg:right-8 flex gap-2 z-20">
+        {/* Settings stay in flow on mobile to avoid overlap with header */}
+        <div
+          className={`flex gap-2 z-20 ${
+            isMobile
+              ? 'mb-4 justify-end'
+              : 'absolute top-6 sm:top-10 right-4 sm:right-6 lg:right-8'
+          }`}
+        >
           {isAdmin && (
             <Button
               variant="outline"
               size="icon"
               onClick={handleLock}
               title="Lock admin tools"
+              aria-label="Lock admin tools"
+              className="h-11 w-11 min-h-[44px] min-w-[44px]"
             >
               <LockSimple size={18} weight="duotone" />
             </Button>
@@ -130,7 +136,7 @@ function App() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Desktop Navigation - traditional tab list */}
-          <TabsList className={`hidden sm:grid w-full ${tabGridCols} mb-8 sm:mb-10 h-auto p-1.5 bg-background/50 backdrop-blur-sm`}>
+          <TabsList className={`hidden md:grid w-full ${tabGridCols} mb-8 sm:mb-10 h-auto p-1.5 bg-background/50 backdrop-blur-sm`}>
             <TabsTrigger value="home" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
               <House size={18} />
               <span>Home</span>
@@ -210,6 +216,8 @@ function App() {
             {/* Primary nav items */}
             <button
               onClick={() => setActiveTab('home')}
+              aria-label="Go to Home tab"
+              aria-current={activeTab === 'home' ? 'page' : undefined}
               className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
                 activeTab === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
@@ -220,6 +228,8 @@ function App() {
             
             <button
               onClick={() => setActiveTab('details')}
+              aria-label="Go to Details tab"
+              aria-current={activeTab === 'details' ? 'page' : undefined}
               className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
                 activeTab === 'details' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
@@ -230,6 +240,8 @@ function App() {
             
             <button
               onClick={() => setActiveTab('accuracy')}
+              aria-label="Go to Accuracy tab"
+              aria-current={activeTab === 'accuracy' ? 'page' : undefined}
               className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
                 activeTab === 'accuracy' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
@@ -240,6 +252,8 @@ function App() {
             
             <button
               onClick={() => setActiveTab('history')}
+              aria-label="Go to History tab"
+              aria-current={activeTab === 'history' ? 'page' : undefined}
               className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
                 activeTab === 'history' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
@@ -252,6 +266,9 @@ function App() {
             <Drawer open={moreDrawerOpen} onOpenChange={setMoreDrawerOpen}>
               <DrawerTrigger asChild>
                 <button
+                  aria-label="Open More menu"
+                  aria-expanded={moreDrawerOpen}
+                  aria-current={overflowTabs.includes(activeTab) ? 'page' : undefined}
                   className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
                     overflowTabs.includes(activeTab) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                   }`}

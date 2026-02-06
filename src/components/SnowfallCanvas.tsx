@@ -36,7 +36,7 @@ export function SnowfallCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationFrameRef = useRef<number | undefined>(undefined)
   const snowflakesRef = useRef<SnowflakeParticle[]>([])
-  const { performanceMultiplier, isLowEnd } = useDevicePerformance()
+  const { performanceMultiplier, isLowEnd, isMobile } = useDevicePerformance()
 
   useEffect(() => {
     // Respect user's motion preferences
@@ -72,7 +72,8 @@ export function SnowfallCanvas({
     // Apply performance multiplier for mobile/low-end devices
     const baseCount = Math.min(Math.floor(intensity * 12), 180)
     const themeMultiplier = theme === 'blizzard' || theme === 'whiteout' ? 2 : 1
-    const particleCount = Math.floor(baseCount * themeMultiplier * performanceMultiplier)
+    const rawParticleCount = Math.floor(baseCount * themeMultiplier * performanceMultiplier)
+    const particleCount = isMobile ? Math.min(rawParticleCount, 80) : rawParticleCount
     
     // Calculate drift based on wind speed (0-50 mph = 0-5 drift)
     const windDrift = Math.min(windSpeed / 8, 6)
@@ -211,7 +212,7 @@ export function SnowfallCanvas({
       }
       window.removeEventListener('resize', resizeCanvas)
     }
-  }, [intensity, windSpeed, respectReducedMotion, theme, performanceMultiplier, isLowEnd])
+  }, [intensity, windSpeed, respectReducedMotion, theme, performanceMultiplier, isLowEnd, isMobile])
 
   // Don't render if no snow predicted
   if (intensity < 1) {

@@ -440,6 +440,180 @@ const FinalPredictionSchema = z.object({
 })
 
 // ============================================================================
+// WEB VERIFIER GUARDRAILS (deterministic sanity checks)
+// ============================================================================
+
+function getHostname(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string' || rawUrl === 'provided_by_user') {
+    return ''
+  }
+  try {
+    return new URL(rawUrl).hostname.toLowerCase()
+  } catch {
+    return ''
+  }
+}
+
+function getSourceProviderId(source) {
+  const host = getHostname(source?.url)
+  if (!host) {
+    return source?.url === 'provided_by_user' ? 'weatherapi' : 'unknown'
+  }
+
+  if (host.endsWith('weather.com') || host.endsWith('wunderground.com')) return 'weather_company'
+  if (host.endsWith('weather.gov') || host.endsWith('noaa.gov') || host.includes('forecast.weather.gov')) return 'nws'
+  if (host.endsWith('accuweather.com')) return 'accuweather'
+  if (host.endsWith('weatherapi.com')) return 'weatherapi'
+  if (host.endsWith('weatherbug.com')) return 'weatherbug'
+  return host
+}
+
+function isLikelyPointWeatherSource(source) {
+  const host = getHostname(source?.url)
+  const sourceName = String(source?.source_name || '').toLowerCase()
+
+  if (!host) return false
+  if (source?.url === 'provided_by_user') return false
+
+  const trustedWeatherHosts = [
+    'weather.com',
+    'wunderground.com',
+    'weather.gov',
+    'noaa.gov',
+    'accuweather.com',
+    'weatherapi.com',
+    'weatherbug.com'
+  ]
+
+  if (trustedWeatherHosts.some(domain => host.endsWith(domain))) return true
+  if (sourceName.includes('weather') && !host.includes('news')) return true
+  return false
+}
+
+function isLikelyStaleTimestamp(rawTimestamp) {
+  const ts = String(rawTimestamp || '').toLowerCase()
+  if (!ts) return false
+  if (ts.includes('stale') || ts.includes('unknown') || ts.includes('yesterday')) return true
+
+  const dayMatch = ts.match(/(\d+)\s*day/)
+  if (dayMatch && Number(dayMatch[1]) >= 1) return true
+  return false
+}
+
+function normalizeReliabilityScore(score) {
+  if (typeof score !== 'number' || Number.isNaN(score)) return 50
+  const normalized = score <= 1 ? score * 100 : score
+  return Math.max(0, Math.min(100, Math.round(normalized * 10) / 10))
+}
+
+function round1(value) {
+  return Math.round(value * 10) / 10
+}
+
+function sanitizeWebWeatherVerification(rawAnalysis) {
+  if (!rawAnalysis || typeof rawAnalysis !== 'object') return rawAnalysis
+
+  const analysis = JSON.parse(JSON.stringify(rawAnalysis))
+  const weatherSources = Array.isArray(analysis.weather_sources) ? analysis.weather_sources : []
+
+  const evaluatedSources = weatherSources.map(source => {
+    const providerId = getSourceProviderId(source)
+    const reliability = String(source?.reliability || '').toLowerCase()
+    const forecastFeelsLike = Number(source?.forecast_feels_like_f)
+    const isExtreme = Number.isFinite(forecastFeelsLike) && forecastFeelsLike <= -20
+    const isStale = isLikelyStaleTimestamp(source?.data_timestamp)
+    const isPointWeather = isLikelyPointWeatherSource(source)
+    const isConfirmable = isPointWeather && !isStale && reliability !== 'low' && providerId !== 'weatherapi'
+    return {
+      source,
+      providerId,
+      forecastFeelsLike,
+      isExtreme,
+      isConfirmable,
+      isPointWeather,
+      isStale
+    }
+  })
+
+  const confirmableExtremeSources = evaluatedSources.filter(entry => entry.isConfirmable && entry.isExtreme)
+  const extremeProviders = new Set(confirmableExtremeSources.map(entry => entry.providerId))
+  const hasNwsExtreme = confirmableExtremeSources.some(entry => entry.providerId === 'nws')
+  const confirmedExtreme = hasNwsExtreme || extremeProviders.size >= 2
+  const singleSourceExtreme = !confirmedExtreme && extremeProviders.size === 1
+
+  const usableForAverage = evaluatedSources.filter(entry => entry.isConfirmable && Number.isFinite(entry.forecastFeelsLike))
+  const apiFeelsLike = Number(analysis?.api_comparison?.api_feels_like_f)
+  if (usableForAverage.length > 0 && Number.isFinite(apiFeelsLike) && analysis.api_comparison) {
+    const webAverage = round1(
+      usableForAverage.reduce((sum, entry) => sum + entry.forecastFeelsLike, 0) / usableForAverage.length
+    )
+    analysis.api_comparison.web_average_feels_like_f = webAverage
+    analysis.api_comparison.difference_f = round1(Math.abs(apiFeelsLike - webAverage))
+  }
+
+  if (!analysis.discrepancy_analysis) {
+    analysis.discrepancy_analysis = {
+      major_discrepancies_found: false,
+      feels_like_below_minus_20: false,
+      consensus_level: 'weak',
+      reliability_score: 50,
+      data_freshness: 'unknown'
+    }
+  }
+
+  analysis.discrepancy_analysis.reliability_score = normalizeReliabilityScore(
+    Number(analysis.discrepancy_analysis.reliability_score)
+  )
+
+  if (!confirmedExtreme) {
+    analysis.discrepancy_analysis.feels_like_below_minus_20 = false
+  }
+
+  if (singleSourceExtreme) {
+    analysis.discrepancy_analysis.consensus_level = 'conflicting'
+  }
+
+  if (
+    typeof analysis.api_comparison?.difference_f === 'number' &&
+    Math.abs(analysis.api_comparison.difference_f) > 10
+  ) {
+    analysis.discrepancy_analysis.major_discrepancies_found = true
+  }
+
+  if (!Array.isArray(analysis.critical_alerts)) {
+    analysis.critical_alerts = []
+  }
+
+  if (singleSourceExtreme) {
+    const existingSingleSourceAlert = analysis.critical_alerts.some(alert =>
+      String(alert?.message || '').includes('SINGLE-SOURCE EXTREME WIND CHILL')
+    )
+    if (!existingSingleSourceAlert) {
+      const sourceNames = [...new Set(confirmableExtremeSources.map(entry => entry.source.source_name))].join(', ')
+      const minExtreme = Math.min(...confirmableExtremeSources.map(entry => entry.forecastFeelsLike))
+      analysis.critical_alerts.push({
+        severity: 'warning',
+        affected_parameter: 'feels_like',
+        message:
+          `SINGLE-SOURCE EXTREME WIND CHILL: ${sourceNames || 'one provider'} shows ${minExtreme}F, ` +
+          'but this is not confirmed by NWS or a second independent weather provider.'
+      })
+    }
+  }
+
+  if (!confirmedExtreme && analysis.recommendation === 'trust_web') {
+    analysis.recommendation = 'investigate_further'
+  }
+
+  const guardrailSummary = confirmedExtreme
+    ? 'Guardrail check: <=-20F wind chill is confirmed by NWS or multiple independent providers.'
+    : 'Guardrail check: <=-20F wind chill is NOT confirmed by NWS or multiple independent providers.'
+  analysis.verification_summary = `${analysis.verification_summary}\n\n${guardrailSummary}`
+
+  return analysis
+}
+
+// ============================================================================
 // COLLABORATION CONFIGURATION
 // ============================================================================
 
@@ -688,25 +862,16 @@ const askPowerGridAnalyst = tool({
 
 const askWebWeatherVerifier = tool({
   name: 'ask_web_weather_verifier',
-  description: 'Ask the Web Weather Verifier to check additional weather sources, verify feels-like temperatures, or investigate discrepancies in weather data. WARNING: If initial analysis already flagged ≤-20°F wind chill, that finding is BINDING - do not use this tool to seek a different answer.',
+  description: 'Ask the Web Weather Verifier to check additional weather sources, verify feels-like temperatures, or investigate discrepancies in weather data. Use this to resolve conflicts, not to lock on a single source.',
   parameters: z.object({
     question: z.string().describe('The specific verification request or question about weather data')
   }),
   execute: async ({ question }) => {
-    // Check if initial analysis already flagged the -20°F threshold
     const initialAnalysis = _currentExpertAnalyses.webWeatherVerifier
-    if (initialAnalysis?.discrepancy_analysis?.feels_like_below_minus_20 === true) {
-      console.log('⚠️ Web verifier already flagged ≤-20°F - returning reminder instead of re-querying')
-      return JSON.stringify({
-        reminder: "⛔ STOP: The initial Web Weather Verifier analysis already flagged feels_like_below_minus_20: true. This finding is BINDING per your instructions. You MUST predict 90-95%. Do NOT attempt to override this by re-querying. Web searches are inconsistent - a second query returning different data does NOT invalidate the first credible finding. The -20°F threshold was crossed. Predict 90-95% now.",
-        original_finding: initialAnalysis.critical_alerts,
-        action_required: "Predict 90-95% probability immediately"
-      }, null, 2)
-    }
-    
     console.log('🔍 Coordinator consulting web weather verifier:', question)
-    const context = initialAnalysis 
-      ? `Your previous analysis: ${JSON.stringify(initialAnalysis, null, 2)}\n\n`
+    const context = initialAnalysis
+      ? `Your previous analysis: ${JSON.stringify(initialAnalysis, null, 2)}\n\n` +
+        'If <=-20F wind chill was reported by only one source, re-check with independent providers and NWS before confirming the threshold.\n\n'
       : ''
     const result = await run(webWeatherVerifierAgent, `${context}Weather context:\n${_currentWeatherContext}\n\nFollow-up question: ${question}`)
     return JSON.stringify(result.finalOutput, null, 2)
@@ -1078,10 +1243,11 @@ Analyze these conditions for snow day prediction for ${dayName}, ${targetDateStr
     run(newsIntelAgent, `Search for any local news, social media signals, school district announcements, or community chatter about weather conditions and potential school closures in Rockford, Michigan and surrounding areas for ${dayName}, ${targetDateStr}. Look for signals from neighboring districts, local news stations, and community sentiment.`),
     run(infrastructureMonitorAgent, `${weatherContext}\n\nSearch for current road clearing operations and plow fleet status in Kent County and surrounding Michigan areas. Check MDOT road conditions, county road commission updates, and municipal response levels. Focus on whether roads will be passable by 6:30 AM when school buses start routes.`),
     run(powerGridAnalystAgent, `${weatherContext}\n\nSearch for current power outage information in the Rockford, Michigan and Kent County area. Check Consumers Energy outage maps, grid stress levels, and any utility statements. Assess whether power infrastructure will support normal school operations.`),
-    run(webWeatherVerifierAgent, `${weatherContext}\n\nCross-reference the Weather API data against multiple web sources including Weather.com, Weather.gov, AccuWeather, and local news weather pages for ${location}. CRITICAL: Verify "feels like" temperature data - if any source shows below -20°F, this triggers automatic closure consideration. Compare API forecasts with what the public is seeing on their weather apps.`)
+    run(webWeatherVerifierAgent, `${weatherContext}\n\nCross-reference the Weather API data against multiple web sources including Weather.com, Weather.gov, AccuWeather, and local weather pages for ${location}. CRITICAL: Verify "feels like" temperature data. Treat <=-20F as a confirmed threshold only when validated by NWS or at least two independent weather providers. Compare API forecasts with what the public is seeing on their weather apps.`)
   ])
   
   console.log('✅ Expert analyses complete (7 agents)')
+  const sanitizedWebWeatherVerifier = sanitizeWebWeatherVerification(webWeatherVerifierResult.finalOutput)
 
   // Store context for agent tools
   _currentWeatherContext = weatherContext
@@ -1092,7 +1258,7 @@ Analyze these conditions for snow day prediction for ${dayName}, ${targetDateStr
     news: newsResult.finalOutput,
     infrastructure: infrastructureResult.finalOutput,
     powerGrid: powerGridResult.finalOutput,
-    webWeatherVerifier: webWeatherVerifierResult.finalOutput
+    webWeatherVerifier: sanitizedWebWeatherVerifier
   }
 
   // Run collaborative debate if enabled
@@ -1142,7 +1308,7 @@ POWER GRID & UTILITY STATUS:
 ${JSON.stringify(powerGridResult.finalOutput, null, 2)}
 
 WEB WEATHER VERIFICATION:
-${JSON.stringify(webWeatherVerifierResult.finalOutput, null, 2)}
+${JSON.stringify(sanitizedWebWeatherVerifier, null, 2)}
 ${collaborationContext}
 LOCATION: ${location}
 ANALYSIS TIMESTAMP: ${new Date().toISOString()}
@@ -1267,7 +1433,7 @@ ${expertAnalyses}`
     news: newsResult.finalOutput,
     infrastructure: infrastructureResult.finalOutput,
     powerGrid: powerGridResult.finalOutput,
-    webWeatherVerifier: webWeatherVerifierResult.finalOutput,
+    webWeatherVerifier: sanitizedWebWeatherVerifier,
     final: validatedFinal,
     collaboration, // Include collaboration data
     timestamp: new Date().toISOString(),

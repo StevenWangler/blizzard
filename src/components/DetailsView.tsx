@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { AnimatedProbability } from '@/components/AnimatedProbability'
 import { NarrativeSummary } from '@/components/NarrativeSummary'
 import { ConditionPulse } from '@/components/ConditionPulse'
@@ -32,6 +33,7 @@ import {
 } from '@phosphor-icons/react'
 import { WeatherService } from '@/services/weather'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { toast } from 'sonner'
 import { buildOutcomeStats, fetchOutcomeLedger, normalizeProbability } from '@/services/outcomes'
@@ -105,6 +107,7 @@ export function DetailsView({ onBack }: DetailsViewProps) {
   })
   
   const { updateWeatherConditions } = useWeatherTheme()
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     loadPredictionData()
@@ -591,286 +594,543 @@ export function DetailsView({ onBack }: DetailsViewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="weather" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-2">
-                <TabsTrigger value="weather">Weather</TabsTrigger>
-                <TabsTrigger value="history">History</TabsTrigger>
-                <TabsTrigger value="safety">Safety</TabsTrigger>
-                <TabsTrigger value="timeline">Timeline</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="weather" className="space-y-5 pt-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-3.5">
-                    <h4 className="font-semibold flex items-center gap-2.5">
-                      <Thermometer size={16} />
-                      Temperature Analysis
-                    </h4>
-                    <div className="space-y-2.5 text-sm">
-                      <div className="flex justify-between">
-                        <span>Current:</span>
-                        <span>{prediction.meteorology.temperature_analysis.current_temp_f}°F</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Overnight Low:</span>
-                        <span>{prediction.meteorology.temperature_analysis.overnight_low_f}°F</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Morning High:</span>
-                        <span>{prediction.meteorology.temperature_analysis.morning_high_f}°F</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Trend:</span>
-                        <span className="capitalize">{prediction.meteorology.temperature_analysis.temperature_trend}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3.5">
-                    <h4 className="font-semibold flex items-center gap-2.5">
-                      <CloudSnow size={16} />
-                      Precipitation
-                    </h4>
-                    <div className="space-y-2.5 text-sm">
-                      <div className="flex justify-between">
-                        <span>Total Snow:</span>
-                        <span>{prediction.meteorology.precipitation_analysis.total_snowfall_inches}"</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Type:</span>
-                        <span className="capitalize">{prediction.meteorology.precipitation_analysis.precipitation_type}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Morning Chance:</span>
-                        <span>{prediction.meteorology.precipitation_analysis.snow_probability_morning}%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3.5">
-                    <h4 className="font-semibold flex items-center gap-2.5">
-                      <Wind size={16} />
-                      Wind Conditions
-                    </h4>
-                    <div className="space-y-2.5 text-sm">
-                      <div className="flex justify-between">
-                        <span>Max Speed:</span>
-                        <span>{prediction.meteorology.wind_analysis.max_wind_speed_mph} mph</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Direction:</span>
-                        <span>{prediction.meteorology.wind_analysis.wind_direction}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Wind Chill:</span>
-                        <span>{prediction.meteorology.wind_analysis.wind_chill_impact ? 'Yes' : 'No'}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h4 className="font-semibold flex items-center gap-2">
-                      <Eye size={16} />
-                      Visibility
-                    </h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Minimum:</span>
-                        <span>{prediction.meteorology.visibility_analysis.minimum_visibility_miles} mi</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Average:</span>
-                        <span>{prediction.meteorology.visibility_analysis.avg_visibility_miles} mi</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {prediction.meteorology.alert_summary.length > 0 && (
-                  <Alert>
-                    <Warning size={16} />
-                    <AlertDescription>
-                      <div className="space-y-1">
-                        {prediction.meteorology.alert_summary.map((alert: { type: string; description: string }, index: number) => (
-                          <div key={index} className="text-sm">
-                            <span className="font-medium">{alert.type}:</span> {alert.description}
+            {isMobile ? (
+              <Accordion type="single" collapsible defaultValue="weather" className="w-full space-y-2">
+                <AccordionItem value="weather" className="rounded-xl border px-4">
+                  <AccordionTrigger>Weather</AccordionTrigger>
+                  <AccordionContent className="space-y-5 pt-2">
+                    <div className="grid grid-cols-1 gap-5">
+                      <div className="space-y-3.5">
+                        <h4 className="font-semibold flex items-center gap-2.5">
+                          <Thermometer size={16} />
+                          Temperature Analysis
+                        </h4>
+                        <div className="space-y-2.5 text-sm">
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Current:</span>
+                            <span>{prediction.meteorology.temperature_analysis.current_temp_f}°F</span>
                           </div>
-                        ))}
-                      </div>
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="history" className="space-y-4">
-                {prediction.history?.error ? (
-                  <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-                    Historical analysis temporarily unavailable: {prediction.history.error}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold mb-2">Similar Weather Patterns</h4>
-                      <div className="space-y-2">
-                        {prediction.history?.similar_weather_patterns?.map((pattern: { pattern_description: string; confidence_level: string; historical_snow_day_rate: number }, index: number) => (
-                          <div key={index} className="border rounded-lg p-3">
-                            <div className="flex justify-between items-start mb-1">
-                              <p className="text-sm font-medium">{pattern.pattern_description}</p>
-                              <Badge variant="outline" className={pattern.confidence_level === 'high' ? 'border-green-500' : pattern.confidence_level === 'medium' ? 'border-yellow-500' : 'border-red-500'}>
-                                {pattern.confidence_level}
-                              </Badge>
-                            </div>
-                            <p className="text-xs text-muted-foreground">Historical snow day rate: {pattern.historical_snow_day_rate}%</p>
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Overnight Low:</span>
+                            <span>{prediction.meteorology.temperature_analysis.overnight_low_f}°F</span>
                           </div>
-                        ))}
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Morning High:</span>
+                            <span>{prediction.meteorology.temperature_analysis.morning_high_f}°F</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3.5">
+                        <h4 className="font-semibold flex items-center gap-2.5">
+                          <CloudSnow size={16} />
+                          Precipitation
+                        </h4>
+                        <div className="space-y-2.5 text-sm">
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Total Snow:</span>
+                            <span>{prediction.meteorology.precipitation_analysis.total_snowfall_inches}"</span>
+                          </div>
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Type:</span>
+                            <span className="capitalize">{prediction.meteorology.precipitation_analysis.precipitation_type}</span>
+                          </div>
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Morning Chance:</span>
+                            <span>{prediction.meteorology.precipitation_analysis.snow_probability_morning}%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3.5">
+                        <h4 className="font-semibold flex items-center gap-2.5">
+                          <Wind size={16} />
+                          Wind and Visibility
+                        </h4>
+                        <div className="space-y-2.5 text-sm">
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Max Wind:</span>
+                            <span>{prediction.meteorology.wind_analysis.max_wind_speed_mph} mph</span>
+                          </div>
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Min Visibility:</span>
+                            <span>{prediction.meteorology.visibility_analysis.minimum_visibility_miles} mi</span>
+                          </div>
+                          <div className="flex items-start justify-between gap-3">
+                            <span>Trend:</span>
+                            <span className="capitalize">{prediction.meteorology.temperature_analysis.temperature_trend}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold mb-2">Seasonal Context</h4>
-                      <p className="text-sm mb-2">{prediction.history?.seasonal_context?.typical_conditions_for_date ?? 'No seasonal context available'}</p>
-                      {(prediction.history?.seasonal_context?.unusual_factors?.length ?? 0) > 0 && (
+                    {prediction.meteorology.alert_summary.length > 0 && (
+                      <Alert>
+                        <Warning size={16} />
+                        <AlertDescription>
+                          <div className="space-y-1">
+                            {prediction.meteorology.alert_summary.map((alert: { type: string; description: string }, index: number) => (
+                              <div key={index} className="text-sm">
+                                <span className="font-medium">{alert.type}:</span> {alert.description}
+                              </div>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="history" className="rounded-xl border px-4">
+                  <AccordionTrigger>History</AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    {prediction.history?.error ? (
+                      <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
+                        Historical analysis temporarily unavailable: {prediction.history.error}
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
                         <div>
-                          <p className="text-sm font-medium mb-1">Unusual factors:</p>
-                          <ul className="text-sm text-muted-foreground space-y-1">
-                            {prediction.history?.seasonal_context?.unusual_factors?.map((factor: string, index: number) => (
-                              <li key={index}>• {factor}</li>
+                          <h4 className="font-semibold mb-2">Similar Weather Patterns</h4>
+                          <div className="space-y-2">
+                            {prediction.history?.similar_weather_patterns?.map((pattern: { pattern_description: string; confidence_level: string; historical_snow_day_rate: number }, index: number) => (
+                              <div key={index} className="border rounded-lg p-3">
+                                <div className="flex items-start justify-between gap-3 mb-1">
+                                  <p className="text-sm font-medium">{pattern.pattern_description}</p>
+                                  <Badge variant="outline" className={pattern.confidence_level === 'high' ? 'border-green-500' : pattern.confidence_level === 'medium' ? 'border-yellow-500' : 'border-red-500'}>
+                                    {pattern.confidence_level}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground">Historical snow day rate: {pattern.historical_snow_day_rate}%</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="font-semibold mb-2">Seasonal Context</h4>
+                          <p className="text-sm mb-2">{prediction.history?.seasonal_context?.typical_conditions_for_date ?? 'No seasonal context available'}</p>
+                          {(prediction.history?.seasonal_context?.unusual_factors?.length ?? 0) > 0 && (
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              {prediction.history?.seasonal_context?.unusual_factors?.map((factor: string, index: number) => (
+                                <li key={index}>• {factor}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="safety" className="rounded-xl border px-4">
+                  <AccordionTrigger>Safety</AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    {prediction.safety?.error ? (
+                      <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
+                        Safety analysis temporarily unavailable: {prediction.safety.error}
+                      </div>
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-3">
+                            <h4 className="font-semibold flex items-center gap-2">
+                              <ShieldCheck size={16} />
+                              Road Conditions
+                            </h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex items-start justify-between gap-3">
+                                <span>Primary Roads:</span>
+                                <span>{prediction.safety?.road_conditions?.primary_roads_score ?? '—'}/10</span>
+                              </div>
+                              <div className="flex items-start justify-between gap-3">
+                                <span>Secondary Roads:</span>
+                                <span>{prediction.safety?.road_conditions?.secondary_roads_score ?? '—'}/10</span>
+                              </div>
+                              <div className="flex items-start justify-between gap-3">
+                                <span>Ice Risk:</span>
+                                <span className={getRiskColor(prediction.safety?.road_conditions?.ice_formation_risk ?? '')}>
+                                  {prediction.safety?.road_conditions?.ice_formation_risk ?? '—'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            <h4 className="font-semibold">Travel Safety</h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex items-start justify-between gap-3">
+                                <span>Walking:</span>
+                                <span>{prediction.safety?.travel_safety?.walking_conditions_score ?? '—'}/10</span>
+                              </div>
+                              <div className="flex items-start justify-between gap-3">
+                                <span>Driving:</span>
+                                <span>{prediction.safety?.travel_safety?.driving_conditions_score ?? '—'}/10</span>
+                              </div>
+                              <div className="flex items-start justify-between gap-3">
+                                <span>Overall Risk:</span>
+                                <span className={getRiskColor(prediction.safety?.risk_level ?? '')}>
+                                  {prediction.safety?.risk_level ?? '—'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {(prediction.safety?.safety_recommendations?.length ?? 0) > 0 && (
+                          <div>
+                            <h4 className="font-semibold mb-2">Safety Recommendations</h4>
+                            <ul className="text-sm space-y-1">
+                              {prediction.safety?.safety_recommendations?.map((rec: string, index: number) => (
+                                <li key={index} className="flex items-start gap-2">
+                                  <span className="text-primary">•</span>
+                                  <span>{rec}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="timeline" className="rounded-xl border px-4">
+                  <AccordionTrigger>Timeline</AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3 p-3 bg-muted/50 rounded-lg">
+                        <span className="font-medium">Conditions Start:</span>
+                        <span>{prediction.final?.timeline?.conditions_start ?? '—'}</span>
+                      </div>
+                      <div className="flex items-start justify-between gap-3 p-3 bg-muted/50 rounded-lg">
+                        <span className="font-medium">Peak Impact:</span>
+                        <span>{prediction.final?.timeline?.peak_impact_time ?? '—'}</span>
+                      </div>
+                      <div className="flex items-start justify-between gap-3 p-3 bg-muted/50 rounded-lg">
+                        <span className="font-medium">Conditions Improve:</span>
+                        <span>{prediction.final?.timeline?.conditions_improve ?? '—'}</span>
+                      </div>
+                    </div>
+
+                    {!prediction.safety?.error && (
+                      <div className="grid grid-cols-1 gap-4 mt-4">
+                        <div>
+                          <h5 className="font-semibold mb-2">Morning Commute Impact</h5>
+                          <Badge className={getRiskColor(prediction.safety?.timing_analysis?.morning_commute_impact ?? '')}>
+                            {prediction.safety?.timing_analysis?.morning_commute_impact ?? '—'}
+                          </Badge>
+                        </div>
+                        <div>
+                          <h5 className="font-semibold mb-2">Afternoon Impact</h5>
+                          <Badge className={getRiskColor(prediction.safety?.timing_analysis?.afternoon_impact ?? '')}>
+                            {prediction.safety?.timing_analysis?.afternoon_impact ?? '—'}
+                          </Badge>
+                        </div>
+                      </div>
+                    )}
+
+                    {(prediction.final?.alternative_scenarios?.length ?? 0) > 0 && (
+                      <div className="mt-2">
+                        <h5 className="font-semibold mb-2">Alternative Scenarios</h5>
+                        <div className="space-y-2">
+                          {prediction.final?.alternative_scenarios?.map((scenario: { scenario: string; probability: number; impact: string }, index: number) => (
+                            <div key={index} className="border rounded-lg p-3">
+                              <div className="flex items-start justify-between gap-3 mb-1">
+                                <p className="text-sm font-medium">{scenario.scenario}</p>
+                                <span className="text-xs text-muted-foreground">{scenario.probability}%</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{scenario.impact}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            ) : (
+              <Tabs defaultValue="weather" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 mb-2">
+                  <TabsTrigger value="weather">Weather</TabsTrigger>
+                  <TabsTrigger value="history">History</TabsTrigger>
+                  <TabsTrigger value="safety">Safety</TabsTrigger>
+                  <TabsTrigger value="timeline">Timeline</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="weather" className="space-y-5 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div className="space-y-3.5">
+                      <h4 className="font-semibold flex items-center gap-2.5">
+                        <Thermometer size={16} />
+                        Temperature Analysis
+                      </h4>
+                      <div className="space-y-2.5 text-sm">
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Current:</span>
+                          <span>{prediction.meteorology.temperature_analysis.current_temp_f}°F</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Overnight Low:</span>
+                          <span>{prediction.meteorology.temperature_analysis.overnight_low_f}°F</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Morning High:</span>
+                          <span>{prediction.meteorology.temperature_analysis.morning_high_f}°F</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Trend:</span>
+                          <span className="capitalize">{prediction.meteorology.temperature_analysis.temperature_trend}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3.5">
+                      <h4 className="font-semibold flex items-center gap-2.5">
+                        <CloudSnow size={16} />
+                        Precipitation
+                      </h4>
+                      <div className="space-y-2.5 text-sm">
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Total Snow:</span>
+                          <span>{prediction.meteorology.precipitation_analysis.total_snowfall_inches}"</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Type:</span>
+                          <span className="capitalize">{prediction.meteorology.precipitation_analysis.precipitation_type}</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Morning Chance:</span>
+                          <span>{prediction.meteorology.precipitation_analysis.snow_probability_morning}%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3.5">
+                      <h4 className="font-semibold flex items-center gap-2.5">
+                        <Wind size={16} />
+                        Wind Conditions
+                      </h4>
+                      <div className="space-y-2.5 text-sm">
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Max Speed:</span>
+                          <span>{prediction.meteorology.wind_analysis.max_wind_speed_mph} mph</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Direction:</span>
+                          <span>{prediction.meteorology.wind_analysis.wind_direction}</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Wind Chill:</span>
+                          <span>{prediction.meteorology.wind_analysis.wind_chill_impact ? 'Yes' : 'No'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h4 className="font-semibold flex items-center gap-2">
+                        <Eye size={16} />
+                        Visibility
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Minimum:</span>
+                          <span>{prediction.meteorology.visibility_analysis.minimum_visibility_miles} mi</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <span>Average:</span>
+                          <span>{prediction.meteorology.visibility_analysis.avg_visibility_miles} mi</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {prediction.meteorology.alert_summary.length > 0 && (
+                    <Alert>
+                      <Warning size={16} />
+                      <AlertDescription>
+                        <div className="space-y-1">
+                          {prediction.meteorology.alert_summary.map((alert: { type: string; description: string }, index: number) => (
+                            <div key={index} className="text-sm">
+                              <span className="font-medium">{alert.type}:</span> {alert.description}
+                            </div>
+                          ))}
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="history" className="space-y-4">
+                  {prediction.history?.error ? (
+                    <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
+                      Historical analysis temporarily unavailable: {prediction.history.error}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Similar Weather Patterns</h4>
+                        <div className="space-y-2">
+                          {prediction.history?.similar_weather_patterns?.map((pattern: { pattern_description: string; confidence_level: string; historical_snow_day_rate: number }, index: number) => (
+                            <div key={index} className="border rounded-lg p-3">
+                              <div className="flex items-start justify-between gap-3 mb-1">
+                                <p className="text-sm font-medium">{pattern.pattern_description}</p>
+                                <Badge variant="outline" className={pattern.confidence_level === 'high' ? 'border-green-500' : pattern.confidence_level === 'medium' ? 'border-yellow-500' : 'border-red-500'}>
+                                  {pattern.confidence_level}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Historical snow day rate: {pattern.historical_snow_day_rate}%</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2">Seasonal Context</h4>
+                        <p className="text-sm mb-2">{prediction.history?.seasonal_context?.typical_conditions_for_date ?? 'No seasonal context available'}</p>
+                        {(prediction.history?.seasonal_context?.unusual_factors?.length ?? 0) > 0 && (
+                          <div>
+                            <p className="text-sm font-medium mb-1">Unusual factors:</p>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              {prediction.history?.seasonal_context?.unusual_factors?.map((factor: string, index: number) => (
+                                <li key={index}>• {factor}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="safety" className="space-y-4">
+                  {prediction.safety?.error ? (
+                    <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
+                      Safety analysis temporarily unavailable: {prediction.safety.error}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                          <h4 className="font-semibold flex items-center gap-2">
+                            <ShieldCheck size={16} />
+                            Road Conditions
+                          </h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-start justify-between gap-3">
+                              <span>Primary Roads:</span>
+                              <span>{prediction.safety?.road_conditions?.primary_roads_score ?? '—'}/10</span>
+                            </div>
+                            <div className="flex items-start justify-between gap-3">
+                              <span>Secondary Roads:</span>
+                              <span>{prediction.safety?.road_conditions?.secondary_roads_score ?? '—'}/10</span>
+                            </div>
+                            <div className="flex items-start justify-between gap-3">
+                              <span>Ice Risk:</span>
+                              <span className={getRiskColor(prediction.safety?.road_conditions?.ice_formation_risk ?? '')}>
+                                {prediction.safety?.road_conditions?.ice_formation_risk ?? '—'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <h4 className="font-semibold">Travel Safety</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-start justify-between gap-3">
+                              <span>Walking:</span>
+                              <span>{prediction.safety?.travel_safety?.walking_conditions_score ?? '—'}/10</span>
+                            </div>
+                            <div className="flex items-start justify-between gap-3">
+                              <span>Driving:</span>
+                              <span>{prediction.safety?.travel_safety?.driving_conditions_score ?? '—'}/10</span>
+                            </div>
+                            <div className="flex items-start justify-between gap-3">
+                              <span>Overall Risk:</span>
+                              <span className={getRiskColor(prediction.safety?.risk_level ?? '')}>
+                                {prediction.safety?.risk_level ?? '—'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {(prediction.safety?.safety_recommendations?.length ?? 0) > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2">Safety Recommendations</h4>
+                          <ul className="text-sm space-y-1">
+                            {prediction.safety?.safety_recommendations?.map((rec: string, index: number) => (
+                              <li key={index} className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span>{rec}</span>
+                              </li>
                             ))}
                           </ul>
                         </div>
                       )}
+                    </>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="timeline" className="space-y-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Clock size={20} />
+                      <h4 className="font-semibold">Event Timeline</h4>
                     </div>
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="safety" className="space-y-4">
-                {prediction.safety?.error ? (
-                  <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-                    Safety analysis temporarily unavailable: {prediction.safety.error}
-                  </div>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-3">
-                        <h4 className="font-semibold flex items-center gap-2">
-                          <ShieldCheck size={16} />
-                          Road Conditions
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span>Primary Roads:</span>
-                            <span>{prediction.safety?.road_conditions?.primary_roads_score ?? '—'}/10</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Secondary Roads:</span>
-                            <span>{prediction.safety?.road_conditions?.secondary_roads_score ?? '—'}/10</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Ice Risk:</span>
-                            <span className={getRiskColor(prediction.safety?.road_conditions?.ice_formation_risk ?? '')}>
-                              {prediction.safety?.road_conditions?.ice_formation_risk ?? '—'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">Travel Safety</h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span>Walking:</span>
-                            <span>{prediction.safety?.travel_safety?.walking_conditions_score ?? '—'}/10</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Driving:</span>
-                            <span>{prediction.safety?.travel_safety?.driving_conditions_score ?? '—'}/10</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Overall Risk:</span>
-                            <span className={getRiskColor(prediction.safety?.risk_level ?? '')}>
-                              {prediction.safety?.risk_level ?? '—'}
-                            </span>
-                          </div>
-                        </div>
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3 p-3 bg-muted/50 rounded-lg">
+                        <span className="font-medium">Conditions Start:</span>
+                        <span>{prediction.final?.timeline?.conditions_start ?? '—'}</span>
+                      </div>
+                      <div className="flex items-start justify-between gap-3 p-3 bg-muted/50 rounded-lg">
+                        <span className="font-medium">Peak Impact:</span>
+                        <span>{prediction.final?.timeline?.peak_impact_time ?? '—'}</span>
+                      </div>
+                      <div className="flex items-start justify-between gap-3 p-3 bg-muted/50 rounded-lg">
+                        <span className="font-medium">Conditions Improve:</span>
+                        <span>{prediction.final?.timeline?.conditions_improve ?? '—'}</span>
                       </div>
                     </div>
 
-                    {(prediction.safety?.safety_recommendations?.length ?? 0) > 0 && (
-                      <div>
-                        <h4 className="font-semibold mb-2">Safety Recommendations</h4>
-                        <ul className="text-sm space-y-1">
-                          {prediction.safety?.safety_recommendations?.map((rec: string, index: number) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-primary">•</span>
-                              <span>{rec}</span>
-                            </li>
-                          ))}
-                        </ul>
+                    {!prediction.safety?.error && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                        <div>
+                          <h5 className="font-semibold mb-2">Morning Commute Impact</h5>
+                          <Badge className={getRiskColor(prediction.safety?.timing_analysis?.morning_commute_impact ?? '')}>
+                            {prediction.safety?.timing_analysis?.morning_commute_impact ?? '—'}
+                          </Badge>
+                        </div>
+                        <div>
+                          <h5 className="font-semibold mb-2">Afternoon Impact</h5>
+                          <Badge className={getRiskColor(prediction.safety?.timing_analysis?.afternoon_impact ?? '')}>
+                            {prediction.safety?.timing_analysis?.afternoon_impact ?? '—'}
+                          </Badge>
+                        </div>
                       </div>
                     )}
-                  </>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="timeline" className="space-y-4">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Clock size={20} />
-                    <h4 className="font-semibold">Event Timeline</h4>
-                  </div>
 
-                  <div className="space-y-3">
-                    <div className="flex justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Conditions Start:</span>
-                      <span>{prediction.final?.timeline?.conditions_start ?? '—'}</span>
-                    </div>
-                    <div className="flex justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Peak Impact:</span>
-                      <span>{prediction.final?.timeline?.peak_impact_time ?? '—'}</span>
-                    </div>
-                    <div className="flex justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Conditions Improve:</span>
-                      <span>{prediction.final?.timeline?.conditions_improve ?? '—'}</span>
-                    </div>
-                  </div>
-
-                  {!prediction.safety?.error && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                      <div>
-                        <h5 className="font-semibold mb-2">Morning Commute Impact</h5>
-                        <Badge className={getRiskColor(prediction.safety?.timing_analysis?.morning_commute_impact ?? '')}>
-                          {prediction.safety?.timing_analysis?.morning_commute_impact ?? '—'}
-                        </Badge>
-                      </div>
-                      <div>
-                        <h5 className="font-semibold mb-2">Afternoon Impact</h5>
-                        <Badge className={getRiskColor(prediction.safety?.timing_analysis?.afternoon_impact ?? '')}>
-                          {prediction.safety?.timing_analysis?.afternoon_impact ?? '—'}
-                        </Badge>
-                      </div>
-                    </div>
-                  )}
-
-                  {(prediction.final?.alternative_scenarios?.length ?? 0) > 0 && (
-                    <div className="mt-6">
-                      <h5 className="font-semibold mb-2">Alternative Scenarios</h5>
-                      <div className="space-y-2">
-                        {prediction.final?.alternative_scenarios?.map((scenario: { scenario: string; probability: number; impact: string }, index: number) => (
-                          <div key={index} className="border rounded-lg p-3">
-                            <div className="flex justify-between items-start mb-1">
-                              <p className="text-sm font-medium">{scenario.scenario}</p>
-                              <span className="text-xs text-muted-foreground">{scenario.probability}%</span>
+                    {(prediction.final?.alternative_scenarios?.length ?? 0) > 0 && (
+                      <div className="mt-6">
+                        <h5 className="font-semibold mb-2">Alternative Scenarios</h5>
+                        <div className="space-y-2">
+                          {prediction.final?.alternative_scenarios?.map((scenario: { scenario: string; probability: number; impact: string }, index: number) => (
+                            <div key={index} className="border rounded-lg p-3">
+                              <div className="flex items-start justify-between gap-3 mb-1">
+                                <p className="text-sm font-medium">{scenario.scenario}</p>
+                                <span className="text-xs text-muted-foreground">{scenario.probability}%</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{scenario.impact}</p>
                             </div>
-                            <p className="text-xs text-muted-foreground">{scenario.impact}</p>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            )}
           </CardContent>
         </Card>
       )}
@@ -885,46 +1145,90 @@ export function DetailsView({ onBack }: DetailsViewProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="schools" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="schools">Schools</TabsTrigger>
-                <TabsTrigger value="residents">Residents</TabsTrigger>
-                <TabsTrigger value="authorities">Authorities</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="schools" className="mt-5">
-                <ul className="space-y-2.5">
-                  {prediction.final?.recommendations?.for_schools?.map((rec: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <span className="text-primary">•</span>
-                      <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
-                    </li>
-                  ))}
-                </ul>
-              </TabsContent>
-              
-              <TabsContent value="residents" className="mt-5">
-                <ul className="space-y-2.5">
-                  {prediction.final?.recommendations?.for_residents?.map((rec: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2.5 text-sm">
-                      <span className="text-primary">•</span>
-                      <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
-                    </li>
-                  ))}
-                </ul>
-              </TabsContent>
-              
-              <TabsContent value="authorities" className="mt-5">
-                <ul className="space-y-2.5">
-                  {prediction.final?.recommendations?.for_authorities?.map((rec: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2.5 text-sm">
-                      <span className="text-primary">•</span>
-                      <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
-                    </li>
-                  ))}
-                </ul>
-              </TabsContent>
-            </Tabs>
+            {isMobile ? (
+              <Accordion type="single" collapsible defaultValue="schools" className="w-full space-y-2">
+                <AccordionItem value="schools" className="rounded-xl border px-4">
+                  <AccordionTrigger>Schools</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="space-y-2.5">
+                      {prediction.final?.recommendations?.for_schools?.map((rec: string, index: number) => (
+                        <li key={index} className="flex items-start gap-2 text-sm">
+                          <span className="text-primary">•</span>
+                          <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="residents" className="rounded-xl border px-4">
+                  <AccordionTrigger>Residents</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="space-y-2.5">
+                      {prediction.final?.recommendations?.for_residents?.map((rec: string, index: number) => (
+                        <li key={index} className="flex items-start gap-2.5 text-sm">
+                          <span className="text-primary">•</span>
+                          <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="authorities" className="rounded-xl border px-4">
+                  <AccordionTrigger>Authorities</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="space-y-2.5">
+                      {prediction.final?.recommendations?.for_authorities?.map((rec: string, index: number) => (
+                        <li key={index} className="flex items-start gap-2.5 text-sm">
+                          <span className="text-primary">•</span>
+                          <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            ) : (
+              <Tabs defaultValue="schools" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="schools">Schools</TabsTrigger>
+                  <TabsTrigger value="residents">Residents</TabsTrigger>
+                  <TabsTrigger value="authorities">Authorities</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="schools" className="mt-5">
+                  <ul className="space-y-2.5">
+                    {prediction.final?.recommendations?.for_schools?.map((rec: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2 text-sm">
+                        <span className="text-primary">•</span>
+                        <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
+                      </li>
+                    ))}
+                  </ul>
+                </TabsContent>
+                
+                <TabsContent value="residents" className="mt-5">
+                  <ul className="space-y-2.5">
+                    {prediction.final?.recommendations?.for_residents?.map((rec: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2.5 text-sm">
+                        <span className="text-primary">•</span>
+                        <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
+                      </li>
+                    ))}
+                  </ul>
+                </TabsContent>
+                
+                <TabsContent value="authorities" className="mt-5">
+                  <ul className="space-y-2.5">
+                    {prediction.final?.recommendations?.for_authorities?.map((rec: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2.5 text-sm">
+                        <span className="text-primary">•</span>
+                        <Markdown content={rec} className="[&_p]:my-0 [&_p]:inline" />
+                      </li>
+                    ))}
+                  </ul>
+                </TabsContent>
+              </Tabs>
+            )}
           </CardContent>
         </Card>
       )}

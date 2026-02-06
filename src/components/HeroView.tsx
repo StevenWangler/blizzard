@@ -15,6 +15,7 @@ import {
 import { fetchData } from '@/lib/dataPath'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { useNotifications } from '@/hooks/useNotifications'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { normalizeProbability } from '@/services/outcomes'
 import type { AgentPrediction } from '@/types/agentPrediction'
 
@@ -63,8 +64,9 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
   const [error, setError] = useState<string | null>(null)
   const [nextRefresh, setNextRefresh] = useState('')
   
-  const { updateWeatherConditions, getCurrentTheme, isDarkMode } = useWeatherTheme()
+  const { updateWeatherConditions, isDarkMode } = useWeatherTheme()
   const { checkAndNotify } = useNotifications()
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     loadPrediction()
@@ -155,9 +157,27 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
     return 'light_snow'
   }
 
+  const mobileSnowfallIntensity = Math.max(snowfallIntensity * 0.7, probability / 14)
+  const desktopSnowfallIntensity = Math.max(snowfallIntensity, probability / 10)
+  const updatedTimestampLabel = prediction?.timestamp
+    ? new Date(prediction.timestamp).toLocaleString('en-US', isMobile ? {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    } : {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+    : ''
+
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center">
+      <div className="min-h-[56vh] sm:min-h-[70vh] flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -180,7 +200,7 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
 
   if (error) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-[56vh] sm:min-h-[70vh] flex flex-col items-center justify-center gap-4">
         <Warning size={48} className="text-muted-foreground" />
         <p className="text-muted-foreground">{error}</p>
         <Button onClick={loadPrediction} variant="outline">
@@ -191,7 +211,7 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
   }
 
   return (
-    <div className="relative min-h-[75vh] flex flex-col items-center justify-center px-4">
+    <div className="relative min-h-[62vh] sm:min-h-[75vh] flex flex-col items-center justify-center px-4 pb-4">
       {/* Subtle backdrop that works in both light and dark modes */}
       <div 
         className="absolute inset-0 pointer-events-none dark:bg-black/20"
@@ -202,7 +222,7 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
       
       {/* Probability-reactive snowfall overlay */}
       <SnowfallCanvas 
-        intensity={Math.max(snowfallIntensity, probability / 10)} 
+        intensity={isMobile ? mobileSnowfallIntensity : desktopSnowfallIntensity}
         windSpeed={windSpeed}
         theme={getSnowTheme()}
         respectReducedMotion={true}
@@ -243,23 +263,17 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.4 }}
-            className="mb-3 text-xs text-muted-foreground/70 flex items-center justify-center gap-1"
+            className="mb-3 text-xs text-muted-foreground/70 flex items-center justify-center gap-1 max-w-[18rem] sm:max-w-none"
           >
             <Clock size={12} />
-            <span>
-              Updated {new Date(prediction.timestamp).toLocaleString('en-US', { 
-                month: 'short', 
-                day: 'numeric',
-                hour: 'numeric', 
-                minute: '2-digit',
-                hour12: true 
-              })}
+            <span className="leading-snug">
+              Updated {updatedTimestampLabel}
             </span>
           </motion.div>
         )}
 
         {/* AI Orb probability display */}
-        <div className="relative w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] mx-auto py-4">
+        <div className="relative w-full max-w-[320px] sm:max-w-[450px] md:max-w-[500px] mx-auto py-2 sm:py-4">
           <HeroProbabilityDisplay value={probability} duration={2.5} />
         </div>
 
@@ -315,11 +329,12 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.5 }}
+          className="w-full flex justify-center"
         >
           <Button
             size="lg"
             onClick={onNavigateToDetails}
-            className="group px-8 py-6 text-lg font-semibold rounded-full bg-primary/90 hover:bg-primary dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md border border-primary/20 dark:border-white/20 text-primary-foreground dark:text-white shadow-lg shadow-primary/20 dark:shadow-black/20 hover:shadow-xl transition-all duration-300"
+            className="group w-full sm:w-auto max-w-xs px-8 py-6 text-lg font-semibold rounded-full bg-primary/90 hover:bg-primary dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md border border-primary/20 dark:border-white/20 text-primary-foreground dark:text-white shadow-lg shadow-primary/20 dark:shadow-black/20 hover:shadow-xl transition-all duration-300"
           >
             See Why
             <ArrowRight 
@@ -348,7 +363,7 @@ export function HeroView({ onNavigateToDetails }: HeroViewProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.4 }}
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 sm:hidden"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden min-[360px]:block sm:hidden"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}

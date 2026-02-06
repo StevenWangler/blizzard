@@ -1,18 +1,33 @@
 import { useEffect, useState, useMemo } from "react"
 
-const MOBILE_BREAKPOINT = 768
+export const MOBILE_BREAKPOINT = 768
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined)
 
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const legacyMql = mql as MediaQueryList & {
+      addListener?: (listener: (event: MediaQueryListEvent) => void) => void
+      removeListener?: (listener: (event: MediaQueryListEvent) => void) => void
+    }
     const onChange = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
     }
-    mql.addEventListener("change", onChange)
+    if (typeof mql.addEventListener === "function") {
+      mql.addEventListener("change", onChange)
+    } else if (typeof legacyMql.addListener === "function") {
+      // Safari < 14 fallback
+      legacyMql.addListener(onChange)
+    }
     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    return () => mql.removeEventListener("change", onChange)
+    return () => {
+      if (typeof mql.removeEventListener === "function") {
+        mql.removeEventListener("change", onChange)
+      } else if (typeof legacyMql.removeListener === "function") {
+        legacyMql.removeListener(onChange)
+      }
+    }
   }, [])
 
   return !!isMobile

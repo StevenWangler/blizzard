@@ -21,7 +21,7 @@ export function WeatherAtmosphere() {
   const animationRef = useRef<number | undefined>(undefined)
   const particlesRef = useRef<Particle[]>([])
   const { currentTheme, getCurrentTheme, isDarkMode } = useWeatherTheme()
-  const { performanceMultiplier, isLowEnd } = useDevicePerformance()
+  const { performanceMultiplier, isLowEnd, isMobile } = useDevicePerformance()
   const theme = getCurrentTheme()
 
   const config = useMemo(() => {
@@ -211,13 +211,16 @@ export function WeatherAtmosphere() {
     
     // Get base config and apply performance multiplier to particle count
     const baseConfig = configs[currentTheme] || configs.clear
+    const particleCount = Math.floor(baseConfig.particleCount * performanceMultiplier)
+    const cappedParticleCount = isMobile ? Math.min(particleCount, 120) : particleCount
+
     return {
       ...baseConfig,
-      particleCount: Math.floor(baseConfig.particleCount * performanceMultiplier),
+      particleCount: cappedParticleCount,
       // Disable glow effects on low-end devices (GPU intensive)
-      hasGlow: baseConfig.hasGlow && !isLowEnd
+      hasGlow: baseConfig.hasGlow && !isLowEnd && !isMobile
     }
-  }, [currentTheme, isDarkMode, performanceMultiplier, isLowEnd])
+  }, [currentTheme, isDarkMode, performanceMultiplier, isLowEnd, isMobile])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -270,7 +273,7 @@ export function WeatherAtmosphere() {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Draw aurora effect for aurora theme (skip on very low-end devices)
-      if (currentTheme === 'aurora' && !skipGlow) {
+      if (currentTheme === 'aurora' && !skipGlow && !isMobile) {
         drawAurora(ctx, canvas.width, canvas.height, auroraPhase)
         auroraPhase += 0.005
       }
@@ -329,7 +332,7 @@ export function WeatherAtmosphere() {
       }
       window.removeEventListener('resize', resizeCanvas)
     }
-  }, [currentTheme, config, theme, isDarkMode, isLowEnd])
+  }, [currentTheme, config, theme, isDarkMode, isLowEnd, isMobile])
 
   // Don't render for themes with no particles and no special effects
   if (config.particleCount === 0 && currentTheme !== 'overcast') {
@@ -344,7 +347,7 @@ export function WeatherAtmosphere() {
           className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000"
           style={{
             background: theme.gradient,
-            opacity: theme.atmosphereIntensity || 0.15,
+            opacity: (theme.atmosphereIntensity || 0.15) * (isMobile ? 0.75 : 1),
             mixBlendMode: isDarkMode ? 'screen' : 'multiply'
           }}
         />
@@ -362,7 +365,7 @@ export function WeatherAtmosphere() {
       )}
 
       {/* Shimmer effect for appropriate themes */}
-      {theme?.shimmer && (
+      {theme?.shimmer && !isMobile && (
         <div 
           className="fixed inset-0 pointer-events-none z-0 animate-shimmer"
           style={{

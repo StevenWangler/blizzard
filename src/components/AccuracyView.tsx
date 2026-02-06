@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { Target, Clock, Database, Warning, ArrowsClockwise, Calendar } from '@phosphor-icons/react'
+import { Target, Clock, CaretDown, Calendar } from '@phosphor-icons/react'
 import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { fetchData } from '@/lib/dataPath'
 
 interface PredictionMeta {
@@ -18,14 +20,15 @@ const todayISO = () => new Date().toISOString().split('T')[0]
 
 export function AccuracyView() {
   const [outcomes, setOutcomes] = useState<SnowDayOutcome[]>([])
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [predictionMeta, setPredictionMeta] = useState<PredictionMeta | null>(null)
+  const [trendChartOpen, setTrendChartOpen] = useState(false)
+  const [calibrationChartOpen, setCalibrationChartOpen] = useState(false)
   const { isAdmin } = useAdminAccess()
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     const loadLedger = async () => {
-      setLoading(true)
       setError(null)
       try {
         const ledger = await fetchOutcomeLedger({ bustCache: true })
@@ -33,8 +36,7 @@ export function AccuracyView() {
       } catch (err) {
         console.warn('Could not load outcome ledger:', err)
         setOutcomes([])
-      } finally {
-        setLoading(false)
+        setError('Unable to refresh outcome ledger right now.')
       }
     }
 
@@ -188,6 +190,13 @@ export function AccuracyView() {
 
   return (
     <div className="space-y-8 relative z-10">
+      {error && (
+        <Card className="rounded-2xl border border-destructive/40 bg-destructive/5">
+          <CardContent className="p-4 text-sm text-destructive">
+            {error}
+          </CardContent>
+        </Card>
+      )}
 
       {pendingRecords.length > 0 && (
         <Card className="rounded-2xl border border-amber-500/30 bg-background/80 backdrop-blur shadow-lg shadow-amber-500/5">
@@ -203,24 +212,25 @@ export function AccuracyView() {
                 </p>
                 <div className="space-y-2">
                   {pendingRecords.map(record => (
-                    <div key={record.date} className="flex items-center justify-between p-2 rounded-lg border border-border/60 bg-card/80">
-                      <div className="text-sm">
-                        <span className="font-medium mr-2">{new Date(record.date).toLocaleDateString()}</span>
-                        <span className="text-muted-foreground">Model: {record.modelPrediction}%</span>
+                    <div key={record.date} className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between p-3 rounded-lg border border-border/60 bg-card/80">
+                      <div className="text-sm space-y-1">
+                        <div className="font-medium">{new Date(record.date).toLocaleDateString()}</div>
+                        <div className="text-muted-foreground">Model: {record.modelPrediction}%</div>
                       </div>
                       {isAdmin ? (
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                           <Button 
                             size="sm" 
                             variant="outline"
                             onClick={openRecorderTab}
-                            className="text-xs"
+                            className="text-xs w-full sm:w-auto"
                           >
                             Open Recorder
                           </Button>
                           <Button 
                             size="sm" 
                             variant="outline"
+                            className="w-full sm:w-auto"
                             asChild
                           >
                             <a
@@ -309,29 +319,67 @@ export function AccuracyView() {
             </p>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={recentTrend}>
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis 
-                    dataKey="date" 
-                    tick={{ fontSize: 12 }}
-                    tickFormatter={(date) => new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                  />
-                  <YAxis tick={{ fontSize: 12 }} domain={[0, 0.5]} />
-                  <Tooltip 
-                    labelFormatter={(date) => new Date(date).toLocaleDateString()}
-                    formatter={(value: number) => [value.toFixed(3), 'Brier']}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="modelBrier" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            {isMobile ? (
+              <Collapsible open={trendChartOpen} onOpenChange={setTrendChartOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between min-h-[44px]">
+                    <span>Show chart</span>
+                    <CaretDown size={16} className={`transition-transform ${trendChartOpen ? 'rotate-180' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4">
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={recentTrend}>
+                        <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                        <XAxis
+                          dataKey="date"
+                          tick={{ fontSize: 10 }}
+                          tickFormatter={(date) => new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          interval="preserveStartEnd"
+                        />
+                        <YAxis tick={{ fontSize: 10 }} domain={[0, 0.5]} />
+                        <Tooltip
+                          labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                          formatter={(value: number) => [value.toFixed(3), 'Brier']}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="modelBrier"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            ) : (
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={recentTrend}>
+                    <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={(date) => new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                    />
+                    <YAxis tick={{ fontSize: 12 }} domain={[0, 0.5]} />
+                    <Tooltip
+                      labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                      formatter={(value: number) => [value.toFixed(3), 'Brier']}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="modelBrier"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -343,17 +391,41 @@ export function AccuracyView() {
             </p>
           </CardHeader>
           <CardContent>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={calibrationData}>
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis dataKey="range" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
-                  <Tooltip formatter={(value: number) => [`${value}%`, 'Observed']} />
-                  <Bar dataKey="observed" fill="hsl(var(--primary))" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {isMobile ? (
+              <Collapsible open={calibrationChartOpen} onOpenChange={setCalibrationChartOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between min-h-[44px]">
+                    <span>Show chart</span>
+                    <CaretDown size={16} className={`transition-transform ${calibrationChartOpen ? 'rotate-180' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-4">
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={calibrationData}>
+                        <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                        <XAxis dataKey="range" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
+                        <YAxis tick={{ fontSize: 10 }} domain={[0, 100]} />
+                        <Tooltip formatter={(value: number) => [`${value}%`, 'Observed']} />
+                        <Bar dataKey="observed" fill="hsl(var(--primary))" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            ) : (
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={calibrationData}>
+                    <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                    <XAxis dataKey="range" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
+                    <Tooltip formatter={(value: number) => [`${value}%`, 'Observed']} />
+                    <Bar dataKey="observed" fill="hsl(var(--primary))" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
             <p className="text-xs text-muted-foreground mt-2">
               Perfect calibration lands each bar near the midpoint of its range.
             </p>
@@ -372,20 +444,20 @@ export function AccuracyView() {
           <div className="space-y-3">
             {completedOutcomes.length > 0 ? (
               completedOutcomes.map((record) => (
-                <div key={`${record.date}-${record.recordedAt}`} className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card/80 shadow-sm">
-                  <div className="flex items-center gap-4">
+                <div key={`${record.date}-${record.recordedAt}`} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 rounded-xl border border-border/60 bg-card/80 shadow-sm">
+                  <div className="space-y-1.5">
                     <div className="text-sm font-medium">
-                      {new Date(record.date).toLocaleDateString(undefined, { 
-                        weekday: 'short', 
-                        month: 'short', 
-                        day: 'numeric' 
+                      {new Date(record.date).toLocaleDateString(undefined, {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
                       })}
                     </div>
-                    <div className="text-sm">
-                      <span>{typeof record.modelPrediction === 'number' ? `${record.modelPrediction}%` : '—'}</span>
+                    <div className="text-sm text-muted-foreground">
+                      Model: {typeof record.modelPrediction === 'number' ? `${record.modelPrediction}%` : '—'}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={record.actualSnowDay === true ? 'destructive' : record.actualSnowDay === false ? 'secondary' : 'outline'}>
                       {record.actualSnowDay === true ? 'Snow Day' : record.actualSnowDay === false ? 'School Open' : 'Pending'}
                     </Badge>
