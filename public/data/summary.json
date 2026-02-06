@@ -1,23 +1,23 @@
 {
-  "probability": 28,
+  "probability": 55,
   "confidence": "moderate",
   "primary_factors": [
-    "Main accumulating snow signal is for Sunday 2/8 (≈3–4\"), not Monday 2/9; Monday looks more like post-storm cleanup/refreeze risk than an active-storm bus-window problem",
-    "Plow timing math favors opening: snow tapers late Sunday morning, leaving ~19–20 hours before Monday bus routes for MDOT/Kent County to clear priority roads",
-    "Main residual risk is localized slick/compacted snow + refreeze on secondary/neighborhood and rural connector roads during 5:30–8:30 AM Monday (bus-route limiting factor)",
-    "No confirmed neighboring-district “domino” closures yet for Monday; Rockford and nearby districts show no pre-announcement signals",
-    "No credible source indicates wind chill ≤ -20°F for Monday morning (so no extreme-cold automatic closure trigger); power-outage situation not confirmed and appears unlikely to be widespread given light winds, but remains a wildcard without live map access"
+    "Web Weather Verifier flagged a credible ≤ -20°F wind chill scenario (Weather.com cache shows ~-26°F), which triggers the Extreme Cold Rule and dominates the decision risk even with otherwise quiet weather",
+    "No meaningful snow/ice is forecast in the provided meteorological slice (Sun 2/8), so a snow-driven closure is unlikely; main non-cold hazard would be isolated refreeze/black ice",
+    "Neighboring districts and Rockford have no posted closure/delay signals in accessible official pages as of Fri 2/6; community sentiment shows “no buzz,” which normally points to staying open",
+    "Infrastructure monitor expects roads mostly clear with only patchy refreeze risk; however their data confidence is low and live road-condition layers weren’t accessible",
+    "Power outages in Kent County are elevated but not clearly widespread; without Rockford-specific outage polygons/ETRs, power is a low-probability but high-impact wildcard"
   ],
-  "decision_rationale": "Across meteorology, history, safety, news, infrastructure, and power: the experts largely agree the impactful snow is a Sunday-morning event (~3–4 inches) with enough time before Monday’s commute for typical West Michigan plow/treatment operations to catch up on highways and primary bus-route roads. The key conflict was the safety timing window (Mon 5:30–8:30) versus the hourly snowfall window (Sun 3–10); follow-up confirmed Monday risk is primarily post-storm refreeze/compaction, not active snowfall—so a full closure is less likely than a normal open or a 2-hour delay.\n\nNews intelligence did not find confirmed Monday closures/delays among major nearby districts (Forest Hills, Cedar Springs, Lowell, GRPS), and community buzz is limited/uncertain—this removes a major domino-effect driver. Web verification also found no ≤-20°F wind-chill trigger for Monday morning, keeping this out of the ‘automatic closure’ band. Power-grid information is low confidence due to interactive map limits, but with light winds and relatively cold (likely drier) snow, widespread outages are not the expected outcome.\n\nNet: the most likely decision for Rockford on Mon 2/9 is OPEN, with a meaningful but not dominant chance of a 2-hour delay if Sunday cleanup is imperfect and refreeze produces scattered “one-bad-intersection” hazards on neighborhood/rural bus segments. Full closure remains a tail risk tied to localized overperformance (totals >~6\") and/or widespread Sunday-night reports of roads still snow-covered + numerous slide-offs or an outage affecting school buildings.",
-  "timestamp": "2026-02-06T18:26:22.120Z",
+  "decision_rationale": "There is a major conflict between the API-based meteorology (quiet, dry; wind chill not extreme) and the Web Weather Verifier (Weather.com shows a much colder ‘feels like,’ including a plausible ~-26°F scenario). Under the NON-NEGOTIABLE extreme cold rules, any credible source showing ≤ -20°F wind chill during 6–8 AM means Rockford-area schools are very likely to close regardless of roads. However, the Weather.com signal is inconsistent across caches/locales (about -17°F vs -26°F), and we do not have a dedicated Monday 6–8 AM NWS/Weather.gov value in the provided packet, so the forecast certainty is not high enough to go straight to 90–95%.\n\nGiven (1) no snow/ice expected to force a closure on its own, (2) no neighboring-district domino effect yet, and (3) only moderate/scattered outage risk—but (4) a safety-significant chance that wind chills are in the -20°F-or-colder range—I’m setting a mid-high probability that reflects the ‘cold-triggered closure’ being the primary path. If Monday morning wind chills verify closer to -17°F (still dangerously cold but above the automatic threshold), Rockford would more likely stay open with caution; if they verify ≤ -20°F, closure odds jump to the 90–95% band.",
+  "timestamp": "2026-02-06T23:09:15.409Z",
   "targetDate": "2026-02-09",
   "targetDayName": "Monday",
   "daysAhead": 3,
   "location": "Rockford, Michigan",
   "collaboration": {
-    "rounds": 2,
+    "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 10.0% spread. Average probability: 25%."
+    "summary": "Agents reached consensus after 1 round(s) with 11.0% spread. Average probability: 7%."
   }
 }
