@@ -1,23 +1,24 @@
 {
-  "probability": 100,
-  "confidence": "very_high",
+  "probability": 6,
+  "confidence": "high",
   "primary_factors": [
-    "Rockford Public Schools is already scheduled CLOSED for Mid-Winter Break on Mon Feb 16, 2026 (official district homepage + official news post).",
-    "Multiple neighboring districts (Forest Hills, Cedar Springs, Sparta, Lowell, Greenville, GRPS) are also off for Mid-Winter Break, reducing any operational pressure to run buses/classes.",
-    "Weather is not a snow/ice event: near-0 accumulation expected; primary hazard is fog/mist with localized slick-spot/bridge black ice risk, which would more typically prompt caution messaging (or at most a delay) if school were in session.",
-    "No extreme-cold trigger: web sources do NOT show ≤ -20°F wind chills during 6–8 AM; winds are modest.",
-    "Power outage signal is small/scattered (not widespread), unlikely to force a district-wide closure beyond the already-scheduled break."
+    "No accumulating snow or meaningful wintry precip expected (rain/fog setup; snowfall forecast 0\")",
+    "Temperatures stay above freezing around bus time (~33.7–34.2°F); wind chill near ~29–31°F (no extreme-cold closure trigger)",
+    "Primary hazard is fog/low stratus 2–9 AM: prevailing ~1 mile visibility with pockets possibly <0.5 mile (localized), which usually leads to “open with caution” rather than closure in Michigan",
+    "Roads/plow operations: roads already clear; no plowing needed; only isolated bridge/overpass slick-spot risk (not widespread ice)",
+    "Decision signals: no active closings/delays on a major local TV closings page; no neighboring-district weather closures found; Rockford communications currently indicate school resumes Feb 17",
+    "Power: only small, scattered outages reported countywide (~82 customers in Kent County) — not a districtwide closure driver"
   ],
-  "decision_rationale": "Interpreting the question as “Will Rockford Public Schools be closed on Monday 2/16/2026?”, the probability is effectively 100% because the district has an official, pre-scheduled Mid-Winter Break closure for that date (confirmed via the district homepage and an official news post). This is not weather-dependent.\n\nIf instead you mean a counterfactual “weather-driven closure if school were in session,” the expert consensus is that closure probability would be very low (≈1–3%): no meaningful snow/ice accumulation is forecast, no extreme wind chill is indicated by web verification, and the main operational hazard is fog/mist with possible localized black ice on bridges/overpasses—typically managed via spot-salting and route checks rather than a district-wide closure in Michigan. Power-outage risk appears low and scattered, not a closure driver.",
-  "timestamp": "2026-02-15T23:08:40.957Z",
-  "targetDate": "2026-02-16",
-  "targetDayName": "Monday",
+  "decision_rationale": "All expert inputs align on a non-snow, above-freezing morning with fog as the main operational issue. Meteorology and web verification both show mid-30s temperatures and feels-like around ~29–32°F during 6–9 AM, with 0\" snow and no extreme cold—so Michigan’s main closure triggers (ice storm, blizzard/heavy snow, or ≤-20°F wind chill) are not present. Safety and infrastructure agree the credible hazard is reduced visibility during the bus window, plus isolated slick spots on bridges/overpasses if microclimates briefly touch ~32°F; that profile more often produces slower routes or, at most, a short delay rather than a full closure. News intelligence shows no active closings/delays on a local TV closings page at this time and no confirmed neighboring-district weather closures; additionally, several nearby districts being off for mid-winter break weakens any ‘domino’ closure signal. Power-grid risk is low: only scattered outages countywide, not a widespread event. Given Michigan’s high bar for full closures and the lack of snow/ice/extreme cold, the best Brier-optimized call is a low single-digit closure probability, with monitoring for localized dense fog/spot-ice that could instead justify a delay.",
+  "timestamp": "2026-02-16T14:20:04.165Z",
+  "targetDate": "2026-02-17",
+  "targetDayName": "Tuesday",
   "daysAhead": 1,
   "location": "Rockford, Michigan",
   "collaboration": {
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 1.0% spread. Average probability: 2%."
+    "summary": "Agents reached consensus after 1 round(s) with 1.0% spread. Average probability: 6%."
   }
 }
