@@ -1,23 +1,23 @@
 {
-  "probability": 9,
+  "probability": 4,
   "confidence": "high",
   "primary_factors": [
-    "Temps well above freezing during 6–8 AM bus window (low–mid 40s°F) with feels-like mid-30s → no cold-closure trigger",
-    "No snow/ice accumulation expected for the morning commute; precipitation is rain tapering around ~7 AM",
-    "Wind Advisory (gusts up to ~45 mph) is the main hazard: possible scattered tree debris and isolated outages, but typically not enough alone for district-wide closure",
-    "Visibility risk appears to be patchy fog/low stratus (most likely ~1+ mile at bus time per meteorologist); near-zero visibility values look like an overstatement/artifact for 6–8 AM",
-    "No confirmed local closure ‘domino effect’ signals; closings aggregators show none active, and community sentiment shows no buzz"
+    "No accumulating snow or wintry precip signal in the provided forecast context (Sunday is cold/overcast and dry), so there’s no plowing catch-up problem for Monday morning",
+    "Wind chills are cold but nowhere near Michigan extreme-cold closure thresholds (no credible ≤-20°F signal for 6–8 AM bus hours)",
+    "Main roads/bus routes expected passable; only *localized* refreeze/black-ice risk on bridges, shaded rural connectors, and some neighborhood streets",
+    "No confirmed neighboring-district closure domino signals for Mon 2/23 as of Fri 2/20; Rockford PS has no closure/delay posting",
+    "Power-grid risk appears low: only scattered outages indicated systemwide after the Fri wind, unlikely to persist into Monday at disruptive levels"
   ],
-  "decision_rationale": "All experts converge that this is not a classic Michigan snow/ice morning: temperatures stay well above freezing through bus time and snowfall is 0. The web verifier corroborates that no credible source shows dangerous wind chills (nowhere near the ≤-20°F rule), and Weather.com aligns with the API on feels-like (~mid/upper 30s). The only plausible closure mechanisms are secondary impacts—(1) wind-driven widespread outages/debris before the ~5:30 AM decision window, or (2) truly dense fog at bus time. Follow-up clarifications reduce both concerns: the meteorologist expects patchy fog with minimum visibility around ~1 mile and improving after daybreak, and the safety analyst confirms ice risk is mainly late-day refreeze (not morning black ice). News intel shows no active closings and no neighboring-district closure wave (with one neighbor, Northview, already off for mid-winter break, so not a domino indicator). Power data suggests low statewide outages going into Friday, making a pre-dawn widespread outage scenario unlikely. Therefore the most defensible, Brier-optimized call is a low single-digit probability with a small tail-risk bump for wind/outage/debris surprises.",
-  "timestamp": "2026-02-19T23:13:05.706Z",
-  "targetDate": "2026-02-20",
-  "targetDayName": "Friday",
-  "daysAhead": 1,
+  "decision_rationale": "Across meteorology, history, safety, news intel, infrastructure, and power-grid inputs, the base case for Rockford, MI on Mon 2/23 is a normal winter school day: no forecast accumulation, no ice event indicated, modest winds, and wind chills well above the -15°F/-20°F closure triggers. The only meaningful operational risk is *patchy* black ice from residual moisture/refreeze (bridges, shaded stretches, subdivisions), which in West Michigan typically leads to targeted treatment and cautious driving—more often a minor delay at most, not a districtwide closure. News/community signals do not show a closure trend in neighboring districts yet (appropriate this far out), and power-outage risk looks scattered and unlikely to force closure. What could make this wrong is an unmodeled late-Sunday-night band (lake-effect/clipper) or unexpected drizzle/fog deposition creating broader icing than expected—currently low-probability with the provided data.",
+  "timestamp": "2026-02-20T14:18:32.118Z",
+  "targetDate": "2026-02-23",
+  "targetDayName": "Monday",
+  "daysAhead": 3,
   "location": "Rockford, Michigan",
   "collaboration": {
-    "rounds": 2,
+    "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 4.0% spread. Average probability: 9%."
+    "summary": "Agents reached consensus after 1 round(s) with 1.0% spread. Average probability: 4%."
   }
 }
