@@ -1,23 +1,23 @@
 {
-  "probability": 3,
-  "confidence": "high",
+  "probability": 18,
+  "confidence": "moderate",
   "primary_factors": [
-    "No snow/ice precipitation signal: all sources indicate 0\" snowfall and rain/fog, not a winter storm",
-    "Temperatures remain above freezing during the 6–8 AM bus window even in the colder web scenario (upper 30s/low 40s; feels-like low/mid 30s) → no widespread morning ice mechanism",
-    "Primary hazard is dense fog/near-zero visibility around ~4–8 AM, which more often drives slower buses or a delay—not a full closure in Michigan",
-    "Road infrastructure/plowing is a non-factor (roads already clear; no snow-clearing needed)",
-    "News/community signals show no closure momentum: FOX17 closings page reported no active closings/delays; district sites show no preemptive announcement; no meaningful local buzz"
+    "Bus-window conditions favor heavy rain/ponding with temps just above freezing (33–35°F), not plowable snow—Michigan districts usually stay open in this setup",
+    "Localized hazards are plausible (ponding + low visibility + bridge/overpass slick spots from near-freezing surfaces and treatment wash-off), which supports a delay more than a full closure",
+    "No extreme cold trigger: multiple web sources keep feels-like ~upper 20s/low 30s °F (no ≤-20°F wind chill)",
+    "No confirmed neighboring district closures and no community/social buzz pointing to an expected shutdown; RPS is still publicly framing 3/11 as a planned Early Release day",
+    "Power grid currently stable with very small, decreasing outages in Kent County; outage-driven closure risk is a low-probability wildcard"
   ],
-  "decision_rationale": "All experts converge on a non-winter setup for Rockford, MI on Tue 3/10: rain/fog, zero snow accumulation, modest winds, and temperatures that stay above freezing during the school decision window. The only credible operational threat is dense fog with very low visibility around bus pickup time. Michigan districts (including in West Michigan) rarely fully close for fog alone; the more realistic action, if fog verifies widespread at 5:30–6:30 AM, is a short delay to allow daylight/mixing and safer bus operations. \n\nPotential conflict was the safety model’s earlier ‘moderate’ ice risk; clarification indicates icing is not expected as a primary Tuesday-AM hazard and would be limited to isolated microclimates (bridges/low spots) only if temperatures crash faster than forecast. Power-grid risk is low with no verified outage trend. News intel shows no neighboring-district closure domino effect and FOX17’s closings page had no active listings at check time. \n\nRecommendation outcome: schools should plan to OPEN with monitoring, with a contingency for a 1–2 hour delay if near-zero visibility is confirmed across rural routes at pre-dawn checks.",
-  "timestamp": "2026-03-09T23:10:01.510Z",
-  "targetDate": "2026-03-10",
-  "targetDayName": "Tuesday",
+  "decision_rationale": "Cross-checking the experts, the core agreement is that Wednesday morning is primarily a heavy-rain/ponding commute with temperatures hovering just above freezing. Meteorology and the web verifier both indicate no extreme cold and no strong signal for meaningful snow accumulation during the 6–8 AM decision window; the NWS point forecast even suggests little/no accumulation, creating uncertainty around the WeatherAPI ~3\" daily snow number—but that snow is timed later.\n\nThe main conflict was Safety’s “high” ice risk vs meteorology’s above-freezing rain picture. Safety clarified this is not a widespread flash-freeze assumption; it’s localized bridge/overpass slick spots plus treatment wash-off/dilution under very heavy rain, combined with marginal surface temperatures. That raises crash/bus-route risk, but in Michigan it more often leads to a DELAY (buying treatment/daylight time) than an all-day closure.\n\nNews intel shows no confirmed closures nearby, no buzz, and RPS communications still emphasize a planned Early Release day—an operational signal that the district expects to run unless conditions materially worsen overnight. Power-grid conditions are supportive (outages decreased to single digits countywide), so power is unlikely to force a closure.\n\nPutting this together, a full-day snow day/closure is possible if ponding becomes widespread on secondary bus routes or if the changeover to sleet/wet snow happens earlier than forecast, but the base case is “open (possibly with a delay), then monitor for afternoon/evening deterioration.” For Brier-score calibration in Michigan, that supports a low-but-not-trivial closure probability rather than a hedge near 50%.",
+  "timestamp": "2026-03-10T14:19:09.656Z",
+  "targetDate": "2026-03-11",
+  "targetDayName": "Wednesday",
   "daysAhead": 1,
   "location": "Rockford, Michigan",
   "collaboration": {
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 1.0% spread. Average probability: 3%."
+    "summary": "Agents reached consensus after 1 round(s) with 10.0% spread. Average probability: 18%."
   }
 }
