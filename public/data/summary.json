@@ -1,15 +1,15 @@
 {
-  "probability": 8,
-  "confidence": "high",
+  "probability": 10,
+  "confidence": "moderate",
   "primary_factors": [
-    "No new snow/ice expected Thu 3/12 (quiet, sunny/dry forecast) → Michigan districts almost always stay open",
-    "Temps in the mid/upper 20s at bus time after a very wet Wed → patchy refreeze/black ice is the main credible hazard (localized, not district-wide)",
-    "Wind chills in the teens (~17–20°F) are well above extreme-cold closure thresholds",
-    "No confirmed closure domino effect: no verified neighboring-district closures and no Rockford announcement/buzz indicating a pending closure",
-    "Power outages were reported in Kent County (~2,045 customers out early Wed), but persistence into Thu and impact to specific school buildings is unconfirmed → a limited wildcard rather than the base case"
+    "No accumulating snow or active precipitation during the 6–8 AM bus window; visibility and wind are not at Michigan closure thresholds",
+    "Main hazard is **patchy refreeze/black ice** early Thu (roughly 4–8:30 AM) after Wed’s heavy rain/freezing-rain window—especially bridges, shaded/rural connectors, and low spots with lingering water",
+    "No confirmed domino-effect: no verified neighboring district closures/delays and no Rockford PS announcement found in accessible sources",
+    "Power outages are the main non-weather wildcard: Kent County previously reported ~2,045 customers out; Rockford/facility-specific outages and ETRs remain unconfirmed",
+    "Infrastructure response likely spot-salting/treatment (not plowing); risk is localized slick spots rather than widespread impassable roads"
   ],
-  "decision_rationale": "All experts converged on a low closure probability (debate average ~7% with a 3% spread). Meteorology shows a dry/sunny Thursday with 0\" forecast snow and good visibility—conditions that strongly suppress full closures in West Michigan. The only meaningful safety mechanism is leftover water/slush from Wednesday’s storm refreezing overnight (black ice), which can create a ‘moderate localized hazard’ during 5:30–8:30 AM, especially on bridges/ramps and untreated neighborhood/rural connectors. Historically, that pattern yields occasional delays and caution/spot-treatment, but rarely a district-wide closure absent confirmed widespread glare ice or a crash spike.\n\nNews intel does not show a closure cascade or official hints. Power outages are the main operational wildcard: a countywide outage figure was reported early Wednesday, but there is no current, Rockford-building-specific confirmation that would force closure regardless of roads. With no evidence of extreme cold (web verifier did NOT flag ≤-20°F wind chills) and no active Thu precipitation, the Brier-score-optimized call is a single-digit closure probability: low, but not zero due to (1) potential widespread refreeze if Wednesday left significant standing water/slush and (2) a small chance of a lingering outage affecting a school facility.",
-  "timestamp": "2026-03-11T14:21:34.653Z",
+  "decision_rationale": "All experts converged on a dry, post-storm cold-advection/high-pressure Thursday with **essentially no snowfall and no commute-time precipitation**, which in Michigan strongly favors staying open. The only credible closure pathways are (1) a broader-than-expected **black ice/refreeze** event from Wednesday’s wet/possibly icy antecedent conditions, or (2) an **unresolved power/heat issue** at one or more school buildings due to storm-related outages. \n\nConflicts were limited and mostly about *how widespread* the slick-spot risk could be (meteorology leaning low, safety/history flagging a moderate spot-ice window). Infrastructure input supports the hazard being **patchy/local-road focused**, not a plow-overwhelmed event. News intelligence found **no closure momentum** (no neighboring-district announcements found; no Rockford PS post found). The web verification found **no ≤-20°F wind chill signal** from credible sources, so the extreme-cold rules do not apply. \n\nGiven Michigan’s high bar for full closures on ‘no-new-precip’ days, the best Brier-optimized call is **low but non-zero**: most likely OPEN, meaningful chance of a DELAY, and a smaller tail risk of full closure if either widespread early-morning glaze is reported by route scouts or a facility power/heat problem persists past decision time.",
+  "timestamp": "2026-03-11T18:30:09.356Z",
   "targetDate": "2026-03-12",
   "targetDayName": "Thursday",
   "daysAhead": 1,
@@ -18,6 +18,6 @@
     "rounds": 2,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 3.0% spread. Average probability: 7%."
+    "summary": "Agents reached consensus after 2 round(s) with 6.0% spread. Average probability: 8%."
   }
 }
