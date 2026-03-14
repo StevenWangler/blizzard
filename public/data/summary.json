@@ -1,23 +1,23 @@
 {
-  "probability": 30,
+  "probability": 74,
   "confidence": "moderate",
   "primary_factors": [
-    "Most concrete hourly forecast details show the wintry mix focused on Sunday pre-dawn, followed by a strong warm-up Sunday—this usually allows roads to recover well before Monday bus time in Kent County.",
-    "Main Monday risk is not snow depth but patchy black ice/refreeze on bridges, overpasses, shaded neighborhood streets and rural connectors; this more often supports a delay/extra caution than a full closure unless it becomes widespread.",
-    "Winter Storm Watch for counties just north of Kent through Monday evening creates meaningful track/thermal-profile uncertainty (tail risk of sleet/freezing rain shifting into Kent during the Monday AM commute).",
-    "Power is a wildcard: ~52k Consumers Energy outages statewide with confirmed Kent County impact (Rockford-specific concentration unknown). If outages persist or expand Sunday night, closures become more likely.",
-    "News/decision signals are quiet: no neighboring district closures visible yet and FOX 17 shows no active closings/delays; no community buzz—this usually correlates with ‘open’ unless conditions deteriorate Sunday night."
+    "High-impact timing: rain overnight with temperatures falling below freezing around/just before bus-run time (6–8 AM), creating flash-freeze/black-ice risk even before the main freezing-rain window",
+    "Freezing rain risk 8–10 AM (school start window) + gusty winds: even a light glaze is a major Michigan closure trigger because it’s hard to mitigate on secondary/local roads and bridges",
+    "Safety assessment flags severe ice-formation and severe morning-commute impact; buses and teen drivers are the limiting factor, not snowfall totals",
+    "Infrastructure/treatment constraint: heavy rain can wash off pretreatment; effective re-treatment may not “hold” on secondary/local roads as temps crash, producing patchy, high-liability conditions",
+    "Power-grid risk is now meaningful: Kent County outages reported ~8.6k (~2.8%) and rising; forecast icing/wind could spike outages and prevent buildings/traffic signals from operating normally"
   ],
-  "decision_rationale": "Cross-referencing the experts: Meteorology, History, News, and Infrastructure are broadly aligned that—based on the only detailed hourly data provided—the impactful wintry mix is Sunday morning and Sunday warms well above freezing, which typically reduces Monday closure odds in West Michigan. Safety’s ‘Mon 04:30–09:00 worst window’ is acknowledged as a Michigan-typical refreeze/black-ice heuristic rather than something directly supported by a Monday-specific hourly forecast in the dataset; infrastructure agrees the likely Monday problem is patchy slick spots, not plows being overwhelmed. News intel shows no pre-call closure signals and no neighboring-district domino effect yet, which keeps probability from rising into the 50%+ range.\n\nWhat could make this forecast wrong is the watch-driven uncertainty: if the storm track/thermal profile shifts south into Kent and produces ongoing sleet/freezing rain or accumulating snow during 6–8 AM Monday, Michigan districts often close. Separately, if Kent County outages persist/expand into Monday morning (schools or key traffic corridors without power), that can force closure even if roads are mostly passable. Given these tail risks but a more-likely ‘wet/bare main roads + isolated slick spots’ outcome, the Brier-optimized call is low-to-moderate: 30%.",
-  "timestamp": "2026-03-13T23:11:01.234Z",
+  "decision_rationale": "Cross-referencing the experts, there is broad agreement that this is an ice/flash-freeze-timing event, not a snow-amount event. The main conflict is probability magnitude: meteorology is cautious (inconsistent model totals), while history/safety are higher due to known decision behavior around freezing rain at bus time. To resolve that, I weighted (1) the safety/infrastructure reality that heavy rain can wash off chemicals and produce sudden black ice as temps drop below freezing near 6–7 AM, (2) the explicit freezing-rain window around 8–10 AM, and (3) the updated power-grid signal showing Kent County outages already meaningful and increasing, with icing/wind likely to worsen them. \n\nAgainst that, news intelligence shows no confirmed neighboring-district closures yet; that’s expected 48 hours out and prevents me from going into the 85–95% ‘near-lock’ range today. With Michigan’s typically high bar for snow days, a full closure still becomes more likely than not when freezing rain overlaps bus and arrival times, especially with patchy secondary-road icing and rising outages. Net: I land at 74% for a full closure, with a substantial remaining chance that districts choose a 2-hour delay if the changeover/icing shifts later or is less intense than depicted.",
+  "timestamp": "2026-03-14T14:11:24.978Z",
   "targetDate": "2026-03-16",
   "targetDayName": "Monday",
-  "daysAhead": 3,
+  "daysAhead": 2,
   "location": "Rockford, Michigan",
   "collaboration": {
-    "rounds": 2,
+    "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 11.0% spread. Average probability: 29%."
+    "summary": "Agents reached consensus after 1 round(s) with 14.0% spread. Average probability: 66%."
   }
 }
