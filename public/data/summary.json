@@ -1,15 +1,15 @@
 {
-  "probability": 74,
+  "probability": 70,
   "confidence": "moderate",
   "primary_factors": [
-    "High-impact timing: rain overnight with temperatures falling below freezing around/just before bus-run time (6–8 AM), creating flash-freeze/black-ice risk even before the main freezing-rain window",
-    "Freezing rain risk 8–10 AM (school start window) + gusty winds: even a light glaze is a major Michigan closure trigger because it’s hard to mitigate on secondary/local roads and bridges",
-    "Safety assessment flags severe ice-formation and severe morning-commute impact; buses and teen drivers are the limiting factor, not snowfall totals",
-    "Infrastructure/treatment constraint: heavy rain can wash off pretreatment; effective re-treatment may not “hold” on secondary/local roads as temps crash, producing patchy, high-liability conditions",
-    "Power-grid risk is now meaningful: Kent County outages reported ~8.6k (~2.8%) and rising; forecast icing/wind could spike outages and prevent buildings/traffic signals from operating normally"
+    "High-impact timing: flash-freeze/black ice risk centered on 5–9 AM (bus/run + teen-driver window) after rain",
+    "Non-zero chance of freezing drizzle/rain lingering into/near the 6–8 AM window (ice is the equalizer in Michigan)",
+    "Gusty post-frontal winds (20+ mph, higher gusts possible) + potential snow showers/squalls after daybreak -> localized visibility drops and rapid refreeze on bridges/ramps",
+    "Severe safety assessment for driving/bus operations if any active icing persists at 6–7 AM; buses limited by the worst 10% of secondary/local segments",
+    "Power-grid baseline outages in Kent are currently low and decreasing, but conditional outage-spike risk Monday AM if icing + wind verifies (secondary closure trigger)"
   ],
-  "decision_rationale": "Cross-referencing the experts, there is broad agreement that this is an ice/flash-freeze-timing event, not a snow-amount event. The main conflict is probability magnitude: meteorology is cautious (inconsistent model totals), while history/safety are higher due to known decision behavior around freezing rain at bus time. To resolve that, I weighted (1) the safety/infrastructure reality that heavy rain can wash off chemicals and produce sudden black ice as temps drop below freezing near 6–7 AM, (2) the explicit freezing-rain window around 8–10 AM, and (3) the updated power-grid signal showing Kent County outages already meaningful and increasing, with icing/wind likely to worsen them. \n\nAgainst that, news intelligence shows no confirmed neighboring-district closures yet; that’s expected 48 hours out and prevents me from going into the 85–95% ‘near-lock’ range today. With Michigan’s typically high bar for snow days, a full closure still becomes more likely than not when freezing rain overlaps bus and arrival times, especially with patchy secondary-road icing and rising outages. Net: I land at 74% for a full closure, with a substantial remaining chance that districts choose a 2-hour delay if the changeover/icing shifts later or is less intense than depicted.",
-  "timestamp": "2026-03-14T14:11:24.978Z",
+  "decision_rationale": "Across meteorology, history, and safety, the agreement is strong: this is an ICE/flash-freeze-driven event, not a snowfall-amount event. Snow totals (~1 inch in the provided dataset) alone would normally imply ‘open’ for West Michigan, but the modeled/expected rapid temperature crash to below freezing near daybreak, combined with lingering moisture, creates a classic black-ice setup that historically produces closures in the Rockford-area—especially with rural routes, bridges, shaded curves, and stop-controlled intersections.\n\nWhere experts disagreed was the *intensity/duration* of active freezing rain at 6–8 AM (the dataset has internal inconsistencies, and web verification could not cleanly confirm hourly details). I resolved that by weighting the meteorologist’s bounding: **more likely flash-freeze/black ice than sustained freezing rain**, but still a meaningful chance of **freezing drizzle** right at bus time. The Safety Analyst clarified the operational hinge: if measurable freezing rain is still occurring 6–7 AM, it’s closure-level for buses; if it’s mainly post-rain refreeze, a **2-hour delay becomes the more common choice** provided road commission/driver checks are favorable.\n\nNews intelligence provides little domino-effect signal at this lead time: no confirmed Rockford/neighbor closures yet and no social buzz. In Michigan, that lack of early announcements (on Saturday) is not decisive for a Monday-morning peak event, so I do not reduce much for it.\n\nPower grid: Kent County outages are currently low (0.64%) and trending down, so power is not the primary driver. However, freezing rain + wind can spike outages pre-dawn Monday; if outages jump near Rockford feeders, closure odds would rise quickly.\n\nGiven the strong safety signal but real uncertainty about whether icing is *active* at 6–7 AM vs mostly a refreeze, I land at **70%** (high, but not near-certain). My operational recommendation is: **Plan for closure; if you want to preserve instruction time, the ‘Michigan-typical’ alternative is a 2-hour delay with a firm 6:30–7:00 AM go/no-go check based on real road observations.**",
+  "timestamp": "2026-03-14T18:18:03.393Z",
   "targetDate": "2026-03-16",
   "targetDayName": "Monday",
   "daysAhead": 2,
@@ -18,6 +18,6 @@
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 14.0% spread. Average probability: 66%."
+    "summary": "Agents reached consensus after 1 round(s) with 10.0% spread. Average probability: 67%."
   }
 }
