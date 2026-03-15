@@ -1,23 +1,23 @@
 {
-  "probability": 40,
+  "probability": 63,
   "confidence": "moderate",
   "primary_factors": [
-    "High flash-freeze/black-ice risk from heavy rain overnight followed by temps dropping toward/through 32°F near/after the bus window (especially bridges, hills, shaded and untreated secondary roads)",
-    "Very limited modeled snow accumulation for Monday in Rockford itself (this is primarily an ice/visibility/temperature-crash event, not a plowable snow event)",
-    "Short operational buffer: precip likely ends around ~05:00 with buses starting ~06:30 (only ~1.5 hours for treatment on problem spots; neighborhood streets are last priority)",
-    "Low clouds and potentially poor visibility early morning (likely improves with increasing wind/mixing after daybreak, but could still be a bus-safety issue if it verifies)",
-    "No domino-effect closure signals yet from Rockford or nearby districts; current outage levels are scattered (not a primary driver unless they spike overnight)"
+    "High-impact timing: rain-to-snow transition with deteriorating conditions during bus/run + arrival window (~6:30–10:30 AM)",
+    "High ice/refreeze risk: wet pavement from overnight rain with temps falling toward/through 32°F near daybreak (bridges, ramps, shaded/rural connectors most vulnerable)",
+    "Conditional snow-squall risk 8–11 AM: brief heavy rates (~1+\"/hr possible) with sharp visibility drops (to ~0.25 mi in updated cross-check)",
+    "Gusty winds (20 mph sustained, higher gusts) increasing crash risk and potential for localized blowing snow and tree/line issues",
+    "Power-outage wildcard: Consumers Energy outages now materially higher statewide (46,014), raising the chance of localized outages/operational disruptions Monday AM even if roads are marginally passable"
   ],
-  "decision_rationale": "Cross-checking the experts, there is broad agreement on the core story: Sunday night features heavy rain, then a sharp temperature crash with gusty winds; Monday’s risk is dominated by flash-freeze/black ice and some visibility concerns rather than accumulating snow. The key disagreements were (a) how likely this becomes a full closure versus a delay, and (b) whether near-zero visibility and/or precip persists into the 6–8 AM bus window. Follow-up confirms confidence is only moderate that precip is NOT falling 6–8 AM, and that the most critical icing risk increases as temps approach/breach 32°F closer to ~08:00—meaning some of the worst glaze risk may develop as buses are already running, which often drives districts toward a DELAY more than a full closure.\n\nInfrastructure input highlights the operational weakness: only ~1.5 hours from precip ending (~05:00) to bus rollout (~06:30), and neighborhood/low-traffic pickup streets are last priority; that supports a meaningful disruption risk. However, news intelligence shows no confirmed closures/delays or strong ‘monitoring’ messaging yet from Rockford or nearby districts (and some neighboring calendars list normal activities), which typically correlates with districts waiting until late Sunday night/early Monday to decide—again more consistent with a delay-or-open call unless conditions rapidly deteriorate.\n\nPower grid: outages are currently scattered in Kent County (~974 out countywide) with moderate risk of an overnight increase due to wind/flash-freeze, but not enough at this time to be a primary closure driver.\n\nPutting it together for a Brier-optimized forecast in Michigan (high snow-day threshold): I keep full-closure probability below 50%. The most likely operational decision is a 1–2 hour delay (not captured as a separate headline outcome here), with full closure becoming more likely only if there are widespread early crash/slide-offs, confirmed dense fog near bus time, or an earlier-than-expected drop below 32°F while roads remain wet.",
-  "timestamp": "2026-03-14T23:10:18.057Z",
+  "decision_rationale": "No extreme-cold trigger is present: the web verifier found no credible source showing ≤ -20°F wind chills during 6–8 AM, so this is not an automatic cold closure.\n\nThe experts largely agree on the *type* of hazard (a high-variance transition event) and the *worst window* (roughly 6:30–11:30 AM). The key conflict is magnitude/certainty: WeatherAPI indicates a potentially intense 8–10 AM burst with very low visibility, while accessible consumer web sources did not clearly corroborate that exact burst. I resolve this by treating the squall/whiteout as a meaningful but conditional risk (not guaranteed), which pushes probability above 50% but keeps confidence at “moderate,” not “high.”\n\nPlow timing math is unfavorable for a normal start because there is effectively no clean gap (“hours until bus routes: 0”): roads start wet from overnight rain and then deteriorate as temps fall and precip changes over. Even if trunklines remain passable, Rockford has enough rural/bridge/hill routes that the district must protect the worst segments.\n\nNews/neighbor-district signals are currently weak (no confirmed closure/delay posts found in indexed pages; no domino effect yet), which is the main factor preventing a 70–80% call. However, the updated power snapshot (46k outages statewide) is a legitimate operational wildcard that can quickly force closures if Kent/Rockford clusters develop pre-dawn.\n\nNet: more likely than not that Rockford opts for a full closure given the severe commute-risk profile, but a 2-hour delay remains a very plausible alternative if the changeover is later/weaker and roads stay mostly wet/slushy through ~8 AM.",
+  "timestamp": "2026-03-15T14:12:04.481Z",
   "targetDate": "2026-03-16",
   "targetDayName": "Monday",
-  "daysAhead": 2,
+  "daysAhead": 1,
   "location": "Rockford, Michigan",
   "collaboration": {
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 7.0% spread. Average probability: 41%."
+    "summary": "Agents reached consensus after 1 round(s) with 4.0% spread. Average probability: 59%."
   }
 }
