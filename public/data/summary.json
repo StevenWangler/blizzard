@@ -1,23 +1,23 @@
 {
-  "probability": 32,
+  "probability": 30,
   "confidence": "moderate",
   "primary_factors": [
-    "High flash-freeze/black ice risk during bus & start times (temps crossing 32°F ~7 AM and falling into 20s by ~8 AM after overnight rain/drizzle)",
-    "NWS Winter Weather Advisory for Kent County (2–5\" + gusts up to ~45 mph, starting 8 AM) creates a credible ‘conditions deteriorate after start’ risk and some forecast mismatch uncertainty",
-    "Michigan operational reality: major roads likely serviceable, but secondary/local roads + bridges can glaze quickly; this often yields delays/route changes more than full closure",
-    "No confirmed domino effect yet: no accessible evidence of neighboring weather closures/delays and no Rockford-specific closure buzz/announcement as of late Sunday",
-    "Power outages currently low systemwide (not a primary driver), but wind + saturated ground makes overnight localized outages a meaningful wildcard"
+    "Minimal new precipitation during the 5–8 AM bus window (hourly data is essentially dry after ~1 AM), which strongly argues against a classic ‘snow amount/timing’ closure",
+    "Cold temperatures in the mid-teens with wind chills near 0°F increase refreeze/black-ice risk on bridges, shaded areas, hills, and low-traffic rural connectors (a delay trigger more than a full closure trigger)",
+    "Major outage environment for Consumers Energy (~88k customers out) creates a meaningful operational wildcard: a single feeder outage at a school building (heat) or key intersections can force closure/delay even if roads are passable",
+    "No confirmed neighboring-district closure cascade and no Rockford-specific announcement/social buzz yet, which reduces the probability of a proactive closure",
+    "Infrastructure status is inferred (no live MiDrive/KCRC feed retrieved), so ‘ground-truth’ uncertainty remains about how well drifting/compaction from Monday’s winds is being managed on secondary roads"
   ],
-  "decision_rationale": "All experts broadly agree this is not an ‘accumulating-snow-before-dawn’ event; it’s a rain-to-freezing transition with gusty winds, making the Monday morning decision hinge on black ice rather than plowable snow. Meteorology and web verification align that bus-hour wind chills are in the teens/low 20s °F (not near the ≤-20°F automatic closure rule), so cold alone does not drive a closure. Safety and infrastructure both flag the same key hazard: widespread wet pavement overnight followed by a rapid drop through freezing around/just after daybreak, which can produce hard-to-detect black ice—especially on bridges, shaded stretches, and low-volume neighborhood/secondary roads used by bus routes. \n\nWhere the analyses conflict: the hourly snowfall depiction is near-zero during 05:30–08:30, yet the NWS advisory calls for 2–5 inches starting 8 AM with blowing snow potential. I resolve this by treating Monday as a ‘deterioration-after-start’ risk: Rockford may still open (or delay) if the 6–8 AM window is merely patchy ice on treated roads, but a full closure becomes more likely if the flash-freeze is widespread OR snow showers/blowing snow arrive earlier/faster than modeled.\n\nNews intelligence does NOT show confirmed neighboring-district weather closures/delays or strong Rockford closure buzz yet, which argues against going too high on a full closure probability (Michigan districts often delay first unless early-morning incident reports are bad). Power-grid status is not currently forcing a closure (systemwide outages are low and decreasing), but gusty winds keep the ‘localized outage hits a school’ scenario alive.\n\nNet: the most likely operational choice is a 2-hour delay (or open with heightened caution) rather than a full closure. To optimize Brier score in a Michigan context, I keep full-closure probability in the low-to-mid 30s rather than hedging near 50% or staying too low given the high-consequence flash-freeze setup and advisory timing overlap with school start.",
-  "timestamp": "2026-03-15T23:11:25.544Z",
-  "targetDate": "2026-03-16",
-  "targetDayName": "Monday",
+  "decision_rationale": "Cross-referencing the experts, there’s broad agreement that Tuesday morning is *not* a heavy/ongoing snow event: the meteorologist resolves the ‘freezing rain’ daily icon as an aggregation artifact and keeps active 5–8 AM precip probability very low. That normally supports a low closure probability in Michigan because plows have ~6+ hours after the midnight burst.\n\nWhere the risk rises above the 10–20% meteorology-only baseline is the second-order/operational layer: (1) refreeze and patchy black ice on secondary/rural bus routes (Safety and History both flag this as the realistic hazard), and (2) the power situation—Consumers Energy is in a major-event restoration posture (~88k outages, high grid stress). Even without knowing Rockford-specific clusters, that kind of outage backdrop increases the chance that *some* schools or critical traffic signals remain out during the decision window, which can force a closure or at least a delay.\n\nNews intelligence does *not* show a domino effect yet (no confirmed neighboring closures; no strong community buzz), which keeps this from jumping into the 40–60% band. Putting it together for Brier-score-optimized decisiveness in Michigan: the most likely outcome is **OPEN or 2-hour delay**, with a **non-trivial but minority** chance of a full closure driven by either widespread early-morning icing on bus routes or a school-facility power/heat issue. Net: **30%** chance of a full snow day/closure.",
+  "timestamp": "2026-03-16T14:30:32.238Z",
+  "targetDate": "2026-03-17",
+  "targetDayName": "Tuesday",
   "daysAhead": 1,
   "location": "Rockford, Michigan",
   "collaboration": {
     "rounds": 2,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 14.0% spread. Average probability: 29%."
+    "summary": "Agents reached consensus after 2 round(s) with 6.0% spread. Average probability: 26%."
   }
 }
