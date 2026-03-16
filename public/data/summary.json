@@ -1,15 +1,15 @@
 {
-  "probability": 18,
+  "probability": 22,
   "confidence": "moderate",
   "primary_factors": [
-    "Minimal *new* accumulation overnight in the hourly feed (~0.1\") with precip ending around 12–1 AM → long plow runway before 6–8 AM buses",
-    "Winter Weather Advisory extends through Tue 11 AM + lingering wind/drifting risk → commute could still be slick/spotty even if no new snow is falling",
-    "Cold temps (mid-teens) “lock in” packed snow and raise black-ice risk on untreated/shaded neighborhood streets, bridges, and rural connectors",
-    "No confirmed neighboring-district closures or Rockford announcement found yet (weak domino/operations signal)",
-    "Power outages are a wildcard: statewide Consumers Energy outages elevated but Kent/Rockford-specific counts not confirmed; could force delay/closure if a building loses heat overnight"
+    "Ice/black-ice setup at very cold pavement temps (mid-teens): even trace freezing rain can create hazardous secondary-road and neighborhood conditions",
+    "Freezing precip timing is close to bus dispatch (light freezing rain/drizzle around ~4–6 AM; most guidance has it ending by ~7 AM, but a 15–25% chance it lingers into 7–8 AM)",
+    "Michigan operational response likely favors treatment + possible DELAY rather than full closure when precip is ending near commute",
+    "No confirmed Rockford or neighboring-district closures yet; FOX17 closings list currently shows no active closings/delays (reduces domino-pressure)",
+    "Elevated but localized power-outage tail risk (statewide outages high; Rockford/Kent not clearly a hardest-hit area, but any building outage/heat loss could force a closure)"
   ],
-  "decision_rationale": "Across meteorology/history/safety/infrastructure, the base case is a classic West Michigan “storm Monday, cleanup Tuesday” setup: the provided hourly forecast concentrates the last measurable snow around midnight with improving visibility thereafter, leaving ~6.5 hours for plows/salt before buses. Michigan districts usually stay open in that scenario, especially with only ~0.1\" new snow indicated.\n\nWhere the experts meaningfully disagree is not snowfall totals but *second-order hazards*: (1) advisory language through late morning + strong winds can keep drifting/slippery conditions going even after snowfall ends, (2) cold mid-teen temps increase black-ice persistence on untreated neighborhood streets and bridges, and (3) a mismatch between ‘light freezing rain’ labeling/high daily precip chance vs mostly-dry hourly data leaves a non-zero risk of trace freezing drizzle/glaze near dawn. Those factors raise the tail risk—but without confirmed neighboring-district closures and without confirmed Rockford/Kent power outages, the most Brier-optimal call remains **OPEN with monitoring**, with **a meaningful chance of a 2-hour delay** if early-morning spot checks find widespread glaze/drifting on bus-route connectors or if any school loses heat overnight.\n\nExtreme-cold auto-closure thresholds are NOT triggered: the web verifier found no credible ≤ -20°F wind chill in the 6–8 AM window (API ~0°F; web snippets even warmer).",
-  "timestamp": "2026-03-16T18:32:07.095Z",
+  "decision_rationale": "All experts converged near ~20% for a FULL closure, and the follow-up checks did not uncover new closure signals. Meteorology + Safety + History agree this is an ICE/patchy glaze risk at ~14–16°F (not a snow-accumulation event), with the most operationally sensitive period near 4–6:30 AM. That supports meaningful disruption risk, but Michigan districts often manage this by pre-treating and/or calling a 2-hour delay—especially when guidance suggests precip is ending by ~7 AM. News intel currently shows no active closings/delays on FOX17 and no Rockford post yet, so the domino effect is not engaged. Power-grid conditions add a non-trivial tail risk (large statewide outages), but without evidence Rockford is specifically impacted, it is not enough to push to a high closure probability. Net: full closure remains a minority outcome driven by (a) unexpectedly widespread glaze on secondary roads during 5–7 AM route checks and/or (b) significant localized outages affecting buildings or key intersections.\n\nOperational recommendation: treat as a likely OPEN or 2-hour DELAY morning, with the closure probability at 22% primarily due to black-ice risk plus outage tail risk.",
+  "timestamp": "2026-03-16T23:11:48.185Z",
   "targetDate": "2026-03-17",
   "targetDayName": "Tuesday",
   "daysAhead": 1,
@@ -18,6 +18,6 @@
     "rounds": 2,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 8.0% spread. Average probability: 17%."
+    "summary": "Agents reached consensus after 2 round(s) with 2.0% spread. Average probability: 20%."
   }
 }
