@@ -1,15 +1,15 @@
 {
-  "probability": 30,
+  "probability": 18,
   "confidence": "moderate",
   "primary_factors": [
-    "Minimal new precipitation during the 5–8 AM bus window (hourly data is essentially dry after ~1 AM), which strongly argues against a classic ‘snow amount/timing’ closure",
-    "Cold temperatures in the mid-teens with wind chills near 0°F increase refreeze/black-ice risk on bridges, shaded areas, hills, and low-traffic rural connectors (a delay trigger more than a full closure trigger)",
-    "Major outage environment for Consumers Energy (~88k customers out) creates a meaningful operational wildcard: a single feeder outage at a school building (heat) or key intersections can force closure/delay even if roads are passable",
-    "No confirmed neighboring-district closure cascade and no Rockford-specific announcement/social buzz yet, which reduces the probability of a proactive closure",
-    "Infrastructure status is inferred (no live MiDrive/KCRC feed retrieved), so ‘ground-truth’ uncertainty remains about how well drifting/compaction from Monday’s winds is being managed on secondary roads"
+    "Minimal *new* accumulation overnight in the hourly feed (~0.1\") with precip ending around 12–1 AM → long plow runway before 6–8 AM buses",
+    "Winter Weather Advisory extends through Tue 11 AM + lingering wind/drifting risk → commute could still be slick/spotty even if no new snow is falling",
+    "Cold temps (mid-teens) “lock in” packed snow and raise black-ice risk on untreated/shaded neighborhood streets, bridges, and rural connectors",
+    "No confirmed neighboring-district closures or Rockford announcement found yet (weak domino/operations signal)",
+    "Power outages are a wildcard: statewide Consumers Energy outages elevated but Kent/Rockford-specific counts not confirmed; could force delay/closure if a building loses heat overnight"
   ],
-  "decision_rationale": "Cross-referencing the experts, there’s broad agreement that Tuesday morning is *not* a heavy/ongoing snow event: the meteorologist resolves the ‘freezing rain’ daily icon as an aggregation artifact and keeps active 5–8 AM precip probability very low. That normally supports a low closure probability in Michigan because plows have ~6+ hours after the midnight burst.\n\nWhere the risk rises above the 10–20% meteorology-only baseline is the second-order/operational layer: (1) refreeze and patchy black ice on secondary/rural bus routes (Safety and History both flag this as the realistic hazard), and (2) the power situation—Consumers Energy is in a major-event restoration posture (~88k outages, high grid stress). Even without knowing Rockford-specific clusters, that kind of outage backdrop increases the chance that *some* schools or critical traffic signals remain out during the decision window, which can force a closure or at least a delay.\n\nNews intelligence does *not* show a domino effect yet (no confirmed neighboring closures; no strong community buzz), which keeps this from jumping into the 40–60% band. Putting it together for Brier-score-optimized decisiveness in Michigan: the most likely outcome is **OPEN or 2-hour delay**, with a **non-trivial but minority** chance of a full closure driven by either widespread early-morning icing on bus routes or a school-facility power/heat issue. Net: **30%** chance of a full snow day/closure.",
-  "timestamp": "2026-03-16T14:30:32.238Z",
+  "decision_rationale": "Across meteorology/history/safety/infrastructure, the base case is a classic West Michigan “storm Monday, cleanup Tuesday” setup: the provided hourly forecast concentrates the last measurable snow around midnight with improving visibility thereafter, leaving ~6.5 hours for plows/salt before buses. Michigan districts usually stay open in that scenario, especially with only ~0.1\" new snow indicated.\n\nWhere the experts meaningfully disagree is not snowfall totals but *second-order hazards*: (1) advisory language through late morning + strong winds can keep drifting/slippery conditions going even after snowfall ends, (2) cold mid-teen temps increase black-ice persistence on untreated neighborhood streets and bridges, and (3) a mismatch between ‘light freezing rain’ labeling/high daily precip chance vs mostly-dry hourly data leaves a non-zero risk of trace freezing drizzle/glaze near dawn. Those factors raise the tail risk—but without confirmed neighboring-district closures and without confirmed Rockford/Kent power outages, the most Brier-optimal call remains **OPEN with monitoring**, with **a meaningful chance of a 2-hour delay** if early-morning spot checks find widespread glaze/drifting on bus-route connectors or if any school loses heat overnight.\n\nExtreme-cold auto-closure thresholds are NOT triggered: the web verifier found no credible ≤ -20°F wind chill in the 6–8 AM window (API ~0°F; web snippets even warmer).",
+  "timestamp": "2026-03-16T18:32:07.095Z",
   "targetDate": "2026-03-17",
   "targetDayName": "Tuesday",
   "daysAhead": 1,
@@ -18,6 +18,6 @@
     "rounds": 2,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 6.0% spread. Average probability: 26%."
+    "summary": "Agents reached consensus after 2 round(s) with 8.0% spread. Average probability: 17%."
   }
 }
