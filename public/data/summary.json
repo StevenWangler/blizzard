@@ -1,24 +1,23 @@
 {
-  "probability": 25,
-  "confidence": "moderate",
+  "probability": 10,
+  "confidence": "high",
   "primary_factors": [
-    "Primary hazard is patchy ice/black ice from trace–very light freezing drizzle/freezing rain roughly 12 AM–6 AM with temps ~19–22°F (ice risk is disproportionately disruptive vs. QPF)",
-    "No extreme-cold trigger: wind chills around 8–12°F at bus time are well above Michigan closure thresholds",
-    "No accumulating snow signal (most sources show ~0\"; one public source suggests <1\" which is not closure-level by itself in Michigan)",
-    "Infrastructure reality: highways/major primaries likely treated and passable by 6–8 AM, but secondary/local neighborhood roads may remain slick into bus routes (key limiter for Rockford)",
-    "News/decision signals are quiet: no confirmed neighboring-district closures/delays and no strong community buzz; that usually correlates with ‘open’ or at most a delay",
-    "Power is a low-likelihood wildcard for Rockford: statewide outages are high but Kent County appears essentially unaffected right now, reducing odds of a weather-forced closure due to outages"
+    "No accumulating snow/precip expected (0\"), so no plowing-capacity driver for closure",
+    "Primary hazard is dense/freezing fog during bus window (roughly 5:30–8:30 AM) with potential near-zero visibility and patchy bridge/overpass glaze",
+    "Road network expected generally passable on trunklines/arterials; risk concentrated on rural low-lying routes, bridges, subdivision streets, and parking lots/sidewalks",
+    "No confirmed domino effect: closings pages show no active closures/delays; no official district announcement found",
+    "Power-outage wildcard exists (Consumers reporting ~44k out systemwide), but Rockford/Kent-specific facility impacts are unconfirmed and trend is decreasing"
   ],
-  "decision_rationale": "Across the six inputs, there’s broad agreement this is not a snow-accumulation event and not an extreme-cold closure setup. The meaningful risk is a nuisance-ice scenario: very light freezing rain/drizzle overnight with temps in the low 20s, which can create patchy black ice—especially on bridges, ramps, hills, and lower-priority subdivision/secondary roads. That aligns with the Safety and Infrastructure assessments: primaries should be mostly serviceable by 6–8 AM with active treatment, while local streets may remain slick into the bus window. Historically, that pattern more often yields ‘open’ or a short delay rather than a full closure, and the News Intel scan shows no confirmed neighboring-district closures/delays and no strong community buzz—both of which typically push decisions toward staying open. Power-grid risk appears lower for Rockford specifically (Kent County currently near-zero outages), so a power-driven closure is not the base case. Net: closure is plausible if early-morning glaze is more widespread than modeled or if bus test routes fail on secondaries, but the most likely outcome remains OPEN, with a meaningful chance of a 1–2 hour delay. Therefore I set a 25% probability for a full snow day/closure (with a higher probability for a delay than for closure).",
-  "timestamp": "2026-03-17T23:13:09.929Z",
-  "targetDate": "2026-03-18",
-  "targetDayName": "Wednesday",
+  "decision_rationale": "All expert inputs converge that Thu 2026-03-19 is not a snowfall or extreme-cold closure setup for Rockford: forecast snowfall is 0\" and verified wind chills are far above the ≤-20°F automatic-closure thresholds. The only credible pathway to a closure is operational safety from freezing fog (reduced sight distance for buses, kids at stops, and stop-arm events) combined with spot icing on bridges/overpasses and untreated local streets/parking lots. Historically, Michigan districts more often mitigate this exact scenario with a short delay rather than an all-day closure, unless there is widespread sustained ≤1/4-mile visibility AND confirmed glazing/black-ice problems across multiple routes. News intel shows no active closings/delays postings yet and no neighboring-district domino signal. Power outages are a secondary wildcard (systemwide outages remain elevated), but there is no Rockford-specific confirmation; outage totals are also trending downward. Given Michigan’s high bar for full cancellations and the lack of confirming closure signals, the most Brier-optimal call is a low (but non-zero) all-day closure probability, with a higher conditional risk of a 1–2 hour delay if fog verifies as widespread at 5:30–6:30 AM.",
+  "timestamp": "2026-03-18T14:31:30.534Z",
+  "targetDate": "2026-03-19",
+  "targetDayName": "Thursday",
   "daysAhead": 1,
   "location": "Rockford, Michigan",
   "collaboration": {
-    "rounds": 2,
+    "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 10.0% spread. Average probability: 21%."
+    "summary": "Agents reached consensus after 1 round(s) with 6.0% spread. Average probability: 8%."
   }
 }
