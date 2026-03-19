@@ -1,23 +1,23 @@
 {
-  "probability": 15,
-  "confidence": "moderate",
+  "probability": 5,
+  "confidence": "high",
   "primary_factors": [
-    "Primary hazard is a narrow 3–8 AM window of freezing drizzle + freezing fog, creating patchy black ice on bridges/secondary roads and potentially very low visibility near bus time",
-    "Negligible snowfall (~0.2 in) and light winds: not a plowable event; Michigan districts usually stay open unless icing is widespread at 6–7 AM",
-    "Plow/treatment timing is tight: precip tapering ~6 AM leaves ~0.5 hour before many bus routes—main corridors likely treated, but local/residential pickup roads may lag",
-    "No confirmed neighboring district closures or Rockford Public Schools announcement yet; minimal community “closure buzz,” which usually correlates with staying open or a delay",
-    "Power outages appear to be improving and not Kent/Rockford-concentrated based on latest available proxy data; unlikely to force a closure by itself"
+    "No accumulating snow or wintry precip expected (0\"; snow probabilities 0) and temperatures stay above freezing through the bus window (roughly 33–36°F, rising after sunrise)",
+    "Main operational hazard is dense fog/very low visibility overnight into early morning; could slow buses and elevate crash risk, but Michigan districts rarely fully close for fog alone",
+    "Only a localized/conditional slick-spot risk (bridges/overpasses/shaded rural patches) from fog/condensation + marginal temps—not a widespread icing event",
+    "Infrastructure signals: roads generally clear; no plow event. Live MDOT/KCRC incident confirmation was not available, increasing uncertainty slightly but not enough to move probability much",
+    "News/operations signals: FOX 17 closings page shows no active closings/delays; no Rockford/neighbor district announcements or community “closure buzz”"
   ],
-  "decision_rationale": "Integrating the experts: Meteorology + Web verification agree there is no extreme-cold trigger and snow totals are negligible; the credible disruption pathway is icing and/or dense freezing fog near the morning commute. Safety and Infrastructure both flag that the timing is the problem—freezing drizzle persisting to about 6 AM leaves too little buffer for uniform treatment of secondary/local roads and bridges before buses roll, even if primary routes improve. News intel lacks confirmed closure cascades or official district signals, which (in Michigan) usually keeps full-closure probability low; however, there is some emerging ground-truth of icy conditions and a reported spinout, supporting at least a non-trivial risk that conditions verify worse than “patchy.” Power grid risk appears to be decreasing and is not currently a dominant closure driver.\n\nBrier-score-wise in Michigan, a full closure on a trace-snow event is uncommon unless icing is widespread at 6–7 AM. So the best calibrated call is: low-to-moderate closure odds (15%) but a meaningfully higher chance of a 2-hour delay if fog/ice verify. Operational recommendation: be prepared to choose a DELAY based on 5:30–6:15 AM road checks (especially bridges/rural connectors) and visibility observations.",
-  "timestamp": "2026-03-18T23:11:54.738Z",
-  "targetDate": "2026-03-19",
-  "targetDayName": "Thursday",
+  "decision_rationale": "All core experts converge on a benign winter-weather setup for Rockford Friday: no snow/ice event is forecast, temperatures remain above freezing through 6–8 AM, and winds are light—so Michigan’s usual closure triggers (accumulating snow, freezing rain/ice accretion, blizzard/drifting, extreme wind chill) are absent. The one meaningful hazard is dense fog (locally near-zero visibility), which can justify slower bus operations and—if widespread and persistent right at bus time—sometimes a 2-hour delay, but full district closure remains historically uncommon. News intelligence strengthens the ‘stay open’ call: no active closings/delays on FOX 17’s system and no Rockford/neighboring-district announcements or community buzz. Power-grid risk is low; Kent County outages appear cleared in the latest check. Given Michigan’s high bar for closures and the lack of a domino-effect signal, the best Brier-optimized forecast is a very low closure probability with a note that delay odds are higher than closure odds if fog verifies as widespread <0.25 mile at 6–7 AM.",
+  "timestamp": "2026-03-19T14:20:27.066Z",
+  "targetDate": "2026-03-20",
+  "targetDayName": "Friday",
   "daysAhead": 1,
   "location": "Rockford, Michigan",
   "collaboration": {
     "rounds": 1,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 1 round(s) with 17.8% spread. Average probability: 10%."
+    "summary": "Agents reached consensus after 1 round(s) with 2.0% spread. Average probability: 4%."
   }
 }
