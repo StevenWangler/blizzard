@@ -34,7 +34,19 @@ on:
       - '.github/workflows/snow-day-prediction.yml'
 
 jobs:
+  off-season-summary:
+    if: vars.BLIZZARD_ACTIVE == 'false'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Record off-season skip
+      run: |
+        echo "🌼 Blizzard is in off-season mode." >> $GITHUB_STEP_SUMMARY
+        echo "Scheduled prediction generation was skipped because BLIZZARD_ACTIVE=false." >> $GITHUB_STEP_SUMMARY
+        echo "Skipping prediction generation because BLIZZARD_ACTIVE=false"
+
   generate-prediction:
+    if: vars.BLIZZARD_ACTIVE != 'false'
     runs-on: ubuntu-latest
     
     permissions:
@@ -62,8 +74,10 @@ jobs:
     
     - name: Generate snow day prediction
       env:
+        BLIZZARD_ACTIVE: ${{ vars.BLIZZARD_ACTIVE || 'true' }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         VITE_WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+        VITE_BLIZZARD_ACTIVE: ${{ vars.BLIZZARD_ACTIVE || 'true' }}
         VITE_ZIP_CODE: ${{ github.event.inputs.zip_code || '49341' }}
       run: node build-tools/generate-prediction.mjs
     
@@ -160,6 +174,7 @@ jobs:
   deploy-site:
     needs: generate-prediction
     if: |
+      vars.BLIZZARD_ACTIVE != 'false' &&
       always() && 
       needs.generate-prediction.result == 'success' &&
       (github.event_name == 'schedule' || github.event.inputs.deploy_after == 'true' || github.event.inputs.deploy_after == true)
@@ -199,6 +214,7 @@ jobs:
         if [ -z "$ZIP_CODE" ]; then ZIP_CODE="49341"; fi
         echo "VITE_ZIP_CODE=${ZIP_CODE}" >> .env
         echo "VITE_OUTCOME_ADMIN_SECRET=${{ secrets.VITE_OUTCOME_ADMIN_SECRET }}" >> .env
+        echo "VITE_BLIZZARD_ACTIVE=${{ vars.BLIZZARD_ACTIVE || 'true' }}" >> .env
         echo "VITE_BLIZZARD_ENV=production" >> .env
         echo "VITE_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .env
     

@@ -8,26 +8,35 @@
 2. Set **Source** to "GitHub Actions"
 3. Your site will be available at: `https://StevenWangler.github.io/snowday-forecast`
 
-### 2. Add Repository Secrets
+### 2. Add Repository Secrets and Variables
 
 Go to **Settings** → **Secrets and variables** → **Actions** and add:
 
-```
-WEATHER_API_KEY = your_weatherapi_com_key_here
-ZIP_CODE = 49341  (optional, defaults to 49341)
-```
+**Repository secrets**
+
+- `WEATHER_API_KEY` — WeatherAPI.com key for forecast data
+- `OPENAI_API_KEY` — used by the scheduled prediction generator
+- `VITE_OUTCOME_ADMIN_SECRET` — passphrase for maintainer tooling / preview mode
+- `PAT_TOKEN` — token used by the prediction workflow to commit updated data
+- `ZIP_CODE` — optional, defaults to `49341`
+
+**Repository variable**
+
+- `BLIZZARD_ACTIVE=true` — turns the forecasting experience on
+
+Set `BLIZZARD_ACTIVE=false` to switch the public site into the lightweight off-season landing page and skip scheduled AI prediction generation.
 
 ### 3. Trigger First Deployment
 
 - Push to main branch, or
 - Go to **Actions** tab → **Daily Weather Update & Deploy** → **Run workflow**
 
-## 🔄 **How Daily Updates Work**
+## 🔄 **How Scheduled Updates Work**
 
-- **Scheduled**: Runs every day at 5 AM EST
-- **Fresh Data**: Fetches latest weather data during build
-- **Static Generation**: Builds optimized static site
-- **Auto Deploy**: Updates GitHub Pages automatically
+- **Scheduled**: Prediction generation runs at 9 AM, 1 PM, and 6 PM EST
+- **Fresh Data**: Each run fetches current forecast data and generates updated prediction artifacts
+- **Static Generation**: GitHub Pages deploys the latest built site after prediction updates
+- **Off-season aware**: When `BLIZZARD_ACTIVE=false`, scheduled prediction generation is skipped on purpose
 
 ## 📊 **Build Process**
 
@@ -72,8 +81,33 @@ schedule:
 The workflow automatically sets:
 - `VITE_WEATHER_API_KEY` from secrets
 - `VITE_ZIP_CODE` from secrets (optional)
+- `VITE_BLIZZARD_ACTIVE` from the `BLIZZARD_ACTIVE` repository variable
 - `VITE_BLIZZARD_ENV=production`
 - `VITE_BUILD_TIME` (current timestamp)
+
+## 🌼 Off-Season Mode
+
+Blizzard now supports a repository-variable-driven off-season mode.
+
+### Turn forecasting off
+
+1. Go to **Settings** → **Secrets and variables** → **Actions**
+2. Set repository variable `BLIZZARD_ACTIVE` to `false`
+3. Run the **Deploy Site** workflow (or push a commit) so GitHub Pages rebuilds with the new flag
+
+Result:
+
+- The site renders a spring/summer landing page instead of the full winter app
+- The scheduled `Generate Blizzard Prediction` workflow skips OpenAI/weather generation work
+- Maintainers can still unlock a preview of the full app using the admin passphrase
+
+### Turn forecasting back on
+
+1. Set `BLIZZARD_ACTIVE` to `true`
+2. Redeploy the site
+3. Scheduled prediction generation resumes on the next workflow run
+
+> GitHub Pages is a static deployment, so changing the repository variable is a build-time switch. Flip the variable, then redeploy.
 
 ## 🚨 **Monitoring & Alerts**
 

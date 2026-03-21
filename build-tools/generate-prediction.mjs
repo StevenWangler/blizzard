@@ -84,12 +84,24 @@ function getDateInTimeZone(fromDate = new Date(), timeZone = DEFAULT_TIMEZONE) {
 const args = process.argv.slice(2)
 const isLocalMode = args.includes('--local') || args.includes('-l')
 
+function isBlizzardActive(value) {
+  if (!value) return true
+  return !['0', 'false', 'no', 'off', 'disabled'].includes(String(value).trim().toLowerCase())
+}
+
 // Enable SDK tracing for debugging and monitoring (false = tracing ON)
 setTracingDisabled(false)
 
 console.log('🚀 Starting Snow Day Prediction Generator (OpenAI Agents SDK)...')
 if (isLocalMode) {
   console.log('📦 Running in LOCAL mode - output will be saved to public/data/local/')
+}
+
+const blizzardActive = isBlizzardActive(process.env.BLIZZARD_ACTIVE ?? process.env.VITE_BLIZZARD_ACTIVE)
+
+if (!blizzardActive) {
+  console.log('🌼 Blizzard is in off-season mode. Skipping prediction generation.')
+  process.exit(0)
 }
 
 /**
