@@ -1,0 +1,273 @@
+import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import {
+  ArrowRight,
+  CloudSun,
+  Flower2,
+  Leaf,
+  LockOpen,
+  RotateCcw,
+  Sparkles,
+  SunMedium,
+  Waves,
+} from 'lucide-react'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { cn } from '../utils/utils'
+
+interface SeasonalLandingPageProps {
+  canEnterPreview: boolean
+  onEnterPreview: () => void
+}
+
+type WarmSeasonTheme = 'spring' | 'summer'
+
+const warmSeasonThemes: Record<WarmSeasonTheme, { label: string; accent: string; glow: string; chip: string }> = {
+  spring: {
+    label: 'Spring Mode',
+    accent: 'from-emerald-400 via-lime-300 to-sky-300',
+    glow: 'bg-emerald-400/30',
+    chip: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-200',
+  },
+  summer: {
+    label: 'Summer Mode',
+    accent: 'from-amber-300 via-yellow-300 to-sky-400',
+    glow: 'bg-amber-300/30',
+    chip: 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-200',
+  },
+}
+
+const gardenMessages = [
+  'A tiny sprout appears. Nature is healing, and so is your OpenAI bill.',
+  'Fresh petals unlocked. The snow globe is officially on vacation.',
+  'The garden is vibing. Forecast credits remain safely unspent.',
+  'Peak warm-weather energy achieved. Blizzard will wake up when winter comes calling.',
+]
+
+function getWarmSeasonTheme(date = new Date()): WarmSeasonTheme {
+  const month = date.getMonth()
+  return month >= 5 && month <= 8 ? 'summer' : 'spring'
+}
+
+export function SeasonalLandingPage({ canEnterPreview, onEnterPreview }: SeasonalLandingPageProps) {
+  const [gardenLevel, setGardenLevel] = useState(0)
+  const themeKey = useMemo(() => getWarmSeasonTheme(), [])
+  const theme = warmSeasonThemes[themeKey]
+  const blossomsOpen = Math.min(gardenLevel, 8)
+  const gardenMessage = gardenMessages[Math.min(gardenLevel, gardenMessages.length - 1)]
+  const funMeter = Math.min(100, gardenLevel * 16)
+
+  return (
+    <div className="relative z-10 space-y-8 sm:space-y-10">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 hidden overflow-hidden md:block">
+        <motion.div
+          className={cn('absolute left-8 top-8 h-44 w-44 rounded-full blur-3xl', theme.glow)}
+          animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute right-16 top-20 h-24 w-40 rounded-full bg-white/50 blur-2xl dark:bg-sky-100/10"
+          animate={{ x: [0, 20, 0], y: [0, -8, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute right-48 top-40 h-20 w-32 rounded-full bg-white/35 blur-2xl dark:bg-white/5"
+          animate={{ x: [0, -18, 0], y: [0, 10, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
+
+      <Card className="relative overflow-hidden rounded-[2rem] border border-primary/10 bg-background/80 shadow-2xl shadow-primary/10 backdrop-blur-xl">
+        <div className={cn('absolute inset-x-0 top-0 h-1 bg-gradient-to-r', theme.accent)} />
+        <CardContent className="grid gap-8 px-6 py-8 sm:px-8 sm:py-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+          <div className="space-y-6">
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary" className={cn('px-3 py-1', theme.chip)}>
+                <SunMedium size={14} />
+                {theme.label}
+              </Badge>
+              <Badge variant="outline" className="px-3 py-1 bg-background/70">
+                <Sparkles size={14} />
+                Forecasts paused
+              </Badge>
+              <Badge variant="outline" className="px-3 py-1 bg-background/70">
+                <Leaf size={14} />
+                AI credits protected
+              </Badge>
+            </div>
+
+            <div className="space-y-4">
+              <motion.h2
+                className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              >
+                Blizzard is on
+                <span className={cn('block bg-gradient-to-r bg-clip-text text-transparent', theme.accent)}>
+                  warm-weather break.
+                </span>
+              </motion.h2>
+              <motion.p
+                className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+              >
+                Snow-day forecasting is currently switched off by the repository flag, so the site stays light,
+                playful, and blissfully free of unnecessary AI runs until winter mode is re-enabled.
+              </motion.p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button size="lg" onClick={() => setGardenLevel(level => level + 1)}>
+                <Flower2 />
+                Grow the garden
+              </Button>
+              <Button size="lg" variant="outline" onClick={onEnterPreview}>
+                <LockOpen />
+                {canEnterPreview ? 'Open maintainer preview' : 'Maintainer preview'}
+                <ArrowRight />
+              </Button>
+            </div>
+
+            <div className="rounded-2xl border border-border/60 bg-card/70 p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Tiny summer side quest</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Tap the garden button and see how lush you can make the off-season.</p>
+                </div>
+                <Badge variant="secondary" className="px-3 py-1">
+                  {funMeter}% chill
+                </Badge>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {Array.from({ length: 8 }).map((_, index) => {
+                  const isOpen = index < blossomsOpen
+                  return (
+                    <motion.div
+                      key={index}
+                      className={cn(
+                        'h-11 w-11 rounded-2xl border transition-colors',
+                        isOpen
+                          ? 'border-emerald-400/40 bg-gradient-to-br from-emerald-300/80 via-lime-200/80 to-pink-200/80'
+                          : 'border-border/60 bg-muted/60'
+                      )}
+                      animate={isOpen ? { y: [0, -4, 0], rotate: [0, -3, 3, 0] } : { y: 0, rotate: 0 }}
+                      transition={{ duration: 2.8, repeat: isOpen ? Infinity : 0, delay: index * 0.08 }}
+                    />
+                  )
+                })}
+              </div>
+              <p className="mt-4 text-sm text-muted-foreground">{gardenMessage}</p>
+              {gardenLevel > 0 && (
+                <Button variant="ghost" className="mt-2 px-0 text-sm" onClick={() => setGardenLevel(0)}>
+                  <RotateCcw />
+                  Reset the garden
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <motion.div
+            className="relative mx-auto flex w-full max-w-md flex-col gap-4"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+          >
+            <div className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-card/80 p-6 shadow-lg">
+              <motion.div
+                className={cn('absolute right-6 top-6 h-20 w-20 rounded-full blur-2xl', theme.glow)}
+                animate={{ scale: [1, 1.08, 1], opacity: [0.45, 0.7, 0.45] }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <div className="relative space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                    <CloudSun size={24} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Low-power mode</p>
+                    <p className="text-sm text-muted-foreground">The expensive snow machinery is taking a nap.</p>
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">Status</p>
+                    <p className="mt-2 text-lg font-semibold text-foreground">Repo flag is off</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Flip <code className="rounded bg-muted px-1 py-0.5 text-xs">BLIZZARD_ACTIVE</code> back to true to wake everything up.</p>
+                  </div>
+                  <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">Result</p>
+                    <p className="mt-2 text-lg font-semibold text-foreground">No forecast runs</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Scheduled prediction jobs can safely skip OpenAI and weather API work.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-2xl border border-dashed border-border/60 bg-background/60 p-4 text-sm text-muted-foreground">
+                  <Waves size={18} className="text-sky-500" />
+                  Beach-day vibes enabled. Snow-day vibes temporarily mothballed.
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="border-primary/10 bg-background/80 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Leaf size={18} className="text-emerald-500" />
+              Why it’s paused
+            </CardTitle>
+            <CardDescription>
+              Off-season mode avoids burning credits when snow-day forecasting is not useful.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p>• The scheduled prediction workflow can skip the OpenAI agent pipeline entirely.</p>
+            <p>• Weather API calls stay quiet unless you intentionally preview or reactivate the app.</p>
+            <p>• The public site still looks polished instead of appearing broken or abandoned.</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-primary/10 bg-background/80 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Sparkles size={18} className="text-primary" />
+              What still works
+            </CardTitle>
+            <CardDescription>
+              The site becomes a lightweight landing page with a tiny interactive flourish.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p>• Theme switching still works, so dark mode fans are not left in the sun.</p>
+            <p>• Maintainers can unlock preview mode to inspect the full app when needed.</p>
+            <p>• Deploys still work normally, so switching modes is operationally simple.</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-primary/10 bg-background/80 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CloudSun size={18} className="text-amber-500" />
+              How to wake Blizzard up
+            </CardTitle>
+            <CardDescription>
+              One repo variable controls both the site experience and the workflow behavior.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p>• Set the repository variable <code className="rounded bg-muted px-1 py-0.5 text-xs">BLIZZARD_ACTIVE</code> to <code className="rounded bg-muted px-1 py-0.5 text-xs">true</code>.</p>
+            <p>• Redeploy the site so GitHub Pages rebuilds with the updated flag.</p>
+            <p>• Scheduled predictions will resume the next time the workflow runs.</p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}

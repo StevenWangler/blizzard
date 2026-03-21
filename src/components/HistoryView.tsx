@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { CloudSnow, CalendarBlank, Clock, ArrowsClockwise } from '@phosphor-icons/react'
 import { fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 interface HistoricalEvent {
   date: string
@@ -156,6 +157,7 @@ export function HistoryView() {
   const [events, setEvents] = useState<HistoricalEvent[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const isMobile = useIsMobile()
 
   const loadHistory = useCallback(async () => {
     setLoading(true)
@@ -235,15 +237,15 @@ export function HistoryView() {
     <div className="space-y-8 relative z-10">
 
       {seasonStats.totalEvents > 0 && (
-        <div className="grid md:grid-cols-5 gap-5">
-          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5">
+          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-primary">{seasonStats.totalEvents}</div>
               <p className="text-sm text-muted-foreground">Total Events</p>
               <p className="text-xs text-muted-foreground">{seasonStats.pendingSchoolDays} pending outcomes</p>
             </CardContent>
           </Card>
-          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
+          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-destructive">{seasonStats.snowDays}</div>
               <p className="text-sm text-muted-foreground">Snow Days</p>
@@ -257,14 +259,14 @@ export function HistoryView() {
               )}
             </CardContent>
           </Card>
-          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
+          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-muted-foreground">{seasonStats.noSchoolDays}</div>
               <p className="text-sm text-muted-foreground">Holidays/Weekends</p>
               <p className="text-xs text-muted-foreground">Excluded from stats</p>
             </CardContent>
           </Card>
-          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
+          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-accent">
                 {seasonStats.modelAccuracy !== null ? `${seasonStats.modelAccuracy}%` : '—'}
@@ -277,7 +279,7 @@ export function HistoryView() {
               </p>
             </CardContent>
           </Card>
-          <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
+          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 col-span-2 lg:col-span-1">
             <CardContent className="p-5 text-center">
               <div className="text-2xl font-bold text-muted-foreground">{seasonStats.realEvents}</div>
               <p className="text-sm text-muted-foreground">Live Records</p>
@@ -289,13 +291,13 @@ export function HistoryView() {
 
       <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <CardTitle className="flex items-center gap-2">
               <CalendarBlank size={20} className="text-primary" />
               Event History
             </CardTitle>
-            <div className="flex items-center gap-3">
-              <div className="w-64">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="w-full sm:w-64">
                 <Input
                   placeholder="Search events..."
                   value={searchTerm}
@@ -306,7 +308,7 @@ export function HistoryView() {
                 <ArrowsClockwise size={18} className={loading ? 'animate-spin' : ''} />
               </Button>
               {seasonStats.totalEvents > 0 && (
-                <div className="text-xs text-muted-foreground">
+                <div className={`text-xs text-muted-foreground ${isMobile ? '' : 'sm:self-center'}`}>
                   {filteredEvents.length} of {seasonStats.totalEvents} events
                 </div>
               )}
@@ -344,7 +346,7 @@ export function HistoryView() {
                 return (
                   <Card key={`${event.date}-${event.recordedAt}`} className="rounded-xl border border-border/60 bg-card/80 p-5 sm:p-6 shadow-sm">
                     <div className="space-y-5">
-                      <div className="flex items-start justify-between">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <h3 className="font-semibold text-lg flex items-center gap-2.5">
                             <CloudSnow size={20} className={event.actualOutcome ? 'text-destructive' : 'text-muted-foreground'} />
@@ -360,7 +362,7 @@ export function HistoryView() {
       
                           </div>
                         </div>
-                        <div className="text-right">
+                        <div className="sm:text-right">
                           {event.noSchoolScheduled ? (
                             <Badge variant="outline" className="bg-muted">
                               No School
@@ -376,7 +378,7 @@ export function HistoryView() {
                         </div>
                       </div>
 
-                      <div className="grid sm:grid-cols-3 gap-5 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-sm">
                         <div>
                           <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Model</p>
                           <p className="font-medium">{event.modelPrediction !== null ? `${event.modelPrediction}%` : '—'}</p>
@@ -395,7 +397,7 @@ export function HistoryView() {
 
                       <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{event.notes}</p>
 
-                      <div className="text-xs text-muted-foreground flex flex-wrap gap-4">
+                      <div className="text-xs text-muted-foreground flex flex-wrap gap-2 sm:gap-4">
                         <span>Logged by <strong>{event.recordedBy}</strong></span>
                         <span>at {new Date(event.recordedAt).toLocaleString()}</span>
                       </div>

@@ -21,6 +21,7 @@ export function Markdown({ content, className = '' }: MarkdownProps) {
   return (
     <div
       className={`prose prose-sm dark:prose-invert max-w-none 
+        break-words [overflow-wrap:anywhere]
         prose-p:my-2 prose-p:leading-relaxed
         prose-ul:my-2 prose-ul:pl-4
         prose-ol:my-2 prose-ol:pl-4
