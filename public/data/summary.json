@@ -1,15 +1,15 @@
 {
-  "probability": 3,
+  "probability": 8,
   "confidence": "high",
   "primary_factors": [
-    "No accumulating precipitation expected (0\" snow / 0\" precip; no winter headlines)",
-    "Temperatures near 31–32°F at bus time with wind chills mid‑20s: not near extreme-cold closure thresholds",
-    "Roads expected broadly clear; only plausible hazard is isolated patchy black ice on bridges/overpasses/shaded spots if residual moisture exists",
-    "No confirmed neighboring-district closures or Rockford announcement signals; community/social buzz is quiet",
-    "Power-outage footprint is minor (~82 customers countywide) with low weather-driven outage risk"
+    "No accumulating snow/ice is forecast for Monday morning (0\" snow; no freezing precip signal) and no winter alerts—Michigan districts almost always stay open in this setup.",
+    "Main credible risk is *refreeze/patchy black ice* 4–9 AM due to Sunday light rain + temps ~30–32°F at bus time; greatest risk on bridges/overpasses, shaded rural roads, and low-volume neighborhood streets.",
+    "Road/infrastructure posture looks normal: roads currently reported clear; treatment (bridge pre-salt) is plausible per KCRC prep messaging, but no evidence of widespread hazardous conditions yet.",
+    "No domino effect: no confirmed closures/delays found for Rockford or nearby districts in the latest check; community chatter is minimal/uncertain.",
+    "Power grid risk is low (very low statewide outages in the available snapshot; dry/light-wind forecast reduces new-outage risk)."
   ],
-  "decision_rationale": "All six inputs converge on a normal operating day for Rockford, MI on Mon 2026-03-23: meteorology shows a dry forecast with no snow/ice and no alerts; historical analogs put closure likelihood near the floor in late March absent a discrete hazard (snow band, freezing rain, blizzard, or extreme wind chill). Infrastructure expectations are “non-plow morning” with roads generally clear. The only meaningful disagreement was Safety initially framing ice/commute impact as “moderate,” but on clarification this is best interpreted as a targeted, precautionary black-ice check (bridge decks, shaded spots) rather than a district-wide hazard—consistent with meteorology/history/infrastructure. News intel finds no Rockford or neighboring-district closure/delay postings and no domino-effect signals. Power-grid risk is low with only a small, stable outage count countywide.\n\nWhat would make this wrong: an unforecast micro-ice event (brief freezing drizzle) or widespread refreeze from substantial leftover moisture plus multiple early-morning crashes on secondary roads; or a localized facility power/boiler issue. Those are plausible but low-probability, so the Brier-optimized call stays very low rather than hedging mid-range.",
-  "timestamp": "2026-03-21T18:17:26.183Z",
+  "decision_rationale": "All six inputs largely agree: Monday is a dry, post-frontal near-freezing morning with modest NNW wind and no accumulating snow/ice expected. Meteorology and historical analogs both support a very low closure rate (roughly 2–5%) for ‘cold, dry, no-precip’ days in West Michigan. Safety and news add a real but bounded tail risk: Sunday rain followed by subfreezing temperatures can create black ice, and KCRC’s “prepping for ice” messaging reinforces that crews are at least anticipating a refreeze scenario. However, there is no evidence of ongoing freezing drizzle/freezing rain, no widespread precip on Monday, no neighboring-district closure momentum, and infrastructure/power factors do not show disruptive signals. In Michigan, patchy refreeze most often results in targeted salting + cautious driving (sometimes a *delay* if spot checks find multiple slick segments), not a full district closure. Therefore the most Brier-optimal call is still decisively low: ~8% chance of a full snow day/closure (with a higher chance of a minor delay than a closure if ice verifies).",
+  "timestamp": "2026-03-21T23:09:08.506Z",
   "targetDate": "2026-03-23",
   "targetDayName": "Monday",
   "daysAhead": 2,
@@ -18,6 +18,6 @@
     "rounds": 2,
     "consensus": true,
     "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 2.0% spread. Average probability: 3%."
+    "summary": "Agents reached consensus after 2 round(s) with 5.0% spread. Average probability: 7%."
   }
 }
