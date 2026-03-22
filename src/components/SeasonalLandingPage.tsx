@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import {
   Snowflake,
   Sun,
@@ -7,10 +7,8 @@ import {
   Flower2,
   TreePalm,
   Waves,
-  ArrowRight,
+  Leaf,
 } from 'lucide-react'
-import { Button } from './ui/button'
-import { Card, CardContent } from './ui/card'
 import { cn } from '../utils/utils'
 import { useDevicePerformance } from '../hooks/use-mobile'
 
@@ -18,11 +16,16 @@ import { useDevicePerformance } from '../hooks/use-mobile'
 
 interface SeasonalLandingPageProps {}
 
-type Season = 'spring' | 'summer'
+type Season = 'spring' | 'summer' | 'fall'
 
 function getSeason(date = new Date()): Season {
   const m = date.getMonth()
-  return m >= 5 && m <= 8 ? 'summer' : 'spring'
+  // Summer: June-August (5-7)
+  // Fall: September-November (8-10)
+  // Spring: December-May (11, 0-4)
+  if (m >= 5 && m <= 7) return 'summer'
+  if (m >= 8 && m <= 10) return 'fall'
+  return 'spring'
 }
 
 function daysUntilWinter(date = new Date()): number {
@@ -36,37 +39,61 @@ function daysUntilWinter(date = new Date()): number {
 const seasonConfig = {
   spring: {
     emoji: '🌸',
-    greeting: 'Enjoy the sunshine!',
+    greeting: 'Enjoy the blooming season!',
     bg: 'from-emerald-50 via-lime-50 to-sky-50 dark:from-emerald-950/40 dark:via-lime-950/30 dark:to-sky-950/40',
     accent: 'from-emerald-400 via-lime-400 to-teal-400',
     orb: 'from-emerald-300 via-lime-200 to-sky-200',
     orbShadow: 'shadow-emerald-300/40',
     particleColors: ['#f9a8d4', '#fde047', '#86efac', '#c4b5fd', '#fcd34d'],
-    cardBg: 'bg-emerald-500/5 border-emerald-500/10',
+    floatingElements: ['🌸', '🌼', '🦋', '🌺', '🌻', '🌷'],
+    accentColor: '#86efac',
+    glowColor: 'rgba(134, 239, 172, 0.3)',
   },
   summer: {
     emoji: '☀️',
-    greeting: 'Soak up the sun!',
+    greeting: 'Soak up the sunshine!',
     bg: 'from-amber-50 via-yellow-50 to-sky-50 dark:from-amber-950/40 dark:via-yellow-950/30 dark:to-sky-950/40',
     accent: 'from-amber-400 via-yellow-400 to-orange-400',
     orb: 'from-amber-300 via-yellow-200 to-orange-200',
     orbShadow: 'shadow-amber-300/40',
     particleColors: ['#fde047', '#fb923c', '#fbbf24', '#fef08a', '#fdba74'],
-    cardBg: 'bg-amber-500/5 border-amber-500/10',
+    floatingElements: ['🌞', '🌻', '🦋', '☀️', '🌺', '🐝'],
+    accentColor: '#fbbf24',
+    glowColor: 'rgba(251, 191, 36, 0.3)',
+  },
+  fall: {
+    emoji: '🍂',
+    greeting: 'Embrace the autumn colors!',
+    bg: 'from-orange-50 via-red-50 to-amber-50 dark:from-orange-950/40 dark:via-red-950/30 dark:to-amber-950/40',
+    accent: 'from-orange-400 via-red-400 to-amber-400',
+    orb: 'from-orange-300 via-red-200 to-amber-200',
+    orbShadow: 'shadow-orange-300/40',
+    particleColors: ['#fb923c', '#ef4444', '#f59e0b', '#dc2626', '#ea580c'],
+    floatingElements: ['🍂', '🍁', '🍃', '🎃', '🌰', '🦉'],
+    accentColor: '#fb923c',
+    glowColor: 'rgba(251, 146, 60, 0.3)',
   },
 }
 
-/* ── floating particles ── */
+/* ── advanced particle system ── */
 
 interface Particle {
-  x: number; y: number; size: number
-  vx: number; vy: number
-  opacity: number; rotation: number; rotSpeed: number
-  wobblePhase: number; wobbleFreq: number
+  x: number
+  y: number
+  size: number
+  vx: number
+  vy: number
+  opacity: number
+  rotation: number
+  rotSpeed: number
+  wobblePhase: number
+  wobbleFreq: number
   color: string
+  pulsePhase: number
+  pulseSpeed: number
 }
 
-function ParticleCanvas({ season }: { season: Season }) {
+function AdvancedParticleCanvas({ season }: { season: Season }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const frameRef = useRef<number>(undefined)
   const { performanceMultiplier, isLowEnd } = useDevicePerformance()
@@ -92,47 +119,82 @@ function ParticleCanvas({ season }: { season: Season }) {
     resize()
     window.addEventListener('resize', resize)
 
-    const count = Math.max(6, Math.floor(30 * performanceMultiplier))
+    // Create multiple particle layers for depth
+    const count = Math.max(15, Math.floor(50 * performanceMultiplier))
     const particles: Particle[] = Array.from({ length: count }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      size: 2 + Math.random() * 4,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: -(0.12 + Math.random() * 0.28),
-      opacity: 0.15 + Math.random() * 0.35,
+      size: 1.5 + Math.random() * 5,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: -(0.08 + Math.random() * 0.35),
+      opacity: 0.2 + Math.random() * 0.5,
       rotation: Math.random() * 360,
-      rotSpeed: (Math.random() - 0.5) * 0.8,
+      rotSpeed: (Math.random() - 0.5) * 1.2,
       wobblePhase: Math.random() * Math.PI * 2,
-      wobbleFreq: 0.006 + Math.random() * 0.01,
+      wobbleFreq: 0.004 + Math.random() * 0.012,
       color: colors[Math.floor(Math.random() * colors.length)],
+      pulsePhase: Math.random() * Math.PI * 2,
+      pulseSpeed: 0.02 + Math.random() * 0.03,
     }))
 
     let tick = 0
     const draw = () => {
       tick++
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
+
       for (const p of particles) {
+        // Update position with wobble
         p.y += p.vy
-        p.x += p.vx + Math.sin(tick * p.wobbleFreq + p.wobblePhase) * 0.3
+        p.x += p.vx + Math.sin(tick * p.wobbleFreq + p.wobblePhase) * 0.4
         p.rotation += p.rotSpeed
-        if (p.y < -15) { p.y = window.innerHeight + 10; p.x = Math.random() * window.innerWidth }
-        if (p.x < -15) p.x = window.innerWidth + 10
-        if (p.x > window.innerWidth + 15) p.x = -10
+
+        // Pulse effect
+        const pulse = Math.sin(tick * p.pulseSpeed + p.pulsePhase) * 0.3 + 1
+
+        // Wrap around screen
+        if (p.y < -20) {
+          p.y = window.innerHeight + 15
+          p.x = Math.random() * window.innerWidth
+        }
+        if (p.x < -20) p.x = window.innerWidth + 15
+        if (p.x > window.innerWidth + 20) p.x = -15
 
         ctx.save()
         ctx.translate(p.x, p.y)
         ctx.rotate((p.rotation * Math.PI) / 180)
-        ctx.globalAlpha = p.opacity
-        ctx.beginPath()
-        if (p.size > 3.5) {
-          ctx.ellipse(0, 0, p.size * 0.55, p.size, 0, 0, Math.PI * 2)
-        } else {
-          ctx.arc(0, 0, p.size, 0, Math.PI * 2)
+
+        // Add glow effect for larger particles
+        if (p.size > 3) {
+          ctx.shadowBlur = 12 * pulse
+          ctx.shadowColor = p.color
         }
+
+        ctx.globalAlpha = p.opacity * (0.85 + pulse * 0.15)
+        ctx.beginPath()
+
+        const currentSize = p.size * pulse
+        if (p.size > 4) {
+          // Draw star-like shape for larger particles
+          for (let i = 0; i < 5; i++) {
+            const angle = (i * 4 * Math.PI) / 5
+            const radius = i % 2 === 0 ? currentSize : currentSize * 0.5
+            const px = Math.cos(angle) * radius
+            const py = Math.sin(angle) * radius
+            if (i === 0) ctx.moveTo(px, py)
+            else ctx.lineTo(px, py)
+          }
+          ctx.closePath()
+        } else if (p.size > 2.5) {
+          ctx.ellipse(0, 0, currentSize * 0.6, currentSize, 0, 0, Math.PI * 2)
+        } else {
+          ctx.arc(0, 0, currentSize, 0, Math.PI * 2)
+        }
+
         ctx.fillStyle = p.color
         ctx.fill()
         ctx.restore()
       }
+
       frameRef.current = requestAnimationFrame(draw)
     }
     frameRef.current = requestAnimationFrame(draw)
@@ -147,195 +209,229 @@ function ParticleCanvas({ season }: { season: Season }) {
   return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" aria-hidden />
 }
 
-/* ── snowflake catch game ── */
+/* ── floating seasonal elements ── */
 
-interface FallingFlake {
-  id: number; x: number; y: number; size: number; speed: number; caught: boolean
+interface FloatingElement {
+  id: number
+  emoji: string
+  delay: number
+  duration: number
+  startX: number
+  drift: number
 }
 
-function SnowflakeCatchGame() {
-  const [score, setScore] = useState(0)
-  const [flakes, setFlakes] = useState<FallingFlake[]>([])
-  const [playing, setPlaying] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(15)
-  const [highScore, setHighScore] = useState(() => {
-    try { return Number(localStorage.getItem('blizzard:catch-high') || 0) } catch { return 0 }
-  })
-  const nextId = useRef(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined)
-  const spawnRef = useRef<ReturnType<typeof setInterval>>(undefined)
+function FloatingElements({ season }: { season: Season }) {
+  const config = seasonConfig[season]
+  const { isLowEnd } = useDevicePerformance()
 
-  const startGame = useCallback(() => {
-    setScore(0)
-    setFlakes([])
-    setTimeLeft(15)
-    setPlaying(true)
-    nextId.current = 0
-  }, [])
+  const elements = useMemo<FloatingElement[]>(() => {
+    if (isLowEnd) return []
+    return Array.from({ length: 8 }, (_, i) => ({
+      id: i,
+      emoji: config.floatingElements[i % config.floatingElements.length],
+      delay: i * 1.5,
+      duration: 12 + Math.random() * 8,
+      startX: 10 + (i * 80) / 8,
+      drift: (Math.random() - 0.5) * 30,
+    }))
+  }, [season, config.floatingElements, isLowEnd])
 
-  // Timer
-  useEffect(() => {
-    if (!playing) return
-    const t = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          setPlaying(false)
-          clearInterval(t)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-    intervalRef.current = t
-    return () => clearInterval(t)
-  }, [playing])
-
-  // Save high score when game ends
-  useEffect(() => {
-    if (!playing && score > 0 && score > highScore) {
-      setHighScore(score)
-      try { localStorage.setItem('blizzard:catch-high', String(score)) } catch {}
-    }
-  }, [playing, score, highScore])
-
-  // Spawn flakes
-  useEffect(() => {
-    if (!playing) return
-    const spawn = () => {
-      const id = nextId.current++
-      setFlakes(prev => [
-        ...prev.filter(f => !f.caught && f.y < 300),
-        {
-          id,
-          x: 10 + Math.random() * 80,
-          y: -5,
-          size: 24 + Math.random() * 14,
-          speed: 1.2 + Math.random() * 1.8,
-          caught: false,
-        },
-      ])
-    }
-    spawn()
-    spawnRef.current = setInterval(spawn, 700 + Math.random() * 400)
-    return () => { if (spawnRef.current) clearInterval(spawnRef.current) }
-  }, [playing])
-
-  // Animate flakes falling
-  useEffect(() => {
-    if (!playing) return
-    const frame = setInterval(() => {
-      setFlakes(prev => prev.map(f => f.caught ? f : { ...f, y: f.y + f.speed }).filter(f => f.y < 300 || f.caught))
-    }, 40)
-    return () => clearInterval(frame)
-  }, [playing])
-
-  const catchFlake = useCallback((id: number) => {
-    setFlakes(prev => prev.map(f => f.id === id ? { ...f, caught: true } : f))
-    setScore(s => s + 1)
-  }, [])
+  if (isLowEnd) return null
 
   return (
-    <Card className="relative overflow-hidden border-primary/10 bg-background/70 backdrop-blur-xl">
-      <CardContent className="p-5 sm:p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-foreground">Catch the Snowflakes</h3>
-            <p className="text-sm text-muted-foreground">
-              {playing
-                ? `${timeLeft}s left`
-                : score > 0
-                  ? `Nice! You caught ${score} snowflake${score !== 1 ? 's' : ''}!`
-                  : 'Tap the falling snowflakes before they hit the ground!'}
-            </p>
-          </div>
-          <div className="text-right">
-            {playing ? (
-              <span className="text-2xl font-bold tabular-nums text-foreground">{score}</span>
-            ) : (
-              <Button size="sm" onClick={startGame}>
-                {score > 0 ? 'Play again' : 'Start'}
-              </Button>
-            )}
-          </div>
-        </div>
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+      {elements.map((el) => (
+        <motion.div
+          key={el.id}
+          className="absolute text-4xl opacity-40 dark:opacity-30"
+          style={{ left: `${el.startX}%`, top: '100%' }}
+          animate={{
+            y: ['0vh', '-110vh'],
+            x: [0, el.drift, -el.drift, 0],
+            rotate: [0, 360],
+            scale: [0.8, 1.2, 0.8],
+          }}
+          transition={{
+            duration: el.duration,
+            delay: el.delay,
+            repeat: Infinity,
+            ease: 'linear',
+            x: {
+              duration: el.duration / 2,
+              repeat: Infinity,
+              repeatType: 'mirror',
+              ease: 'easeInOut',
+            },
+            rotate: {
+              duration: el.duration / 3,
+              repeat: Infinity,
+              ease: 'linear',
+            },
+            scale: {
+              duration: el.duration / 4,
+              repeat: Infinity,
+              repeatType: 'mirror',
+              ease: 'easeInOut',
+            },
+          }}
+        >
+          {el.emoji}
+        </motion.div>
+      ))}
+    </div>
+  )
+}
 
-        {/* Game area */}
-        <div className="relative h-64 sm:h-72 overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-sky-100/50 via-sky-50/30 to-white/40 dark:from-sky-900/20 dark:via-sky-950/10 dark:to-background/30" style={{ touchAction: playing ? 'none' : 'auto' }}>
-          {!playing && score === 0 && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-              <motion.div
-                animate={{ y: [0, -8, 0], rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <Snowflake size={48} className="text-sky-400/60" />
-              </motion.div>
-              <p className="text-sm">Press start to play!</p>
-            </div>
-          )}
+/* ── ambient glow orbs ── */
 
-          {!playing && score > 0 && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-              <motion.p
-                className="text-4xl font-bold text-foreground"
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 200 }}
-              >
-                {score} ❄️
-              </motion.p>
-              {score > highScore - 1 && score > 0 && (
-                <motion.p
-                  className="text-sm font-medium text-amber-500"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  {score >= highScore ? '🏆 New high score!' : `Best: ${highScore}`}
-                </motion.p>
-              )}
-              {highScore > 0 && score < highScore && (
-                <p className="text-sm text-muted-foreground">Best: {highScore}</p>
-              )}
-            </div>
-          )}
+function AmbientGlowOrbs({ season }: { season: Season }) {
+  const config = seasonConfig[season]
+  const { isLowEnd } = useDevicePerformance()
 
-          <AnimatePresence>
-            {flakes.filter(f => !f.caught).map(f => (
-              <motion.button
-                key={f.id}
-                className="absolute cursor-pointer select-none outline-none p-2 -m-2"
-                style={{ left: `${f.x}%`, top: f.y, fontSize: f.size }}
-                onClick={() => catchFlake(f.id)}
-                onTouchEnd={(e) => { e.preventDefault(); catchFlake(f.id) }}
-                whileTap={{ scale: 1.4 }}
-                exit={{ scale: 0, opacity: 0, rotate: 90 }}
-                transition={{ duration: 0.15 }}
-                aria-label="Catch snowflake"
-              >
-                ❄️
-              </motion.button>
-            ))}
-          </AnimatePresence>
+  if (isLowEnd) return null
 
-          {/* Caught burst effects */}
-          <AnimatePresence>
-            {flakes.filter(f => f.caught).map(f => (
-              <motion.div
-                key={`burst-${f.id}`}
-                className="absolute pointer-events-none"
-                style={{ left: `${f.x}%`, top: f.y }}
-                initial={{ scale: 1, opacity: 1 }}
-                animate={{ scale: 2, opacity: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <span style={{ fontSize: f.size }}>✨</span>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </CardContent>
-    </Card>
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+      {/* Large ambient glow orbs */}
+      <motion.div
+        className="absolute -left-32 top-1/4 h-96 w-96 rounded-full opacity-20 blur-3xl"
+        style={{ backgroundColor: config.accentColor }}
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.15, 0.25, 0.15],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      <motion.div
+        className="absolute -right-32 top-2/3 h-96 w-96 rounded-full opacity-20 blur-3xl"
+        style={{ backgroundColor: config.accentColor }}
+        animate={{
+          scale: [1.2, 1, 1.2],
+          opacity: [0.2, 0.3, 0.2],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      <motion.div
+        className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10 blur-3xl"
+        style={{ backgroundColor: config.accentColor }}
+        animate={{
+          scale: [1, 1.5, 1],
+          opacity: [0.1, 0.2, 0.1],
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+    </div>
+  )
+}
+
+/* ── interactive gradient waves ── */
+
+function GradientWaves({ season }: { season: Season }) {
+  const config = seasonConfig[season]
+  const { isLowEnd } = useDevicePerformance()
+
+  if (isLowEnd) return null
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30" aria-hidden>
+      <motion.div
+        className={cn('absolute inset-0 bg-gradient-to-br', config.accent, 'opacity-20')}
+        animate={{
+          scale: [1, 1.1, 1],
+          rotate: [0, 5, 0],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      <motion.div
+        className={cn('absolute inset-0 bg-gradient-to-tl', config.accent, 'opacity-15')}
+        animate={{
+          scale: [1.1, 1, 1.1],
+          rotate: [0, -5, 0],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+    </div>
+  )
+}
+
+/* ── seasonal icon animation ── */
+
+function SeasonalIcon({ season }: { season: Season }) {
+  const icons = {
+    spring: <Flower2 size={80} className="text-emerald-400" strokeWidth={1.5} />,
+    summer: <Sun size={80} className="text-amber-400" strokeWidth={1.5} />,
+    fall: <Leaf size={80} className="text-orange-400" strokeWidth={1.5} />,
+  }
+
+  return (
+    <motion.div
+      className="relative"
+      animate={{
+        rotate: [0, 360],
+        scale: [1, 1.1, 1],
+      }}
+      transition={{
+        rotate: {
+          duration: 20,
+          repeat: Infinity,
+          ease: 'linear',
+        },
+        scale: {
+          duration: 4,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        },
+      }}
+    >
+      {icons[season]}
+
+      {/* Animated rings around icon */}
+      <motion.div
+        className="absolute inset-0 rounded-full border-2 border-current opacity-30"
+        animate={{
+          scale: [1, 1.5, 1],
+          opacity: [0.3, 0, 0.3],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: 'easeOut',
+        }}
+      />
+      <motion.div
+        className="absolute inset-0 rounded-full border-2 border-current opacity-30"
+        animate={{
+          scale: [1, 1.5, 1],
+          opacity: [0.3, 0, 0.3],
+        }}
+        transition={{
+          duration: 3,
+          delay: 1,
+          repeat: Infinity,
+          ease: 'easeOut',
+        }}
+      />
+    </motion.div>
   )
 }
 
@@ -348,7 +444,11 @@ export function SeasonalLandingPage({}: SeasonalLandingPageProps) {
 
   return (
     <>
-      <ParticleCanvas season={season} />
+      {/* Layered animation effects */}
+      <AmbientGlowOrbs season={season} />
+      <GradientWaves season={season} />
+      <AdvancedParticleCanvas season={season} />
+      <FloatingElements season={season} />
 
       <div className="relative z-10 mx-auto max-w-2xl space-y-8 px-1">
         {/* ── Hero section ── */}
@@ -357,16 +457,9 @@ export function SeasonalLandingPage({}: SeasonalLandingPageProps) {
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+            className="flex justify-center"
           >
-            <motion.span
-              className="inline-block text-6xl sm:text-7xl"
-              animate={{ rotate: [0, 8, -8, 0], y: [0, -6, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              role="img"
-              aria-label={season === 'summer' ? 'sun' : 'cherry blossom'}
-            >
-              {config.emoji}
-            </motion.span>
+            <SeasonalIcon season={season} />
           </motion.div>
 
           <motion.div
@@ -387,31 +480,146 @@ export function SeasonalLandingPage({}: SeasonalLandingPageProps) {
             </p>
           </motion.div>
 
-          {/* Countdown */}
+          {/* Countdown with enhanced animation */}
           <motion.div
             className="inline-flex items-center gap-3 rounded-full border border-border/60 bg-background/70 px-5 py-2.5 shadow-sm backdrop-blur"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
+            whileHover={{ scale: 1.05 }}
           >
-            <Snowflake size={18} className="text-sky-400" />
+            <motion.div
+              animate={{
+                rotate: [0, 360],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+            >
+              <Snowflake size={18} className="text-sky-400" />
+            </motion.div>
             <span className="text-sm text-muted-foreground">
               <span className="font-semibold text-foreground tabular-nums">{days}</span> days until winter mode
             </span>
           </motion.div>
         </div>
 
-        {/* ── Snowflake catch game ── */}
+        {/* Decorative season info cards */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.6 }}
+          className="grid gap-4 sm:grid-cols-3"
         >
-          <SnowflakeCatchGame />
+          {season === 'spring' && (
+            <>
+              <SeasonInfoCard
+                icon={<Flower2 size={24} />}
+                title="Spring"
+                description="Nature awakens"
+                delay={0.4}
+              />
+              <SeasonInfoCard
+                icon={<CloudSun size={24} />}
+                title="Sunshine"
+                description="Warmer days ahead"
+                delay={0.5}
+              />
+              <SeasonInfoCard
+                icon={<Waves size={24} />}
+                title="Fresh Air"
+                description="Enjoy the outdoors"
+                delay={0.6}
+              />
+            </>
+          )}
+          {season === 'summer' && (
+            <>
+              <SeasonInfoCard
+                icon={<Sun size={24} />}
+                title="Summer"
+                description="Peak sunshine"
+                delay={0.4}
+              />
+              <SeasonInfoCard
+                icon={<TreePalm size={24} />}
+                title="Vacation"
+                description="Relax and unwind"
+                delay={0.5}
+              />
+              <SeasonInfoCard
+                icon={<Waves size={24} />}
+                title="Beach Time"
+                description="Make memories"
+                delay={0.6}
+              />
+            </>
+          )}
+          {season === 'fall' && (
+            <>
+              <SeasonInfoCard
+                icon={<Leaf size={24} />}
+                title="Autumn"
+                description="Colors change"
+                delay={0.4}
+              />
+              <SeasonInfoCard
+                icon={<CloudSun size={24} />}
+                title="Crisp Air"
+                description="Cozy season"
+                delay={0.5}
+              />
+              <SeasonInfoCard
+                icon={<Snowflake size={24} />}
+                title="Winter Soon"
+                description="Almost here!"
+                delay={0.6}
+              />
+            </>
+          )}
         </motion.div>
-
-
       </div>
     </>
+  )
+}
+
+/* ── season info card ── */
+
+interface SeasonInfoCardProps {
+  icon: React.ReactNode
+  title: string
+  description: string
+  delay: number
+}
+
+function SeasonInfoCard({ icon, title, description, delay }: SeasonInfoCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5 }}
+      whileHover={{ scale: 1.05, y: -5 }}
+      className="group relative overflow-hidden rounded-lg border border-border/40 bg-background/50 p-4 backdrop-blur-sm transition-all hover:border-border/60 hover:bg-background/60"
+    >
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+        initial={false}
+      />
+      <div className="relative flex flex-col items-center gap-2 text-center">
+        <motion.div
+          className="text-primary"
+          whileHover={{ rotate: 360 }}
+          transition={{ duration: 0.6 }}
+        >
+          {icon}
+        </motion.div>
+        <div>
+          <h3 className="font-semibold text-foreground">{title}</h3>
+          <p className="text-xs text-muted-foreground">{description}</p>
+        </div>
+      </div>
+    </motion.div>
   )
 }
