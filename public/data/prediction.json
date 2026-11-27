@@ -4,68 +4,70 @@
     "snow_day_probability": 2,
     "confidence_level": "moderate",
     "primary_factors": [
-      "Forecast shows **no accumulating snow or ice** during the Monday (Nov 30) morning commute window (about 6–8 a.m.).",
-      "Temperatures are **near freezing** early Monday (around 32–33°F), so the main risk would be **patchy refreeze/black ice** if any wet pavement remains from Sunday’s rain.",
-      "Winds look **modest** (no obvious blizzard/drifting or dangerous visibility signal in the provided hourly forecast).",
-      "This is **4 days out**, so the exact overnight low and any leftover precipitation timing could still shift."
+      "NWS point forecast for Rockford shows rain Sunday, then mainly dry Sunday night with a low around 32°F; Monday is partly sunny with a high near 38°F (no wintry precipitation indicated during school hours).",
+      "Your hourly forecast also shows no precipitation 1–11 a.m. Monday, with temperatures ~32–35°F and light-to-moderate winds—so no blowing/drifting snow signal.",
+      "Main potential hazard is *black ice* early Monday if roads stay wet from Sunday rain and some surfaces dip to/below freezing near daybreak; pavement temperatures and exact drying/refreeze timing are unknown.",
+      "NWS Grand Rapids discussion notes a small chance of snow mixing in Sunday night, but says accumulating snow chances look low and travel impacts are not expected beyond wet roads at times."
     ],
     "timeline": {
-      "conditions_start": "Sun 2026-11-29 daytime/evening: rain showers likely (wet roads possible).",
-      "peak_impact_time": "Mon 2026-11-30 ~05:30–08:00: if temperatures dip to ~32°F or below while pavement is still wet, isolated slick spots could form.",
-      "conditions_improve": "Mon 2026-11-30 after sunrise through late morning: forecast turns dry with temps slowly rising above freezing, lowering ice risk."
+      "conditions_start": "Possible slick-spot window begins late Sunday night (2026-11-29) as temperatures fall toward freezing while roads may still be wet.",
+      "peak_impact_time": "Highest concern is the bus/commute window Monday 2026-11-30 around 6–8 a.m., if any refreeze happens on untreated/colder surfaces (bridges, shaded roads).",
+      "conditions_improve": "Likely improving after sunrise late morning Monday (roughly 9–11 a.m.) as temperatures rise above freezing and roads continue to dry."
     },
-    "decision_rationale": "Based on the supplied hourly forecast for Rockford, MI, rain is concentrated on Sunday (Nov 29) with temperatures well above freezing, and by early Monday morning (Nov 30) precipitation chances are very low and air temps hover around 33°F. That setup is usually **not** strong evidence for a districtwide full-day closure by itself; there is no signal here for heavy snow, freezing rain, whiteout visibility, or extreme cold exposure during bus hours.\n\nThe one meaningful “watch item” is **refreeze risk**: Sunday’s wet roads could become slick overnight if temperatures reach ~32°F (or slightly below on colder surfaces/low spots). However, the provided hourly forecast keeps Monday morning around 33°F and dry, and the NWS point forecast for Rockford also points to Sunday showers with a low near freezing and a dry/partly sunny Monday. NWS Grand Rapids point forecast (Rockford, MI) updated **11:03 pm EST Thu Nov 26, 2026**: `https://forecast.weather.gov/MapClick.php?FcstType=graphical&lat=43.1262&lg=english&lon=-85.5566&unit=0` (shows the official NWS point page and update time), and the NWS text point forecast page updated **10:03 pm EST Thu Nov 26, 2026**: `https://forecast.weather.gov/MapClick.php?CityName=Rockford&lat=43.1262&lon=-85.5566&site=GRR&state=MI` (Sunday showers; Sunday night chance of showers before 1am with low near 32; Monday partly sunny). ([forecast.weather.gov](https://forecast.weather.gov/MapClick.php?CityName=Rockford&lat=43.1262&lon=-85.5566&site=GRR&state=MI)) \n\nUnknowns that matter: actual **road/pavement temperatures** on neighborhood streets and rural routes (not directly forecast here), and whether the true overnight low ends up **below** freezing long enough to create widespread icy travel conditions.",
+    "decision_rationale": "Based on the provided hourly forecast, Monday morning (2026-11-30) is forecast to be dry with temps near freezing (around 32–35°F). That setup usually does *not* support a districtwide full-day closure by itself; the one thing that could still cause problems is refreezing/black ice from Sunday rainfall.\n\nExternal evidence used (available before the issue time):\n- NWS Point Forecast for Rockford, MI (updated 6:05 AM EST Fri Nov 27, 2026) shows: Sunday ‘Showers’ (90%), Sunday night ‘30% chance of showers before 1am’ with low around 32°F, and Monday ‘Partly sunny’ high near 38°F. URL: `https://forecast.weather.gov/MapClick.php?lat=43.1273&lon=-85.5575`. ([forecast.weather.gov](https://forecast.weather.gov/MapClick.php?lat=43.1273&lon=-85.5575))\n- NWS Grand Rapids Area Forecast Discussion (product timestamp 5:58 AM EST Fri Nov 27, 2026; discussion text notes colder air Sunday night into Monday, possible snow mix Sunday night but accumulating snow chances look low; ‘no real impacts to travel are expected except for some wet roads at times’). URL: `https://forecast.weather.gov/product.php?format=txt&issuedby=GRR&product=AFD`. ([forecast.weather.gov](https://forecast.weather.gov/product.php?format=txt&glossary=0&issuedby=GRR&product=AFD&site=BOX&version=1))\n\nWhat’s unknown right now (and matters): how long rain lasts Sunday evening, how quickly roads dry, and whether pavement temps fall below 32°F near daybreak Monday. Those details can swing this toward a delay, but a full-day closure still looks unlikely from the current forecast signal.",
     "alternative_scenarios": [
       {
-        "scenario": "Colder-than-forecast Sunday night (temps drop to ~30–31°F for several hours) while roads stay wet from Sunday rain → more widespread black ice on untreated surfaces Monday morning.",
-        "probability": 0.12,
-        "impact": "Closure risk rises (more likely delays/closures), especially if slick conditions are widespread at 6–8 a.m."
+        "scenario": "Rain ends earlier Sunday evening and roads dry well before temperatures near freezing overnight.",
+        "probability": 0.45,
+        "impact": "Very low chance of closure (could be a normal school day)."
       },
       {
-        "scenario": "Sunday precipitation shifts later and/or changes to wet snow with some accumulation into late Sunday night.",
-        "probability": 0.08,
-        "impact": "Higher chance of a Monday closure if accumulation affects side roads and bus routes near decision time."
+        "scenario": "Light showers linger later into Sunday night than currently forecast and temps dip to 30–31°F near daybreak, creating more widespread black ice on secondary roads.",
+        "probability": 0.35,
+        "impact": "Higher chance of a *delay*; still only a modest chance of a full-day closure unless icing is widespread and persistent."
       },
       {
-        "scenario": "Warmer/drier trend holds (temps stay 33–36°F overnight; roads dry out before dawn).",
-        "probability": 0.6,
-        "impact": "Very low closure risk; normal operations likely."
+        "scenario": "Sunday night trends colder and wetter than forecast, with a more organized rain/snow mix and some accumulating snow before ending.",
+        "probability": 0.2,
+        "impact": "Would increase the odds of significant Monday-morning travel issues and could push closure odds upward."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "Re-check the forecast Sunday evening for the **overnight low** and any precip lingering past midnight.",
-        "If temps are forecast to be **32°F or lower** near 4–8 a.m., be prepared for the possibility of **isolated slick spots** even without snow.",
-        "Monitor for any new NWS advisories/warnings for late Sunday night into Monday morning."
+        "Re-check updated NWS Rockford point forecast and any short-term statements Sunday evening (2026-11-29) and again pre-dawn Monday for any change in precip ending time and overnight lows.",
+        "If Monday morning issues occur, they are more likely to be isolated slick spots/black ice than deep snow; a delay (vs. full-day closure) is the more plausible weather response from this forecast alone.",
+        "Base any decision on *observed* early-morning road conditions (especially neighborhood/secondary roads used by buses), since forecast alone can’t confirm icing."
       ],
       "for_residents": [
-        "Plan for a possibly **slick spot or two** Monday morning (bridges, shaded roads) if temps hover near 32°F.",
-        "Leave extra following distance and allow more time if roads look wet near freezing.",
-        "Check district messages early Monday morning in case conditions change overnight."
+        "Plan for the possibility of slick spots Monday around 6–8 a.m., especially on bridges, shaded streets, and less-traveled roads.",
+        "Leave extra time and reduce speed if roads look wet but air temps are near freezing (that’s a common black-ice setup).",
+        "Check for updated forecasts/alerts Sunday night and early Monday morning."
       ],
       "for_authorities": [
-        "If forecasts trend colder (≤32°F) after a wet Sunday, consider readiness for **spot treatment** on priority routes (conditions are currently unknown).",
-        "Watch for any late-night precip timing shifts that would increase refreeze risk."
+        "If Sunday stays wet into late evening, prioritize monitoring for refreeze risk overnight into the Monday commute window.",
+        "Communicate clearly if spotty icing is expected (bridges/secondary roads), since that’s the main plausible hazard in this setup."
       ]
     },
     "updates_needed": true,
-    "next_evaluation_time": "2026-11-29 20:00 local"
+    "next_evaluation_time": "2026-11-29 20:00 EST (and again early 2026-11-30 around 04:30 EST for any last-minute refreeze/precip timing changes)"
   },
-  "evidenceTimestamp": "2026-11-27T04:34:56.099Z",
-  "timestamp": "2026-11-27T04:35:58.693Z",
+  "evidenceTimestamp": "2026-11-27T14:20:04.705Z",
+  "timestamp": "2026-11-27T14:21:25.535Z",
   "targetDate": "2026-11-30",
   "targetDayName": "Monday",
-  "daysAhead": 4,
+  "daysAhead": 3,
   "location": "Rockford, Michigan",
   "morningWeather": {
     "snowInches": null,
-    "overnightLowF": 33,
+    "overnightLowF": 32,
     "overnightFeelsLikeF": null,
     "morningHighF": 33,
-    "maxWindMph": 8,
+    "maxWindMph": 10,
     "minVisibilityMiles": null,
     "iceType": null,
-    "alerts": []
+    "alerts": [
+      "Special Weather Statement issued November 27 at 7:39AM EST by NWS Grand Rapids MI"
+    ]
   },
   "raw_weather_data": {
     "location": {
@@ -75,207 +77,88 @@
     },
     "source": {
       "forecast": "https://api.weather.gov/gridpoints/GRR/44,54/forecast/hourly",
-      "updatedAt": "2026-11-27T04:03:27+00:00"
+      "updatedAt": "2026-11-27T14:03:28+00:00"
     },
     "forecast": {
       "forecastday": [
         {
-          "date": "2026-11-26",
-          "hour": [
-            {
-              "time": "2026-11-26 23:00",
-              "temp_f": 39,
-              "condition": {
-                "text": "Rain Showers"
-              },
-              "wind": "15 mph",
-              "wind_dir": "NE",
-              "precipitation_probability_pct": 83,
-              "wind_mph": 15
-            }
-          ],
-          "day": {
-            "mintemp_f": 39,
-            "maxtemp_f": 39
-          }
-        },
-        {
           "date": "2026-11-27",
           "hour": [
             {
-              "time": "2026-11-27 00:00",
-              "temp_f": 38,
-              "condition": {
-                "text": "Rain Showers"
-              },
-              "wind": "14 mph",
-              "wind_dir": "NE",
-              "precipitation_probability_pct": 78,
-              "wind_mph": 14
-            },
-            {
-              "time": "2026-11-27 01:00",
-              "temp_f": 37,
-              "condition": {
-                "text": "Rain Showers"
-              },
-              "wind": "13 mph",
-              "wind_dir": "NNE",
-              "precipitation_probability_pct": 94,
-              "wind_mph": 13
-            },
-            {
-              "time": "2026-11-27 02:00",
-              "temp_f": 37,
-              "condition": {
-                "text": "Rain Showers"
-              },
-              "wind": "13 mph",
-              "wind_dir": "NNE",
-              "precipitation_probability_pct": 92,
-              "wind_mph": 13
-            },
-            {
-              "time": "2026-11-27 03:00",
-              "temp_f": 36,
-              "condition": {
-                "text": "Rain Showers"
-              },
-              "wind": "13 mph",
-              "wind_dir": "NNE",
-              "precipitation_probability_pct": 86,
-              "wind_mph": 13
-            },
-            {
-              "time": "2026-11-27 04:00",
-              "temp_f": 36,
-              "condition": {
-                "text": "Rain Showers"
-              },
-              "wind": "12 mph",
-              "wind_dir": "NNE",
-              "precipitation_probability_pct": 83,
-              "wind_mph": 12
-            },
-            {
-              "time": "2026-11-27 05:00",
-              "temp_f": 36,
-              "condition": {
-                "text": "Rain Showers"
-              },
-              "wind": "12 mph",
-              "wind_dir": "N",
-              "precipitation_probability_pct": 85,
-              "wind_mph": 12
-            },
-            {
-              "time": "2026-11-27 06:00",
-              "temp_f": 34,
-              "condition": {
-                "text": "Patchy Fog"
-              },
-              "wind": "12 mph",
-              "wind_dir": "N",
-              "precipitation_probability_pct": 98,
-              "wind_mph": 12
-            },
-            {
-              "time": "2026-11-27 07:00",
-              "temp_f": 35,
-              "condition": {
-                "text": "Patchy Fog"
-              },
-              "wind": "10 mph",
-              "wind_dir": "N",
-              "precipitation_probability_pct": 97,
-              "wind_mph": 10
-            },
-            {
-              "time": "2026-11-27 08:00",
-              "temp_f": 34,
-              "condition": {
-                "text": "Patchy Fog"
-              },
-              "wind": "10 mph",
-              "wind_dir": "N",
-              "precipitation_probability_pct": 97,
-              "wind_mph": 10
-            },
-            {
               "time": "2026-11-27 09:00",
-              "temp_f": 34,
+              "temp_f": 37,
               "condition": {
                 "text": "Patchy Fog"
               },
               "wind": "9 mph",
               "wind_dir": "N",
-              "precipitation_probability_pct": 81,
+              "precipitation_probability_pct": 78,
               "wind_mph": 9
             },
             {
               "time": "2026-11-27 10:00",
-              "temp_f": 36,
+              "temp_f": 38,
               "condition": {
                 "text": "Patchy Fog"
               },
               "wind": "9 mph",
               "wind_dir": "N",
-              "precipitation_probability_pct": 68,
+              "precipitation_probability_pct": 69,
               "wind_mph": 9
             },
             {
               "time": "2026-11-27 11:00",
-              "temp_f": 37,
+              "temp_f": 38,
               "condition": {
                 "text": "Patchy Fog"
               },
               "wind": "9 mph",
               "wind_dir": "N",
-              "precipitation_probability_pct": 68,
+              "precipitation_probability_pct": 61,
               "wind_mph": 9
             },
             {
               "time": "2026-11-27 12:00",
-              "temp_f": 37,
+              "temp_f": 39,
               "condition": {
-                "text": "Patchy Fog"
+                "text": "Chance Light Rain"
               },
               "wind": "9 mph",
               "wind_dir": "N",
-              "precipitation_probability_pct": 84,
+              "precipitation_probability_pct": 52,
               "wind_mph": 9
             },
             {
               "time": "2026-11-27 13:00",
-              "temp_f": 39,
+              "temp_f": 40,
               "condition": {
-                "text": "Chance Rain Showers"
+                "text": "Chance Light Rain"
               },
-              "wind": "9 mph",
+              "wind": "8 mph",
               "wind_dir": "NNW",
               "precipitation_probability_pct": 44,
-              "wind_mph": 9
+              "wind_mph": 8
             },
             {
               "time": "2026-11-27 14:00",
               "temp_f": 40,
               "condition": {
-                "text": "Chance Rain Showers"
+                "text": "Chance Light Rain"
               },
               "wind": "8 mph",
               "wind_dir": "NNW",
-              "precipitation_probability_pct": 25,
+              "precipitation_probability_pct": 32,
               "wind_mph": 8
             },
             {
               "time": "2026-11-27 15:00",
-              "temp_f": 41,
+              "temp_f": 42,
               "condition": {
-                "text": "Slight Chance Rain Showers"
+                "text": "Slight Chance Light Rain"
               },
               "wind": "7 mph",
-              "wind_dir": "NW",
-              "precipitation_probability_pct": 17,
+              "wind_dir": "NNW",
+              "precipitation_probability_pct": 19,
               "wind_mph": 7
             },
             {
@@ -284,10 +167,10 @@
               "condition": {
                 "text": "Cloudy"
               },
-              "wind": "7 mph",
-              "wind_dir": "NW",
+              "wind": "6 mph",
+              "wind_dir": "W",
               "precipitation_probability_pct": 7,
-              "wind_mph": 7
+              "wind_mph": 6
             },
             {
               "time": "2026-11-27 17:00",
@@ -297,7 +180,7 @@
               },
               "wind": "7 mph",
               "wind_dir": "WNW",
-              "precipitation_probability_pct": 3,
+              "precipitation_probability_pct": 6,
               "wind_mph": 7
             },
             {
@@ -308,45 +191,45 @@
               },
               "wind": "7 mph",
               "wind_dir": "NW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 4,
               "wind_mph": 7
             },
             {
               "time": "2026-11-27 19:00",
+              "temp_f": 41,
+              "condition": {
+                "text": "Cloudy"
+              },
+              "wind": "7 mph",
+              "wind_dir": "WNW",
+              "precipitation_probability_pct": 3,
+              "wind_mph": 7
+            },
+            {
+              "time": "2026-11-27 20:00",
               "temp_f": 40,
               "condition": {
                 "text": "Cloudy"
               },
               "wind": "7 mph",
               "wind_dir": "NW",
-              "precipitation_probability_pct": 3,
-              "wind_mph": 7
-            },
-            {
-              "time": "2026-11-27 20:00",
-              "temp_f": 38,
-              "condition": {
-                "text": "Cloudy"
-              },
-              "wind": "7 mph",
-              "wind_dir": "WNW",
               "precipitation_probability_pct": 2,
               "wind_mph": 7
             },
             {
               "time": "2026-11-27 21:00",
-              "temp_f": 37,
+              "temp_f": 39,
               "condition": {
                 "text": "Mostly Cloudy"
               },
               "wind": "6 mph",
-              "wind_dir": "WNW",
+              "wind_dir": "NW",
               "precipitation_probability_pct": 0,
               "wind_mph": 6
             },
             {
               "time": "2026-11-27 22:00",
-              "temp_f": 37,
+              "temp_f": 39,
               "condition": {
                 "text": "Mostly Cloudy"
               },
@@ -357,18 +240,18 @@
             },
             {
               "time": "2026-11-27 23:00",
-              "temp_f": 37,
+              "temp_f": 38,
               "condition": {
                 "text": "Mostly Cloudy"
               },
               "wind": "5 mph",
-              "wind_dir": "W",
+              "wind_dir": "WNW",
               "precipitation_probability_pct": 0,
               "wind_mph": 5
             }
           ],
           "day": {
-            "mintemp_f": 34,
+            "mintemp_f": 37,
             "maxtemp_f": 42
           }
         },
@@ -377,7 +260,7 @@
           "hour": [
             {
               "time": "2026-11-28 00:00",
-              "temp_f": 36,
+              "temp_f": 38,
               "condition": {
                 "text": "Mostly Cloudy"
               },
@@ -388,7 +271,7 @@
             },
             {
               "time": "2026-11-28 01:00",
-              "temp_f": 35,
+              "temp_f": 37,
               "condition": {
                 "text": "Mostly Cloudy"
               },
@@ -404,7 +287,7 @@
                 "text": "Partly Cloudy"
               },
               "wind": "5 mph",
-              "wind_dir": "WSW",
+              "wind_dir": "W",
               "precipitation_probability_pct": 0,
               "wind_mph": 5
             },
@@ -415,7 +298,7 @@
                 "text": "Partly Cloudy"
               },
               "wind": "5 mph",
-              "wind_dir": "W",
+              "wind_dir": "WSW",
               "precipitation_probability_pct": 0,
               "wind_mph": 5
             },
@@ -458,10 +341,10 @@
               "condition": {
                 "text": "Mostly Cloudy"
               },
-              "wind": "5 mph",
+              "wind": "6 mph",
               "wind_dir": "WSW",
-              "precipitation_probability_pct": 0,
-              "wind_mph": 5
+              "precipitation_probability_pct": 5,
+              "wind_mph": 6
             },
             {
               "time": "2026-11-28 08:00",
@@ -471,7 +354,7 @@
               },
               "wind": "6 mph",
               "wind_dir": "WSW",
-              "precipitation_probability_pct": 0,
+              "precipitation_probability_pct": 8,
               "wind_mph": 6
             },
             {
@@ -482,18 +365,18 @@
               },
               "wind": "7 mph",
               "wind_dir": "WSW",
-              "precipitation_probability_pct": 4,
+              "precipitation_probability_pct": 0,
               "wind_mph": 7
             },
             {
               "time": "2026-11-28 10:00",
-              "temp_f": 39,
+              "temp_f": 40,
               "condition": {
-                "text": "Mostly Cloudy"
+                "text": "Cloudy"
               },
               "wind": "8 mph",
               "wind_dir": "WSW",
-              "precipitation_probability_pct": 0,
+              "precipitation_probability_pct": 14,
               "wind_mph": 8
             },
             {
@@ -503,118 +386,118 @@
                 "text": "Mostly Cloudy"
               },
               "wind": "9 mph",
-              "wind_dir": "WSW",
-              "precipitation_probability_pct": 0,
+              "wind_dir": "SW",
+              "precipitation_probability_pct": 2,
               "wind_mph": 9
             },
             {
               "time": "2026-11-28 12:00",
-              "temp_f": 43,
+              "temp_f": 44,
               "condition": {
-                "text": "Partly Sunny"
+                "text": "Chance Rain Showers"
               },
               "wind": "12 mph",
-              "wind_dir": "WSW",
-              "precipitation_probability_pct": 1,
+              "wind_dir": "SW",
+              "precipitation_probability_pct": 28,
               "wind_mph": 12
             },
             {
               "time": "2026-11-28 13:00",
               "temp_f": 45,
               "condition": {
-                "text": "Partly Sunny"
+                "text": "Mostly Cloudy"
               },
               "wind": "13 mph",
-              "wind_dir": "WSW",
-              "precipitation_probability_pct": 1,
+              "wind_dir": "SW",
+              "precipitation_probability_pct": 3,
               "wind_mph": 13
             },
             {
               "time": "2026-11-28 14:00",
               "temp_f": 45,
               "condition": {
-                "text": "Partly Sunny"
+                "text": "Mostly Cloudy"
               },
               "wind": "13 mph",
-              "wind_dir": "WSW",
-              "precipitation_probability_pct": 1,
+              "wind_dir": "SW",
+              "precipitation_probability_pct": 0,
               "wind_mph": 13
             },
             {
               "time": "2026-11-28 15:00",
               "temp_f": 46,
               "condition": {
-                "text": "Partly Sunny"
+                "text": "Mostly Cloudy"
               },
               "wind": "13 mph",
-              "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "wind_dir": "WSW",
+              "precipitation_probability_pct": 0,
               "wind_mph": 13
             },
             {
               "time": "2026-11-28 16:00",
-              "temp_f": 46,
+              "temp_f": 45,
               "condition": {
-                "text": "Mostly Sunny"
+                "text": "Partly Sunny"
               },
               "wind": "12 mph",
-              "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "wind_dir": "WSW",
+              "precipitation_probability_pct": 0,
               "wind_mph": 12
             },
             {
               "time": "2026-11-28 17:00",
-              "temp_f": 45,
+              "temp_f": 44,
               "condition": {
-                "text": "Mostly Sunny"
+                "text": "Partly Sunny"
               },
               "wind": "10 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 0,
               "wind_mph": 10
             },
             {
               "time": "2026-11-28 18:00",
-              "temp_f": 44,
+              "temp_f": 42,
               "condition": {
                 "text": "Partly Cloudy"
               },
               "wind": "8 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 0,
               "wind_mph": 8
             },
             {
               "time": "2026-11-28 19:00",
-              "temp_f": 42,
+              "temp_f": 41,
               "condition": {
                 "text": "Partly Cloudy"
               },
               "wind": "7 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 6,
               "wind_mph": 7
             },
             {
               "time": "2026-11-28 20:00",
-              "temp_f": 41,
+              "temp_f": 40,
               "condition": {
-                "text": "Partly Cloudy"
+                "text": "Mostly Cloudy"
               },
               "wind": "6 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 6,
               "wind_mph": 6
             },
             {
               "time": "2026-11-28 21:00",
-              "temp_f": 41,
+              "temp_f": 40,
               "condition": {
-                "text": "Partly Cloudy"
+                "text": "Mostly Cloudy"
               },
               "wind": "6 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 6,
               "wind_mph": 6
             },
             {
@@ -625,7 +508,7 @@
               },
               "wind": "6 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 6,
               "wind_mph": 6
             },
             {
@@ -636,7 +519,7 @@
               },
               "wind": "6 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 6,
               "wind_mph": 6
             }
           ],
@@ -652,270 +535,270 @@
               "time": "2026-11-29 00:00",
               "temp_f": 39,
               "condition": {
-                "text": "Partly Cloudy"
+                "text": "Mostly Cloudy"
               },
               "wind": "5 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 6,
               "wind_mph": 5
             },
             {
               "time": "2026-11-29 01:00",
               "temp_f": 39,
               "condition": {
-                "text": "Slight Chance Rain Showers"
+                "text": "Mostly Cloudy"
               },
               "wind": "5 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 21,
+              "precipitation_probability_pct": 11,
               "wind_mph": 5
             },
             {
               "time": "2026-11-29 02:00",
               "temp_f": 39,
               "condition": {
-                "text": "Slight Chance Rain Showers"
+                "text": "Mostly Cloudy"
               },
               "wind": "5 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 21,
+              "precipitation_probability_pct": 11,
               "wind_mph": 5
             },
             {
               "time": "2026-11-29 03:00",
               "temp_f": 38,
               "condition": {
-                "text": "Slight Chance Rain Showers"
+                "text": "Mostly Cloudy"
               },
               "wind": "3 mph",
-              "wind_dir": "SW",
-              "precipitation_probability_pct": 21,
+              "wind_dir": "SSW",
+              "precipitation_probability_pct": 11,
               "wind_mph": 3
             },
             {
               "time": "2026-11-29 04:00",
               "temp_f": 38,
               "condition": {
-                "text": "Slight Chance Rain Showers"
+                "text": "Mostly Cloudy"
               },
               "wind": "3 mph",
               "wind_dir": "SSW",
-              "precipitation_probability_pct": 21,
+              "precipitation_probability_pct": 11,
               "wind_mph": 3
             },
             {
               "time": "2026-11-29 05:00",
-              "temp_f": 38,
+              "temp_f": 37,
               "condition": {
-                "text": "Slight Chance Rain Showers"
+                "text": "Mostly Cloudy"
               },
               "wind": "3 mph",
               "wind_dir": "SSW",
-              "precipitation_probability_pct": 21,
+              "precipitation_probability_pct": 11,
               "wind_mph": 3
             },
             {
               "time": "2026-11-29 06:00",
-              "temp_f": 38,
+              "temp_f": 37,
               "condition": {
-                "text": "Slight Chance Rain Showers"
+                "text": "Mostly Cloudy"
               },
               "wind": "3 mph",
               "wind_dir": "SSW",
-              "precipitation_probability_pct": 21,
+              "precipitation_probability_pct": 11,
               "wind_mph": 3
             },
             {
               "time": "2026-11-29 07:00",
-              "temp_f": 38,
+              "temp_f": 37,
               "condition": {
-                "text": "Rain Showers Likely"
+                "text": "Rain Showers"
               },
               "wind": "3 mph",
               "wind_dir": "S",
-              "precipitation_probability_pct": 66,
+              "precipitation_probability_pct": 85,
               "wind_mph": 3
             },
             {
               "time": "2026-11-29 08:00",
-              "temp_f": 39,
+              "temp_f": 38,
               "condition": {
-                "text": "Rain Showers Likely"
+                "text": "Rain Showers"
               },
               "wind": "3 mph",
               "wind_dir": "S",
-              "precipitation_probability_pct": 66,
+              "precipitation_probability_pct": 85,
               "wind_mph": 3
             },
             {
               "time": "2026-11-29 09:00",
-              "temp_f": 41,
+              "temp_f": 40,
               "condition": {
-                "text": "Rain Showers Likely"
+                "text": "Rain Showers"
               },
               "wind": "5 mph",
               "wind_dir": "S",
-              "precipitation_probability_pct": 66,
+              "precipitation_probability_pct": 85,
               "wind_mph": 5
             },
             {
               "time": "2026-11-29 10:00",
-              "temp_f": 42,
+              "temp_f": 41,
               "condition": {
-                "text": "Rain Showers Likely"
+                "text": "Rain Showers"
               },
               "wind": "5 mph",
               "wind_dir": "S",
-              "precipitation_probability_pct": 66,
+              "precipitation_probability_pct": 85,
               "wind_mph": 5
             },
             {
               "time": "2026-11-29 11:00",
-              "temp_f": 43,
+              "temp_f": 42,
               "condition": {
-                "text": "Rain Showers Likely"
+                "text": "Rain Showers"
               },
               "wind": "5 mph",
-              "wind_dir": "SSW",
-              "precipitation_probability_pct": 66,
+              "wind_dir": "S",
+              "precipitation_probability_pct": 85,
               "wind_mph": 5
             },
             {
               "time": "2026-11-29 12:00",
-              "temp_f": 43,
+              "temp_f": 42,
               "condition": {
-                "text": "Rain Showers Likely"
+                "text": "Rain Showers"
               },
               "wind": "5 mph",
               "wind_dir": "SSW",
-              "precipitation_probability_pct": 66,
+              "precipitation_probability_pct": 85,
               "wind_mph": 5
             },
             {
               "time": "2026-11-29 13:00",
-              "temp_f": 43,
+              "temp_f": 42,
               "condition": {
                 "text": "Rain Showers"
               },
               "wind": "5 mph",
               "wind_dir": "SSW",
-              "precipitation_probability_pct": 92,
+              "precipitation_probability_pct": 87,
               "wind_mph": 5
             },
             {
               "time": "2026-11-29 14:00",
-              "temp_f": 43,
+              "temp_f": 42,
               "condition": {
                 "text": "Rain Showers"
               },
-              "wind": "5 mph",
+              "wind": "6 mph",
               "wind_dir": "WSW",
-              "precipitation_probability_pct": 92,
-              "wind_mph": 5
+              "precipitation_probability_pct": 87,
+              "wind_mph": 6
             },
             {
               "time": "2026-11-29 15:00",
-              "temp_f": 43,
+              "temp_f": 41,
               "condition": {
                 "text": "Rain Showers"
               },
-              "wind": "5 mph",
-              "wind_dir": "WNW",
-              "precipitation_probability_pct": 92,
-              "wind_mph": 5
+              "wind": "6 mph",
+              "wind_dir": "NW",
+              "precipitation_probability_pct": 87,
+              "wind_mph": 6
             },
             {
               "time": "2026-11-29 16:00",
-              "temp_f": 42,
+              "temp_f": 41,
               "condition": {
                 "text": "Rain Showers"
               },
-              "wind": "5 mph",
-              "wind_dir": "NW",
-              "precipitation_probability_pct": 92,
-              "wind_mph": 5
+              "wind": "7 mph",
+              "wind_dir": "NNW",
+              "precipitation_probability_pct": 87,
+              "wind_mph": 7
             },
             {
               "time": "2026-11-29 17:00",
-              "temp_f": 42,
+              "temp_f": 40,
               "condition": {
                 "text": "Rain Showers"
               },
-              "wind": "6 mph",
-              "wind_dir": "NW",
-              "precipitation_probability_pct": 92,
-              "wind_mph": 6
+              "wind": "8 mph",
+              "wind_dir": "NNW",
+              "precipitation_probability_pct": 87,
+              "wind_mph": 8
             },
             {
               "time": "2026-11-29 18:00",
-              "temp_f": 41,
+              "temp_f": 39,
               "condition": {
                 "text": "Rain Showers"
               },
-              "wind": "6 mph",
-              "wind_dir": "NW",
-              "precipitation_probability_pct": 92,
-              "wind_mph": 6
+              "wind": "8 mph",
+              "wind_dir": "NNW",
+              "precipitation_probability_pct": 87,
+              "wind_mph": 8
             },
             {
               "time": "2026-11-29 19:00",
-              "temp_f": 42,
-              "condition": {
-                "text": "Chance Rain Showers"
-              },
-              "wind": "7 mph",
-              "wind_dir": "NW",
-              "precipitation_probability_pct": 38,
-              "wind_mph": 7
-            },
-            {
-              "time": "2026-11-29 20:00",
-              "temp_f": 41,
-              "condition": {
-                "text": "Chance Rain Showers"
-              },
-              "wind": "7 mph",
-              "wind_dir": "NW",
-              "precipitation_probability_pct": 38,
-              "wind_mph": 7
-            },
-            {
-              "time": "2026-11-29 21:00",
-              "temp_f": 40,
-              "condition": {
-                "text": "Chance Rain Showers"
-              },
-              "wind": "8 mph",
-              "wind_dir": "NW",
-              "precipitation_probability_pct": 38,
-              "wind_mph": 8
-            },
-            {
-              "time": "2026-11-29 22:00",
-              "temp_f": 39,
-              "condition": {
-                "text": "Chance Rain Showers"
-              },
-              "wind": "8 mph",
-              "wind_dir": "NW",
-              "precipitation_probability_pct": 38,
-              "wind_mph": 8
-            },
-            {
-              "time": "2026-11-29 23:00",
               "temp_f": 38,
               "condition": {
                 "text": "Chance Rain Showers"
               },
-              "wind": "8 mph",
+              "wind": "9 mph",
               "wind_dir": "NW",
-              "precipitation_probability_pct": 38,
-              "wind_mph": 8
+              "precipitation_probability_pct": 28,
+              "wind_mph": 9
+            },
+            {
+              "time": "2026-11-29 20:00",
+              "temp_f": 38,
+              "condition": {
+                "text": "Chance Rain Showers"
+              },
+              "wind": "10 mph",
+              "wind_dir": "NW",
+              "precipitation_probability_pct": 28,
+              "wind_mph": 10
+            },
+            {
+              "time": "2026-11-29 21:00",
+              "temp_f": 37,
+              "condition": {
+                "text": "Chance Rain Showers"
+              },
+              "wind": "10 mph",
+              "wind_dir": "NW",
+              "precipitation_probability_pct": 28,
+              "wind_mph": 10
+            },
+            {
+              "time": "2026-11-29 22:00",
+              "temp_f": 37,
+              "condition": {
+                "text": "Chance Rain Showers"
+              },
+              "wind": "10 mph",
+              "wind_dir": "NW",
+              "precipitation_probability_pct": 28,
+              "wind_mph": 10
+            },
+            {
+              "time": "2026-11-29 23:00",
+              "temp_f": 36,
+              "condition": {
+                "text": "Chance Rain Showers"
+              },
+              "wind": "10 mph",
+              "wind_dir": "NW",
+              "precipitation_probability_pct": 28,
+              "wind_mph": 10
             }
           ],
           "day": {
-            "mintemp_f": 38,
-            "maxtemp_f": 43
+            "mintemp_f": 36,
+            "maxtemp_f": 42
           }
         },
         {
@@ -923,119 +806,42 @@
           "hour": [
             {
               "time": "2026-11-30 00:00",
-              "temp_f": 37,
+              "temp_f": 36,
               "condition": {
                 "text": "Chance Rain Showers"
               },
-              "wind": "8 mph",
+              "wind": "9 mph",
               "wind_dir": "NW",
-              "precipitation_probability_pct": 38,
-              "wind_mph": 8
+              "precipitation_probability_pct": 28,
+              "wind_mph": 9
             },
             {
               "time": "2026-11-30 01:00",
-              "temp_f": 36,
+              "temp_f": 35,
               "condition": {
                 "text": "Mostly Cloudy"
               },
-              "wind": "8 mph",
+              "wind": "9 mph",
               "wind_dir": "NW",
-              "precipitation_probability_pct": 6,
-              "wind_mph": 8
+              "precipitation_probability_pct": 1,
+              "wind_mph": 9
             },
             {
               "time": "2026-11-30 02:00",
-              "temp_f": 35,
+              "temp_f": 34,
               "condition": {
                 "text": "Mostly Cloudy"
               },
-              "wind": "8 mph",
+              "wind": "9 mph",
               "wind_dir": "NW",
-              "precipitation_probability_pct": 6,
-              "wind_mph": 8
+              "precipitation_probability_pct": 1,
+              "wind_mph": 9
             },
             {
               "time": "2026-11-30 03:00",
-              "temp_f": 35,
-              "condition": {
-                "text": "Mostly Cloudy"
-              },
-              "wind": "8 mph",
-              "wind_dir": "WNW",
-              "precipitation_probability_pct": 6,
-              "wind_mph": 8
-            },
-            {
-              "time": "2026-11-30 04:00",
-              "temp_f": 34,
-              "condition": {
-                "text": "Mostly Cloudy"
-              },
-              "wind": "8 mph",
-              "wind_dir": "WNW",
-              "precipitation_probability_pct": 6,
-              "wind_mph": 8
-            },
-            {
-              "time": "2026-11-30 05:00",
               "temp_f": 33,
               "condition": {
                 "text": "Mostly Cloudy"
-              },
-              "wind": "8 mph",
-              "wind_dir": "WNW",
-              "precipitation_probability_pct": 6,
-              "wind_mph": 8
-            },
-            {
-              "time": "2026-11-30 06:00",
-              "temp_f": 33,
-              "condition": {
-                "text": "Mostly Cloudy"
-              },
-              "wind": "7 mph",
-              "wind_dir": "WNW",
-              "precipitation_probability_pct": 6,
-              "wind_mph": 7
-            },
-            {
-              "time": "2026-11-30 07:00",
-              "temp_f": 33,
-              "condition": {
-                "text": "Partly Sunny"
-              },
-              "wind": "7 mph",
-              "wind_dir": "WNW",
-              "precipitation_probability_pct": 1,
-              "wind_mph": 7
-            },
-            {
-              "time": "2026-11-30 08:00",
-              "temp_f": 33,
-              "condition": {
-                "text": "Partly Sunny"
-              },
-              "wind": "7 mph",
-              "wind_dir": "WNW",
-              "precipitation_probability_pct": 1,
-              "wind_mph": 7
-            },
-            {
-              "time": "2026-11-30 09:00",
-              "temp_f": 34,
-              "condition": {
-                "text": "Partly Sunny"
-              },
-              "wind": "8 mph",
-              "wind_dir": "WNW",
-              "precipitation_probability_pct": 1,
-              "wind_mph": 8
-            },
-            {
-              "time": "2026-11-30 10:00",
-              "temp_f": 35,
-              "condition": {
-                "text": "Partly Sunny"
               },
               "wind": "9 mph",
               "wind_dir": "WNW",
@@ -1043,54 +849,131 @@
               "wind_mph": 9
             },
             {
-              "time": "2026-11-30 11:00",
-              "temp_f": 36,
+              "time": "2026-11-30 04:00",
+              "temp_f": 33,
+              "condition": {
+                "text": "Mostly Cloudy"
+              },
+              "wind": "9 mph",
+              "wind_dir": "WNW",
+              "precipitation_probability_pct": 1,
+              "wind_mph": 9
+            },
+            {
+              "time": "2026-11-30 05:00",
+              "temp_f": 32,
+              "condition": {
+                "text": "Mostly Cloudy"
+              },
+              "wind": "9 mph",
+              "wind_dir": "WNW",
+              "precipitation_probability_pct": 1,
+              "wind_mph": 9
+            },
+            {
+              "time": "2026-11-30 06:00",
+              "temp_f": 32,
+              "condition": {
+                "text": "Partly Sunny"
+              },
+              "wind": "8 mph",
+              "wind_dir": "WNW",
+              "precipitation_probability_pct": 1,
+              "wind_mph": 8
+            },
+            {
+              "time": "2026-11-30 07:00",
+              "temp_f": 32,
+              "condition": {
+                "text": "Partly Sunny"
+              },
+              "wind": "8 mph",
+              "wind_dir": "WNW",
+              "precipitation_probability_pct": 0,
+              "wind_mph": 8
+            },
+            {
+              "time": "2026-11-30 08:00",
+              "temp_f": 33,
+              "condition": {
+                "text": "Partly Sunny"
+              },
+              "wind": "8 mph",
+              "wind_dir": "WNW",
+              "precipitation_probability_pct": 0,
+              "wind_mph": 8
+            },
+            {
+              "time": "2026-11-30 09:00",
+              "temp_f": 33,
+              "condition": {
+                "text": "Partly Sunny"
+              },
+              "wind": "9 mph",
+              "wind_dir": "WNW",
+              "precipitation_probability_pct": 0,
+              "wind_mph": 9
+            },
+            {
+              "time": "2026-11-30 10:00",
+              "temp_f": 34,
               "condition": {
                 "text": "Partly Sunny"
               },
               "wind": "10 mph",
               "wind_dir": "WNW",
-              "precipitation_probability_pct": 1,
+              "precipitation_probability_pct": 0,
               "wind_mph": 10
             },
             {
+              "time": "2026-11-30 11:00",
+              "temp_f": 35,
+              "condition": {
+                "text": "Partly Sunny"
+              },
+              "wind": "12 mph",
+              "wind_dir": "WNW",
+              "precipitation_probability_pct": 0,
+              "wind_mph": 12
+            },
+            {
               "time": "2026-11-30 12:00",
+              "temp_f": 36,
+              "condition": {
+                "text": "Partly Sunny"
+              },
+              "wind": "12 mph",
+              "wind_dir": "W",
+              "precipitation_probability_pct": 0,
+              "wind_mph": 12
+            },
+            {
+              "time": "2026-11-30 13:00",
+              "temp_f": 36,
+              "condition": {
+                "text": "Partly Sunny"
+              },
+              "wind": "12 mph",
+              "wind_dir": "W",
+              "precipitation_probability_pct": 0,
+              "wind_mph": 12
+            },
+            {
+              "time": "2026-11-30 14:00",
               "temp_f": 37,
               "condition": {
                 "text": "Partly Sunny"
               },
-              "wind": "10 mph",
-              "wind_dir": "W",
-              "precipitation_probability_pct": 1,
-              "wind_mph": 10
-            },
-            {
-              "time": "2026-11-30 13:00",
-              "temp_f": 38,
-              "condition": {
-                "text": "Mostly Sunny"
-              },
-              "wind": "10 mph",
+              "wind": "12 mph",
               "wind_dir": "W",
               "precipitation_probability_pct": 0,
-              "wind_mph": 10
-            },
-            {
-              "time": "2026-11-30 14:00",
-              "temp_f": 38,
-              "condition": {
-                "text": "Mostly Sunny"
-              },
-              "wind": "10 mph",
-              "wind_dir": "W",
-              "precipitation_probability_pct": 0,
-              "wind_mph": 10
+              "wind_mph": 12
             },
             {
               "time": "2026-11-30 15:00",
               "temp_f": 38,
               "condition": {
-                "text": "Mostly Sunny"
+                "text": "Partly Sunny"
               },
               "wind": "10 mph",
               "wind_dir": "W",
@@ -1110,7 +993,7 @@
             },
             {
               "time": "2026-11-30 17:00",
-              "temp_f": 36,
+              "temp_f": 37,
               "condition": {
                 "text": "Mostly Sunny"
               },
@@ -1121,7 +1004,7 @@
             },
             {
               "time": "2026-11-30 18:00",
-              "temp_f": 35,
+              "temp_f": 36,
               "condition": {
                 "text": "Partly Cloudy"
               },
@@ -1132,7 +1015,7 @@
             },
             {
               "time": "2026-11-30 19:00",
-              "temp_f": 34,
+              "temp_f": 33,
               "condition": {
                 "text": "Partly Cloudy"
               },
@@ -1143,7 +1026,7 @@
             },
             {
               "time": "2026-11-30 20:00",
-              "temp_f": 34,
+              "temp_f": 32,
               "condition": {
                 "text": "Partly Cloudy"
               },
@@ -1154,7 +1037,7 @@
             },
             {
               "time": "2026-11-30 21:00",
-              "temp_f": 33,
+              "temp_f": 32,
               "condition": {
                 "text": "Partly Cloudy"
               },
@@ -1165,7 +1048,7 @@
             },
             {
               "time": "2026-11-30 22:00",
-              "temp_f": 33,
+              "temp_f": 31,
               "condition": {
                 "text": "Partly Cloudy"
               },
@@ -1176,7 +1059,7 @@
             },
             {
               "time": "2026-11-30 23:00",
-              "temp_f": 33,
+              "temp_f": 31,
               "condition": {
                 "text": "Partly Cloudy"
               },
@@ -1187,14 +1070,24 @@
             }
           ],
           "day": {
-            "mintemp_f": 33,
+            "mintemp_f": 31,
             "maxtemp_f": 38
           }
         }
       ]
     },
     "alerts": {
-      "alert": []
+      "alert": [
+        {
+          "event": "Special Weather Statement",
+          "headline": "Special Weather Statement issued November 27 at 7:39AM EST by NWS Grand Rapids MI",
+          "severity": "Moderate",
+          "areas": "Newaygo; Mecosta; Isabella; Muskegon; Montcalm; Gratiot; Ottawa; Kent; Ionia; Allegan; Van Buren",
+          "effective": "2026-11-27T07:39:00-05:00",
+          "expires": "2026-11-27T12:00:00-05:00",
+          "desc": "Areas of rain and snow will continue through mid morning, before\ntapering off this afternoon. Most areas will see the rain, but\nlocally heavier bands will change the rain to snow. Where these bands\nof snow fall, a quick accumulation of up to an inch will be possible,\nmainly on grassy areas. Roads could develop a slush and become slick\ntemporarily, along with a quick reduction in visibility.\n\nIf drivers encounter these heavier bands of snow, slow down by laying\noff the gas pedal, and leave extra room between your vehicle and\nothers."
+        }
+      ]
     }
   }
 }
