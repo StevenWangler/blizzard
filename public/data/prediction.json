@@ -1,58 +1,59 @@
 {
   "architecture": "single-forecaster-v1",
   "final": {
-    "snow_day_probability": 2,
+    "snow_day_probability": 5,
     "confidence_level": "moderate",
     "primary_factors": [
-      "NWS point forecast for Rockford shows rain Sunday, then mainly dry Sunday night with a low around 32°F; Monday is partly sunny with a high near 38°F (no wintry precipitation indicated during school hours).",
-      "Your hourly forecast also shows no precipitation 1–11 a.m. Monday, with temperatures ~32–35°F and light-to-moderate winds—so no blowing/drifting snow signal.",
-      "Main potential hazard is *black ice* early Monday if roads stay wet from Sunday rain and some surfaces dip to/below freezing near daybreak; pavement temperatures and exact drying/refreeze timing are unknown.",
-      "NWS Grand Rapids discussion notes a small chance of snow mixing in Sunday night, but says accumulating snow chances look low and travel impacts are not expected beyond wet roads at times."
+      "Rain/showers are forecast Sunday (11/29) with temps well above freezing, so roads could be wet going into Sunday night.",
+      "Temperatures are forecast to be right around freezing by early Monday (11/30) morning (about 32°F). That creates some risk of patchy refreeze/black ice on untreated surfaces (especially bridges/overpasses and shaded roads).",
+      "Precipitation is forecast to end before the main Monday morning bus window (NWS: showers mainly before 1 AM Sunday night; your hourly data shows precip chances dropping to ~1% after 1 AM). That keeps the icing risk lower than a true freezing-rain event.",
+      "No meaningful snow accumulation signal in the provided forecast; ordinary light/wet snow mixing in would usually be a minor travel issue by itself.",
+      "Road conditions, pavement temperatures, and whether roads dry out overnight are unknown at this time (forecast hazard, not observed conditions)."
     ],
     "timeline": {
-      "conditions_start": "Possible slick-spot window begins late Sunday night (2026-11-29) as temperatures fall toward freezing while roads may still be wet.",
-      "peak_impact_time": "Highest concern is the bus/commute window Monday 2026-11-30 around 6–8 a.m., if any refreeze happens on untreated/colder surfaces (bridges, shaded roads).",
-      "conditions_improve": "Likely improving after sunrise late morning Monday (roughly 9–11 a.m.) as temperatures rise above freezing and roads continue to dry."
+      "conditions_start": "Sun 11/29/2026 ~7:00 PM (wet roads with temps falling through the upper 30s)",
+      "peak_impact_time": "Mon 11/30/2026 ~5:30–8:00 AM (temps near 32°F; risk of isolated slick spots if water refreezes)",
+      "conditions_improve": "Mon 11/30/2026 ~9:00–11:00 AM (temps rising above freezing toward the mid/upper 30s)"
     },
-    "decision_rationale": "Based on the provided hourly forecast, Monday morning (2026-11-30) is forecast to be dry with temps near freezing (around 32–35°F). That setup usually does *not* support a districtwide full-day closure by itself; the one thing that could still cause problems is refreezing/black ice from Sunday rainfall.\n\nExternal evidence used (available before the issue time):\n- NWS Point Forecast for Rockford, MI (updated 6:05 AM EST Fri Nov 27, 2026) shows: Sunday ‘Showers’ (90%), Sunday night ‘30% chance of showers before 1am’ with low around 32°F, and Monday ‘Partly sunny’ high near 38°F. URL: `https://forecast.weather.gov/MapClick.php?lat=43.1273&lon=-85.5575`. ([forecast.weather.gov](https://forecast.weather.gov/MapClick.php?lat=43.1273&lon=-85.5575))\n- NWS Grand Rapids Area Forecast Discussion (product timestamp 5:58 AM EST Fri Nov 27, 2026; discussion text notes colder air Sunday night into Monday, possible snow mix Sunday night but accumulating snow chances look low; ‘no real impacts to travel are expected except for some wet roads at times’). URL: `https://forecast.weather.gov/product.php?format=txt&issuedby=GRR&product=AFD`. ([forecast.weather.gov](https://forecast.weather.gov/product.php?format=txt&glossary=0&issuedby=GRR&product=AFD&site=BOX&version=1))\n\nWhat’s unknown right now (and matters): how long rain lasts Sunday evening, how quickly roads dry, and whether pavement temps fall below 32°F near daybreak Monday. Those details can swing this toward a delay, but a full-day closure still looks unlikely from the current forecast signal.",
+    "decision_rationale": "Based on the hourly forecast you provided, Sunday (11/29) features many hours of rain showers with temps mainly in the upper 30s to low 40s, then precipitation chances fall off overnight with temps trending down to about 32°F for the Monday (11/30) morning commute. That pattern can create patchy black ice if pavement stays wet and temps slip to/just below freezing before buses run, but it does not look like a widespread snowstorm or freezing-rain setup.\n\nNWS evidence available as of the forecast issue time supports this lower-impact picture:\n- NWS Point Forecast for Rockford, MI (last update shown on page: 10:03 PM EST Thu Nov 26, 2026) calls for: Sunday \"Showers\"; Sunday night \"A 40 percent chance of showers before 1am\" with a low around 32; and Monday \"Partly sunny\" with a high near 39. Source: `https://forecast.weather.gov/MapClick.php?CityName=Rockford&lat=43.1262&lon=-85.5566&site=GRR&state=MI` (forecast valid through Dec 3). ([forecast.weather.gov](https://forecast.weather.gov/MapClick.php?CityName=Rockford&lat=43.1262&lon=-85.5566&site=GRR&state=MI))\n- NWS Grand Rapids Area Forecast Discussion (issued 12:32 PM EST Fri Nov 27, 2026) notes that Sunday night into Monday could see some snow mixing in but that accumulating snow chances look low, and states \"Overall, no real impacts to travel are expected except for some wet roads at times.\" Source: `https://forecast.weather.gov/product.php?format=TXT&glossary=0&issuedby=GRR&product=AFD&site=NWS&version=1` (FXUS63 KGRR 271732). ([forecast.weather.gov](https://forecast.weather.gov/product.php?format=TXT&glossary=0&issuedby=GRR&product=AFD&site=NWS&version=1))\n\nGiven this, a districtwide, full-day closure on Monday is unlikely. The main thing that could still cause problems is an overnight temperature drop a few degrees colder than forecast (turning leftover water into more widespread ice) or showers lingering later and ending with temps below 32°F. Those outcomes are not the primary forecast right now, so the best estimate for a full-day closure is low (5%).",
     "alternative_scenarios": [
       {
-        "scenario": "Rain ends earlier Sunday evening and roads dry well before temperatures near freezing overnight.",
-        "probability": 0.45,
-        "impact": "Very low chance of closure (could be a normal school day)."
-      },
-      {
-        "scenario": "Light showers linger later into Sunday night than currently forecast and temps dip to 30–31°F near daybreak, creating more widespread black ice on secondary roads.",
-        "probability": 0.35,
-        "impact": "Higher chance of a *delay*; still only a modest chance of a full-day closure unless icing is widespread and persistent."
-      },
-      {
-        "scenario": "Sunday night trends colder and wetter than forecast, with a more organized rain/snow mix and some accumulating snow before ending.",
+        "scenario": "Colder overnight than forecast (lows in the upper 20s instead of ~32°F), causing widespread refreeze/black ice during 6–8 AM bus travel.",
         "probability": 0.2,
-        "impact": "Would increase the odds of significant Monday-morning travel issues and could push closure odds upward."
+        "impact": "Closure risk would increase (more likely a delay, but a full-day closure becomes more plausible if icing is widespread)."
+      },
+      {
+        "scenario": "Showers persist past ~1 AM and temperatures slip to 31–32°F near daybreak, producing a brief period of freezing drizzle/ice on untreated roads.",
+        "probability": 0.1,
+        "impact": "This is the higher-end risk case; could push the district toward a closure if icing is widespread and persistent."
+      },
+      {
+        "scenario": "Drying happens faster Sunday night and temps stay 33–35°F through the morning commute.",
+        "probability": 0.3,
+        "impact": "Very low closure risk; normal operations likely."
       }
     ],
     "recommendations": {
       "for_schools": [
-        "Re-check updated NWS Rockford point forecast and any short-term statements Sunday evening (2026-11-29) and again pre-dawn Monday for any change in precip ending time and overnight lows.",
-        "If Monday morning issues occur, they are more likely to be isolated slick spots/black ice than deep snow; a delay (vs. full-day closure) is the more plausible weather response from this forecast alone.",
-        "Base any decision on *observed* early-morning road conditions (especially neighborhood/secondary roads used by buses), since forecast alone can’t confirm icing."
+        "Plan for a normal day, but keep a close watch on Sunday-night precipitation end time and early Monday temperatures near 32°F (black-ice setup).",
+        "Be ready for a *delay* decision pathway if spotty icing develops on secondary roads and bridges (this forecast does not strongly support a full-day closure).",
+        "Communicate to families early that the key concern—if any—would be isolated slick spots around the Monday morning commute, not heavy snow."
       ],
       "for_residents": [
-        "Plan for the possibility of slick spots Monday around 6–8 a.m., especially on bridges, shaded streets, and less-traveled roads.",
-        "Leave extra time and reduce speed if roads look wet but air temps are near freezing (that’s a common black-ice setup).",
-        "Check for updated forecasts/alerts Sunday night and early Monday morning."
+        "Assume some roads could be slick in spots Monday morning even if it’s not snowing—especially bridges/overpasses and shaded neighborhood streets.",
+        "Leave extra stopping distance and slow down for the first few miles until you can judge traction.",
+        "Dress for near-freezing temps at the bus stop (wind chill may feel colder than the thermometer)."
       ],
       "for_authorities": [
-        "If Sunday stays wet into late evening, prioritize monitoring for refreeze risk overnight into the Monday commute window.",
-        "Communicate clearly if spotty icing is expected (bridges/secondary roads), since that’s the main plausible hazard in this setup."
+        "Monitor for refreeze risk Sunday night: bridge decks and untreated/local roads can ice first when air temps hover near 32°F.",
+        "If temps trend colder, prioritize early-morning spot treatment on known slick locations (bridges, hills, curves)."
       ]
     },
     "updates_needed": true,
-    "next_evaluation_time": "2026-11-29 20:00 EST (and again early 2026-11-30 around 04:30 EST for any last-minute refreeze/precip timing changes)"
+    "next_evaluation_time": "Sun 11/29/2026 9:00 PM EST"
   },
-  "evidenceTimestamp": "2026-11-27T14:20:04.705Z",
-  "timestamp": "2026-11-27T14:21:25.535Z",
+  "evidenceTimestamp": "2026-11-27T18:21:39.988Z",
+  "timestamp": "2026-11-27T18:22:51.627Z",
   "targetDate": "2026-11-30",
   "targetDayName": "Monday",
   "daysAhead": 3,
@@ -65,9 +66,7 @@
     "maxWindMph": 10,
     "minVisibilityMiles": null,
     "iceType": null,
-    "alerts": [
-      "Special Weather Statement issued November 27 at 7:39AM EST by NWS Grand Rapids MI"
-    ]
+    "alerts": []
   },
   "raw_weather_data": {
     "location": {
@@ -77,7 +76,7 @@
     },
     "source": {
       "forecast": "https://api.weather.gov/gridpoints/GRR/44,54/forecast/hourly",
-      "updatedAt": "2026-11-27T14:03:28+00:00"
+      "updatedAt": "2026-11-27T18:03:30+00:00"
     },
     "forecast": {
       "forecastday": [
@@ -85,65 +84,21 @@
           "date": "2026-11-27",
           "hour": [
             {
-              "time": "2026-11-27 09:00",
-              "temp_f": 37,
-              "condition": {
-                "text": "Patchy Fog"
-              },
-              "wind": "9 mph",
-              "wind_dir": "N",
-              "precipitation_probability_pct": 78,
-              "wind_mph": 9
-            },
-            {
-              "time": "2026-11-27 10:00",
-              "temp_f": 38,
-              "condition": {
-                "text": "Patchy Fog"
-              },
-              "wind": "9 mph",
-              "wind_dir": "N",
-              "precipitation_probability_pct": 69,
-              "wind_mph": 9
-            },
-            {
-              "time": "2026-11-27 11:00",
-              "temp_f": 38,
-              "condition": {
-                "text": "Patchy Fog"
-              },
-              "wind": "9 mph",
-              "wind_dir": "N",
-              "precipitation_probability_pct": 61,
-              "wind_mph": 9
-            },
-            {
-              "time": "2026-11-27 12:00",
-              "temp_f": 39,
-              "condition": {
-                "text": "Chance Light Rain"
-              },
-              "wind": "9 mph",
-              "wind_dir": "N",
-              "precipitation_probability_pct": 52,
-              "wind_mph": 9
-            },
-            {
               "time": "2026-11-27 13:00",
               "temp_f": 40,
               "condition": {
-                "text": "Chance Light Rain"
+                "text": "Chance Rain Showers"
               },
-              "wind": "8 mph",
+              "wind": "9 mph",
               "wind_dir": "NNW",
               "precipitation_probability_pct": 44,
-              "wind_mph": 8
+              "wind_mph": 9
             },
             {
               "time": "2026-11-27 14:00",
               "temp_f": 40,
               "condition": {
-                "text": "Chance Light Rain"
+                "text": "Chance Rain Showers"
               },
               "wind": "8 mph",
               "wind_dir": "NNW",
@@ -154,10 +109,10 @@
               "time": "2026-11-27 15:00",
               "temp_f": 42,
               "condition": {
-                "text": "Slight Chance Light Rain"
+                "text": "Slight Chance Rain Showers"
               },
               "wind": "7 mph",
-              "wind_dir": "NNW",
+              "wind_dir": "WNW",
               "precipitation_probability_pct": 19,
               "wind_mph": 7
             },
@@ -165,10 +120,10 @@
               "time": "2026-11-27 16:00",
               "temp_f": 42,
               "condition": {
-                "text": "Cloudy"
+                "text": "Mostly Cloudy"
               },
               "wind": "6 mph",
-              "wind_dir": "W",
+              "wind_dir": "WSW",
               "precipitation_probability_pct": 7,
               "wind_mph": 6
             },
@@ -179,7 +134,7 @@
                 "text": "Cloudy"
               },
               "wind": "7 mph",
-              "wind_dir": "WNW",
+              "wind_dir": "WSW",
               "precipitation_probability_pct": 6,
               "wind_mph": 7
             },
@@ -190,7 +145,7 @@
                 "text": "Mostly Cloudy"
               },
               "wind": "7 mph",
-              "wind_dir": "NW",
+              "wind_dir": "W",
               "precipitation_probability_pct": 4,
               "wind_mph": 7
             },
@@ -198,7 +153,7 @@
               "time": "2026-11-27 19:00",
               "temp_f": 41,
               "condition": {
-                "text": "Cloudy"
+                "text": "Mostly Cloudy"
               },
               "wind": "7 mph",
               "wind_dir": "WNW",
@@ -209,10 +164,10 @@
               "time": "2026-11-27 20:00",
               "temp_f": 40,
               "condition": {
-                "text": "Cloudy"
+                "text": "Mostly Cloudy"
               },
               "wind": "7 mph",
-              "wind_dir": "NW",
+              "wind_dir": "WNW",
               "precipitation_probability_pct": 2,
               "wind_mph": 7
             },
@@ -223,7 +178,7 @@
                 "text": "Mostly Cloudy"
               },
               "wind": "6 mph",
-              "wind_dir": "NW",
+              "wind_dir": "WNW",
               "precipitation_probability_pct": 0,
               "wind_mph": 6
             },
@@ -245,13 +200,13 @@
                 "text": "Mostly Cloudy"
               },
               "wind": "5 mph",
-              "wind_dir": "WNW",
+              "wind_dir": "W",
               "precipitation_probability_pct": 0,
               "wind_mph": 5
             }
           ],
           "day": {
-            "mintemp_f": 37,
+            "mintemp_f": 38,
             "maxtemp_f": 42
           }
         },
@@ -282,9 +237,9 @@
             },
             {
               "time": "2026-11-28 02:00",
-              "temp_f": 35,
+              "temp_f": 36,
               "condition": {
-                "text": "Partly Cloudy"
+                "text": "Mostly Cloudy"
               },
               "wind": "5 mph",
               "wind_dir": "W",
@@ -293,18 +248,18 @@
             },
             {
               "time": "2026-11-28 03:00",
-              "temp_f": 34,
+              "temp_f": 36,
               "condition": {
-                "text": "Partly Cloudy"
+                "text": "Mostly Cloudy"
               },
               "wind": "5 mph",
-              "wind_dir": "WSW",
+              "wind_dir": "W",
               "precipitation_probability_pct": 0,
               "wind_mph": 5
             },
             {
               "time": "2026-11-28 04:00",
-              "temp_f": 34,
+              "temp_f": 35,
               "condition": {
                 "text": "Partly Cloudy"
               },
@@ -315,7 +270,7 @@
             },
             {
               "time": "2026-11-28 05:00",
-              "temp_f": 34,
+              "temp_f": 33,
               "condition": {
                 "text": "Mostly Cloudy"
               },
@@ -326,7 +281,7 @@
             },
             {
               "time": "2026-11-28 06:00",
-              "temp_f": 34,
+              "temp_f": 33,
               "condition": {
                 "text": "Partly Sunny"
               },
@@ -337,23 +292,23 @@
             },
             {
               "time": "2026-11-28 07:00",
-              "temp_f": 34,
+              "temp_f": 33,
               "condition": {
                 "text": "Mostly Cloudy"
               },
-              "wind": "6 mph",
-              "wind_dir": "WSW",
+              "wind": "5 mph",
+              "wind_dir": "SW",
               "precipitation_probability_pct": 5,
-              "wind_mph": 6
+              "wind_mph": 5
             },
             {
               "time": "2026-11-28 08:00",
-              "temp_f": 34,
+              "temp_f": 33,
               "condition": {
                 "text": "Mostly Cloudy"
               },
               "wind": "6 mph",
-              "wind_dir": "WSW",
+              "wind_dir": "SW",
               "precipitation_probability_pct": 8,
               "wind_mph": 6
             },
@@ -364,13 +319,13 @@
                 "text": "Mostly Cloudy"
               },
               "wind": "7 mph",
-              "wind_dir": "WSW",
+              "wind_dir": "SW",
               "precipitation_probability_pct": 0,
               "wind_mph": 7
             },
             {
               "time": "2026-11-28 10:00",
-              "temp_f": 40,
+              "temp_f": 39,
               "condition": {
                 "text": "Cloudy"
               },
@@ -381,7 +336,7 @@
             },
             {
               "time": "2026-11-28 11:00",
-              "temp_f": 42,
+              "temp_f": 41,
               "condition": {
                 "text": "Mostly Cloudy"
               },
@@ -392,47 +347,47 @@
             },
             {
               "time": "2026-11-28 12:00",
-              "temp_f": 44,
+              "temp_f": 43,
               "condition": {
                 "text": "Chance Rain Showers"
               },
-              "wind": "12 mph",
+              "wind": "10 mph",
               "wind_dir": "SW",
               "precipitation_probability_pct": 28,
-              "wind_mph": 12
+              "wind_mph": 10
             },
             {
               "time": "2026-11-28 13:00",
-              "temp_f": 45,
+              "temp_f": 43,
               "condition": {
                 "text": "Mostly Cloudy"
               },
-              "wind": "13 mph",
+              "wind": "12 mph",
               "wind_dir": "SW",
               "precipitation_probability_pct": 3,
-              "wind_mph": 13
+              "wind_mph": 12
             },
             {
               "time": "2026-11-28 14:00",
-              "temp_f": 45,
+              "temp_f": 44,
               "condition": {
-                "text": "Mostly Cloudy"
+                "text": "Partly Sunny"
               },
-              "wind": "13 mph",
+              "wind": "12 mph",
               "wind_dir": "SW",
               "precipitation_probability_pct": 0,
-              "wind_mph": 13
+              "wind_mph": 12
             },
             {
               "time": "2026-11-28 15:00",
-              "temp_f": 46,
+              "temp_f": 44,
               "condition": {
-                "text": "Mostly Cloudy"
+                "text": "Partly Sunny"
               },
-              "wind": "13 mph",
-              "wind_dir": "WSW",
+              "wind": "12 mph",
+              "wind_dir": "SW",
               "precipitation_probability_pct": 0,
-              "wind_mph": 13
+              "wind_mph": 12
             },
             {
               "time": "2026-11-28 16:00",
@@ -441,20 +396,20 @@
                 "text": "Partly Sunny"
               },
               "wind": "12 mph",
-              "wind_dir": "WSW",
+              "wind_dir": "SW",
               "precipitation_probability_pct": 0,
               "wind_mph": 12
             },
             {
               "time": "2026-11-28 17:00",
-              "temp_f": 44,
+              "temp_f": 43,
               "condition": {
                 "text": "Partly Sunny"
               },
-              "wind": "10 mph",
+              "wind": "9 mph",
               "wind_dir": "SW",
               "precipitation_probability_pct": 0,
-              "wind_mph": 10
+              "wind_mph": 9
             },
             {
               "time": "2026-11-28 18:00",
@@ -471,12 +426,12 @@
               "time": "2026-11-28 19:00",
               "temp_f": 41,
               "condition": {
-                "text": "Partly Cloudy"
+                "text": "Mostly Clear"
               },
-              "wind": "7 mph",
+              "wind": "6 mph",
               "wind_dir": "SW",
-              "precipitation_probability_pct": 6,
-              "wind_mph": 7
+              "precipitation_probability_pct": 0,
+              "wind_mph": 6
             },
             {
               "time": "2026-11-28 20:00",
@@ -524,8 +479,8 @@
             }
           ],
           "day": {
-            "mintemp_f": 34,
-            "maxtemp_f": 46
+            "mintemp_f": 33,
+            "maxtemp_f": 45
           }
         },
         {
@@ -1077,17 +1032,7 @@
       ]
     },
     "alerts": {
-      "alert": [
-        {
-          "event": "Special Weather Statement",
-          "headline": "Special Weather Statement issued November 27 at 7:39AM EST by NWS Grand Rapids MI",
-          "severity": "Moderate",
-          "areas": "Newaygo; Mecosta; Isabella; Muskegon; Montcalm; Gratiot; Ottawa; Kent; Ionia; Allegan; Van Buren",
-          "effective": "2026-11-27T07:39:00-05:00",
-          "expires": "2026-11-27T12:00:00-05:00",
-          "desc": "Areas of rain and snow will continue through mid morning, before\ntapering off this afternoon. Most areas will see the rain, but\nlocally heavier bands will change the rain to snow. Where these bands\nof snow fall, a quick accumulation of up to an inch will be possible,\nmainly on grassy areas. Roads could develop a slush and become slick\ntemporarily, along with a quick reduction in visibility.\n\nIf drivers encounter these heavier bands of snow, slow down by laying\noff the gas pedal, and leave extra room between your vehicle and\nothers."
-        }
-      ]
+      "alert": []
     }
   }
 }
