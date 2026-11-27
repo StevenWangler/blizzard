@@ -24,7 +24,7 @@ const PLACEHOLDER_WEATHER_API_KEYS = new Set([
 ])
 
 export function isWeatherApiKeyConfigured(candidate?: string): boolean {
-  const normalized = (candidate ?? import.meta.env.VITE_WEATHER_API_KEY ?? '').trim()
+  const normalized = (candidate ?? '').trim()
   return !!normalized && !PLACEHOLDER_WEATHER_API_KEYS.has(normalized)
 }
 
@@ -33,16 +33,17 @@ export class WeatherAPI {
   private hasValidApiKey: boolean
 
   constructor(apiKey?: string, zipCode?: string) {
-    // Get configuration from environment variables
-    const envApiKey = (import.meta.env.VITE_WEATHER_API_KEY || '').trim()
+    // Browser builds intentionally do not read an API key from Vite variables.
+    // Any VITE_* value is published in the client bundle. Live weather must be
+    // supplied by a server-side endpoint rather than exposing a vendor key.
     const envZipCode = import.meta.env.VITE_ZIP_CODE || '49341'
 
-    const resolvedApiKey = (apiKey || envApiKey || '').trim()
+    const resolvedApiKey = (apiKey || '').trim()
 
     this.hasValidApiKey = isWeatherApiKeyConfigured(resolvedApiKey)
 
     if (!this.hasValidApiKey) {
-      console.warn('[WeatherAPI] No API key configured. Real-time weather features will be disabled until VITE_WEATHER_API_KEY is set.')
+      console.warn('[WeatherAPI] No server-provided API key configured. Real-time weather features are unavailable in the browser.')
     }
 
     this.config = {
@@ -60,7 +61,7 @@ export class WeatherAPI {
    * @throws WeatherApiError if request fails
    */
   async getForecast(): Promise<WeatherApiResponse> {
-    this.ensureApiKeyAvailable('Set VITE_WEATHER_API_KEY in your environment or pass a key to WeatherAPI.')
+    this.ensureApiKeyAvailable('Use a server-side weather endpoint or pass a key from a trusted runtime to WeatherAPI.')
 
     try {
       const url = new URL(`${this.config.baseUrl}/forecast.json`)
@@ -116,7 +117,7 @@ export class WeatherAPI {
    * @returns Promise containing current weather data
    */
   async getCurrentWeather(): Promise<WeatherApiResponse> {
-    this.ensureApiKeyAvailable('Set VITE_WEATHER_API_KEY in your environment or pass a key to WeatherAPI.')
+    this.ensureApiKeyAvailable('Use a server-side weather endpoint or pass a key from a trusted runtime to WeatherAPI.')
 
     try {
       const url = new URL(`${this.config.baseUrl}/current.json`)
@@ -157,7 +158,7 @@ export class WeatherAPI {
    * @returns Promise containing weather alerts
    */
   async getAlerts(): Promise<WeatherAlert[]> {
-    this.ensureApiKeyAvailable('Set VITE_WEATHER_API_KEY in your environment or pass a key to WeatherAPI.')
+    this.ensureApiKeyAvailable('Use a server-side weather endpoint or pass a key from a trusted runtime to WeatherAPI.')
 
     try {
       const url = new URL(`${this.config.baseUrl}/alerts.json`)
@@ -187,7 +188,7 @@ export class WeatherAPI {
    * @returns Promise containing array of matching locations
    */
   async searchLocations(query: string): Promise<Location[]> {
-    this.ensureApiKeyAvailable('Set VITE_WEATHER_API_KEY in your environment or pass a key to WeatherAPI.')
+    this.ensureApiKeyAvailable('Use a server-side weather endpoint or pass a key from a trusted runtime to WeatherAPI.')
 
     try {
       const url = new URL(`${this.config.baseUrl}/search.json`)
@@ -214,7 +215,7 @@ export class WeatherAPI {
    * @returns Promise<boolean> true if API key is valid
    */
   async validateApiKey(): Promise<boolean> {
-    this.ensureApiKeyAvailable('Set VITE_WEATHER_API_KEY before attempting to validate the configuration')
+    this.ensureApiKeyAvailable('Use a server-side weather endpoint before attempting to validate the configuration')
 
     try {
       await this.getCurrentWeather()

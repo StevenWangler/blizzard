@@ -11,7 +11,7 @@
 [![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-[Live Demo](#) • [Features](#-what-it-does) • [Quick Start](#-quick-start) • [Docs](./docs/)
+[Live site](https://www.blizzardbot.ai/) • [Features](#-what-it-does) • [Quick Start](#-quick-start) • [Docs](./docs/)
 
 ---
 
@@ -27,7 +27,7 @@ Blizzard combines real-time weather data with intelligent prediction algorithms 
 Multi-factor AI analysis weighing snow accumulation, temperature, wind, visibility, and ground conditions
 
 🌡️ **Real-Time Data**  
-Live weather integration via WeatherAPI.com with 48-hour forecasting and government alerts
+Scheduled forecasts use National Weather Service hourly outlooks and alerts for Rockford.
 
 🎨 **Dynamic Theming**  
 UI morphs with weather conditions—from sunny brightness to blizzard darkness
@@ -59,8 +59,8 @@ npm install
 Create `.env` in the project root:
 
 ```bash
-# Get your free key: https://www.weatherapi.com/signup.aspx
-VITE_WEATHER_API_KEY=your_api_key_here
+# Needed only for local paid prediction generation
+OPENAI_API_KEY=your_server_side_key
 
 # Your location (default: Rockford, MI)
 VITE_ZIP_CODE=49341
@@ -105,7 +105,7 @@ src/
 │   ├── PredictionView.tsx    # Main forecast interface
 │   ├── AccuracyView.tsx       # Historical tracking
 │   ├── HistoryView.tsx        # Past outcomes
-│   ├── AgentsView.tsx         # AI prediction agents
+│   ├── AgentsView.tsx         # How the forecast is made
 │   └── ui/                    # Radix primitives
 ├── services/
 │   ├── weather.ts             # Core weather logic
@@ -119,7 +119,7 @@ src/
 ```
 
 **Smart Features**
-- 🧠 Multi-agent AI prediction system
+- 🧠 Single-agent snow-day forecasts
 - 📈 Real-time accuracy calibration
 - 🎭 Weather-reactive UI themes
 - 🔄 Automatic GitHub Actions workflows
@@ -133,35 +133,11 @@ src/
 | [🌡️ **Weather API**](./docs/WEATHER_API_README.md) | Integration guide & API details |
 | [🚀 **Deployment**](./docs/DEPLOYMENT_GUIDE.md) | Deploy to GitHub Pages & more |
 | [📋 **PRD**](./docs/PRD.md) | Product requirements & goals |
-| [🤖 **AI Agents**](./docs/AI_AGENT_SYSTEM.md) | Multi-agent prediction system |
+| [🤖 **AI Agents**](./docs/AI_AGENT_SYSTEM.md) | Single-forecaster workflow |
 
 ## 🎯 The Prediction Algorithm
 
-Blizzard uses a sophisticated multi-factor weighting system:
-
-```typescript
-const predictionFactors = {
-  snow: 0.35,              // Probability & accumulation
-  temperature: 0.20,       // Temperature & wind chill
-  wind: 0.20,              // Wind speed & gusts
-  visibility: 0.15,        // Visibility conditions
-  ground_conditions: 0.10  // Humidity, pressure, etc.
-}
-```
-
-**Decision Thresholds**
-- 🟢 **0-30%**: Low probability—pack your backpack
-- 🟡 **31-60%**: Moderate—keep an eye on updates
-- 🟠 **61-80%**: High—start planning that day off
-- 🔴 **81-100%**: Very high—it's happening!
-
-### AI Agent System
-
-Multiple specialized agents analyze weather data:
-- **Conservative Agent**: Risk-averse predictions
-- **Balanced Agent**: Moderate approach
-- **Aggressive Agent**: Optimistic forecasts
-- **Ensemble**: Weighted combination of all agents
+One forecaster weighs hourly weather and dated local evidence for the next school morning. It returns a validated probability, confidence level and explanation. Each run records its estimated API cost.
 
 ## 🛠️ Development
 
@@ -170,17 +146,20 @@ Multiple specialized agents analyze weather data:
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start dev server on port 5000 |
-| `npm run build` | Production build |
+| `npm run build` | Typecheck and production build |
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
-| `npm run deploy:github` | Deploy to GitHub Pages |
+| `npm run build:release` | Validate private release inputs and build; does not publish |
+| `npm test` | Frontend and backend regression tests |
+| `npm run verify:dist` | Verify release asset boundaries |
 | `npm run generate-prediction` | Run AI prediction workflow |
 
 ### Environment Variables
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `VITE_WEATHER_API_KEY` | ✅ Yes | - | WeatherAPI.com API key |
+| `OPENAI_API_KEY` | For generation | - | Server-side model credential |
+| `WEATHER_API_KEY` | Optional | - | Alternate server-side weather provider for local runs |
 | `VITE_ZIP_CODE` | ⚪ Optional | `49341` | Location (ZIP/postal code) |
 | `VITE_BLIZZARD_ENV` | ⚪ Optional | `production` | Environment setting |
 
@@ -212,7 +191,7 @@ Themes affect backgrounds, cards, buttons, and even animation speeds!
 - 🎯 Brier score calculations
 - 📉 Calibration curve visualization
 - 📝 Manual outcome logging
-- 🔍 Per-agent performance metrics
+- 🔍 Per-forecast API cost reports
 
 **Automated Workflows**
 - Daily prediction generation via GitHub Actions
@@ -222,27 +201,16 @@ Themes affect backgrounds, cards, buttons, and even animation speeds!
 
 ## 🔒 Security & Privacy
 
-✅ **What We Do**
-- Store API keys in environment variables
-- Use HTTPS for all API calls
-- Process data client-side only
-- No user tracking or analytics
+The site serves public saved forecasts. Weather/model requests run in trusted Actions jobs with server-side secrets; browser builds expose only reviewed public configuration. Outcome changes require authenticated GitHub automation, not a frontend maintenance PIN. Public JSON includes outcome notes, so never enter private information there. No analytics or user accounts were added.
 
-❌ **What We Don't Do**
-- Store personal information
-- Share data with third parties
-- Require authentication
-- Track user behavior
+See the [release guide](docs/DEPLOYMENT_GUIDE.md) for scheduled generation, private music delivery and archive recovery.
 
 ## 🚀 Deployment Options
 
 Deploy Blizzard anywhere static sites are hosted:
 
 ### GitHub Pages (Recommended)
-```bash
-npm run deploy:github
-```
-Includes automated workflows for daily predictions!
+Deployment uses the reviewed `Deploy Site` GitHub Actions workflow at the custom-domain root. Local generation/build commands never publish. Release, private music delivery, credentials and workflow activation require the separate gates in [the deployment guide](docs/DEPLOYMENT_GUIDE.md).
 
 ### Other Platforms
 - **Vercel**: One-click import from GitHub
@@ -264,7 +232,6 @@ We welcome contributions from the community! Here's how:
 
 ### Contribution Ideas
 - 🎨 New weather themes
-- 🤖 Additional AI prediction agents
 - 📊 Enhanced data visualizations
 - 🌍 Multi-location support
 - 🔔 Push notification system

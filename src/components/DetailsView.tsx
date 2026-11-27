@@ -1,16 +1,16 @@
+import { getNextRefreshTime } from '@/lib/forecastSchedule'
 import { useState, useEffect, useMemo } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { AnimatedProbability } from '@/components/AnimatedProbability'
 import { NarrativeSummary } from '@/components/NarrativeSummary'
-import { ConditionPulse } from '@/components/ConditionPulse'
+import { ForecastBrief } from '@/components/ForecastBrief'
+import { StudentPageHeading } from '@/components/StudentPageHeading'
 import { Markdown } from '@/components/ui/markdown'
 import { 
   CloudSnow, 
@@ -34,12 +34,13 @@ import {
 import { WeatherService } from '@/services/weather'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { toast } from 'sonner'
-import { buildOutcomeStats, fetchOutcomeLedger, normalizeProbability } from '@/services/outcomes'
+import { buildOutcomeStats, fetchOutcomeLedger, normalizeProbability, readOutcomeProbability } from '@/services/outcomes'
 import { fetchData } from '@/lib/dataPath'
 import type { OutcomeStats, SnowDayOutcome } from '@/services/outcomes'
 import type { AgentPrediction } from '@/types/agentPrediction'
+import { forecastFreshness } from '@/lib/forecastPresentation'
+import { getAnalysisError } from '@/lib/analysisError'
 
 interface DetailsViewProps {
   onBack?: () => void
@@ -56,28 +57,6 @@ interface WeatherData {
   lastUpdated: string
 }
 
-// GitHub Actions schedule: 9 AM, 1 PM, 6 PM EST
-const REFRESH_TIMES_UTC = [14, 18, 23]
-
-function getNextRefreshTime(): Date {
-  const now = new Date()
-  const currentUTCHour = now.getUTCHours()
-  const currentUTCMinutes = now.getUTCMinutes()
-  
-  for (const hour of REFRESH_TIMES_UTC) {
-    if (currentUTCHour < hour || (currentUTCHour === hour && currentUTCMinutes === 0)) {
-      const next = new Date(now)
-      next.setUTCHours(hour, 0, 0, 0)
-      return next
-    }
-  }
-  
-  const tomorrow = new Date(now)
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
-  tomorrow.setUTCHours(REFRESH_TIMES_UTC[0], 0, 0, 0)
-  return tomorrow
-}
-
 function formatTimeUntil(targetDate: Date): string {
   const now = new Date()
   const diffMs = targetDate.getTime() - now.getTime()
@@ -92,6 +71,7 @@ function formatTimeUntil(targetDate: Date): string {
 }
 
 export function DetailsView({ onBack }: DetailsViewProps) {
+  const reduceMotion = useReducedMotion()
   const [prediction, setPrediction] = useState<AgentPrediction | null>(null)
   const [fallbackWeather, setFallbackWeather] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -99,7 +79,6 @@ export function DetailsView({ onBack }: DetailsViewProps) {
   const [recentAverage, setRecentAverage] = useState<number | null>(null)
   const [trendError, setTrendError] = useState<string | null>(null)
   const [trendLoading, setTrendLoading] = useState(true)
-  const [rationaleOpen, setRationaleOpen] = useState(true)
   const [spotlightOpen, setSpotlightOpen] = useState(false)
   const [lastUpdateMeta, setLastUpdateMeta] = useState<{ formatted: string; nextRefresh: string }>({
     formatted: '',
@@ -108,6 +87,8 @@ export function DetailsView({ onBack }: DetailsViewProps) {
   
   const { updateWeatherConditions } = useWeatherTheme()
   const isMobile = useIsMobile()
+  const historyError = getAnalysisError(prediction?.history)
+  const safetyError = getAnalysisError(prediction?.safety)
 
   useEffect(() => {
     loadPredictionData()
@@ -157,12 +138,12 @@ export function DetailsView({ onBack }: DetailsViewProps) {
       if (ledger.length) {
         setOutcomeStats(buildOutcomeStats(ledger))
         const recent = ledger
-          .filter(entry => normalizeProbability(entry.modelProbability) !== null)
+          .filter(entry => readOutcomeProbability(entry.modelProbability) !== null)
           .slice(-7)
 
         if (recent.length) {
           const avg = Math.round(
-            recent.reduce((sum, entry) => sum + (normalizeProbability(entry.modelProbability) ?? 0), 0) / recent.length
+            recent.reduce((sum, entry) => sum + (readOutcomeProbability(entry.modelProbability) ?? 0), 0) / recent.length
           )
           setRecentAverage(avg)
         } else {
@@ -178,13 +159,6 @@ export function DetailsView({ onBack }: DetailsViewProps) {
     } finally {
       setTrendLoading(false)
     }
-  }
-
-  const getSnowDayVerdict = (probability: number) => {
-    if (probability >= 70) return { text: 'Very Likely', color: 'bg-destructive' }
-    if (probability >= 50) return { text: 'Likely', color: 'bg-accent' }
-    if (probability >= 30) return { text: 'Possible', color: 'bg-muted' }
-    return { text: 'Unlikely', color: 'bg-secondary' }
   }
 
   const generateFallbackRationale = (weather: WeatherData): string => {
@@ -233,17 +207,6 @@ export function DetailsView({ onBack }: DetailsViewProps) {
     return `${parts.join(', ')}. ${conclusion}.`
   }
 
-  const getConfidenceBadge = (confidence: string) => {
-    const colors = {
-      'very_high': 'bg-green-500',
-      'high': 'bg-green-400',
-      'moderate': 'bg-yellow-500',
-      'low': 'bg-orange-500',
-      'very_low': 'bg-red-500'
-    }
-    return colors[confidence as keyof typeof colors] || 'bg-gray-500'
-  }
-
   const getRiskColor = (risk: string) => {
     const colors = {
       'low': 'text-green-600',
@@ -254,9 +217,10 @@ export function DetailsView({ onBack }: DetailsViewProps) {
     return colors[risk as keyof typeof colors] || 'text-gray-600'
   }
 
-  const rawProbability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability ?? 0
-  const probability = normalizeProbability(rawProbability)
-  const verdict = getSnowDayVerdict(probability)
+  const rawProbability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability
+  const probability = prediction && forecastFreshness(prediction.timestamp, prediction.targetDate) === 'archived'
+    ? readOutcomeProbability(rawProbability)
+    : normalizeProbability(rawProbability)
   
   const lastUpdateInfo = useMemo(() => {
     if (prediction) {
@@ -289,10 +253,9 @@ export function DetailsView({ onBack }: DetailsViewProps) {
     return () => clearInterval(interval)
   }, [lastUpdateTime])
 
-  const timestampToShow = lastUpdateMeta.formatted || (lastUpdateInfo ? lastUpdateInfo.date.toLocaleString() : '')
   const nextRefreshDisplay = lastUpdateMeta.nextRefresh
   const baselineProbability = recentAverage ?? outcomeStats?.avgProbability ?? null
-  const probabilityDelta = baselineProbability !== null ? probability - baselineProbability : null
+  const probabilityDelta = baselineProbability !== null && probability !== null ? probability - baselineProbability : null
 
   if (loading) {
     return (
@@ -300,7 +263,7 @@ export function DetailsView({ onBack }: DetailsViewProps) {
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <Brain size={32} className="animate-spin text-primary sm:w-12 sm:h-12" />
-            <span className="text-base sm:text-lg">Loading detailed analysis...</span>
+            <span className="text-base sm:text-lg">Loading the forecast…</span>
           </div>
         </CardContent>
       </Card>
@@ -320,113 +283,49 @@ export function DetailsView({ onBack }: DetailsViewProps) {
 
   return (
     <motion.div 
-      className="space-y-6 sm:space-y-8"
-      initial={{ opacity: 0, y: 20 }}
+      className="student-page forecast-page space-y-6 sm:space-y-8"
+      initial={reduceMotion ? false : { opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      transition={{ duration: reduceMotion ? 0 : 0.6, ease: 'easeOut' }}
     >
-      {/* Back button and header */}
-      <div className="flex items-center justify-between">
-        {onBack && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onBack}
-            className="gap-2"
-          >
-            <ArrowLeft size={16} />
-            Back
-          </Button>
-        )}
-        <div className="text-right flex-1">
-          <WeatherThemeIndicator />
-          {lastUpdateInfo && (
-            <>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {lastUpdateInfo.label}: {timestampToShow}
-              </p>
-              {nextRefreshDisplay && (
-                <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-end gap-1">
-                  <Clock size={12} />
-                  Next update in {nextRefreshDisplay}
-                </p>
+      <StudentPageHeading title={forecastFreshness(prediction?.timestamp, prediction?.targetDate) === 'current' ? 'Forecast' : 'Last forecast'} description="Chance of a snow day, and why." />
+      <ForecastBrief prediction={prediction} fallback={fallbackWeather} nextRefresh={nextRefreshDisplay} />
+      <details className="page-disclosure">
+        <summary>Read the full explanation</summary>
+        <div className="page-disclosure-content">
+          {prediction ? (
+            <div className="space-y-5">
+              <Markdown
+                content={prediction.final?.decision_rationale ?? 'No rationale available'}
+                className="text-sm text-muted-foreground"
+              />
+              {prediction.final?.primary_factors?.length > 0 && (
+                <section aria-label="All forecast factors">
+                  <h3 className="text-sm font-semibold mb-3">All factors behind the call</h3>
+                  <ul className="space-y-3">
+                    {prediction.final.primary_factors.map((factor, index) => (
+                      <li key={index} className="border-l-2 border-primary/50 pl-3"><Markdown content={factor} className="text-sm text-muted-foreground" /></li>
+                    ))}
+                  </ul>
+                </section>
               )}
-            </>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {fallbackWeather ? generateFallbackRationale(fallbackWeather) : 'No rationale available'}
+            </p>
           )}
         </div>
-      </div>
-      
-      {/* Summary card with probability */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <Card className="text-center rounded-2xl border-2 border-primary/10 shadow-xl bg-background/80 backdrop-blur">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg sm:text-xl flex items-center justify-center gap-3">
-              {prediction ? <Brain size={20} className="text-primary" /> : <CloudSnow size={20} className="text-primary" />}
-              {prediction?.targetDayName 
-                ? `${prediction.targetDayName}'s Analysis`
-                : "Tomorrow's Analysis"}
-            </CardTitle>
-            <p className="text-muted-foreground text-sm">
-              {prediction 
-                ? `${prediction.location}${prediction.targetDate ? ` • ${new Date(prediction.targetDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}`
-                : 'Rockford, MI'}
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-center gap-4">
-              <AnimatedProbability value={probability} className="text-4xl sm:text-5xl font-bold text-primary" />
-              <div className="flex flex-col gap-2">
-                <Badge className={`${verdict.color} text-white px-3 py-1`}>
-                  {verdict.text}
-                </Badge>
-                {prediction?.final?.confidence_level && (
-                  <Badge className={`${getConfidenceBadge(prediction.final.confidence_level)} text-white text-xs px-2 py-0.5`}>
-                    {prediction.final.confidence_level.replace('_', ' ')}
-                  </Badge>
-                )}
-              </div>
-            </div>
-            <Progress value={probability} className="h-2" />
+      </details>
 
-            {/* AI Decision Rationale */}
-            <Collapsible open={rationaleOpen} onOpenChange={setRationaleOpen} className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg text-left border border-primary/20 mt-4">
-              <CollapsibleTrigger asChild>
-                <button className="w-full p-4 flex items-center justify-between cursor-pointer hover:bg-primary/5 transition-colors rounded-lg">
-                  <h4 className="font-semibold text-sm flex items-center gap-2">
-                    <Brain size={16} className="text-primary" />
-                    {prediction ? 'AI Decision Rationale' : 'Weather Analysis'}
-                  </h4>
-                  <CaretDown size={16} className={`text-muted-foreground transition-transform ${rationaleOpen ? 'rotate-180' : ''}`} />
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-4 pb-4">
-                {prediction ? (
-                  <Markdown 
-                    content={prediction.final?.decision_rationale ?? 'No rationale available'} 
-                    className="text-sm text-muted-foreground" 
-                  />
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    {fallbackWeather 
-                      ? generateFallbackRationale(fallbackWeather)
-                      : 'No rationale available'}
-                  </p>
-                )}
-              </CollapsibleContent>
-            </Collapsible>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Condition Pulse metrics */}
-      <ConditionPulse />
-
+      {prediction && !prediction.architecture && <details className="page-disclosure">
+        <summary>Compare the forecasts</summary>
+        <div className="page-disclosure-content space-y-5">
       {/* AI Spotlight and Trend cards */}
       {prediction && (
+        <details className="page-disclosure">
+          <summary>Weather context & past trends</summary>
+          <div className="page-disclosure-content">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
             <CardHeader className="space-y-3 p-6 pb-4">
@@ -437,7 +336,7 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                 <CardTitle className="flex items-center justify-between text-lg">
                   <span className="flex items-center gap-2">
                     <Sparkle size={18} className="text-primary" />
-                    AI Spotlight
+                    Weather context
                   </span>
                   <CaretDown size={18} className={`text-muted-foreground transition-transform ${spotlightOpen ? 'rotate-180' : ''}`} />
                 </CardTitle>
@@ -507,11 +406,8 @@ export function DetailsView({ onBack }: DetailsViewProps) {
             <CardHeader className="space-y-2">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <TrendUp size={18} className="text-primary" />
-                Today vs Season Trend
+                This call vs past forecasts
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                How today's call stacks against the ledger
-              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               {trendLoading ? (
@@ -529,8 +425,8 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">Today</p>
-                      <p className="text-3xl font-semibold">{probability}%</p>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">This forecast</p>
+                      <p className="text-3xl font-semibold">{probability !== null ? `${probability}%` : '—'}</p>
                     </div>
                     {baselineProbability !== null && (
                       <div>
@@ -551,11 +447,11 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                       <span>0%</span>
                       <span>100%</span>
                     </div>
-                    <Progress value={probability} className="h-2" />
+                    <Progress value={probability ?? undefined} className="h-2" />
                     {baselineProbability !== null && (
                       <div className="text-xs text-muted-foreground flex items-center gap-2">
                         <span className="inline-flex h-2 w-2 rounded-full bg-primary" />
-                        Today vs <span className="font-medium">{recentAverage ? '7-day mean' : 'season mean'}</span>
+                        This call vs <span className="font-medium">{recentAverage !== null ? '7-day mean' : 'season mean'}</span>
                       </div>
                     )}
                   </div>
@@ -579,10 +475,12 @@ export function DetailsView({ onBack }: DetailsViewProps) {
             </CardContent>
           </Card>
         </div>
+          </div>
+        </details>
       )}
 
       {/* AI-generated narrative summary */}
-      {prediction && <NarrativeSummary prediction={prediction} />}
+      {prediction && <details className="page-disclosure"><summary>Analysis highlights</summary><div className="page-disclosure-content"><NarrativeSummary prediction={prediction} /></div></details>}
 
       {/* Expert Analysis tabs */}
       {prediction && (
@@ -590,12 +488,12 @@ export function DetailsView({ onBack }: DetailsViewProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ChartBar size={20} className="text-primary" />
-              Expert Analysis
+              A closer look
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isMobile ? (
-              <Accordion type="single" collapsible defaultValue="weather" className="w-full space-y-2">
+              <Accordion type="single" collapsible className="w-full space-y-2">
                 <AccordionItem value="weather" className="rounded-xl border px-4">
                   <AccordionTrigger>Weather</AccordionTrigger>
                   <AccordionContent className="space-y-5 pt-2">
@@ -684,9 +582,9 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                 <AccordionItem value="history" className="rounded-xl border px-4">
                   <AccordionTrigger>History</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
-                    {prediction.history?.error ? (
+                    {historyError ? (
                       <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-                        Historical analysis temporarily unavailable: {prediction.history.error}
+                        Historical analysis temporarily unavailable: {historyError}
                       </div>
                     ) : (
                       <div className="space-y-4">
@@ -726,9 +624,9 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                 <AccordionItem value="safety" className="rounded-xl border px-4">
                   <AccordionTrigger>Safety</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
-                    {prediction.safety?.error ? (
+                    {safetyError ? (
                       <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-                        Safety analysis temporarily unavailable: {prediction.safety.error}
+                        Safety analysis temporarily unavailable: {safetyError}
                       </div>
                     ) : (
                       <>
@@ -813,7 +711,7 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                       </div>
                     </div>
 
-                    {!prediction.safety?.error && (
+                    {!safetyError && (
                       <div className="grid grid-cols-1 gap-4 mt-4">
                         <div>
                           <h5 className="font-semibold mb-2">Morning Commute Impact</h5>
@@ -962,9 +860,9 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                 </TabsContent>
                 
                 <TabsContent value="history" className="space-y-4">
-                  {prediction.history?.error ? (
+                  {historyError ? (
                     <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-                      Historical analysis temporarily unavailable: {prediction.history.error}
+                      Historical analysis temporarily unavailable: {historyError}
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -1004,9 +902,9 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                 </TabsContent>
                 
                 <TabsContent value="safety" className="space-y-4">
-                  {prediction.safety?.error ? (
+                  {safetyError ? (
                     <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-                      Safety analysis temporarily unavailable: {prediction.safety.error}
+                      Safety analysis temporarily unavailable: {safetyError}
                     </div>
                   ) : (
                     <>
@@ -1094,7 +992,7 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                       </div>
                     </div>
 
-                    {!prediction.safety?.error && (
+                    {!safetyError && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                         <div>
                           <h5 className="font-semibold mb-2">Morning Commute Impact</h5>
@@ -1146,7 +1044,7 @@ export function DetailsView({ onBack }: DetailsViewProps) {
           </CardHeader>
           <CardContent>
             {isMobile ? (
-              <Accordion type="single" collapsible defaultValue="schools" className="w-full space-y-2">
+              <Accordion type="single" collapsible className="w-full space-y-2">
                 <AccordionItem value="schools" className="rounded-xl border px-4">
                   <AccordionTrigger>Schools</AccordionTrigger>
                   <AccordionContent>
@@ -1161,7 +1059,7 @@ export function DetailsView({ onBack }: DetailsViewProps) {
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="residents" className="rounded-xl border px-4">
-                  <AccordionTrigger>Residents</AccordionTrigger>
+                  <AccordionTrigger>Families</AccordionTrigger>
                   <AccordionContent>
                     <ul className="space-y-2.5">
                       {prediction.final?.recommendations?.for_residents?.map((rec: string, index: number) => (
@@ -1191,7 +1089,7 @@ export function DetailsView({ onBack }: DetailsViewProps) {
               <Tabs defaultValue="schools" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="schools">Schools</TabsTrigger>
-                  <TabsTrigger value="residents">Residents</TabsTrigger>
+                  <TabsTrigger value="residents">Families</TabsTrigger>
                   <TabsTrigger value="authorities">Authorities</TabsTrigger>
                 </TabsList>
                 
@@ -1232,6 +1130,9 @@ export function DetailsView({ onBack }: DetailsViewProps) {
           </CardContent>
         </Card>
       )}
+        </div>
+      </details>}
+      {onBack && <Button variant="ghost" onClick={onBack} className="w-full gap-2 sm:w-auto"><ArrowLeft size={16} />Back to Today</Button>}
     </motion.div>
   )
 }

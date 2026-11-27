@@ -157,15 +157,8 @@ export class WeatherConfigValidator {
     const errors: string[] = []
     const warnings: string[] = []
 
-    // Check API key
-    const apiKey = import.meta.env.VITE_WEATHER_API_KEY
-    if (!apiKey) {
-      errors.push('VITE_WEATHER_API_KEY environment variable is not set')
-    } else if (apiKey === 'your_weatherapi_key_here') {
-      errors.push('VITE_WEATHER_API_KEY is set to the default placeholder value')
-    } else if (apiKey.length < 20) {
-      warnings.push('VITE_WEATHER_API_KEY appears to be too short for a valid API key')
-    }
+    // Public clients intentionally never receive a vendor weather key.
+    warnings.push('Live WeatherAPI validation is available only from a trusted server-side runtime.')
 
     // Check ZIP code
     const zipCode = import.meta.env.VITE_ZIP_CODE

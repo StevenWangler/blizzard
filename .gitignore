@@ -35,3 +35,11 @@ pids
 
 # Local development data (prevents merge conflicts with production data)
 public/data/local/
+
+# Licensed media supplied privately for local builds; never publish in source.
+/.local-assets/
+
+# Environment variants and interrupted local data transactions remain private.
+.env.*
+!.env.example
+**/.blizzard-write.lock/

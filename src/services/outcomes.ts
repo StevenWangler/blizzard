@@ -5,6 +5,25 @@ export interface SnowDayOutcome {
   modelProbability?: number | null
   /** Rockford High School student prediction (0-100) - our competition */
   rhsPrediction?: number | null
+  competitionSubmission?: {
+    modelProbability: number
+    rhsPrediction: number
+    forecastTimestamp: string
+    lockedAt: string
+    revision: string
+    roadStudy?: {
+      version: 1
+      observation: {
+        roadClass: 'highway' | 'county-road' | 'local-street'
+        condition: 'clear' | 'wet' | 'treated' | 'icy' | 'snow-covered'
+        observedAt: string
+        source: string
+      } | null
+      iceWindow: { firstIceHour: number | null; lastIceHour: number | null; frozenThroughHour: number | null; iceType: string } | null
+      iceOnly: number | null
+      iceAndRoutes: number | null
+    }
+  }
   confidence?: string | null
   predictionTimestamp?: string | null
   actualSnowDay?: boolean | null
@@ -30,11 +49,10 @@ export interface OutcomeStats {
 export async function fetchOutcomeLedger(options?: { bustCache?: boolean }): Promise<SnowDayOutcome[]> {
   try {
     // fetchData handles local vs production paths automatically
-    // Add cache busting via a query param if needed (fetchData doesn't handle this)
     const payload = await fetchData<unknown>('outcomes.json', {
       cache: options?.bustCache ? 'no-store' : 'default'
     })
-    if (!Array.isArray(payload)) return []
+    if (!Array.isArray(payload)) throw new Error('Expected an outcome ledger array')
     return cleanOutcomeLedger(payload as SnowDayOutcome[])
   } catch (error) {
     console.error('Failed to load outcome ledger:', error)
@@ -97,14 +115,19 @@ export function findOutcomeByDate(outcomes: SnowDayOutcome[], date: string): Sno
   return outcomes.find(entry => entry.date === date)
 }
 
+/** Archive values are already percentages, including historical decimals such as 0.5%. */
+export function readOutcomeProbability(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100 ? value : null
+}
+
 /**
  * Normalize probability to 0-100 scale.
  * Handles both 0-1 scale (e.g., 0.18) and 0-100 scale (e.g., 18) values.
  */
-export function normalizeProbability(value: number | null | undefined): number | null {
-  if (value === null || value === undefined) return null
-  const num = Number(value)
-  if (Number.isNaN(num) || !Number.isFinite(num)) return null
+export function normalizeProbability(value: unknown): number | null {
+  // Runtime JSON can violate TypeScript types. Never coerce blank/string/boolean data to a forecast.
+  const num = readOutcomeProbability(value)
+  if (num === null) return null
   // If value is between 0 and 1 (exclusive of 1), treat as 0-1 scale
   const normalized = (num > 0 && num < 1) ? num * 100 : num
   return Math.max(0, Math.min(100, Math.round(normalized)))
@@ -128,7 +151,7 @@ export function buildOutcomeStats(outcomes: SnowDayOutcome[]): OutcomeStats {
   const openDays = completed.length - snowDays
 
   const probabilityValues = completed
-    .map(entry => normalizeProbability(entry.modelProbability))
+    .map(entry => readOutcomeProbability(entry.modelProbability))
     .filter((value): value is number => value !== null)
 
   const avgProbability = probabilityValues.length > 0
@@ -136,19 +159,19 @@ export function buildOutcomeStats(outcomes: SnowDayOutcome[]): OutcomeStats {
     : 0
 
   const directionalCorrect = completed.filter(entry => {
-    const prob = normalizeProbability(entry.modelProbability)
+    const prob = readOutcomeProbability(entry.modelProbability)
     if (prob === null) return false
     const predictedSnowDay = prob >= 50
     return predictedSnowDay === entry.actualSnowDay
   }).length
 
-  const directionalAccuracy = completed.length > 0
-    ? Math.round((directionalCorrect / completed.length) * 100)
+  const directionalAccuracy = probabilityValues.length > 0
+    ? Math.round((directionalCorrect / probabilityValues.length) * 100)
     : 0
 
   const brierScores = completed
     .map(entry => {
-      const prob = normalizeProbability(entry.modelProbability)
+      const prob = readOutcomeProbability(entry.modelProbability)
       if (prob === null) return null
       const actual = entry.actualSnowDay ? 1 : 0
       return Math.pow(prob / 100 - actual, 2)

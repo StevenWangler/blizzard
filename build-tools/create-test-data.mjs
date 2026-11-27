@@ -205,7 +205,7 @@ const mockSummary = {
 console.log('🧪 Creating test prediction data...')
 
 // Ensure output directory exists
-const outputDir = join(projectRoot, 'public', 'data')
+const outputDir = join(projectRoot, 'public', 'data', 'local')
 if (!existsSync(outputDir)) {
   mkdirSync(outputDir, { recursive: true })
   console.log(`📁 Created output directory: ${outputDir}`)

@@ -55,7 +55,8 @@ export interface AgentCollaboration {
   collaborationSummary: string
 }
 
-export interface AgentPrediction {
+interface LegacyPrediction {
+  architecture?: undefined
   meteorology: {
     temperature_analysis: {
       current_temp_f: number
@@ -298,3 +299,23 @@ export interface AgentPrediction {
   daysAhead?: number
   location: string
 }
+
+
+export interface MorningWeather {
+  snowInches: number | null
+  overnightLowF: number | null
+  overnightFeelsLikeF: number | null
+  morningHighF: number | null
+  maxWindMph: number | null
+  minVisibilityMiles: number | null
+  iceType: 'freezing_rain' | 'sleet' | null
+  alerts: string[]
+}
+
+type LegacySections = 'meteorology' | 'history' | 'safety' | 'news' | 'infrastructure' | 'powerGrid' | 'webWeatherVerifier' | 'collaboration'
+type SingleForecast = Omit<LegacyPrediction, LegacySections | 'architecture'> & Partial<Record<LegacySections, never>> & {
+  architecture: 'single-forecaster-v1'
+  morningWeather: MorningWeather
+}
+
+export type AgentPrediction = SingleForecast | LegacyPrediction

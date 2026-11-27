@@ -1,247 +1,122 @@
 #!/usr/bin/env node
-/**
- * backfill-predictions.mjs
- * 
- * Retrieves historical Blizzard predictions from git history by matching
- * summary.json's targetDate to school days. Useful for:
- * - Filling in missing modelProbability values in outcomes.json
- * - Generating reports of what Blizzard predicted for past dates
- * - Supporting batch outcome recording with accurate historical data
- * 
- * Usage:
- *   node build-tools/backfill-predictions.mjs --dates 2026-01-05,2026-01-06,2026-01-07
- *   node build-tools/backfill-predictions.mjs --range 2026-01-05 2026-01-16
- *   node build-tools/backfill-predictions.mjs --patch  # Updates outcomes.json with missing predictions
- */
+import { historyRef } from './lib/forecast-data-ref.mjs'
+import { execFileSync } from 'node:child_process'
+import { join, dirname, resolve } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { calendarDate, probability, confidenceLevels, assertTimestamp, readLedger, atomicJson, withDataLock } from './lib/data-integrity.mjs'
 
-import { execSync } from 'node:child_process'
-import { readFile, writeFile, access } from 'node:fs/promises'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const dataDir = join(repoRoot, 'public', 'data')
+let historyIndex
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const repoRoot = path.resolve(__dirname, '..')
-const dataDir = path.join(repoRoot, 'public', 'data')
+// Only main's first-parent history is eligible, never arbitrary local/unmerged branches.
+// Conservative cutoff: generation must precede the target date in district local time.
+const districtDate = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'America/Detroit', year: 'numeric', month: '2-digit', day: '2-digit'
+})
 
-/**
- * Get the last (most recent) prediction for a specific targetDate from git history.
- * Returns the prediction closest to the event date for best accuracy.
- */
-function getHistoricalPrediction(targetDate) {
-  try {
-    // Get all commits that touched summary.json
-    const commitsRaw = execSync(
-      'git log --all --format="%H" -- public/data/summary.json',
-      { cwd: repoRoot, encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 }
-    )
-    
-    const commits = commitsRaw.trim().split('\n').filter(Boolean)
-    
-    // Search through commits to find the LAST one with this targetDate
-    // (most recent prediction for that school day)
-    for (const commit of commits) {
+export function indexHistoricalSummaries(summaries, locked = new Map()) {
+  const index = new Map()
+  for (const { summary, commit, committedAt } of summaries) {
+    try {
+      const date = calendarDate(summary.targetDate)
+      probability(summary.probability, { optional: false, stored: true })
+      assertTimestamp(summary.timestamp)
+      if (!confidenceLevels.includes(summary.confidence)) continue
+      const issued = Date.parse(summary.timestamp)
+      if (!Number.isFinite(committedAt)) continue
+      if (districtDate.format(issued) >= date || districtDate.format(committedAt) >= date) continue
+      const submission = locked.get(date)
+      if (submission && (summary.timestamp !== submission.forecastTimestamp ||
+          summary.probability !== submission.modelProbability || committedAt > Date.parse(submission.lockedAt))) continue
+      const previous = index.get(date)
+      if (previous && Date.parse(previous.timestamp) >= issued) continue
+      index.set(date, {
+        probability: summary.probability, confidence: summary.confidence,
+        timestamp: summary.timestamp, targetDate: date, commit
+      })
+    } catch { /* Invalid historic snapshots are not candidates; existing records are never rewritten. */ }
+  }
+  return index
+}
+
+export function loadHistory(revision = historyRef(repoRoot), locked = new Map()) {
+  const git = args => execFileSync('git', args, { cwd: repoRoot, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] })
+  const main = git(['rev-parse', '--verify', '--end-of-options', revision + '^{commit}']).trim()
+  const commits = git(['log', '--first-parent', '--format=%H %ct', main, '--', 'public/data/summary.json']).trim().split('\n').filter(Boolean)
+  const summaries = []
+  // Read small groups of Git blobs in one process. Git reports byte lengths,
+  // including for summaries containing multibyte units such as degree signs.
+  for (let start = 0; start < commits.length; start += 32) {
+    const batch = commits.slice(start, start + 32).map(line => line.split(' '))
+    const input = batch.map(([commit]) => commit + ':public/data/summary.json').join('\n') + '\n'
+    const bytes = execFileSync('git', ['cat-file', '--batch'], { cwd: repoRoot, input, maxBuffer: 16 * 1024 * 1024 })
+    let offset = 0
+    for (const [commit, seconds] of batch) {
+      const end = bytes.indexOf(10, offset)
+      const header = bytes.toString('utf8', offset, end)
+      offset = end + 1
+      if (header.endsWith(' missing')) continue
+      const [, type, size] = header.split(' ')
+      if (type !== 'blob' || !/^\d+$/.test(size)) throw new Error('Invalid Git summary object')
+      const json = bytes.toString('utf8', offset, offset + Number(size))
+      offset += Number(size) + 1
       try {
-        const summaryRaw = execSync(
-          `git show "${commit}:public/data/summary.json"`,
-          { cwd: repoRoot, encoding: 'utf8', maxBuffer: 1024 * 1024 }
-        )
-        
-        const summary = JSON.parse(summaryRaw)
-        
-        if (summary.targetDate === targetDate) {
-          return {
-            probability: summary.probability,
-            confidence: summary.confidence,
-            timestamp: summary.timestamp,
-            targetDate: summary.targetDate,
-            commit: commit.substring(0, 8)
-          }
-        }
-      } catch {
-        // Skip commits where summary.json doesn't exist or is invalid
-        continue
-      }
+        summaries.push({ summary: JSON.parse(json), commit, committedAt: Number(seconds) * 1000 })
+      } catch { /* Malformed historical JSON cannot supply a probability. */ }
     }
-    
-    return null
-  } catch (error) {
-    console.error(`Error searching git history for ${targetDate}:`, error.message)
-    return null
   }
+  return indexHistoricalSummaries(summaries, locked)
 }
 
-/**
- * Generate array of dates between start and end (inclusive), excluding weekends
- */
-function generateSchoolDays(startDate, endDate) {
+export function getHistoricalPrediction(targetDate) {
+  calendarDate(targetDate)
+  historyIndex ??= loadHistory()
+  return historyIndex.get(targetDate) ?? null
+}
+
+export function generateSchoolDays(startDate, endDate) {
+  calendarDate(startDate)
+  calendarDate(endDate)
+  const start = new Date(`${startDate}T00:00:00Z`)
+  const end = new Date(`${endDate}T00:00:00Z`)
+  if (end < start || end - start > 366 * 86400000) throw new Error('Date range must be ordered and at most 366 days')
   const dates = []
-  const current = new Date(startDate + 'T12:00:00')
-  const end = new Date(endDate + 'T12:00:00')
-  
-  while (current <= end) {
-    const dayOfWeek = current.getDay()
-    // Skip weekends (0 = Sunday, 6 = Saturday)
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      dates.push(current.toISOString().split('T')[0])
-    }
-    current.setDate(current.getDate() + 1)
+  for (let current = start; current <= end; current.setUTCDate(current.getUTCDate() + 1)) {
+    if (![0, 6].includes(current.getUTCDay())) dates.push(current.toISOString().slice(0, 10))
   }
-  
-  return dates
+  return dates // Weekdays only; this is not an official district calendar.
 }
 
-/**
- * Load JSON file if it exists
- */
-async function loadJsonIfExists(filePath) {
-  try {
-    await access(filePath)
-    const raw = await readFile(filePath, 'utf8')
-    return JSON.parse(raw)
-  } catch {
-    return null
-  }
-}
-
-/**
- * Main function
- */
 async function main() {
   const args = process.argv.slice(2)
-  
-  // Parse arguments
   let dates = []
-  let patchMode = false
-  let reportOnly = true
-  
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i]
-    
-    if (arg === '--dates' && args[i + 1]) {
-      dates = args[i + 1].split(',').map(d => d.trim())
-      i++
-    } else if (arg === '--range' && args[i + 1] && args[i + 2]) {
-      dates = generateSchoolDays(args[i + 1], args[i + 2])
-      i += 2
-    } else if (arg === '--patch') {
-      patchMode = true
-      reportOnly = false
-    } else if (arg === '--help' || arg === '-h') {
-      console.log(`
-Usage:
-  node build-tools/backfill-predictions.mjs --dates 2026-01-05,2026-01-06
-  node build-tools/backfill-predictions.mjs --range 2026-01-05 2026-01-16
-  node build-tools/backfill-predictions.mjs --patch
-
-Options:
-  --dates <list>      Comma-separated list of dates (YYYY-MM-DD)
-  --range <start> <end>  Date range (excludes weekends)
-  --patch             Update outcomes.json with missing predictions
-  --help              Show this help
-`)
-      process.exit(0)
-    }
+  if (args.includes('--dates')) dates = args[args.indexOf('--dates') + 1].split(',').map(calendarDate)
+  if (args.includes('--range')) {
+    const i = args.indexOf('--range')
+    dates = generateSchoolDays(args[i + 1], args[i + 2])
   }
-  
-  // If patch mode with no dates, find pending entries in outcomes.json
-  if (patchMode && dates.length === 0) {
-    const outcomesPath = path.join(dataDir, 'outcomes.json')
-    const outcomes = await loadJsonIfExists(outcomesPath) || []
-    
-    // Find entries with null/undefined modelProbability OR where probability looks like a placeholder
-    dates = outcomes
-      .filter(o => o.modelProbability === null || o.modelProbability === undefined)
-      .map(o => o.date?.trim())
-      .filter(Boolean)
-    
-    if (dates.length === 0) {
-      console.log('No entries with missing predictions found in outcomes.json')
-      process.exit(0)
-    }
-    
-    console.log(`Found ${dates.length} entries with missing predictions`)
-  }
-  
-  if (dates.length === 0) {
-    console.error('No dates specified. Use --dates, --range, or --patch')
-    process.exit(1)
-  }
-  
-  console.log(`\nSearching git history for ${dates.length} date(s)...\n`)
-  
-  const results = []
-  
-  for (const date of dates) {
-    const prediction = getHistoricalPrediction(date)
-    
-    if (prediction) {
-      results.push({
-        date,
-        ...prediction,
-        found: true
+  const patch = args.includes('--patch')
+  const run = async () => {
+    const file = join(dataDir, 'outcomes.json')
+    const ledger = await readLedger(file)
+    if (patch && dates.length === 0) dates = ledger.filter(row => row.modelProbability == null).map(row => row.date)
+    const results = dates.map(date => ({ date, prediction: getHistoricalPrediction(date) }))
+    if (patch) {
+      const next = ledger.map(row => {
+        const result = results.find(result => result.date === row.date)?.prediction
+        if (row.modelProbability != null || !result) return row
+        return { ...row, modelProbability: result.probability, confidence: result.confidence,
+          predictionTimestamp: result.timestamp, predictionCommit: result.commit, predictionSource: 'history' }
       })
-      console.log(`✓ ${date}: ${prediction.probability}% (${prediction.confidence}) from commit ${prediction.commit}`)
-    } else {
-      results.push({ date, found: false })
-      console.log(`✗ ${date}: No prediction found in git history`)
+      await atomicJson(file, next)
     }
-  }
-  
-  // Summary
-  const found = results.filter(r => r.found).length
-  console.log(`\nFound predictions for ${found}/${dates.length} dates`)
-  
-  // Patch mode: update outcomes.json
-  if (patchMode && found > 0) {
-    const outcomesPath = path.join(dataDir, 'outcomes.json')
-    const outcomes = await loadJsonIfExists(outcomesPath) || []
-    
-    let updated = 0
-    
-    for (const result of results) {
-      if (!result.found) continue
-      
-      // Find the matching entry (handle potential whitespace in dates)
-      const idx = outcomes.findIndex(o => o.date?.trim() === result.date)
-      
-      if (idx !== -1) {
-        // Only update if modelProbability is missing
-        if (outcomes[idx].modelProbability === null || outcomes[idx].modelProbability === undefined) {
-          outcomes[idx].modelProbability = result.probability
-          outcomes[idx].confidence = result.confidence
-          outcomes[idx].predictionTimestamp = result.timestamp
-          updated++
-        }
-      }
-    }
-    
-    if (updated > 0) {
-      const json = JSON.stringify(outcomes, null, 2)
-      await writeFile(outcomesPath, `${json}\n`, 'utf8')
-      console.log(`\nPatched ${updated} entries in outcomes.json`)
-    } else {
-      console.log('\nNo entries needed patching')
-    }
-  }
-  
-  // Output JSON for scripting use
-  if (process.env.OUTPUT_JSON === 'true') {
-    console.log('\n--- JSON OUTPUT ---')
     console.log(JSON.stringify(results, null, 2))
   }
-  
-  return results
+  if (patch) await withDataLock(dataDir, run)
+  else await run()
 }
 
-// Export for use as module
-export { getHistoricalPrediction, generateSchoolDays }
-
-// Run if called directly (not imported as module)
-const isMainModule = import.meta.url === `file://${process.argv[1]}`
-if (isMainModule) {
-  main().catch(error => {
-    console.error(error)
-    process.exit(1)
-  })
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main().catch(error => { console.error(error.message); process.exitCode = 1 })
 }

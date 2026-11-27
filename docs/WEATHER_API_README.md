@@ -26,7 +26,7 @@ Update your `.env` file in the project root:
 
 ```bash
 # Required: Your WeatherAPI.com API key
-VITE_WEATHER_API_KEY=your_actual_api_key_here
+WEATHER_API_KEY=your_actual_api_key_here
 
 # Optional: Location (ZIP code for US, postal code for others)
 VITE_ZIP_CODE=49341
@@ -134,7 +134,7 @@ if (!validation.isValid) {
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `VITE_WEATHER_API_KEY` | Yes | `your_weatherapi_key_here` | WeatherAPI.com API key |
+| `WEATHER_API_KEY` | Yes | `your_weatherapi_key_here` | WeatherAPI.com API key (server-side only) |
 | `VITE_ZIP_CODE` | No | `49341` | Location (ZIP/postal code) |
 | `VITE_BLIZZARD_ENV` | No | `production` | Environment setting |
 

@@ -1,0 +1,73 @@
+.student-page { min-width: 0; max-width: 100%; }
+.student-page-heading { margin-bottom: 24px; }
+.student-page-heading h2 { font-size: clamp(28px, 5vw, 36px); line-height: 1.1; letter-spacing: -.045em; font-weight: 750; color: var(--foreground); }
+.student-page-heading p { margin-top: 8px; max-width: 42rem; font-size: 14px; line-height: 1.6; color: var(--muted-foreground); }
+.student-page [data-slot="card"] { background: var(--card); border-color: var(--border); box-shadow: none; backdrop-filter: none; min-width: 0; }
+.student-page [data-slot="card-title"] { line-height: 1.3; }
+.student-page p, .student-page li, .student-page dd { overflow-wrap: anywhere; }
+.student-page button, .student-page summary, .student-page [role="tab"] { min-height: 44px; }
+.student-page details > summary { cursor: pointer; }
+.student-page details > summary:focus-visible { outline: 3px solid var(--primary); outline-offset: 4px; border-radius: 6px; }
+.page-disclosure { border: 1px solid var(--border); border-radius: 18px; background: var(--card); overflow: hidden; }
+.page-disclosure > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 17px 20px; font-size: 15px; font-weight: 650; list-style: none; color: var(--foreground); }
+.page-disclosure > summary::-webkit-details-marker { display: none; }
+.page-disclosure > summary::after { content: '+'; font-size: 22px; font-weight: 400; color: var(--primary); }
+.page-disclosure[open] > summary::after { content: '−'; }
+.page-disclosure-content { padding: 0 20px 20px; }
+.forecast-brief-content { display: grid; gap: 24px; }
+.forecast-school-brief { border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 18px; padding: 20px; background: var(--card); }
+.forecast-date { font-size: 12px; font-weight: 650; color: var(--muted-foreground); }
+.forecast-saved-notice { margin-top: 12px; font-size: 13px; color: var(--primary); font-weight: 650; }
+.forecast-verdict-row { display: flex; gap: 20px; align-items: center; margin-top: 16px; }
+.forecast-verdict-row h3 { flex: 1; min-width: 0; font-size: clamp(23px, 4vw, 30px); letter-spacing: -.035em; line-height: 1.15; font-weight: 700; }
+.forecast-mini-probability { flex-shrink: 0; width: 90px; text-align: right; }
+.forecast-mini-probability strong { display: block; font-size: 40px; line-height: 1; font-weight: 700; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.forecast-mini-probability small { font-size: 18px; margin-left: 2px; }
+.forecast-mini-probability > span { display: block; margin-top: 6px; font-size: 10px; color: var(--muted-foreground); }
+.forecast-takeaway { font-size: 15px; line-height: 1.6; color: var(--muted-foreground); margin-top: 14px; }
+.forecast-report-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 11px; line-height: 1.5; color: var(--muted-foreground); margin-top: 18px; }
+.forecast-refresh { font-size: 11px; color: var(--muted-foreground); margin-top: 5px; }
+.forecast-weather h3, .forecast-reasons h3, .forecast-alerts h3 { font-weight: 650; font-size: 16px; margin-bottom: 12px; }
+.forecast-signals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; background: var(--card); }
+.forecast-signals > div { padding: 16px 18px; }
+.forecast-signals > div:nth-child(odd) { border-right: 1px solid var(--border); }
+.forecast-signals > div:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+.forecast-signals dt { font-size: 12px; color: var(--muted-foreground); }
+.forecast-signals dd { font-size: 23px; font-weight: 650; line-height: 1.2; font-variant-numeric: tabular-nums; margin-top: 5px; }
+.forecast-reasons li { border-left: 2px solid var(--primary); padding-left: 14px; margin-top: 14px; }
+.forecast-factor-text { font-size: 14px; line-height: 1.65; color: var(--muted-foreground); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.forecast-reasons-hint, .forecast-district-note { margin-top: 12px; font-size: 12px; line-height: 1.6; color: var(--muted-foreground); }
+.forecast-alerts { padding: 18px; background: var(--card); border: 1px solid var(--primary); border-radius: 16px; }
+.forecast-alerts li { font-size: 14px; line-height: 1.65; margin-top: 8px; }
+.history-summary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border-block: 1px solid var(--border); padding-block: 16px; gap: 12px; }
+.history-summary dt { font-size: 11px; color: var(--muted-foreground); margin-top: 5px; }
+.history-summary dd { font-size: 26px; line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; }
+.record-disclosure > summary { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--foreground); list-style: none; }
+.record-disclosure > summary::-webkit-details-marker { display: none; }
+.record-disclosure > summary::before { content: '+'; color: var(--primary); font-size: 20px; }
+.record-disclosure[open] > summary::before { content: '−'; }
+.student-page .recharts-responsive-container { min-width: 0; }
+@media (min-width: 768px) { .forecast-brief-content { grid-template-columns: 1fr 1fr; align-items: start; } .forecast-school-brief, .forecast-district-note { grid-column: 1 / -1; } }
+@media (max-width: 767px) {
+  .student-page { margin-top: 4px; }
+  .student-page > [data-slot="card"] { border-radius: 20px; }
+  .student-page [data-slot="card-header"], .student-page [data-slot="card-content"] { padding-inline: 18px; }
+  .student-page [data-slot="card"] { gap: 18px; padding-block: 18px; }
+  .student-page .page-disclosure-content { padding-inline: 16px; }
+  .student-page .page-disclosure [data-slot="card"] { border: 0; }
+  .student-page .page-disclosure [data-slot="card-header"], .student-page .page-disclosure [data-slot="card-content"] { padding-inline: 0; }
+  .student-page-heading { margin-bottom: 20px; }
+  .student-page > :not(:first-child) { margin-top: 20px; }
+  .student-page [data-slot="accordion-trigger"] { text-align: left; }
+  .student-page [data-slot="badge"] { white-space: normal; overflow-wrap: anywhere; }
+  .agents-page .bg-gradient-to-br { background-image: none; background-color: var(--muted); }
+}
+@media (max-width: 359px) {
+  .forecast-verdict-row { align-items: flex-start; gap: 12px; }
+  .forecast-verdict-row h3 { font-size: 22px; }
+  .forecast-mini-probability { width: 64px; }
+  .forecast-mini-probability strong { font-size: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .student-page *, .student-page *::before, .student-page *::after { animation: none !important; transition: none !important; }
+}

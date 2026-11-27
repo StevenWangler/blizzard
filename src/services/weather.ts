@@ -17,14 +17,15 @@ export class WeatherService {
 
   /**
    * Get current weather forecast using real WeatherAPI data.
-   * Falls back to mock data if API is unavailable or not configured.
+   *
+   * The public client intentionally has no vendor API key. Callers must handle
+   * an unavailable live-weather source rather than displaying invented data.
    */
   static async getCurrentForecast(): Promise<WeatherData> {
     try {
       // Check if API key is configured
       if (!isWeatherApiKeyConfigured()) {
-        console.warn('Weather API key not configured, using mock data')
-        return this.getMockWeatherData()
+        throw new Error('Live weather is unavailable because this public client has no server-side weather source.')
       }
 
       // Fetch real weather data
@@ -77,56 +78,7 @@ export class WeatherService {
         }
       }
 
-      // Fall back to mock data
-      console.warn('Falling back to mock weather data')
-      return this.getMockWeatherData()
-    }
-  }
-
-  /**
-   * Get mock weather data for testing and fallback scenarios.
-   */
-  private static getMockWeatherData(): WeatherData {
-    const scenarios = [
-      {
-        temperature: 18,
-        snowfall: 6,
-        windSpeed: 25,
-        visibility: 0.5,
-        alerts: ['Winter Storm Warning until 6 AM'],
-        modelProbability: 85
-      },
-      {
-        temperature: 28,
-        snowfall: 3,
-        windSpeed: 15,
-        visibility: 2,
-        alerts: ['Snow Advisory until midnight'],
-        modelProbability: 65
-      },
-      {
-        temperature: 32,
-        snowfall: 1,
-        windSpeed: 10,
-        visibility: 5,
-        alerts: [],
-        modelProbability: 35
-      },
-      {
-        temperature: 38,
-        snowfall: 0,
-        windSpeed: 8,
-        visibility: 10,
-        alerts: [],
-        modelProbability: 15
-      }
-    ]
-
-    const randomScenario = scenarios[Math.floor(Math.random() * scenarios.length)]
-    
-    return {
-      ...randomScenario,
-      lastUpdated: new Date().toISOString()
+      throw error
     }
   }
 
@@ -141,7 +93,7 @@ export class WeatherService {
       if (!isWeatherApiKeyConfigured()) {
         return {
           isValid: false,
-          message: 'Weather API key not configured. Please set VITE_WEATHER_API_KEY in your .env file.'
+          message: 'Live browser weather is intentionally disabled until a server-side weather endpoint is available.'
         }
       }
 

@@ -1,35 +1,62 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
-import { House, MagnifyingGlass, Target, Clock, ListChecks, LockSimple, UsersThree, Trophy, Info, DotsThree } from '@phosphor-icons/react'
+import { House, MagnifyingGlass, Clock, DotsThree, Info, Target, ListChecks, LockSimple, UsersThree, Trophy, X } from '@phosphor-icons/react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { HeroView } from '@/components/HeroView'
-import { DetailsView } from '@/components/DetailsView'
-import { AccuracyView } from '@/components/AccuracyView'
-import { HistoryView } from '@/components/HistoryView'
-import { AgentsView } from '@/components/AgentsView'
-import { CompetitionView } from '@/components/CompetitionView'
-import { AboutView } from '@/components/AboutView'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { OutcomeRecorder } from '@/components/OutcomeRecorder'
 import { NotificationSettings } from '@/components/NotificationSettings'
 import { EnhancedHeader } from '@/components/EnhancedHeader'
+import { ForecastMusicControl } from '@/components/ForecastMusicControl'
+import { ForecastTicker } from '@/components/ForecastTicker'
+import { useSavedForecast } from '@/hooks/useSavedForecast'
 import { SeasonalLandingPage } from '@/components/SeasonalLandingPage'
-import { WeatherAtmosphere } from '@/components/WeatherAtmosphere'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useSeasonMode } from '@/hooks/useSeasonMode'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
-import { Input } from '@/components/ui/input'
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
+const DetailsView = lazy(() => import('@/components/DetailsView').then(module => ({ default: module.DetailsView })))
+const AccuracyView = lazy(() => import('@/components/AccuracyView').then(module => ({ default: module.AccuracyView })))
+const HistoryView = lazy(() => import('@/components/HistoryView').then(module => ({ default: module.HistoryView })))
+const AgentsView = lazy(() => import('@/components/AgentsView').then(module => ({ default: module.AgentsView })))
+const CompetitionView = lazy(() => import('@/components/CompetitionView').then(module => ({ default: module.CompetitionView })))
+const AboutView = lazy(() => import('@/components/AboutView').then(module => ({ default: module.AboutView })))
+const OutcomeRecorder = lazy(() => import('@/components/OutcomeRecorder').then(module => ({ default: module.OutcomeRecorder })))
+
+const tabHashes: Record<string, string> = {
+  home: '#today', details: '#forecast', history: '#past-calls',
+  accuracy: '#accuracy', agents: '#how-it-works', competition: '#competition',
+  about: '#about', outcomes: '#outcomes',
+}
+
+const primaryTabs = [
+  { id: 'home', label: 'Today', icon: House },
+  { id: 'details', label: 'Forecast', icon: MagnifyingGlass },
+  { id: 'history', label: 'Past calls', icon: Clock },
+  { id: 'about', label: 'About', icon: Info },
+]
+
+const morePages = [
+  { id: 'accuracy', label: 'Accuracy', description: 'See how past forecasts did', icon: Target },
+  { id: 'agents', label: 'How it works', description: 'How Blizzard makes its call', icon: UsersThree },
+  { id: 'competition', label: 'Competition', description: 'Compare Blizzard and RHS calls', icon: Trophy },
+]
+
+const aboutPage = { id: 'about', label: 'About Blizzard', description: 'Schedule, scoring, and music credits', icon: Info }
+const outcomesPage = { id: 'outcomes', label: 'Record outcomes', description: 'Log school-day results', icon: ListChecks }
+
+function tabFromLocation() {
+  return Object.keys(tabHashes).find(tab => tabHashes[tab] === window.location.hash) ?? 'home'
+}
+
 function App() {
-  const [activeTab, setActiveTab] = useState("home")
+  const [activeTab, setActiveTab] = useState(tabFromLocation)
   const [unlockOpen, setUnlockOpen] = useState(false)
-  const [passphrase, setPassphrase] = useState('')
-  const [unlockError, setUnlockError] = useState<string | null>(null)
   const [moreDrawerOpen, setMoreDrawerOpen] = useState(false)
   const { isAdmin, unlock, lock } = useAdminAccess()
   const isMobile = useIsMobile()
@@ -40,6 +67,26 @@ function App() {
     activatePreviewOverride,
     disablePreviewOverride,
   } = useSeasonMode(isAdmin)
+  const forecast = useSavedForecast(shouldRenderBlizzard)
+
+  useEffect(() => {
+    // Establish this page's first entry so Back returns through visited screens.
+    window.history.replaceState(null, '', tabHashes[tabFromLocation()])
+    const restorePage = () => setActiveTab(tabFromLocation())
+    window.addEventListener('popstate', restorePage)
+    window.addEventListener('hashchange', restorePage)
+    return () => {
+      window.removeEventListener('popstate', restorePage)
+      window.removeEventListener('hashchange', restorePage)
+    }
+  }, [])
+
+  useEffect(() => {
+    const hash = tabHashes[activeTab]
+    if (window.location.hash !== hash) window.history.pushState(null, '', hash)
+    // A tab is a new page: don't carry a long report's scroll position into it.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [activeTab])
 
   useEffect(() => {
     if ((!isAdmin && activeTab === 'outcomes') || (!shouldRenderBlizzard && activeTab !== 'home')) {
@@ -62,29 +109,22 @@ function App() {
   }, [])
 
   const handleUnlock = () => {
-    const result = unlock(passphrase)
+    const result = unlock()
     if (result.success) {
       if (isOffSeason) {
         activatePreviewOverride()
       }
 
       setUnlockOpen(false)
-      setPassphrase('')
-      setUnlockError(null)
       toast.success(isOffSeason ? 'Maintainer preview enabled' : 'Admin tools unlocked')
       setActiveTab(isOffSeason ? 'home' : 'outcomes')
     } else {
-      setUnlockError(result.message || 'Unable to unlock admin tools')
-      toast.error(result.message || 'Incorrect passphrase')
+      toast.error(result.message || 'Unable to open maintainer tools')
     }
   }
 
   const handleDialogChange = (open: boolean) => {
     setUnlockOpen(open)
-    if (!open) {
-      setPassphrase('')
-      setUnlockError(null)
-    }
   }
 
   const handleLock = () => {
@@ -108,287 +148,156 @@ function App() {
     setMoreDrawerOpen(false)
   }
 
+  const desktopMorePages = isAdmin ? [...morePages, outcomesPage] : morePages
+  const mobileMorePages = isAdmin ? [...morePages, aboutPage, outcomesPage] : [...morePages, aboutPage]
 
-  // Overflow tabs shown in "More" drawer on mobile
-  const overflowTabs = ['agents', 'competition', 'about', ...(isAdmin ? ['outcomes'] : [])]
-
-  const tabGridCols = isAdmin ? 'grid-cols-4 sm:grid-cols-8' : 'grid-cols-4 sm:grid-cols-7'
   const pageBackground = shouldRenderBlizzard
-    ? 'from-background via-secondary/30 to-background'
-    : 'from-background via-emerald-500/10 to-sky-500/10'
+    ? 'winter-workspace station-workspace'
+    : 'bg-[#071625]'
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${pageBackground} transition-colors relative overflow-hidden`}>
-      {/* Weather Atmosphere Effects */}
-      {shouldRenderBlizzard && <WeatherAtmosphere />}
-      
-      {/* Animated background blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block">
-        <div className={`absolute top-0 -left-4 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob ${shouldRenderBlizzard ? 'bg-primary/5' : 'bg-emerald-300/20'}`}></div>
-        <div className={`absolute top-0 -right-4 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob delay-2000 ${shouldRenderBlizzard ? 'bg-cyan-300/5' : 'bg-sky-300/20'}`}></div>
-        <div className={`absolute -bottom-8 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob delay-4000 ${shouldRenderBlizzard ? 'bg-blue-300/5' : 'bg-amber-200/20'}`}></div>
-      </div>
-      
-      <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 max-w-6xl relative z-10 ${isMobile && shouldRenderBlizzard ? 'mb-bottom-nav' : ''}`}>
-        {shouldRenderBlizzard && <EnhancedHeader />}
-        
-        {/* Settings stay in flow on mobile to avoid overlap with header */}
+    <div className={`min-h-screen ${pageBackground} transition-colors relative overflow-hidden`}>
+      <div className={`${shouldRenderBlizzard ? 'blizzard-shell station-shell' : 'min-h-screen'} relative z-10`}>
         <div
           className={`flex flex-wrap items-center gap-2 z-20 ${
-            isMobile || !shouldRenderBlizzard
-              ? 'mb-4 justify-end'
-              : 'absolute top-6 sm:top-10 right-4 sm:right-6 lg:right-8'
+            !shouldRenderBlizzard
+              ? 'absolute right-4 top-4 sm:right-8 sm:top-5'
+              : 'broadcast-header station-masthead justify-between'
           }`}
         >
-          {isPreviewMode && (
-            <Badge variant="secondary" className="min-h-[36px] px-3 py-1.5">
-              Off-season preview
-            </Badge>
-          )}
-          {isAdmin && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleLock}
-              title={isPreviewMode ? 'Close maintainer preview' : 'Lock admin tools'}
-              aria-label={isPreviewMode ? 'Close maintainer preview' : 'Lock admin tools'}
-              className="h-11 w-11 min-h-[44px] min-w-[44px]"
-            >
-              <LockSimple size={18} weight="duotone" />
-            </Button>
-          )}
-          {shouldRenderBlizzard && <NotificationSettings />}
-          <ThemeToggle />
+          {shouldRenderBlizzard && <EnhancedHeader />}
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-1">
+            {isPreviewMode && (
+              <Badge variant="secondary" className="min-h-[36px] px-3 py-1.5">
+                Off-season preview
+              </Badge>
+            )}
+            {isAdmin && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleLock}
+                title={isPreviewMode ? 'Close maintainer preview' : 'Lock admin tools'}
+                aria-label={isPreviewMode ? 'Close maintainer preview' : 'Lock admin tools'}
+                className="h-11 w-11 min-h-[44px] min-w-[44px]"
+              >
+                <LockSimple size={18} weight="duotone" />
+              </Button>
+            )}
+            {shouldRenderBlizzard && <ForecastMusicControl navigationKey={activeTab} />}
+            {shouldRenderBlizzard && <NotificationSettings />}
+            <ThemeToggle />
+          </div>
         </div>
 
         {shouldRenderBlizzard ? (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Desktop Navigation - traditional tab list */}
-            <TabsList className={`hidden md:grid w-full ${tabGridCols} mb-8 sm:mb-10 h-auto p-1.5 bg-background/50 backdrop-blur-sm`}>
-              <TabsTrigger value="home" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
-                <House size={18} />
-                <span>Home</span>
-              </TabsTrigger>
-              <TabsTrigger value="details" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
-                <MagnifyingGlass size={18} />
-                <span>Details</span>
-              </TabsTrigger>
-              <TabsTrigger value="accuracy" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
-                <Target size={18} />
-                <span>Accuracy</span>
-              </TabsTrigger>
-              <TabsTrigger value="history" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
-                <Clock size={18} />
-                <span>History</span>
-              </TabsTrigger>
-              <TabsTrigger value="agents" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
-                <UsersThree size={18} />
-                <span>Agents</span>
-              </TabsTrigger>
-              <TabsTrigger value="competition" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
-                <Trophy size={18} />
-                <span>Competition</span>
-              </TabsTrigger>
-              <TabsTrigger value="about" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
-                <Info size={18} />
-                <span>About</span>
-              </TabsTrigger>
-              {isAdmin && (
-                <TabsTrigger value="outcomes" className="flex flex-row items-center gap-2 py-2 text-sm min-h-[44px]">
-                  <ListChecks size={18} />
-                  <span>Outcomes</span>
-                </TabsTrigger>
-              )}
+            <TabsList aria-label="Main navigation" className="station-nav station-nav-desktop">
+              {primaryTabs.map(({ id, label }) => <TabsTrigger key={id} value={id}>{label}</TabsTrigger>)}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" data-section-active={desktopMorePages.some(page => page.id === activeTab)}>More</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="station-more-dropdown">
+                  {desktopMorePages.map(({ id, label, icon: Icon }) => (
+                    <DropdownMenuItem key={id} onClick={() => setActiveTab(id)}>
+                      <Icon size={16} className="mr-2" aria-hidden="true" />
+                      {label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </TabsList>
+            {!isMobile && activeTab !== 'home' && <ForecastTicker prediction={forecast.prediction} loading={forecast.loading} error={!!forecast.error} suspended={moreDrawerOpen || unlockOpen} />}
 
-            <TabsContent value="home">
-              <HeroView onNavigateToDetails={handleNavigateToDetails} />
-            </TabsContent>
-
-            <TabsContent value="details">
-              <DetailsView onBack={() => setActiveTab('home')} />
-            </TabsContent>
-            
-            <TabsContent value="accuracy">
-              <AccuracyView />
-            </TabsContent>
-            
-            <TabsContent value="history">
-              <HistoryView />
-            </TabsContent>
-
-            <TabsContent value="agents">
-              <AgentsView />
-            </TabsContent>
-
-            <TabsContent value="competition">
-              <CompetitionView />
-            </TabsContent>
-
-            <TabsContent value="about">
-              <AboutView />
-            </TabsContent>
-
-            {isAdmin && (
-              <TabsContent value="outcomes">
-                <OutcomeRecorder />
+            <Suspense fallback={<p className="min-h-40 py-12 text-center text-sm text-muted-foreground" role="status">Loading this page…</p>}>
+              <TabsContent value="home" className="station-home">
+                <HeroView forecast={forecast} onNavigateToDetails={handleNavigateToDetails} onNavigateToHistory={() => setActiveTab('history')} />
               </TabsContent>
-            )}
+
+              <TabsContent value="details">
+                <DetailsView onBack={() => setActiveTab('home')} />
+              </TabsContent>
+
+              <TabsContent value="accuracy">
+                <AccuracyView />
+              </TabsContent>
+
+              <TabsContent value="history">
+                <HistoryView />
+              </TabsContent>
+
+              <TabsContent value="agents">
+                <AgentsView forecast={forecast} />
+              </TabsContent>
+
+              <TabsContent value="competition">
+                <CompetitionView />
+              </TabsContent>
+
+              <TabsContent value="about">
+                <AboutView />
+              </TabsContent>
+
+              {isAdmin && (
+                <TabsContent value="outcomes">
+                  <OutcomeRecorder />
+                </TabsContent>
+              )}
+            </Suspense>
           </Tabs>
         ) : (
           <SeasonalLandingPage />
         )}
-      </div>
 
-      {/* Mobile Bottom Navigation - fixed at bottom with safe area padding */}
-      {shouldRenderBlizzard && isMobile && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border pb-safe">
-          <div className="grid grid-cols-5 h-16">
-            {/* Primary nav items */}
-            <button
-              onClick={() => setActiveTab('home')}
-              aria-label="Go to Home tab"
-              aria-current={activeTab === 'home' ? 'page' : undefined}
-              className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
-                activeTab === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <House size={22} weight={activeTab === 'home' ? 'fill' : 'regular'} />
-              <span>Home</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab('details')}
-              aria-label="Go to Details tab"
-              aria-current={activeTab === 'details' ? 'page' : undefined}
-              className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
-                activeTab === 'details' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <MagnifyingGlass size={22} weight={activeTab === 'details' ? 'bold' : 'regular'} />
-              <span>Details</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab('accuracy')}
-              aria-label="Go to Accuracy tab"
-              aria-current={activeTab === 'accuracy' ? 'page' : undefined}
-              className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
-                activeTab === 'accuracy' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Target size={22} weight={activeTab === 'accuracy' ? 'fill' : 'regular'} />
-              <span>Accuracy</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab('history')}
-              aria-label="Go to History tab"
-              aria-current={activeTab === 'history' ? 'page' : undefined}
-              className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
-                activeTab === 'history' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Clock size={22} weight={activeTab === 'history' ? 'fill' : 'regular'} />
-              <span>History</span>
-            </button>
-            
-            {/* More menu with Drawer */}
+        {shouldRenderBlizzard && isMobile && (
+          <nav aria-label="Main navigation" className="station-nav station-nav-mobile">
+            {primaryTabs.filter(({ id }) => id !== 'about').map(({ id, label, icon: Icon }) => (
+              <button key={id} type="button" aria-current={activeTab === id ? 'page' : undefined} onClick={() => setActiveTab(id)}>
+                <Icon size={18} weight={activeTab === id ? 'fill' : 'regular'} aria-hidden="true" />
+                <span>{label}</span>
+              </button>
+            ))}
             <Drawer open={moreDrawerOpen} onOpenChange={setMoreDrawerOpen}>
               <DrawerTrigger asChild>
-                <button
-                  aria-label="Open More menu"
-                  aria-expanded={moreDrawerOpen}
-                  aria-current={overflowTabs.includes(activeTab) ? 'page' : undefined}
-                  className={`flex flex-col items-center justify-center gap-0.5 text-xs transition-colors min-h-[44px] ${
-                    overflowTabs.includes(activeTab) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <DotsThree size={22} weight={overflowTabs.includes(activeTab) ? 'bold' : 'regular'} />
+                <button type="button" aria-label="Open More menu" aria-expanded={moreDrawerOpen} aria-current={mobileMorePages.some(page => page.id === activeTab) ? 'page' : undefined}>
+                  <DotsThree size={21} weight="bold" aria-hidden="true" />
                   <span>More</span>
                 </button>
               </DrawerTrigger>
-              <DrawerContent>
-                <DrawerHeader>
-                  <DrawerTitle>More Options</DrawerTitle>
+              <DrawerContent className="station-directory">
+                <DrawerHeader className="flex-row items-center justify-between">
+                  <div>
+                    <DrawerTitle>More</DrawerTitle>
+                    <DrawerDescription className="sr-only">Explore Blizzard and its past forecasts.</DrawerDescription>
+                  </div>
+                  <DrawerClose asChild>
+                    <Button variant="ghost" size="icon" className="size-11" aria-label="Close More menu"><X size={20} /></Button>
+                  </DrawerClose>
                 </DrawerHeader>
-                <div className="p-4 pb-8 space-y-2">
-                  <button
-                    onClick={() => handleDrawerTabSelect('agents')}
-                    className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
-                      activeTab === 'agents' 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'hover:bg-muted text-foreground'
-                    }`}
-                  >
-                    <UsersThree size={24} weight={activeTab === 'agents' ? 'fill' : 'regular'} />
-                    <div className="text-left">
-                      <div className="font-medium">Agents</div>
-                      <div className="text-sm text-muted-foreground">AI agent details</div>
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => handleDrawerTabSelect('competition')}
-                    className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
-                      activeTab === 'competition' 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'hover:bg-muted text-foreground'
-                    }`}
-                  >
-                    <Trophy size={24} weight={activeTab === 'competition' ? 'fill' : 'regular'} />
-                    <div className="text-left">
-                      <div className="font-medium">Competition</div>
-                      <div className="text-sm text-muted-foreground">Agent performance rankings</div>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleDrawerTabSelect('about')}
-                    className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
-                      activeTab === 'about' 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'hover:bg-muted text-foreground'
-                    }`}
-                  >
-                    <Info size={24} weight={activeTab === 'about' ? 'fill' : 'regular'} />
-                    <div className="text-left">
-                      <div className="font-medium">About</div>
-                      <div className="text-sm text-muted-foreground">How predictions work</div>
-                    </div>
-                  </button>
-                  
-                  {isAdmin && (
-                    <button
-                      onClick={() => handleDrawerTabSelect('outcomes')}
-                      className={`w-full flex items-center gap-3 p-4 rounded-lg transition-colors min-h-[56px] ${
-                        activeTab === 'outcomes' 
-                          ? 'bg-primary/10 text-primary' 
-                          : 'hover:bg-muted text-foreground'
-                      }`}
-                    >
-                      <ListChecks size={24} weight={activeTab === 'outcomes' ? 'fill' : 'regular'} />
-                      <div className="text-left">
-                        <div className="font-medium">Outcomes</div>
-                        <div className="text-sm text-muted-foreground">Record prediction results</div>
-                      </div>
+                <div className="station-directory-links">
+                  {mobileMorePages.map(({ id, label, description, icon: Icon }) => (
+                    <button key={id} type="button" onClick={() => handleDrawerTabSelect(id)} aria-current={activeTab === id ? 'page' : undefined}>
+                      <Icon size={22} aria-hidden="true" />
+                      <span><strong>{label}</strong><small>{description}</small></span>
+                      <span className="station-directory-chevron" aria-hidden="true">»</span>
                     </button>
-                  )}
+                  ))}
                 </div>
               </DrawerContent>
             </Drawer>
-          </div>
-        </nav>
-      )}
+          </nav>
+        )}
+      </div>
 
       <Dialog open={unlockOpen} onOpenChange={handleDialogChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Admin Access</DialogTitle>
+            <DialogTitle>Maintainer tools</DialogTitle>
             <DialogDescription>
               {isOffSeason
-                ? 'Enter the passphrase to unlock maintainer preview and internal tooling during the off-season.'
-                : 'Enter the passphrase to unlock internal tooling. This shortcut is limited to maintainers.'}
+                ? 'Open the local preview and maintenance tools during the off-season.'
+                : 'Open local maintenance tools. Recording an outcome still requires an authenticated GitHub CLI session.'}
             </DialogDescription>
           </DialogHeader>
           <form
@@ -398,21 +307,11 @@ function App() {
             }}
             className="space-y-4"
           >
-            <Input
-              type="password"
-              placeholder="Passphrase"
-              value={passphrase}
-              onChange={(event) => setPassphrase(event.target.value)}
-              autoFocus
-            />
-            {unlockError && (
-              <p className="text-sm text-destructive">{unlockError}</p>
-            )}
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => handleDialogChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Unlock</Button>
+              <Button type="submit">Open tools</Button>
             </DialogFooter>
           </form>
         </DialogContent>

@@ -1,3 +1,4 @@
+import { shellQuote } from '@/lib/shellQuote'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -26,7 +27,7 @@ import {
   TreePalm,
   Warning
 } from '@phosphor-icons/react'
-import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
+import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome, readOutcomeProbability } from '@/services/outcomes'
 
 /** Get today's date in ISO format */
 const todayISO = () => new Date().toISOString().split('T')[0]
@@ -107,32 +108,12 @@ const getDayName = (dateStr: string) => {
 
 const ghCommandFromForm = (form: OutcomeFormState) => {
   if (!form.outcome) return ''
-  
-  const parts = [
-    'gh workflow run log-outcome.yml',
-    '--ref development',
-    `-f event_date=${form.date}`,
-    `-f actual_outcome=${form.outcome}`
-  ]
-
-  if (form.outcome === 'no-school' && form.noSchoolReason.trim()) {
-    parts.push(`-f no_school_reason=${form.noSchoolReason.trim()}`)
-  }
-
-  if (form.notes.trim()) {
-    const sanitized = form.notes.replace(/"/g, '\\"')
-    parts.push(`-f notes="${sanitized}"`)
-  }
-
-  if (form.blizzardPrediction.trim()) {
-    parts.push(`-f blizzard_prediction=${form.blizzardPrediction.trim()}`)
-  }
-
-  if (form.rhsPrediction.trim()) {
-    parts.push(`-f rhs_prediction=${form.rhsPrediction.trim()}`)
-  }
-
-  return parts.join(' ')
+  const fields: Record<string, string> = { event_date: form.date, actual_outcome: form.outcome }
+  if (form.outcome === 'no-school' && form.noSchoolReason.trim()) fields.no_school_reason = form.noSchoolReason.trim()
+  if (form.notes.trim()) fields.notes = form.notes.trim()
+  if (form.blizzardPrediction.trim()) fields.blizzard_prediction = form.blizzardPrediction.trim()
+  if (form.rhsPrediction.trim()) fields.rhs_prediction = form.rhsPrediction.trim()
+  return ['gh workflow run log-outcome.yml --ref main', ...Object.entries(fields).map(([key, value]) => `-f ${shellQuote(`${key}=${value}`)}`)].join(' ')
 }
 
 interface OutcomeFormState {
@@ -224,7 +205,7 @@ export function OutcomeRecorder() {
         return {
           date,
           outcome: existingEntry?.outcome ?? batchForm.defaultOutcome,
-          blizzardPrediction: prediction !== undefined ? normalizeProbability(prediction) : null
+          blizzardPrediction: prediction !== undefined ? readOutcomeProbability(prediction) : null
         }
       })
       
@@ -320,7 +301,7 @@ export function OutcomeRecorder() {
   }
 
   const getDeleteCommand = (date: string) => {
-    return `gh workflow run delete-outcome.yml --ref development -f event_date=${dateOnly(date)} -f confirm=yes`
+    return `gh workflow run delete-outcome.yml --ref main -f ${shellQuote(`event_date=${dateOnly(date)}`)} -f confirm=yes`
   }
 
   const copyDeleteCommand = async (date: string) => {
@@ -410,6 +391,11 @@ export function OutcomeRecorder() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Before the district announces its decision, use <code>lock-matchup</code> in the{' '}
+            <a className="underline" href="https://github.com/StevenWangler/blizzard/actions/workflows/log-outcome.yml"
+              target="_blank" rel="noreferrer">competition submission form</a> to save both forecasts.
+          </p>
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'single' | 'batch')} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="single">Single Day</TabsTrigger>
@@ -512,13 +498,16 @@ export function OutcomeRecorder() {
                   <p className="text-xs text-muted-foreground mt-1">Rockford High School's prediction</p>
                 </div>
                 <div className="md:col-span-3">
-                  <label className="text-sm font-medium">Notes (optional)</label>
+                  <label htmlFor="outcome-public-notes" className="text-sm font-medium">Public notes (optional)</label>
                   <Textarea
+                    id="outcome-public-notes"
+                    aria-describedby="outcome-public-notes-help"
                     value={form.notes}
                     onChange={(e) => setForm(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder="Conditions, timing, etc."
+                    placeholder="Public conditions or closure timing"
                     rows={2}
                   />
+                  <p id="outcome-public-notes-help" className="text-xs text-muted-foreground mt-1">Notes appear in Past Calls and Git history. Use public information only.</p>
                 </div>
               </div>
             </CollapsibleContent>
@@ -561,7 +550,7 @@ export function OutcomeRecorder() {
                 </div>
                 <Button asChild className="w-full">
                   <a
-                    href="https://github.com/StevenWangler/snowday-forecast/actions/workflows/log-outcome.yml"
+                    href="https://github.com/StevenWangler/blizzard/actions/workflows/log-outcome.yml"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -824,7 +813,7 @@ export function OutcomeRecorder() {
                     </div>
                     <Button asChild className="w-full">
                       <a
-                        href="https://github.com/StevenWangler/snowday-forecast/actions/workflows/log-outcomes-batch.yml"
+                        href="https://github.com/StevenWangler/blizzard/actions/workflows/log-outcomes-batch.yml"
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -948,8 +937,8 @@ export function OutcomeRecorder() {
                   </TableHeader>
                   <TableBody>
                     {outcomes.slice().reverse().map(entry => {
-                      const modelProb = normalizeProbability(entry.modelProbability)
-                      const rhsProb = normalizeProbability(entry.rhsPrediction)
+                      const modelProb = readOutcomeProbability(entry.modelProbability)
+                      const rhsProb = readOutcomeProbability(entry.rhsPrediction)
                       return (
                       <React.Fragment key={`${entry.date}-${entry.recordedAt}`}>
                       <TableRow>
@@ -1032,7 +1021,7 @@ export function OutcomeRecorder() {
                                 </div>
                                 <Button asChild size="sm" variant="destructive" className="w-full">
                                   <a
-                                    href="https://github.com/StevenWangler/snowday-forecast/actions/workflows/delete-outcome.yml"
+                                    href="https://github.com/StevenWangler/blizzard/actions/workflows/delete-outcome.yml"
                                     target="_blank"
                                     rel="noreferrer"
                                   >

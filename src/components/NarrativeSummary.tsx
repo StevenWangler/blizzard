@@ -2,7 +2,7 @@ import { type ComponentType, useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CloudSnow, Clock, ShieldCheck, Sparkle, TrendUp } from '@phosphor-icons/react'
 import { generateFullSummary } from '@/lib/narrativeGenerator'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
 interface HighlightItem {
   title: string
@@ -15,10 +15,10 @@ interface NarrativeSummaryProps {
 }
 
 export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
+  const reduceMotion = useReducedMotion()
   const [activeHighlight, setActiveHighlight] = useState(0)
   
   // Check for required data - safety may have error instead of full data
-  const hasSafetyData = prediction?.safety?.road_conditions && prediction?.safety?.travel_safety
   const hasRequiredData = prediction?.meteorology && prediction?.final
 
   const narrative = useMemo(() => {
@@ -56,14 +56,6 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
     setActiveHighlight(0)
   }, [prediction])
 
-  useEffect(() => {
-    if (highlights.length <= 1) return
-    const timer = setInterval(() => {
-      setActiveHighlight((prev) => (prev + 1) % highlights.length)
-    }, 7000)
-    return () => clearInterval(timer)
-  }, [highlights.length])
-
   // Early return after all hooks
   if (!hasRequiredData || !narrative || highlights.length === 0) {
     return null
@@ -71,15 +63,15 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+      transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 0.3 }}
     >
       <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader className="px-6 sm:px-8 pt-6 sm:pt-8 pb-3">
           <CardTitle className="flex items-center gap-2.5 text-lg">
             <Sparkle size={20} weight="duotone" className="text-primary" />
-            AI Summary
+            Analysis highlights
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 px-6 sm:px-8 pb-6 sm:pb-8 pt-0">
@@ -88,8 +80,9 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
               <button
                 key={highlight.title}
                 type="button"
+                aria-pressed={index === activeHighlight}
                 onClick={() => setActiveHighlight(index)}
-                className={`flex items-center gap-1 px-2 py-1 rounded-full transition-colors ${
+                className={`flex min-h-11 items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
                   index === activeHighlight ? 'bg-primary/10 text-primary' : 'text-primary/50 hover:text-primary'
                 }`}
               >
@@ -104,10 +97,10 @@ export function NarrativeSummary({ prediction }: NarrativeSummaryProps) {
               {highlights[activeHighlight] && (
                 <motion.div
                   key={highlights[activeHighlight].title}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.4 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, y: -10 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.4 }}
                   className="space-y-2"
                 >
                   <p className="text-sm font-semibold text-primary flex items-center gap-2">

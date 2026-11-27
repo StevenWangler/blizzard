@@ -1,11 +1,5 @@
 import { useMemo } from 'react'
-import { marked } from 'marked'
-
-// Configure marked for safe rendering
-marked.setOptions({
-  breaks: true, // Convert \n to <br>
-  gfm: true, // GitHub Flavored Markdown
-})
+import { sanitizeForecastMarkdown } from '@/lib/safeMarkdown'
 
 interface MarkdownProps {
   content: string
@@ -15,7 +9,7 @@ interface MarkdownProps {
 export function Markdown({ content, className = '' }: MarkdownProps) {
   const html = useMemo(() => {
     if (!content) return ''
-    return marked.parse(content, { async: false }) as string
+    return sanitizeForecastMarkdown(content)
   }, [content])
 
   return (

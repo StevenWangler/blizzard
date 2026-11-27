@@ -126,9 +126,7 @@ export function WeatherDebugPanel() {
         )}
 
         <div className="text-sm text-muted-foreground">
-          <p><strong>API Key Status:</strong> {import.meta.env.VITE_WEATHER_API_KEY ? 
-            (import.meta.env.VITE_WEATHER_API_KEY === 'your_weatherapi_key_here' ? 'Default placeholder' : 'Configured') : 
-            'Not set'}</p>
+          <p><strong>Live WeatherAPI:</strong> Server-side only (never exposed in this browser build)</p>
           <p><strong>ZIP Code:</strong> {import.meta.env.VITE_ZIP_CODE || 'Using default (49341)'}</p>
         </div>
       </CardContent>
