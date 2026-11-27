@@ -1,23 +1,18 @@
 {
-  "probability": 8,
-  "confidence": "high",
+  "architecture": "single-forecaster-v1",
+  "probability": 2,
+  "confidence": "moderate",
   "primary_factors": [
-    "No accumulating snow/ice is forecast for Monday morning (0\" snow; no freezing precip signal) and no winter alerts—Michigan districts almost always stay open in this setup.",
-    "Main credible risk is *refreeze/patchy black ice* 4–9 AM due to Sunday light rain + temps ~30–32°F at bus time; greatest risk on bridges/overpasses, shaded rural roads, and low-volume neighborhood streets.",
-    "Road/infrastructure posture looks normal: roads currently reported clear; treatment (bridge pre-salt) is plausible per KCRC prep messaging, but no evidence of widespread hazardous conditions yet.",
-    "No domino effect: no confirmed closures/delays found for Rockford or nearby districts in the latest check; community chatter is minimal/uncertain.",
-    "Power grid risk is low (very low statewide outages in the available snapshot; dry/light-wind forecast reduces new-outage risk)."
+    "Forecast shows **no accumulating snow or ice** during the Monday (Nov 30) morning commute window (about 6–8 a.m.).",
+    "Temperatures are **near freezing** early Monday (around 32–33°F), so the main risk would be **patchy refreeze/black ice** if any wet pavement remains from Sunday’s rain.",
+    "Winds look **modest** (no obvious blizzard/drifting or dangerous visibility signal in the provided hourly forecast).",
+    "This is **4 days out**, so the exact overnight low and any leftover precipitation timing could still shift."
   ],
-  "decision_rationale": "All six inputs largely agree: Monday is a dry, post-frontal near-freezing morning with modest NNW wind and no accumulating snow/ice expected. Meteorology and historical analogs both support a very low closure rate (roughly 2–5%) for ‘cold, dry, no-precip’ days in West Michigan. Safety and news add a real but bounded tail risk: Sunday rain followed by subfreezing temperatures can create black ice, and KCRC’s “prepping for ice” messaging reinforces that crews are at least anticipating a refreeze scenario. However, there is no evidence of ongoing freezing drizzle/freezing rain, no widespread precip on Monday, no neighboring-district closure momentum, and infrastructure/power factors do not show disruptive signals. In Michigan, patchy refreeze most often results in targeted salting + cautious driving (sometimes a *delay* if spot checks find multiple slick segments), not a full district closure. Therefore the most Brier-optimal call is still decisively low: ~8% chance of a full snow day/closure (with a higher chance of a minor delay than a closure if ice verifies).",
-  "timestamp": "2026-03-21T23:09:08.506Z",
-  "targetDate": "2026-03-23",
+  "decision_rationale": "Based on the supplied hourly forecast for Rockford, MI, rain is concentrated on Sunday (Nov 29) with temperatures well above freezing, and by early Monday morning (Nov 30) precipitation chances are very low and air temps hover around 33°F. That setup is usually **not** strong evidence for a districtwide full-day closure by itself; there is no signal here for heavy snow, freezing rain, whiteout visibility, or extreme cold exposure during bus hours.\n\nThe one meaningful “watch item” is **refreeze risk**: Sunday’s wet roads could become slick overnight if temperatures reach ~32°F (or slightly below on colder surfaces/low spots). However, the provided hourly forecast keeps Monday morning around 33°F and dry, and the NWS point forecast for Rockford also points to Sunday showers with a low near freezing and a dry/partly sunny Monday. NWS Grand Rapids point forecast (Rockford, MI) updated **11:03 pm EST Thu Nov 26, 2026**: `https://forecast.weather.gov/MapClick.php?FcstType=graphical&lat=43.1262&lg=english&lon=-85.5566&unit=0` (shows the official NWS point page and update time), and the NWS text point forecast page updated **10:03 pm EST Thu Nov 26, 2026**: `https://forecast.weather.gov/MapClick.php?CityName=Rockford&lat=43.1262&lon=-85.5566&site=GRR&state=MI` (Sunday showers; Sunday night chance of showers before 1am with low near 32; Monday partly sunny). ([forecast.weather.gov](https://forecast.weather.gov/MapClick.php?CityName=Rockford&lat=43.1262&lon=-85.5566&site=GRR&state=MI)) \n\nUnknowns that matter: actual **road/pavement temperatures** on neighborhood streets and rural routes (not directly forecast here), and whether the true overnight low ends up **below** freezing long enough to create widespread icy travel conditions.",
+  "timestamp": "2026-11-27T04:35:58.693Z",
+  "targetDate": "2026-11-30",
   "targetDayName": "Monday",
-  "daysAhead": 2,
+  "daysAhead": 4,
   "location": "Rockford, Michigan",
-  "collaboration": {
-    "rounds": 2,
-    "consensus": true,
-    "exitReason": "consensus",
-    "summary": "Agents reached consensus after 2 round(s) with 5.0% spread. Average probability: 7%."
-  }
+  "collaboration": null
 }
