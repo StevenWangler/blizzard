@@ -79,7 +79,6 @@ jobs:
           npm run typecheck
           npm test
           npm run build:release
-          npm run verify:dist
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: steps.revision.outputs.current == 'true'
         with:

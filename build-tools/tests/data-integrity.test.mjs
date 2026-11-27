@@ -293,6 +293,7 @@ test('release input and output validation reject parseable but invalid outcome l
   await writeFile(source, JSON.stringify([old]))
   await copyPublicReleaseAssets(dir, output)
   await verifyDist(output, manifest)
+  await assert.rejects(verifyDist(output, manifest, { requireMusic: true }), /exactly one licensed music file/)
   const invalid = JSON.stringify([old, old])
   await writeFile(source, invalid)
   await assert.rejects(verifyReleaseInputs(dir), /Duplicate outcome date/)

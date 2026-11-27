@@ -6,7 +6,8 @@ import { createHash } from 'node:crypto'
 import { assetManifest, regularFileBelow } from './lib/release-assets.mjs'
 import { readLedger } from './lib/data-integrity.mjs'
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
-export async function verifyDist(output, manifest) {
+export async function verifyDist(output, manifest, { requireMusic = false } = {}) {
+  let musicFiles = 0
   if ((await lstat(output)).isSymbolicLink()) throw new Error('Symlinks are forbidden in release output')
   async function walk(dir) {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -21,6 +22,7 @@ export async function verifyDist(output, manifest) {
         throw new Error('Unexpected file in release output; review the asset allowlist')
       }
       if (entry.name.endsWith('.mp3')) {
+        musicFiles++
         const media = await readFile(file)
         if (media.length !== manifest.music?.bytes || createHash('sha256').update(media).digest('hex') !== manifest.music?.sha256) throw new Error('Release music integrity mismatch')
       }
@@ -31,12 +33,13 @@ export async function verifyDist(output, manifest) {
     }
   }
   await walk(output)
+  if (requireMusic && musicFiles !== 1) throw new Error('Release output must include exactly one licensed music file')
   for (const file of manifest.public) await regularFileBelow(output, file)
   // These JSON snapshots must still be parseable, without changing their historical contents.
   for (const file of ['prediction', 'summary']) JSON.parse(await readFile(join(output, 'data', `${file}.json`), 'utf8'))
   await readLedger(join(output, 'data', 'outcomes.json'))
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  await verifyDist(join(root, 'dist'), await assetManifest(root))
+  await verifyDist(join(root, 'dist'), await assetManifest(root), { requireMusic: process.argv.includes('--require-music') })
   console.log('Release output verified: required assets present; preview data and credential references absent')
 }

@@ -22,7 +22,7 @@
         "test:watch": "vitest --config config/vitest.config.ts",
         "typecheck": "tsc --build config/tsconfig.json --pretty false && npm run typecheck:sdk",
         "test:backend": "node --test build-tools/tests/*.test.mjs",
-        "build:release": "BLIZZARD_RELEASE_BUILD=true npm run build",
+        "build:release": "BLIZZARD_RELEASE_BUILD=true npm run build && node build-tools/verify-dist.mjs --require-music",
         "verify:dist": "node build-tools/verify-dist.mjs",
         "typecheck:sdk": "tsc --strict --noEmit --skipLibCheck false --target ES2022 --module ESNext --moduleResolution Bundler --types node build-tools/tests/sdk-types.contract.ts"
     },
