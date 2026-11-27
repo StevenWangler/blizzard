@@ -26,7 +26,7 @@ globalThis.fetch = async (url, init) => {
   assert.deepEqual(body.tools?.map(tool => tool.type) ?? [], live ? ['web_search'] : [])
   assert.equal(body.max_tool_calls, live ? 3 : undefined)
   assert.ok(!JSON.stringify(body.input).includes('TEST OUTCOME LEAK'))
-  const fail = incomplete && process.argv.includes('--local')
+  const fail = incomplete && live && !process.argv.includes('--scheduled')
   if (fail) incomplete = false
   const answer = JSON.stringify(fixture)
   return Response.json({ id: 'resp_' + ++responseNumber, object: 'response', model: body.model,

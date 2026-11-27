@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -13,11 +14,12 @@ import { TodayForecast } from '@/components/TodayForecast'
 
 interface HeroViewProps {
   onNavigateToDetails: () => void
+  children?: ReactNode
   onNavigateToHistory: () => void
   forecast: SavedForecast
 }
 
-export function HeroView({ onNavigateToDetails, onNavigateToHistory, forecast }: HeroViewProps) {
+export function HeroView({ onNavigateToDetails, onNavigateToHistory, forecast, children }: HeroViewProps) {
   const reduceMotion = useReducedMotion()
   const { prediction, loading, error, reload } = forecast
   
@@ -77,5 +79,5 @@ export function HeroView({ onNavigateToDetails, onNavigateToHistory, forecast }:
     )
   }
 
-  return <TodayForecast prediction={prediction} onNavigateToDetails={onNavigateToDetails} onNavigateToHistory={onNavigateToHistory} />
+  return <TodayForecast prediction={prediction} onNavigateToDetails={onNavigateToDetails} onNavigateToHistory={onNavigateToHistory}>{children}</TodayForecast>
 }

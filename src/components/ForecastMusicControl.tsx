@@ -6,11 +6,10 @@ import { attachMusicLifecycle, ForecastMusic, MUSIC_ARTIST_URL, MUSIC_CREDIT, ty
 import { forecastMusicUrl } from '@/lib/forecastMusicAsset'
 import { readMusicEnabled, writeMusicEnabled } from '@/lib/musicPreference'
 
-export function ForecastMusicControl({ navigationKey }: { navigationKey: string }) {
+export function ForecastMusicControl() {
   const [state, setState] = useState<MusicState>('off')
   const [enabled, setEnabled] = useState(readMusicEnabled)
   const enabledPreference = useRef(enabled)
-  const previousNavigation = useRef(navigationKey)
   const host = useRef<HTMLSpanElement>(null)
   const player = useRef<ForecastMusic | null>(null)
 
@@ -51,13 +50,6 @@ export function ForecastMusicControl({ navigationKey }: { navigationKey: string 
       if (player.current === current) player.current = null
     }
   }, [getPlayer])
-
-  useEffect(() => {
-    if (previousNavigation.current !== navigationKey) {
-      previousNavigation.current = navigationKey
-      player.current?.pause()
-    }
-  }, [navigationKey])
 
   if (!forecastMusicUrl) return null
   const active = state === 'playing'

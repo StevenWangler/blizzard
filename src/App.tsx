@@ -2,8 +2,10 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Toaster } from '@/components/ui/sonner'
-import { House, MagnifyingGlass, Clock, DotsThree, Info, Target, ListChecks, LockSimple, UsersThree, Trophy, X } from '@phosphor-icons/react'
+import { House, MagnifyingGlass, Clock, DotsThree, Info, Target, LockSimple, UsersThree, Trophy, X } from '@phosphor-icons/react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { CompetitionScoreboard } from '@/components/CompetitionScoreboard'
+import { useCompetitionStandings } from '@/hooks/useCompetitionStandings'
 import { HeroView } from '@/components/HeroView'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { NotificationSettings } from '@/components/NotificationSettings'
@@ -12,13 +14,11 @@ import { ForecastMusicControl } from '@/components/ForecastMusicControl'
 import { ForecastTicker } from '@/components/ForecastTicker'
 import { useSavedForecast } from '@/hooks/useSavedForecast'
 import { SeasonalLandingPage } from '@/components/SeasonalLandingPage'
-import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useSeasonMode } from '@/hooks/useSeasonMode'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
 
 const DetailsView = lazy(() => import('@/components/DetailsView').then(module => ({ default: module.DetailsView })))
 const AccuracyView = lazy(() => import('@/components/AccuracyView').then(module => ({ default: module.AccuracyView })))
@@ -26,17 +26,17 @@ const HistoryView = lazy(() => import('@/components/HistoryView').then(module =>
 const AgentsView = lazy(() => import('@/components/AgentsView').then(module => ({ default: module.AgentsView })))
 const CompetitionView = lazy(() => import('@/components/CompetitionView').then(module => ({ default: module.CompetitionView })))
 const AboutView = lazy(() => import('@/components/AboutView').then(module => ({ default: module.AboutView })))
-const OutcomeRecorder = lazy(() => import('@/components/OutcomeRecorder').then(module => ({ default: module.OutcomeRecorder })))
 
 const tabHashes: Record<string, string> = {
   home: '#today', details: '#forecast', history: '#past-calls',
   accuracy: '#accuracy', agents: '#how-it-works', competition: '#competition',
-  about: '#about', outcomes: '#outcomes',
+  about: '#about',
 }
 
 const primaryTabs = [
   { id: 'home', label: 'Today', icon: House },
   { id: 'details', label: 'Forecast', icon: MagnifyingGlass },
+  { id: 'competition', label: 'Face-off', icon: Trophy },
   { id: 'history', label: 'Past calls', icon: Clock },
   { id: 'about', label: 'About', icon: Info },
 ]
@@ -44,11 +44,9 @@ const primaryTabs = [
 const morePages = [
   { id: 'accuracy', label: 'Accuracy', description: 'See how past forecasts did', icon: Target },
   { id: 'agents', label: 'How it works', description: 'How Blizzard makes its call', icon: UsersThree },
-  { id: 'competition', label: 'Competition', description: 'Compare Blizzard and RHS calls', icon: Trophy },
 ]
 
 const aboutPage = { id: 'about', label: 'About Blizzard', description: 'Schedule, scoring, and music credits', icon: Info }
-const outcomesPage = { id: 'outcomes', label: 'Record outcomes', description: 'Log school-day results', icon: ListChecks }
 
 function tabFromLocation() {
   return Object.keys(tabHashes).find(tab => tabHashes[tab] === window.location.hash) ?? 'home'
@@ -56,9 +54,8 @@ function tabFromLocation() {
 
 function App() {
   const [activeTab, setActiveTab] = useState(tabFromLocation)
-  const [unlockOpen, setUnlockOpen] = useState(false)
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false)
   const [moreDrawerOpen, setMoreDrawerOpen] = useState(false)
-  const { isAdmin, unlock, lock } = useAdminAccess()
   const isMobile = useIsMobile()
   const {
     isOffSeason,
@@ -66,8 +63,9 @@ function App() {
     shouldRenderBlizzard,
     activatePreviewOverride,
     disablePreviewOverride,
-  } = useSeasonMode(isAdmin)
+  } = useSeasonMode()
   const forecast = useSavedForecast(shouldRenderBlizzard)
+  const standings = useCompetitionStandings(shouldRenderBlizzard && (activeTab === 'home' || activeTab === 'competition'))
 
   useEffect(() => {
     // Establish this page's first entry so Back returns through visited screens.
@@ -89,16 +87,17 @@ function App() {
   }, [activeTab])
 
   useEffect(() => {
-    if ((!isAdmin && activeTab === 'outcomes') || (!shouldRenderBlizzard && activeTab !== 'home')) {
+    if (!shouldRenderBlizzard && activeTab !== 'home') {
       setActiveTab('home')
     }
-  }, [isAdmin, activeTab, shouldRenderBlizzard])
+  }, [activeTab, shouldRenderBlizzard])
 
   useEffect(() => {
+    if (!isOffSeason || isPreviewMode) return
     const handler = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === 'o') {
         event.preventDefault()
-        setUnlockOpen(true)
+        setPreviewDialogOpen(true)
       }
     }
 
@@ -106,36 +105,7 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handler)
     }
-  }, [])
-
-  const handleUnlock = () => {
-    const result = unlock()
-    if (result.success) {
-      if (isOffSeason) {
-        activatePreviewOverride()
-      }
-
-      setUnlockOpen(false)
-      toast.success(isOffSeason ? 'Maintainer preview enabled' : 'Admin tools unlocked')
-      setActiveTab(isOffSeason ? 'home' : 'outcomes')
-    } else {
-      toast.error(result.message || 'Unable to open maintainer tools')
-    }
-  }
-
-  const handleDialogChange = (open: boolean) => {
-    setUnlockOpen(open)
-  }
-
-  const handleLock = () => {
-    if (isPreviewMode) {
-      disablePreviewOverride()
-    }
-
-    lock()
-    setActiveTab('home')
-    toast.success(isPreviewMode ? 'Maintainer preview closed' : 'Admin tools locked')
-  }
+  }, [isOffSeason, isPreviewMode])
 
   // Navigate to details tab (used by HeroView CTA)
   const handleNavigateToDetails = () => {
@@ -148,8 +118,7 @@ function App() {
     setMoreDrawerOpen(false)
   }
 
-  const desktopMorePages = isAdmin ? [...morePages, outcomesPage] : morePages
-  const mobileMorePages = isAdmin ? [...morePages, aboutPage, outcomesPage] : [...morePages, aboutPage]
+  const mobileMorePages = [...morePages, aboutPage]
 
   const pageBackground = shouldRenderBlizzard
     ? 'winter-workspace station-workspace'
@@ -172,19 +141,19 @@ function App() {
                 Off-season preview
               </Badge>
             )}
-            {isAdmin && (
+            {isPreviewMode && (
               <Button
                 variant="outline"
                 size="icon"
-                onClick={handleLock}
-                title={isPreviewMode ? 'Close maintainer preview' : 'Lock admin tools'}
-                aria-label={isPreviewMode ? 'Close maintainer preview' : 'Lock admin tools'}
+                onClick={() => { disablePreviewOverride(); setActiveTab('home') }}
+                title="Close off-season preview"
+                aria-label="Close off-season preview"
                 className="h-11 w-11 min-h-[44px] min-w-[44px]"
               >
                 <LockSimple size={18} weight="duotone" />
               </Button>
             )}
-            {shouldRenderBlizzard && <ForecastMusicControl navigationKey={activeTab} />}
+            {shouldRenderBlizzard && <ForecastMusicControl />}
             {shouldRenderBlizzard && <NotificationSettings />}
             <ThemeToggle />
           </div>
@@ -196,10 +165,10 @@ function App() {
               {primaryTabs.map(({ id, label }) => <TabsTrigger key={id} value={id}>{label}</TabsTrigger>)}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" data-section-active={desktopMorePages.some(page => page.id === activeTab)}>More</Button>
+                  <Button variant="ghost" size="sm" data-section-active={morePages.some(page => page.id === activeTab)}>More</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="station-more-dropdown">
-                  {desktopMorePages.map(({ id, label, icon: Icon }) => (
+                  {morePages.map(({ id, label, icon: Icon }) => (
                     <DropdownMenuItem key={id} onClick={() => setActiveTab(id)}>
                       <Icon size={16} className="mr-2" aria-hidden="true" />
                       {label}
@@ -208,11 +177,13 @@ function App() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </TabsList>
-            {!isMobile && activeTab !== 'home' && <ForecastTicker prediction={forecast.prediction} loading={forecast.loading} error={!!forecast.error} suspended={moreDrawerOpen || unlockOpen} />}
+            {!isMobile && activeTab !== 'home' && <ForecastTicker prediction={forecast.prediction} loading={forecast.loading} error={!!forecast.error} suspended={moreDrawerOpen || previewDialogOpen} />}
 
             <Suspense fallback={<p className="min-h-40 py-12 text-center text-sm text-muted-foreground" role="status">Loading this page…</p>}>
               <TabsContent value="home" className="station-home">
-                <HeroView forecast={forecast} onNavigateToDetails={handleNavigateToDetails} onNavigateToHistory={() => setActiveTab('history')} />
+                <HeroView forecast={forecast} onNavigateToDetails={handleNavigateToDetails} onNavigateToHistory={() => setActiveTab('history')}>
+                  <CompetitionScoreboard compact standings={standings} />
+                </HeroView>
               </TabsContent>
 
               <TabsContent value="details">
@@ -232,18 +203,13 @@ function App() {
               </TabsContent>
 
               <TabsContent value="competition">
-                <CompetitionView />
+                <CompetitionView standings={standings} />
               </TabsContent>
 
               <TabsContent value="about">
                 <AboutView />
               </TabsContent>
 
-              {isAdmin && (
-                <TabsContent value="outcomes">
-                  <OutcomeRecorder />
-                </TabsContent>
-              )}
             </Suspense>
           </Tabs>
         ) : (
@@ -290,33 +256,19 @@ function App() {
         )}
       </div>
 
-      <Dialog open={unlockOpen} onOpenChange={handleDialogChange}>
+      {isOffSeason && <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Maintainer tools</DialogTitle>
-            <DialogDescription>
-              {isOffSeason
-                ? 'Open the local preview and maintenance tools during the off-season.'
-                : 'Open local maintenance tools. Recording an outcome still requires an authenticated GitHub CLI session.'}
-            </DialogDescription>
+            <DialogTitle>Off-season preview</DialogTitle>
+            <DialogDescription>View the forecast site on this device during the off-season.</DialogDescription>
           </DialogHeader>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault()
-              handleUnlock()
-            }}
-            className="space-y-4"
-          >
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => handleDialogChange(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Open tools</Button>
-            </DialogFooter>
-          </form>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreviewDialogOpen(false)}>Cancel</Button>
+            <Button onClick={() => { activatePreviewOverride(); setPreviewDialogOpen(false) }}>Open preview</Button>
+          </DialogFooter>
         </DialogContent>
-      </Dialog>
-      
+      </Dialog>}
+
       <Toaster position="top-right" />
     </div>
   )

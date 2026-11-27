@@ -22,6 +22,10 @@ The **Generate Blizzard Prediction** workflow attempts one forecast at 9:17 a.m.
 
 For class submissions use **Log Blizzard Outcome** on main. Lock the matchup at submission and record the school decision separately. Stored percentages use the 0–100 scale, including historical fractional values. Before correcting a published entry, inspect the data history. Use the outcome workflow for ordinary corrections. [Replay and scoring](FORECAST_REPLAY.md)
 
+## Refreshing the local preview
+
+Run `npm run preview:refresh` to replace the local prediction, summary and results with one published revision from `origin/blizzard-data`. This overwrites any local forecast experiment. Run `npm run generate-prediction` to try a fresh forecast afterward. Both commands write to the gitignored `public/data/local/` directory. Use the outcome Actions on main to publish results.
+
 ## Local verification and release
 
 Use Node 22.12+ and run `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` and `npm run verify:dist`. PR CI performs these checks without private media or provider credentials.

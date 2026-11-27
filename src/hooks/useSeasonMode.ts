@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 const PREVIEW_STORAGE_KEY = 'blizzard:season:preview-enabled'
 const INACTIVE_VALUES = new Set(['0', 'false', 'no', 'off', 'disabled'])
@@ -13,22 +13,9 @@ function getStoredPreviewState() {
   return window.localStorage.getItem(PREVIEW_STORAGE_KEY) === 'true'
 }
 
-export function useSeasonMode(isAdmin: boolean) {
+export function useSeasonMode() {
   const isRepoActive = useMemo(() => isBlizzardRepoActive(import.meta.env?.VITE_BLIZZARD_ACTIVE), [])
   const [previewEnabled, setPreviewEnabled] = useState<boolean>(() => getStoredPreviewState())
-
-  useEffect(() => {
-    setPreviewEnabled(getStoredPreviewState())
-  }, [])
-
-  useEffect(() => {
-    if (isAdmin) return
-
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(PREVIEW_STORAGE_KEY)
-    }
-    setPreviewEnabled(false)
-  }, [isAdmin])
 
   const activatePreviewOverride = useCallback(() => {
     if (isRepoActive) return
@@ -47,7 +34,7 @@ export function useSeasonMode(isAdmin: boolean) {
   }, [])
 
   const isOffSeason = !isRepoActive
-  const isPreviewMode = isOffSeason && isAdmin && previewEnabled
+  const isPreviewMode = isOffSeason && previewEnabled
   const shouldRenderBlizzard = isRepoActive || isPreviewMode
 
   return {

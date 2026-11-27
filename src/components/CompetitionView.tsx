@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { StudentPageHeading } from '@/components/StudentPageHeading'
 import { Badge } from '@/components/ui/badge'
@@ -11,7 +11,10 @@ import {
   Trophy, Robot, Users, Target, TrendUp, Lightning, Snowflake, 
   Crown, Medal, ChartLine, Fire
 } from '@phosphor-icons/react'
-import { fetchOutcomeLedger, SnowDayOutcome, readOutcomeProbability } from '@/services/outcomes'
+import { CompetitionScoreboard } from '@/components/CompetitionScoreboard'
+import type { CompetitionStandings } from '@/hooks/useCompetitionStandings'
+import { schoolDateLabel } from '@/lib/forecastPresentation'
+import { type SnowDayOutcome, readOutcomeProbability } from '@/services/outcomes'
 
 interface CompetitorStats {
   name: string
@@ -23,16 +26,6 @@ interface CompetitorStats {
   perfectCalls: number
   snowDayAccuracy: number
   schoolOpenAccuracy: number
-}
-
-interface HeadToHeadRecord {
-  date: string
-  blizzardPrediction: number
-  rhsPrediction: number
-  actual: boolean
-  lockedAt?: string
-  blizzardError: number
-  rhsError: number
 }
 
 const calculateCompetitorStats = (
@@ -102,36 +95,10 @@ const calculateCompetitorStats = (
   }
 }
 
-export function CompetitionView() {
-  const [outcomes, setOutcomes] = useState<SnowDayOutcome[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchOutcomeLedger({ bustCache: true })
-        setOutcomes(data)
-      } catch (err) {
-        console.error('Failed to load outcomes:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
-
-  // For fair comparison, only include days where BOTH made predictions (advisory days)
-  const competitionOutcomes = useMemo(() => 
-    outcomes.map(o => o.competitionSubmission ? {
-      ...o, modelProbability: o.competitionSubmission.modelProbability, rhsPrediction: o.competitionSubmission.rhsPrediction
-    } : o).filter(o => {
-      const blizzard = readOutcomeProbability(o.modelProbability)
-      const rhs = readOutcomeProbability(o.rhsPrediction)
-      return blizzard !== null && rhs !== null
-    }),
-    [outcomes]
-  )
-
+export function CompetitionView({ standings }: { standings: CompetitionStandings }) {
+  const { outcomes, paired: competitionOutcomes, headToHead, wins: winCounts, status } = standings
+  const latest = competitionOutcomes[competitionOutcomes.length - 1]
+  const latestScored = headToHead[headToHead.length - 1]
   // Stats are calculated only from head-to-head matchups (advisory days)
   const blizzardStats = useMemo(() => 
     calculateCompetitorStats(competitionOutcomes, o => o.modelProbability, 'Blizzard AI'),
@@ -148,39 +115,6 @@ export function CompetitionView() {
     outcomes.filter(o => readOutcomeProbability(o.modelProbability) !== null && !o.noSchoolScheduled).length,
     [outcomes]
   )
-
-  const headToHead = useMemo((): HeadToHeadRecord[] => {
-    return competitionOutcomes
-      .filter(o => typeof o.actualSnowDay === 'boolean' && !o.noSchoolScheduled)
-      .map(o => {
-        const blizzard = readOutcomeProbability(o.modelProbability)!
-        const rhs = readOutcomeProbability(o.rhsPrediction)!
-        const actual = o.actualSnowDay!
-        const actualNum = actual ? 100 : 0
-        return {
-          date: o.date,
-          blizzardPrediction: blizzard,
-          rhsPrediction: rhs,
-          actual,
-          lockedAt: o.competitionSubmission?.lockedAt,
-          blizzardError: Math.abs(blizzard - actualNum),
-          rhsError: Math.abs(rhs - actualNum)
-        }
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  }, [competitionOutcomes])
-
-  const winCounts = useMemo(() => {
-    let blizzard = 0
-    let rhs = 0
-    let ties = 0
-    headToHead.forEach(h => {
-      if (h.blizzardError < h.rhsError) blizzard++
-      else if (h.rhsError < h.blizzardError) rhs++
-      else ties++
-    })
-    return { blizzard, rhs, ties }
-  }, [headToHead])
 
   const leader = winCounts.blizzard === winCounts.rhs ? 'tie' : winCounts.blizzard > winCounts.rhs ? 'blizzard' : 'rhs'
 
@@ -207,83 +141,32 @@ export function CompetitionView() {
     })
   }, [headToHead])
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-pulse text-muted-foreground">Loading competition data...</div>
-      </div>
-    )
-  }
-
-  const hasCompetitionData = headToHead.length > 0
-
-  if (!hasCompetitionData) {
-    return (
-      <div className="student-page competition-page space-y-6">
-        <StudentPageHeading title="Forecast face-off" description="Blizzard and RHS students, compared on the same school days." />
-        <Card className="border-dashed">
-          <CardContent className="py-12 text-center">
-            <Trophy size={64} className="mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="text-xl font-semibold mb-2">No Competition Data Yet</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              The competition occurs during <strong>winter weather advisories</strong> when RHS students make predictions.
-              Once both Blizzard AI and RHS have predictions for the same day, matchups will appear here!
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mt-8">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Robot size={24} />
-                <span>Blizzard AI</span>
-                <Badge variant="outline" className="text-xs">Daily</Badge>
-              </div>
-              <span className="text-2xl font-bold text-muted-foreground">vs</span>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Users size={24} />
-                <span>RHS Students</span>
-                <Badge variant="outline" className="text-xs">Advisories Only</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  const pending = latest && typeof latest.actualSnowDay !== 'boolean' ? latest : undefined
 
   return (
     <div className="student-page competition-page space-y-6 sm:space-y-8 relative z-10">
-      <StudentPageHeading title="Forecast face-off" description="Blizzard and RHS students, compared on the same school days." />
-      {/* Hero Section - Current Leader */}
-      <Card className={`relative overflow-hidden rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 ${
-        leader === 'blizzard' ? 'bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-background' :
-        leader === 'rhs' ? 'bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-background' :
-        'bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-background'
-      }`}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3 text-2xl">
-            <Trophy size={28} weight="fill" className="text-yellow-500" />
-            Closest forecasts
-          </CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">
-            One win for the closer forecast on each of {headToHead.length} school days. Equal forecasts tie.
-          </p>
-        </CardHeader>
-        <CardContent>
-          {/* Head-to-Head Summary */}
-          <div className="mb-5 p-4 rounded-lg bg-muted/50">
-            <div className="grid grid-cols-3 items-center gap-3 sm:gap-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-500">{winCounts.blizzard}</div>
-                <div className="text-sm text-muted-foreground">Blizzard Wins</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-muted-foreground">{winCounts.ties}</div>
-                <div className="text-sm text-muted-foreground">Ties</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-orange-500">{winCounts.rhs}</div>
-                <div className="text-sm text-muted-foreground">RHS Wins</div>
-              </div>
-            </div>
-          </div>
+      <StudentPageHeading title="Forecast face-off" description="Blizzard takes on the Rockford High School statistics class. The closer snow-day probability wins each day." />
+      <CompetitionScoreboard standings={standings} />
+      {status === 'error' && <button className="faceoff-retry" type="button" onClick={standings.retry}>Retry standings</button>}
+      {status === 'ready' && latestScored && <section className="faceoff-result">
+        <header>
+          <div><span className="faceoff-result-label">Last scored matchup</span>
+            <h3>{latestScored.blizzardError === latestScored.rhsError ? 'Tie' : latestScored.blizzardError < latestScored.rhsError ? 'Blizzard wins' : 'RHS wins'}
+              {' · '}{latestScored.actual ? 'Snow day' : 'School open'}</h3></div>
+          <time dateTime={latestScored.date}>{schoolDateLabel(latestScored.date, true)}</time>
+        </header>
+        <dl><div><dt>Blizzard AI</dt><dd>{latestScored.blizzardPrediction}%</dd></div>
+          <div><dt>RHS Stats</dt><dd>{latestScored.rhsPrediction}%</dd></div></dl>
+      </section>}
+      {status === 'ready' && pending && <section className="faceoff-result">
+        <header><h3>School outcome pending</h3><time dateTime={pending.date}>{schoolDateLabel(pending.date, true)}</time></header>
+        <dl><div><dt>Blizzard AI</dt><dd>{pending.modelProbability}%</dd></div>
+          <div><dt>RHS Stats</dt><dd>{pending.rhsPrediction}%</dd></div></dl>
+      </section>}
+      {status === 'ready' && headToHead.length > 0 && <>
+      <details className="page-disclosure faceoff-analysis">
+        <summary>Team stats and forecast trends</summary>
+        <div className="page-disclosure-content">
           <div className="grid md:grid-cols-2 gap-5 sm:gap-8">
             {/* Blizzard Side */}
             <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all ${
@@ -388,9 +271,6 @@ export function CompetitionView() {
             </div>
           </div>
 
-        </CardContent>
-      </Card>
-
       {/* Charts Row */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Radar Chart - Skills Comparison */}
@@ -471,6 +351,9 @@ export function CompetitionView() {
         </Card>
       </div>
 
+        </div>
+      </details>
+
       {/* Head-to-Head History */}
       <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
         <CardHeader>
@@ -502,7 +385,7 @@ export function CompetitionView() {
                       <Snowflake size={12} className="mr-1" />
                       {match.actual ? 'Snow Day' : 'School'}
                     </Badge>
-                    <div className="text-xs text-muted-foreground">{match.lockedAt ? 'Locked before school day' : 'Submission time unavailable'}</div>
+                    {match.lockedAt && <div className="text-xs text-muted-foreground">Locked before school day</div>}
                   </div>
                 </div>
 
@@ -576,6 +459,7 @@ export function CompetitionView() {
           </CardContent>
         </Card>
       </div>
+      </>}
     </div>
   )
 }
