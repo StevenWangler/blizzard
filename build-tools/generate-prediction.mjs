@@ -30,8 +30,12 @@ const DEFAULT_TIMEZONE = process.env.VITE_TIMEZONE || process.env.TIMEZONE || 'A
 // Parse command line arguments
 const args = process.argv.slice(2)
 const compare = args[0] === '--compare-reasoning' && args.length === 2
-const isLocalMode = args.length === 1 && ['--local', '-l'].includes(args[0])
-if (args.length && !compare && !isLocalMode) throw new Error('Expected --local or --compare-reasoning <saved prediction.json>')
+const scheduled = args.length === 1 && args[0] === '--scheduled'
+const isLocalMode = args.length === 0 || (args.length === 1 && ['--local', '-l'].includes(args[0]))
+if (!compare && !scheduled && !isLocalMode) throw new Error('Expected --local, --scheduled or --compare-reasoning <saved prediction.json>')
+if (scheduled && (process.env.GITHUB_ACTIONS !== 'true' || process.env.GITHUB_REF !== 'refs/heads/main')) {
+  throw new Error('Scheduled output requires the main-branch forecast action')
+}
 
 function isBlizzardActive(value) {
   if (!value) return true

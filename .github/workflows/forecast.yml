@@ -48,7 +48,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           VITE_ZIP_CODE: '49341'
           OPENAI_FORECAST_MODEL: ${{ vars.OPENAI_FORECAST_MODEL || vars.OPENAI_FORECAST_COORDINATOR_MODEL }}
-        run: node build-tools/generate-prediction.mjs
+        run: node build-tools/generate-prediction.mjs --scheduled
       - name: Commit validated data without JSON rebasing
         id: commit
         env:

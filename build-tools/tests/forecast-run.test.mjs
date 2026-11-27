@@ -90,15 +90,15 @@ test('local, scheduled and frozen CLI runs use only the forecaster and isolate t
   await mkdir(join(temp, 'build-tools'))
   await copyFile(join(root, 'build-tools/generate-prediction.mjs'), join(temp, 'build-tools/generate-prediction.mjs'))
   for (const name of ['build-tools/lib','src','node_modules']) await symlink(join(root, name), join(temp, name))
-  const generator = (...args) => execFileSync(process.execPath, [
+  const generator = (environment, ...args) => execFileSync(process.execPath, [
     '--import', join(root, 'build-tools/tests/fixtures/forecast-provider.mjs'),
     join(temp, 'build-tools/generate-prediction.mjs'), ...args
-  ], { cwd: temp, env: { OPENAI_API_KEY: 'fixture', WEATHER_API_KEY: 'fixture' }, timeout: 45000 })
+  ], { cwd: temp, env: { OPENAI_API_KEY: 'fixture', WEATHER_API_KEY: 'fixture', ...environment }, timeout: 45000 })
   const data = join(temp, 'public/data')
   await mkdir(data, { recursive: true })
   const archive = await readFile(join(root, 'public/data/outcomes.json'), 'utf8')
   await writeFile(join(data, 'outcomes.json'), archive)
-  generator('--local')
+  generator({})
   const file = join(temp, 'public/data/local/prediction.json')
   const saved = await readFile(file, 'utf8')
   const snapshot = JSON.parse(saved)
@@ -108,14 +108,15 @@ test('local, scheduled and frozen CLI runs use only the forecaster and isolate t
   const frozen = join(temp, 'legacy.json')
   await writeFile(frozen, JSON.stringify({ ...snapshot, architecture: undefined, final: { decision_rationale: 'TEST OUTCOME LEAK' },
     safety: { report: 'TEST OUTCOME LEAK' }, actualSnowDay: 'TEST OUTCOME LEAK' }))
-  generator('--compare-reasoning', frozen)
+  generator({}, '--compare-reasoning', frozen)
   assert.equal(await readFile(file, 'utf8'), saved)
   assert.deepEqual((await readdir(data)).sort(), ['local','outcomes.json'])
   assert.equal(await readFile(join(data, 'outcomes.json'), 'utf8'), archive)
   const localRows = JSON.parse(await readFile(join(data, 'local/outcomes.json'), 'utf8'))
   const historical = JSON.parse(archive).filter(r => r.date !== snapshot.targetDate)
   assert.deepEqual(localRows.filter(r => r.date !== snapshot.targetDate), historical)
-  generator()
+  assert.throws(() => generator({}, '--scheduled'), /main-branch forecast action/)
+  generator({ GITHUB_ACTIONS: 'true', GITHUB_REF: 'refs/heads/main' }, '--scheduled')
   const scheduled = JSON.parse(await readFile(join(data, 'prediction.json')))
   assert.equal(scheduled.architecture, 'single-forecaster-v1')
   assert.equal(JSON.parse(await readFile(join(data, 'summary.json'))).architecture, scheduled.architecture)

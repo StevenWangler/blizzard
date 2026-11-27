@@ -152,7 +152,8 @@ One forecaster weighs hourly weather and dated local evidence for the next schoo
 | `npm run build:release` | Validate private release inputs and build; does not publish |
 | `npm test` | Frontend and backend regression tests |
 | `npm run verify:dist` | Verify release asset boundaries |
-| `npm run generate-prediction` | Run AI prediction workflow |
+| `npm run preview:refresh` | Replace the three preview files in `public/data/local/` with the latest snapshot from the `blizzard-data` branch on origin |
+| `npm run generate-prediction` | Generate a forecast in the local preview (uses the configured provider credentials) |
 
 ### Environment Variables
 
