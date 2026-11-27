@@ -1,48 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { StudentPageHeading } from '@/components/StudentPageHeading'
+import { ForecastMusicCredits } from '@/components/ForecastMusicControl'
 import { 
   Clock, 
   Brain, 
-  CloudSnow, 
   Target, 
   UsersThree, 
   GithubLogo,
   Lightning,
-  ChartLine,
-  MapPin
+  ChartLine
 } from '@phosphor-icons/react'
 
 export function AboutView() {
   return (
-    <div className="space-y-8 relative z-10">
-      {/* Hero Section */}
-      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
-        <CardHeader className="text-center pb-4">
-          <div className="flex justify-center mb-4">
-            <CloudSnow size={48} className="text-primary" weight="duotone" />
-          </div>
-          <CardTitle className="text-2xl sm:text-3xl">Snow Day Predictor</CardTitle>
-          <p className="text-muted-foreground mt-2">
-            AI-powered snow day predictions for Rockford, Michigan
-          </p>
-        </CardHeader>
-        <CardContent className="text-center">
-          <div className="flex flex-wrap justify-center gap-2">
-            <Badge variant="secondary" className="text-xs">
-              <MapPin size={12} className="mr-1" />
-              Rockford, MI
-            </Badge>
-            <Badge variant="secondary" className="text-xs">
-              <Brain size={12} className="mr-1" />
-              Multi-Agent AI
-            </Badge>
-            <Badge variant="secondary" className="text-xs">
-              <Target size={12} className="mr-1" />
-              Brier Scoring
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="student-page about-page space-y-6 sm:space-y-8 relative z-10">
+      <StudentPageHeading title="About Blizzard" description="A snow-day forecast for the Rockford Rams." />
+      <p className="border-l-2 border-primary pl-4 text-sm leading-6 text-muted-foreground">
+        Blizzard estimates the chance of a snow day. It is not an official district announcement;
+        Rockford Public Schools makes the final call.
+      </p>
+
+      <ForecastMusicCredits />
 
       {/* How It Works */}
       <div className="grid md:grid-cols-2 gap-6">
@@ -58,12 +36,12 @@ export function AboutView() {
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                 <Lightning size={18} className="text-primary mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium">3 Times Daily</p>
+                  <p className="font-medium">Three scheduled runs</p>
                   <p className="text-muted-foreground text-xs mt-1">
-                    Predictions run automatically at 9 AM, 1 PM, and 6 PM EST via GitHub Actions
+                    Forecasts are scheduled three times a day while Blizzard is active.
                   </p>
                   <p className="text-muted-foreground text-xs mt-1 italic">
-                    Note: GitHub Actions scheduling can vary by 15–60 minutes depending on runner availability
+                    Runs can be delayed or fail. Check the forecast’s update time.
                   </p>
                 </div>
               </div>
@@ -72,7 +50,7 @@ export function AboutView() {
                 <div>
                   <p className="font-medium">Fresh Weather Data</p>
                   <p className="text-muted-foreground text-xs mt-1">
-                    Each run fetches the latest conditions and forecasts from weather APIs to keep predictions current
+                    Each successful run uses newly fetched weather data.
                   </p>
                 </div>
               </div>
@@ -90,26 +68,8 @@ export function AboutView() {
           <CardContent className="space-y-4">
             <div className="space-y-3 text-sm">
               <p className="text-muted-foreground">
-                The system uses a multi-agent AI architecture with specialized experts:
+                One forecaster reads the weather for Rockford’s next school morning. It can check dated public reports when ice, road conditions or extreme cold could change the call.
               </p>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span><strong>Chief Meteorologist</strong> — analyzes weather conditions</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-purple-500" />
-                  <span><strong>Weather Historian</strong> — provides historical context</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-orange-500" />
-                  <span><strong>Safety Analyst</strong> — evaluates travel conditions</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500" />
-                  <span><strong>Decision Coordinator</strong> — synthesizes the final prediction</span>
-                </li>
-              </ul>
             </div>
           </CardContent>
         </Card>
@@ -127,7 +87,7 @@ export function AboutView() {
           <div className="grid sm:grid-cols-3 gap-4 text-sm">
             <div className="p-4 rounded-xl border border-border/60 bg-card/80">
               <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <span className="text-lg">1️⃣</span> Data Collection
+                <span className="text-primary tabular-nums">01</span> Data Collection
               </h4>
               <p className="text-muted-foreground text-xs">
                 Weather APIs provide current conditions, forecasts, precipitation, wind, and temperature data
@@ -135,18 +95,18 @@ export function AboutView() {
             </div>
             <div className="p-4 rounded-xl border border-border/60 bg-card/80">
               <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <span className="text-lg">2️⃣</span> Expert Analysis
+                <span className="text-primary tabular-nums">02</span> Morning travel
               </h4>
               <p className="text-muted-foreground text-xs">
-                AI agents analyze data in parallel, each applying their specialized knowledge to assess snow day likelihood
+                The forecaster weighs overnight accumulation and freezing against the time buses head out.
               </p>
             </div>
             <div className="p-4 rounded-xl border border-border/60 bg-card/80">
               <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <span className="text-lg">3️⃣</span> Final Prediction
+                <span className="text-primary tabular-nums">03</span> Final Prediction
               </h4>
               <p className="text-muted-foreground text-xs">
-                The Decision Coordinator weighs all inputs and produces a probability with confidence level and detailed reasoning
+                Blizzard publishes the estimated chance of closure, the main reasons and how confident the forecaster is.
               </p>
             </div>
           </div>
@@ -195,10 +155,10 @@ export function AboutView() {
               </p>
             </div>
             <a 
-              href="https://github.com/StevenWangler/snowday-forecast"
+              href="https://github.com/StevenWangler/blizzard"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <GithubLogo size={20} />
               <span>View on GitHub</span>

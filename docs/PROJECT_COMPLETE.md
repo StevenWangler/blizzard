@@ -86,7 +86,7 @@ npm run dev
 npm run dev
 
 # Test with real API key
-# 1. Add VITE_WEATHER_API_KEY to .env
+# 1. Add WEATHER_API_KEY to .env
 # 2. npm run dev
 # 3. Check browser console for weather data logs
 ```

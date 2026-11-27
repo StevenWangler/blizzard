@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { StudentPageHeading } from '@/components/StudentPageHeading'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts'
 import { 
   Trophy, Robot, Users, Target, TrendUp, Lightning, Snowflake, 
   Crown, Medal, ChartLine, Fire
 } from '@phosphor-icons/react'
-import { fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
+import { fetchOutcomeLedger, SnowDayOutcome, readOutcomeProbability } from '@/services/outcomes'
 
 interface CompetitorStats {
   name: string
@@ -29,8 +30,7 @@ interface HeadToHeadRecord {
   blizzardPrediction: number
   rhsPrediction: number
   actual: boolean
-  blizzardCorrect: boolean
-  rhsCorrect: boolean
+  lockedAt?: string
   blizzardError: number
   rhsError: number
 }
@@ -41,7 +41,7 @@ const calculateCompetitorStats = (
   name: string
 ): CompetitorStats => {
   const validOutcomes = outcomes.filter(o => {
-    const pred = normalizeProbability(getPrediction(o))
+    const pred = readOutcomeProbability(getPrediction(o))
     return pred !== null && o.actualSnowDay !== null && o.actualSnowDay !== undefined && !o.noSchoolScheduled
   })
 
@@ -69,7 +69,7 @@ const calculateCompetitorStats = (
   let schoolOpenTotal = 0
 
   validOutcomes.forEach(o => {
-    const pred = normalizeProbability(getPrediction(o))!
+    const pred = readOutcomeProbability(getPrediction(o))!
     const actual = o.actualSnowDay!
     const predBool = pred >= 50
     const actualNum = actual ? 1 : 0
@@ -122,9 +122,11 @@ export function CompetitionView() {
 
   // For fair comparison, only include days where BOTH made predictions (advisory days)
   const competitionOutcomes = useMemo(() => 
-    outcomes.filter(o => {
-      const blizzard = normalizeProbability(o.modelProbability)
-      const rhs = normalizeProbability(o.rhsPrediction)
+    outcomes.map(o => o.competitionSubmission ? {
+      ...o, modelProbability: o.competitionSubmission.modelProbability, rhsPrediction: o.competitionSubmission.rhsPrediction
+    } : o).filter(o => {
+      const blizzard = readOutcomeProbability(o.modelProbability)
+      const rhs = readOutcomeProbability(o.rhsPrediction)
       return blizzard !== null && rhs !== null
     }),
     [outcomes]
@@ -143,24 +145,16 @@ export function CompetitionView() {
 
   // Count of all Blizzard predictions (for context)
   const totalBlizzardPredictions = useMemo(() => 
-    outcomes.filter(o => normalizeProbability(o.modelProbability) !== null && !o.noSchoolScheduled).length,
+    outcomes.filter(o => readOutcomeProbability(o.modelProbability) !== null && !o.noSchoolScheduled).length,
     [outcomes]
   )
 
   const headToHead = useMemo((): HeadToHeadRecord[] => {
-    return outcomes
-      .filter(o => {
-        const blizzard = normalizeProbability(o.modelProbability)
-        const rhs = normalizeProbability(o.rhsPrediction)
-        return blizzard !== null && 
-          rhs !== null &&
-          o.actualSnowDay !== null && 
-          o.actualSnowDay !== undefined &&
-          !o.noSchoolScheduled
-      })
+    return competitionOutcomes
+      .filter(o => typeof o.actualSnowDay === 'boolean' && !o.noSchoolScheduled)
       .map(o => {
-        const blizzard = normalizeProbability(o.modelProbability)!
-        const rhs = normalizeProbability(o.rhsPrediction)!
+        const blizzard = readOutcomeProbability(o.modelProbability)!
+        const rhs = readOutcomeProbability(o.rhsPrediction)!
         const actual = o.actualSnowDay!
         const actualNum = actual ? 100 : 0
         return {
@@ -168,23 +162,13 @@ export function CompetitionView() {
           blizzardPrediction: blizzard,
           rhsPrediction: rhs,
           actual,
-          blizzardCorrect: (blizzard >= 50) === actual,
-          rhsCorrect: (rhs >= 50) === actual,
+          lockedAt: o.competitionSubmission?.lockedAt,
           blizzardError: Math.abs(blizzard - actualNum),
           rhsError: Math.abs(rhs - actualNum)
         }
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  }, [outcomes])
-
-  const leader = useMemo(() => {
-    if (blizzardStats.accuracy > rhsStats.accuracy) return 'blizzard'
-    if (rhsStats.accuracy > blizzardStats.accuracy) return 'rhs'
-    // Tie-breaker: better Brier score
-    if (blizzardStats.brierScore < rhsStats.brierScore) return 'blizzard'
-    if (rhsStats.brierScore < blizzardStats.brierScore) return 'rhs'
-    return 'tie'
-  }, [blizzardStats, rhsStats])
+  }, [competitionOutcomes])
 
   const winCounts = useMemo(() => {
     let blizzard = 0
@@ -197,6 +181,8 @@ export function CompetitionView() {
     })
     return { blizzard, rhs, ties }
   }, [headToHead])
+
+  const leader = winCounts.blizzard === winCounts.rhs ? 'tie' : winCounts.blizzard > winCounts.rhs ? 'blizzard' : 'rhs'
 
   const radarData = useMemo(() => [
     { stat: 'Accuracy', Blizzard: blizzardStats.accuracy, RHS: rhsStats.accuracy },
@@ -216,7 +202,7 @@ export function CompetitionView() {
         date: h.date,
         blizzardWins,
         rhsWins,
-        displayDate: new Date(h.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+        displayDate: new Date(h.date + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
       }
     })
   }, [headToHead])
@@ -233,7 +219,8 @@ export function CompetitionView() {
 
   if (!hasCompetitionData) {
     return (
-      <div className="space-y-6">
+      <div className="student-page competition-page space-y-6">
+        <StudentPageHeading title="Forecast face-off" description="Blizzard and RHS students, compared on the same school days." />
         <Card className="border-dashed">
           <CardContent className="py-12 text-center">
             <Trophy size={64} className="mx-auto mb-4 text-muted-foreground/50" />
@@ -242,7 +229,7 @@ export function CompetitionView() {
               The competition occurs during <strong>winter weather advisories</strong> when RHS students make predictions.
               Once both Blizzard AI and RHS have predictions for the same day, matchups will appear here!
             </p>
-            <div className="flex items-center justify-center gap-8 mt-8">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mt-8">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Robot size={24} />
                 <span>Blizzard AI</span>
@@ -262,36 +249,47 @@ export function CompetitionView() {
   }
 
   return (
-    <div className="space-y-8 relative z-10">
+    <div className="student-page competition-page space-y-6 sm:space-y-8 relative z-10">
+      <StudentPageHeading title="Forecast face-off" description="Blizzard and RHS students, compared on the same school days." />
       {/* Hero Section - Current Leader */}
       <Card className={`relative overflow-hidden rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 ${
         leader === 'blizzard' ? 'bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-background' :
         leader === 'rhs' ? 'bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-background' :
         'bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-background'
       }`}>
-        <div className="absolute top-4 right-4">
-          <Crown size={48} className={`${
-            leader === 'blizzard' ? 'text-blue-500' :
-            leader === 'rhs' ? 'text-orange-500' :
-            'text-purple-500'
-          }`} weight="fill" />
-        </div>
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-2xl">
             <Trophy size={28} weight="fill" className="text-yellow-500" />
-            Competition Leaderboard
+            Closest forecasts
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
-            Head-to-head comparison on winter weather advisory days ({headToHead.length} matchups)
+            One win for the closer forecast on each of {headToHead.length} school days. Equal forecasts tie.
           </p>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 gap-8">
+          {/* Head-to-Head Summary */}
+          <div className="mb-5 p-4 rounded-lg bg-muted/50">
+            <div className="grid grid-cols-3 items-center gap-3 sm:gap-8">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-500">{winCounts.blizzard}</div>
+                <div className="text-sm text-muted-foreground">Blizzard Wins</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-muted-foreground">{winCounts.ties}</div>
+                <div className="text-sm text-muted-foreground">Ties</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-orange-500">{winCounts.rhs}</div>
+                <div className="text-sm text-muted-foreground">RHS Wins</div>
+              </div>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-5 sm:gap-8">
             {/* Blizzard Side */}
-            <div className={`p-6 rounded-xl border-2 transition-all ${
+            <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all ${
               leader === 'blizzard' ? 'border-blue-500 bg-blue-500/5 ring-2 ring-blue-500/20' : 'border-border'
             }`}>
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className={`p-3 rounded-full ${leader === 'blizzard' ? 'bg-blue-500/20' : 'bg-muted'}`}>
                   <Robot size={32} weight="duotone" className={leader === 'blizzard' ? 'text-blue-500' : 'text-muted-foreground'} />
                 </div>
@@ -339,10 +337,10 @@ export function CompetitionView() {
             </div>
 
             {/* RHS Side */}
-            <div className={`p-6 rounded-xl border-2 transition-all ${
+            <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all ${
               leader === 'rhs' ? 'border-orange-500 bg-orange-500/5 ring-2 ring-orange-500/20' : 'border-border'
             }`}>
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
                 <div className={`p-3 rounded-full ${leader === 'rhs' ? 'bg-orange-500/20' : 'bg-muted'}`}>
                   <Users size={32} weight="duotone" className={leader === 'rhs' ? 'text-orange-500' : 'text-muted-foreground'} />
                 </div>
@@ -390,23 +388,6 @@ export function CompetitionView() {
             </div>
           </div>
 
-          {/* Head-to-Head Summary */}
-          <div className="mt-8 p-4 rounded-lg bg-muted/50">
-            <div className="flex items-center justify-center gap-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-500">{winCounts.blizzard}</div>
-                <div className="text-sm text-muted-foreground">Blizzard Wins</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-muted-foreground">{winCounts.ties}</div>
-                <div className="text-sm text-muted-foreground">Ties</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-orange-500">{winCounts.rhs}</div>
-                <div className="text-sm text-muted-foreground">RHS Wins</div>
-              </div>
-            </div>
-          </div>
         </CardContent>
       </Card>
 
@@ -498,20 +479,20 @@ export function CompetitionView() {
             Head-to-Head Matchups
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Every prediction where both competitors made a call
+            Both forecasts and the school outcome for each matchup.
           </p>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {headToHead.slice().reverse().map((match, idx) => (
+            {headToHead.slice().reverse().map((match) => (
               <div 
                 key={match.date} 
-                className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card/80 shadow-sm hover:bg-card transition-colors"
+                className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 rounded-xl border border-border/60 bg-card/80 shadow-sm hover:bg-card transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="text-center min-w-[80px]">
+                  <div className="flex flex-wrap items-center gap-3 text-left sm:block sm:text-center sm:min-w-[80px]">
                     <div className="text-sm font-medium">
-                      {new Date(match.date).toLocaleDateString(undefined, { 
+                      {new Date(match.date + 'T12:00:00').toLocaleDateString(undefined, {
                         weekday: 'short', 
                         month: 'short', 
                         day: 'numeric' 
@@ -521,19 +502,18 @@ export function CompetitionView() {
                       <Snowflake size={12} className="mr-1" />
                       {match.actual ? 'Snow Day' : 'School'}
                     </Badge>
+                    <div className="text-xs text-muted-foreground">{match.lockedAt ? 'Locked before school day' : 'Submission time unavailable'}</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:w-auto sm:gap-6">
                   {/* Blizzard */}
-                  <div className={`text-center p-3 rounded-lg min-w-[100px] ${
+                  <div className={`text-center p-3 rounded-lg min-w-0 sm:min-w-[100px] ${
                     match.blizzardError < match.rhsError ? 'bg-blue-500/10 ring-2 ring-blue-500/30' : ''
                   }`}>
                     <div className="text-xs text-muted-foreground mb-1">Blizzard</div>
                     <div className="text-lg font-bold">{match.blizzardPrediction}%</div>
-                    <div className={`text-xs ${match.blizzardCorrect ? 'text-green-500' : 'text-red-500'}`}>
-                      {match.blizzardCorrect ? '✓ Correct' : '✗ Wrong'}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{match.blizzardError} pts away</div>
                     {match.blizzardError < match.rhsError && (
                       <Medal size={16} className="mx-auto mt-1 text-blue-500" weight="fill" />
                     )}
@@ -542,14 +522,12 @@ export function CompetitionView() {
                   <span className="text-muted-foreground font-bold">vs</span>
 
                   {/* RHS */}
-                  <div className={`text-center p-3 rounded-lg min-w-[100px] ${
+                  <div className={`text-center p-3 rounded-lg min-w-0 sm:min-w-[100px] ${
                     match.rhsError < match.blizzardError ? 'bg-orange-500/10 ring-2 ring-orange-500/30' : ''
                   }`}>
                     <div className="text-xs text-muted-foreground mb-1">RHS</div>
                     <div className="text-lg font-bold">{match.rhsPrediction}%</div>
-                    <div className={`text-xs ${match.rhsCorrect ? 'text-green-500' : 'text-red-500'}`}>
-                      {match.rhsCorrect ? '✓ Correct' : '✗ Wrong'}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{match.rhsError} pts away</div>
                     {match.rhsError < match.blizzardError && (
                       <Medal size={16} className="mx-auto mt-1 text-orange-500" weight="fill" />
                     )}
@@ -562,7 +540,7 @@ export function CompetitionView() {
       </Card>
 
       {/* Fun Stats */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
           <CardContent className="pt-6 text-center">
             <Fire size={32} className="mx-auto mb-2 text-red-500" weight="fill" />
@@ -594,7 +572,7 @@ export function CompetitionView() {
             <div className="text-2xl font-bold">
               {leader === 'blizzard' ? 'AI' : leader === 'rhs' ? 'RHS' : 'Tied'}
             </div>
-            <div className="text-sm text-muted-foreground">Current Champion</div>
+            <div className="text-sm text-muted-foreground">Most daily wins</div>
           </CardContent>
         </Card>
       </div>

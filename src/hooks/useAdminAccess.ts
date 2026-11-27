@@ -21,25 +21,10 @@ export function useAdminAccess() {
     setIsAdmin(getStoredState())
   }, [])
 
-  const unlock = useCallback((passphrase: string): UnlockResult => {
-    const secret = (import.meta.env.VITE_OUTCOME_ADMIN_SECRET || '').trim()
-
-    // Debug logging removed to avoid exposing sensitive information
-
-    if (!secret) {
-      return {
-        success: false,
-        message: 'Admin secret not configured in environment.'
-      }
-    }
-
-    if (passphrase.trim() !== secret) {
-      return {
-        success: false,
-        message: 'Incorrect passphrase.'
-      }
-    }
-
+  const unlock = useCallback((): UnlockResult => {
+    // This only reveals local maintenance UI. It is deliberately not treated as
+    // authorization: real writes are performed by GitHub Actions and require
+    // the operator's authenticated GitHub CLI session.
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(STORAGE_KEY, 'true')
     }

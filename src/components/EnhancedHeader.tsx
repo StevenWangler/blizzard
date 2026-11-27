@@ -1,5 +1,4 @@
-import { CloudSnow } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 
 interface EnhancedHeaderProps {
   title?: string
@@ -8,61 +7,38 @@ interface EnhancedHeaderProps {
 
 export function EnhancedHeader({ 
   title = "Blizzard",
-  subtitle = "AI-powered snow day forecasting for Rockford, Michigan"
+  subtitle = "Rockford, Michigan"
 }: EnhancedHeaderProps) {
+  const reduceMotion = useReducedMotion()
   return (
     <motion.div 
-      className="text-center mb-8 sm:mb-12 relative"
-      initial={{ opacity: 0, y: -20 }}
+      className="min-w-0 flex-1"
+      initial={reduceMotion ? false : { opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: reduceMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <motion.div
-          animate={{ 
-            rotate: [0, -5, 5, -5, 0],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{ 
-            duration: 3,
-            repeat: Infinity,
-            repeatDelay: 5,
-            ease: "easeInOut"
-          }}
-        >
-          <CloudSnow 
-            size={40} 
-            className="text-primary sm:w-12 sm:h-12 drop-shadow-lg" 
-            weight="duotone" 
+      <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="broadcast-mark">
+          <img
+            src={`${import.meta.env.BASE_URL}images/rockford-rams-mark.png`}
+            alt=""
+            aria-hidden="true"
+            className="size-7 object-contain"
+            draggable={false}
           />
-        </motion.div>
-        
-        <motion.h1 
-          className="text-2xl sm:text-5xl font-bold text-foreground leading-tight bg-gradient-to-r from-primary via-blue-600 to-cyan-600 bg-clip-text text-transparent"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          {title}
-        </motion.h1>
+        </div>
+        <div className="min-w-0">
+          <motion.h1
+            className="broadcast-wordmark"
+            initial={reduceMotion ? false : { opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 0.1 }}
+          >
+            {title}
+          </motion.h1>
+          <p className="broadcast-location">{subtitle}</p>
+        </div>
       </div>
-      
-      <motion.p 
-        className="text-muted-foreground text-base sm:text-lg px-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-      >
-        {subtitle}
-      </motion.p>
-      
-      {/* Decorative gradient line */}
-      <motion.div 
-        className="mt-5 sm:mt-6 h-1 w-32 mx-auto rounded-full bg-gradient-to-r from-transparent via-primary to-transparent"
-        initial={{ scaleX: 0, opacity: 0 }}
-        animate={{ scaleX: 1, opacity: 0.6 }}
-        transition={{ duration: 1, delay: 0.6 }}
-      />
     </motion.div>
   )
 }

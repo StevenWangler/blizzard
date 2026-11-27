@@ -1,3 +1,4 @@
+import { getNextRefreshTime } from '@/lib/forecastSchedule'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -18,30 +19,6 @@ interface WeatherData {
   alerts: string[]
   modelProbability: number
   lastUpdated: string
-}
-
-// GitHub Actions schedule: 9 AM, 1 PM, 6 PM EST
-const REFRESH_TIMES_UTC = [14, 18, 23] // 14:00, 18:00, 23:00 UTC
-
-function getNextRefreshTime(): Date {
-  const now = new Date()
-  const currentUTCHour = now.getUTCHours()
-  const currentUTCMinutes = now.getUTCMinutes()
-  
-  // Find the next scheduled refresh time
-  for (const hour of REFRESH_TIMES_UTC) {
-    if (currentUTCHour < hour || (currentUTCHour === hour && currentUTCMinutes === 0)) {
-      const next = new Date(now)
-      next.setUTCHours(hour, 0, 0, 0)
-      return next
-    }
-  }
-  
-  // If past all today's times, next refresh is tomorrow at first scheduled time
-  const tomorrow = new Date(now)
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
-  tomorrow.setUTCHours(REFRESH_TIMES_UTC[0], 0, 0, 0)
-  return tomorrow
 }
 
 function formatTimeUntil(targetDate: Date): string {
@@ -143,7 +120,7 @@ export function PredictionView() {
         {nextRefresh && (
           <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center gap-1">
             <Clock size={12} />
-            Next update in {nextRefresh}
+            Scheduled check in {nextRefresh}
           </p>
         )}
       </div>

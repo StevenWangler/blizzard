@@ -1,5 +1,6 @@
 /**
- * Multi-Agent Snow Day Prediction System - MICHIGAN CALIBRATED
+ * Legacy browser prototype retained for SDK compatibility checks.
+ * Scheduled and local forecasts use build-tools/generate-prediction.mjs.
  * 
  * This system uses multiple specialized AI agents to analyze weather data
  * and collaboratively predict the probability of snow days with detailed reasoning.
@@ -25,6 +26,7 @@
  */
 
 import { Agent, tool, run, setTracingDisabled, webSearchTool, codeInterpreterTool } from '@openai/agents'
+import type { ModelSettings } from '@openai/agents'
 import { z } from 'zod'
 import type { 
   WeatherApiResponse, 
@@ -40,8 +42,8 @@ import type {
   DebateExchange
 } from "@/types/agentPrediction"
 
-// Enable tracing for debugging and monitoring agent workflows (false = tracing ON)
-setTracingDisabled(false)
+// Browser-side legacy agent helpers must never export forecast context to tracing.
+setTracingDisabled(true)
 import { weatherApi, isWeatherApiKeyConfigured } from './weatherApi'
 import { getRelevantWeatherInformation } from './weatherProcessing'
 
@@ -66,9 +68,9 @@ export interface CollaborationConfig {
 }
 
 export const defaultCollaborationConfig: CollaborationConfig = {
-  maxRounds: 5,
+  maxRounds: 1,
   consensusThreshold: 10,
-  enableDebate: true
+  enableDebate: false
 }
 
 let collaborationConfig: CollaborationConfig = { ...defaultCollaborationConfig }
@@ -85,7 +87,7 @@ export function getCollaborationConfig(): CollaborationConfig {
 // AGENT CONFIGURATION
 // ============================================================================
 
-export type ReasoningEffort = 'none' | 'low' | 'medium' | 'high'
+export type ReasoningEffort = NonNullable<NonNullable<ModelSettings['reasoning']>['effort']>
 
 export interface AgentConfig {
   model: string
@@ -130,7 +132,7 @@ export function getAgentConfig(): AgentSystemConfig {
 
 // ============================================================================
 
-const WEATHER_API_KEY_MISSING_MESSAGE = 'Weather API key is not configured. Please set VITE_WEATHER_API_KEY to run the snow day prediction agents.'
+const WEATHER_API_KEY_MISSING_MESSAGE = 'Weather API key is not configured. Run prediction agents with WEATHER_API_KEY in a trusted server-side environment.'
 
 function ensureWeatherApiConfigured(): void {
   if (!isWeatherApiKeyConfigured()) {
@@ -592,7 +594,7 @@ const meteorologistAgent = new Agent({
   name: 'Chief Meteorologist',
   instructions: meteorologistPrompt,
   model: agentConfig.meteorologist.model,
-  modelSettings: { reasoningEffort: agentConfig.meteorologist.reasoningEffort },
+  modelSettings: { reasoning: { effort: agentConfig.meteorologist.reasoningEffort } },
   tools: [weatherDataTool, webSearchTool(), codeInterpreterTool()],
   outputType: WeatherAnalysisSchema
 })
@@ -601,7 +603,7 @@ const historianAgent = new Agent({
   name: 'Weather Pattern Historian',
   instructions: historianPrompt,
   model: agentConfig.historian.model,
-  modelSettings: { reasoningEffort: agentConfig.historian.reasoningEffort },
+  modelSettings: { reasoning: { effort: agentConfig.historian.reasoningEffort } },
   tools: [webSearchTool(), codeInterpreterTool()],
   outputType: HistoricalAnalysisSchema
 })
@@ -610,7 +612,7 @@ const safetyAnalystAgent = new Agent({
   name: 'Transportation Safety Analyst',
   instructions: safetyAnalystPrompt,
   model: agentConfig.safetyAnalyst.model,
-  modelSettings: { reasoningEffort: agentConfig.safetyAnalyst.reasoningEffort },
+  modelSettings: { reasoning: { effort: agentConfig.safetyAnalyst.reasoningEffort } },
   tools: [weatherDataTool, webSearchTool(), codeInterpreterTool()],
   outputType: SafetyAnalysisSchema
 })
@@ -619,7 +621,7 @@ const newsIntelAgent = new Agent({
   name: 'Local News Intelligence',
   instructions: newsIntelPrompt,
   model: agentConfig.newsIntel.model,
-  modelSettings: { reasoningEffort: agentConfig.newsIntel.reasoningEffort },
+  modelSettings: { reasoning: { effort: agentConfig.newsIntel.reasoningEffort } },
   tools: [webSearchTool()],
   outputType: NewsAnalysisSchema
 })
@@ -628,7 +630,7 @@ const infrastructureMonitorAgent = new Agent({
   name: 'Regional Infrastructure Monitor',
   instructions: infrastructurePrompt,
   model: agentConfig.infrastructureMonitor.model,
-  modelSettings: { reasoningEffort: agentConfig.infrastructureMonitor.reasoningEffort },
+  modelSettings: { reasoning: { effort: agentConfig.infrastructureMonitor.reasoningEffort } },
   tools: [webSearchTool()],
   outputType: InfrastructureAnalysisSchema
 })
@@ -637,7 +639,7 @@ const powerGridAnalystAgent = new Agent({
   name: 'Power Grid Analyst',
   instructions: powerGridPrompt,
   model: agentConfig.powerGridAnalyst.model,
-  modelSettings: { reasoningEffort: agentConfig.powerGridAnalyst.reasoningEffort },
+  modelSettings: { reasoning: { effort: agentConfig.powerGridAnalyst.reasoningEffort } },
   tools: [webSearchTool()],
   outputType: PowerGridAnalysisSchema
 })
@@ -646,7 +648,7 @@ const webWeatherVerifierAgent = new Agent({
   name: 'Web Weather Verification Specialist',
   instructions: webWeatherVerifierPrompt,
   model: agentConfig.webWeatherVerifier.model,
-  modelSettings: { reasoningEffort: agentConfig.webWeatherVerifier.reasoningEffort },
+  modelSettings: { reasoning: { effort: agentConfig.webWeatherVerifier.reasoningEffort } },
   tools: [weatherDataTool, webSearchTool()],
   outputType: WebWeatherVerifierSchema
 })
@@ -846,7 +848,7 @@ Example uses:
 
 You are IN CONTROL. Use these tools to build confidence in your decision.`,
   model: agentConfig.decisionCoordinator.model,
-  modelSettings: { reasoningEffort: agentConfig.decisionCoordinator.reasoningEffort },
+  modelSettings: { reasoning: { effort: agentConfig.decisionCoordinator.reasoningEffort } },
   tools: [askMeteorologist, askHistorian, askSafetyAnalyst, askNewsIntel, askInfrastructureMonitor, askPowerGridAnalyst, askWebWeatherVerifier, crossCheckExperts],
   outputType: FinalPredictionSchema
 })
@@ -866,7 +868,7 @@ Review the weather data and peer analyses, then provide your position with a pro
 Be willing to adjust your estimate based on peer input and challenges.
 Focus on constructive disagreement - challenge assumptions, not conclusions.`,
   model: agentConfig.decisionCoordinator.model,
-  modelSettings: { reasoningEffort: 'medium' },
+  modelSettings: { reasoning: { effort: 'medium' } },
   tools: [webSearchTool()],
   outputType: DebatePositionSchema
 })

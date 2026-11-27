@@ -32,7 +32,7 @@ function NotificationContent({
   isMobile?: boolean
 }) {
   return (
-    <div className="p-4 space-y-4">
+    <div className="min-h-0 overflow-y-auto overscroll-contain p-4 space-y-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Status</span>
         <Button

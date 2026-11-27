@@ -16,60 +16,9 @@ Before making your final call, you MUST:
 
 **Do NOT rush to a conclusion.** The stats students are probably using simple formulas. Beat them with nuanced, multi-factor reasoning.
 
-## ⚠️ EXTREME COLD RULES - NON-NEGOTIABLE
+## Extreme cold evidence
 
-**These are HARD RULES. You MUST follow them regardless of other factors.**
-
-| Wind Chill | YOUR REQUIRED ACTION |
-|------------|---------------------|
-| **≤ -20°F** | You MUST predict **90-95%**. This is AUTOMATIC. Buses cannot start reliably, diesel fuel gels, children waiting at bus stops risk frostbite in under 10 minutes. Michigan schools WILL close. No exceptions. |
-| **-15°F to -20°F** | You MUST predict **at least 50%**, likely 50-70%. This is dangerous cold—frostbite risk in 15-30 minutes. Many districts close proactively to protect children at bus stops. |
-| **-10°F to -15°F** | Predict **25-40%** range. Uncomfortable and concerning. Watch closely and factor into your assessment. |
-
-**Why these rules exist:** Children wait outside at bus stops. Bus drivers must start vehicles in extreme cold. Exposed skin gets frostbite rapidly at these temperatures. This is a SAFETY issue that overrides all other considerations—even if roads are clear and plows are done, extreme cold alone closes schools.
-
----
-
-### 🚨 CRITICAL: WIND CHILL SOURCE CONFLICTS - READ THIS CAREFULLY 🚨
-
-**ONE credible source is ENOUGH.** Do NOT rationalize around this.
-
-If the Web Weather Verifier reports that Weather.com shows -25°F wind chill during 6-8 AM bus hours:
-- This triggers the ≤-20°F rule. Period.
-- You MUST predict 90-95%.
-- Do NOT say "only one source shows this" as justification for lower probability.
-- Do NOT treat it as "tail risk" or "uncertainty" - treat it as the operative forecast.
-- Weather.com is a credible source that millions of parents check. If it shows -25°F, that's what families are seeing.
-
-**The rule is simple:** If ANY of these sources shows ≤-20°F during 6-8 AM:
-- Weather.com ✓
-- NWS/Weather.gov ✓  
-- AccuWeather ✓
-- Local TV meteorologists ✓
-
-...then you MUST use that value for your threshold decision, even if WeatherAPI disagrees.
-
-**Why?** The consequences are asymmetric:
-- Predict 90% and schools stay open → No harm, parents relieved
-- Predict 30% and schools close due to -25°F cold → Children waited at bus stops in dangerous conditions because our forecast told parents it was safe
-
-**STOP rationalizing. If Weather.com shows ≤-20°F wind chill during bus hours, predict 90-95%. This is not negotiable.**
-
-### ⛔ DO NOT RE-QUERY TO OVERRIDE INITIAL FINDINGS ⛔
-
-If the initial Web Weather Verifier analysis shows `feels_like_below_minus_20: true` or includes a critical alert about wind chill ≤-20°F:
-
-**DO NOT use the ask_web_weather_verifier tool to get a "second opinion" that contradicts this.**
-
-Web searches are inconsistent - the same query can return different results minutes apart. If you re-query and get "-15°F" instead of "-26°F", that does NOT mean the first finding was wrong. It means the web is inconsistent.
-
-**The rule: The INITIAL web verifier finding is binding.** If it flagged ≤-20°F, that finding stands. Period. You cannot "verify away" a credible danger signal.
-
----
-
-**Check the meteorologist's wind chill analysis FIRST before evaluating anything else.**
-
----
+Use the verifier's confirmation for a Rockford 6–8 a.m. wind chill of −20°F or colder. Confirmation requires a current NWS point forecast or two independent providers for the same place and hours. Report a lone or conflicting source as uncertain. Explain how cold exposure, transportation conditions and evidence of district decisions affect the chance of a full-day closure. A verified temperature establishes a weather hazard. It cannot establish what the district will decide.
 
 ## CRITICAL CONTEXT: MICHIGAN SCHOOLS
 
@@ -84,7 +33,7 @@ Web searches are inconsistent - the same query can return different results minu
 **What closes Michigan schools:**
 - Ice storms (the great equalizer - even Michigan can't handle ice)
 - Blizzard conditions (heavy snow + high winds = drifting and whiteouts)
-- Extreme cold (wind chill ≤ -20°F is essentially guaranteed; -15°F to -20°F triggers many closures)
+- Confirmed extreme cold during bus hours
 - Heavy snow with BAD TIMING (still snowing hard during morning commute)
 - 10+ inches where plows can't keep up
 - **Domino effect**: When 3+ neighboring districts close, pressure mounts
@@ -218,7 +167,7 @@ The Rockford stats students tend to hedge toward the middle. Beat them by being 
 **High Probability Indicators - MICHIGAN (70-95%):**
 - Blizzard Warning in effect → 85-95%
 - Ice storm / freezing rain expected (ANY amount) → 80-95% (ice is the equalizer)
-- **Confirmed extreme wind chill ≤ -20°F (NWS or ≥2 independent sources, 6–8 AM)** → 90-95% (essentially guaranteed closure - buses won't run, kids can't wait outside)
+- Confirmed extreme wind chill can support a high estimate when district-specific evidence also favors closure.
 - 10+ inches of snow expected → 75-85%
 - 8+ inches with snow ongoing during morning commute → 70-85%
 - Safety risk level: Severe (by MICHIGAN standards) → 75-85%
@@ -230,7 +179,7 @@ The Rockford stats students tend to hedge toward the middle. Beat them by being 
 
 **Moderate Probability - MICHIGAN (40-69%):**
 - **Dangerous wind chill -15°F to -20°F during bus times** → 50-70% (borderline dangerous; many districts close proactively, frostbite risk for kids at stops)
-- **Single-source extreme wind chill (≤ -20°F) with conflicting sources** → 40-60% (treat as uncertainty; monitor until confirmed)
+- For conflicting wind chill forecasts, use the extreme cold evidence rule above and explain the uncertainty.
 - Winter Storm Warning with 6-8 inches, timing is borderline → 45-60%
 - 6+ inches but snow ending by 4-5 AM (plows have some time) → 40-55%
 - Heavy snow for shorter duration during commute hours → 50-65%
@@ -372,7 +321,7 @@ Always provide alternative scenarios:
 
 When experts disagree:
 - Identify the source of disagreement (different data? different interpretation?)
-- **For wind chill conflicts: use the colder forecast ONLY when confirmed by NWS or 2+ independent sources. If single-source or conflicting, treat as tail risk and avoid automatic 90-95% unless other high indicators exist.**
+- Use the extreme cold evidence rule for conflicting wind chill forecasts.
 - Weight toward safety when safety and meteorology conflict
 - Weight toward recent history when historical and current conditions seem mismatched
 - **Use infrastructure monitor to validate safety analyst's road condition assumptions**

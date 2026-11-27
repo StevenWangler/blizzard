@@ -1,0 +1,136 @@
+@import './snowday-broadcast.css';
+
+@font-face {
+  font-family: 'Blizzard Broadcast';
+  src: url('/fonts/vt323-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Cable weather: saturated planes, stepped artwork, a clear school outlook. */
+.winter-workspace, .winter-workspace *, html.dark,
+html[data-weather-mode="night"] .winter-workspace,
+html[data-weather-mode="night"] .winter-workspace * {
+  --broadcast-blue: #163b91;
+  --broadcast-navy: #071a4b;
+  --broadcast-white: #fffef0;
+  --broadcast-yellow: #ffe765;
+  --broadcast-cyan: #8bddeb;
+  --background: #0b2869;
+  --foreground: #fffef0;
+  --card: #163b91;
+  --card-foreground: #fffef0;
+  --popover: #102f79;
+  --popover-foreground: #fffef0;
+  --primary: #ffe765;
+  --primary-foreground: #071a4b;
+  --secondary: #234ba1;
+  --secondary-foreground: #fffef0;
+  --muted: #173879;
+  --muted-foreground: #d3e6ff;
+  --accent: #ffe765;
+  --accent-foreground: #071a4b;
+  --border: #789ddd;
+  --input: #789ddd;
+  --ring: #ffe765;
+}
+html[data-weather-mode="night"] .winter-workspace, html[data-weather-mode="night"] .winter-workspace * { --background: #081e53; --card: #123580; --popover: #102c6d; --secondary: #1c408b; --muted: #133170; }
+.broadcast-header { padding-block: max(12px, env(safe-area-inset-top, 0px)) 12px; background: #071a4b; border-bottom: 5px solid #ed7b38; color: #fffef0; }
+.broadcast-header * { --foreground: #fffef0; --muted-foreground: #d3e6ff; --color-foreground: #fffef0; --color-muted-foreground: #d3e6ff; }
+.broadcast-header button { border-radius: 0; }
+.forecast-music-control[aria-pressed="true"] { background: #163b91; color: #ffe765; box-shadow: inset 0 -3px #ffe765; }
+.forecast-music-control { flex-direction: column; gap: 0; }
+.forecast-music-control .music-tap-label { font: 400 14px/12px 'Blizzard Broadcast', monospace; letter-spacing: 0; }
+.music-credits { font-size: 14px; line-height: 1.6; }
+.music-credits a { display: block; min-height: 44px; padding-block: 8px; color: #ffe765; text-decoration: underline; overflow-wrap: anywhere; }
+.broadcast-mark { width: 26px; height: 32px; border: 1px solid #6484ba; background: #0b2869; }
+.broadcast-mark img { width: 24px; height: 24px; }
+.broadcast-wordmark { font: 400 clamp(40px, 12vw, 58px)/.8 'Blizzard Broadcast', 'Courier New', monospace; letter-spacing: .025em; color: #fffef0; text-shadow: 3px 3px 0 #000b2b; }
+.broadcast-location { margin-top: 7px; color: #8bddeb; font-family: Arial, Helvetica, sans-serif; font-size: 10px; letter-spacing: .025em; }
+.broadcast-forecast { border-bottom: 0; }
+.broadcast-kicker { padding-block: 8px; background: #163b91; border-bottom: 2px solid #8bddeb; color: #ffe765; }
+.broadcast-kicker span { font: 400 30px/1 'Blizzard Broadcast', 'Courier New', monospace; text-transform: uppercase; }
+.broadcast-channel-mark { color: #8bddeb; }
+.broadcast-sheet { flex: 0; gap: 20px; padding-top: 18px; }
+.broadcast-date { gap: 8px; margin-bottom: 12px; color: #d3e6ff; font-family: Arial, Helvetica, sans-serif; font-size: 13px; letter-spacing: 0; }
+.broadcast-date > svg { display: none; }
+.broadcast-outlook-panel { padding: 18px; background: var(--broadcast-blue); border: 3px solid; border-color: #8baae5 #020f32 #020f32 #8baae5; }
+.broadcast-verdict { font: 400 38px/.95 'Blizzard Broadcast', 'Courier New', monospace; color: var(--broadcast-yellow); text-shadow: 2px 2px 0 #071a4b; letter-spacing: 0; }
+.broadcast-score { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; }
+.broadcast-chance { padding-right: 0; border-right: 0; }
+.broadcast-value { gap: 3px; color: var(--broadcast-white); font: 400 132px/.8 'Blizzard Broadcast', 'Courier New', monospace; text-shadow: 3px 3px 0 #071a4b; letter-spacing: 0; }
+.broadcast-value[data-digits="2"] { font-size: 120px; }
+.broadcast-value[data-digits="3"] { font-size: 110px; }
+.broadcast-value small { font-size: .35em; }
+.broadcast-value > * { font-family: inherit; }
+.broadcast-chance > p { max-width: none; margin-top: 10px; color: #d3e6ff; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 1.4; letter-spacing: 0; text-transform: none; }
+.broadcast-glyph { display: block; flex-shrink: 0; width: 96px; height: 96px; }
+.broadcast-reason { margin-top: 20px; padding-top: 16px; border-top: 2px solid #668ac8; font-size: 17px; line-height: 1.5; }
+.broadcast-action { min-height: 56px; padding: 8px 14px; border: 3px solid; border-color: #fff2ab #9b7721 #9b7721 #fff2ab; background: #ffe765; color: #071a4b; box-shadow: 3px 3px 0 #020f32; font: 400 25px/1 'Blizzard Broadcast', 'Courier New', monospace; letter-spacing: 0; text-align: left; }
+.broadcast-action > span { font: inherit; }
+.broadcast-action > svg { box-sizing: border-box; padding-left: 0; border-left: 0; color: #071a4b; }
+.broadcast-action:hover { background: #fff2ab; border-color: #fff2ab #9b7721 #9b7721 #fff2ab; color: #071a4b; }
+.broadcast-action:hover > svg { color: #071a4b; }
+.broadcast-action:active { border-color: #9b7721 #fff2ab #fff2ab #9b7721; box-shadow: none; }
+.broadcast-action:focus-visible { outline: 3px solid #fffef0; }
+.winter-workspace button:not(:disabled):is(:hover, :active), .winter-workspace button:hover svg { scale: 1; }
+.broadcast-disclaimer { margin-top: 12px; color: #d3e6ff; font-size: 12px; line-height: 1.4; }
+.broadcast-empty-message { min-width: 0; max-width: 23ch; flex: 1; font-size: 17px; line-height: 1.45; }
+.broadcast-updated { margin-top: 10px; color: #d3e6ff; font-size: 12px; line-height: 1.5; }
+.broadcast-last-link { display: block; min-height: 44px; margin-top: 8px; padding-block: 10px; color: #d3e6ff; font-size: 12px; line-height: 1.5; text-align: left; text-decoration: underline; text-underline-offset: 3px; }
+.broadcast-last-link:focus-visible { outline: 2px solid #ffe765; outline-offset: 3px; }
+.mobile-navigation { background: #071a4b; border-top: 3px solid #8baae5; }
+.mobile-navigation button { gap: 4px; border-right: 1px solid #4163a5; color: #d3e6ff; font: 400 19px/1 'Blizzard Broadcast', 'Courier New', monospace; }
+.mobile-navigation button > span { font: inherit; }
+.mobile-navigation button[aria-current="page"] { background: #163b91; color: #ffe765; }
+.mobile-navigation button[aria-current="page"]::before { left: 0; right: 0; background: #ffe765; }
+.mobile-navigation button:focus-visible { outline: 3px solid #ffe765; }
+.winter-workspace .winter-nav { border: 2px solid #8baae5; background: #071a4b; box-shadow: 3px 3px 0 #020f32; }
+.winter-workspace .winter-nav [data-state="active"] { background: #ffe765; color: #071a4b; }
+.student-page-heading h2 { color: #ffe765; font: 400 clamp(38px, 10vw, 50px)/.95 'Blizzard Broadcast', 'Courier New', monospace; letter-spacing: 0; text-shadow: 2px 2px 0 #071a4b; }
+.forecast-school-brief { border: 3px solid; border-color: #8baae5 #020f32 #020f32 #8baae5; padding: 18px; background: #163b91; }
+.forecast-date { font-family: Arial, Helvetica, sans-serif; color: #d3e6ff; }
+.forecast-verdict-row h3 { font: 400 clamp(30px, 8vw, 38px)/1 'Blizzard Broadcast', 'Courier New', monospace; color: #ffe765; letter-spacing: 0; }
+.forecast-mini-probability strong { font: 400 56px/.9 'Blizzard Broadcast', 'Courier New', monospace; }
+.forecast-saved-notice { color: #ffe765; }
+.forecast-report-meta { color: #d3e6ff; }
+.forecast-takeaway, .forecast-factor-text { color: #fffef0; }
+.page-disclosure { border: 2px solid; border-color: #8baae5 #020f32 #020f32 #8baae5; background: #102f79; }
+.page-disclosure > summary { padding: 16px; }
+.page-disclosure-content, .student-page .page-disclosure-content { padding: 0 16px 20px; }
+[data-slot="drawer-content"], html[data-weather-mode="night"] [data-slot="drawer-content"] { background: #102f79; color: #fffef0; --foreground: #fffef0; --muted-foreground: #d3e6ff; --color-foreground: #fffef0; --color-muted-foreground: #d3e6ff; --primary: #ffe765; --color-primary: #ffe765; }
+@media (max-width: 359px) {
+  .broadcast-wordmark { font-size: 38px; }
+  .broadcast-header:has(.forecast-music-control) .broadcast-wordmark { font-size: 34px; }
+  .broadcast-header:has(.forecast-music-control) > .min-w-0 > .flex { gap: 6px; }
+  .broadcast-location { font-size: 9px; }
+  .broadcast-mark { width: 22px; height: 28px; }
+  .broadcast-mark img { width: 20px; height: 20px; }
+  .broadcast-header { padding-block: max(9px, env(safe-area-inset-top, 0px)) 9px; }
+  .broadcast-kicker { padding-block: 4px; }
+  .broadcast-kicker span { font-size: 27px; }
+  .broadcast-sheet { gap: 12px; padding-top: 12px; padding-bottom: 20px; }
+  .broadcast-date { font-size: 12px; margin-bottom: 10px; }
+  .broadcast-outlook-panel { padding: 10px; }
+  .broadcast-score { margin-top: 10px; }
+  .broadcast-verdict { font-size: 32px; }
+  .broadcast-value { font-size: 104px; }
+  .broadcast-value[data-digits="2"] { font-size: 96px; }
+  .broadcast-value[data-digits="3"] { font-size: 86px; }
+  .broadcast-glyph { width: 72px; height: 72px; }
+  .broadcast-chance > p { font-size: 11px; }
+  .broadcast-reason { margin-top: 12px; padding-top: 10px; font-size: 16px; }
+  .broadcast-action { min-height: 52px; font-size: 23px; }
+}
+@media (min-width: 640px) { .broadcast-header { padding-top: max(20px, env(safe-area-inset-top, 0px)); padding-bottom: 20px; } .broadcast-sheet { padding-block: 28px; } }
+@media (min-width: 1024px) {
+  .broadcast-sheet { max-width: 860px; }
+  .broadcast-outlook-panel { padding: 26px; }
+  .broadcast-verdict { font-size: 54px; }
+  .broadcast-score { justify-content: flex-start; gap: 96px; }
+  .broadcast-value { font-size: 160px; }
+  .broadcast-value[data-digits="2"] { font-size: 150px; }
+  .broadcast-value[data-digits="3"] { font-size: 140px; }
+  .broadcast-glyph { width: 128px; height: 128px; }
+}

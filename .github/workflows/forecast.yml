@@ -1,0 +1,84 @@
+name: Generate Blizzard Prediction
+on:
+  schedule:
+    - cron: '17 9,13,18 * * *'
+      timezone: America/Detroit
+  workflow_dispatch:
+    inputs:
+      deploy_after:
+        description: 'Request deployment of the validated revision?'
+        default: true
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: blizzard-data-main
+  queue: max
+  cancel-in-progress: false
+jobs:
+  paused-summary:
+    if: vars.BLIZZARD_SEASON_ACTIVE != 'true' || vars.BLIZZARD_AUTOMATION_WRITES_APPROVED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - run: echo 'Generation is paused. Seasonal activation and approved automation writes are both required.' >> "$GITHUB_STEP_SUMMARY"
+  generate-prediction:
+    if: github.ref == 'refs/heads/main' && vars.BLIZZARD_SEASON_ACTIVE == 'true' && vars.BLIZZARD_AUTOMATION_WRITES_APPROVED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Load canonical forecast data
+        id: snapshot
+        run: node build-tools/commit-data.mjs restore
+      - run: npm ci
+      - name: Generate validated prediction
+        env:
+          BLIZZARD_ACTIVE: 'true'
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          VITE_ZIP_CODE: '49341'
+          OPENAI_FORECAST_MODEL: ${{ vars.OPENAI_FORECAST_MODEL || vars.OPENAI_FORECAST_COORDINATOR_MODEL }}
+        run: node build-tools/generate-prediction.mjs
+      - name: Commit validated data without JSON rebasing
+        id: commit
+        env:
+          DATA_BASE: ${{ steps.snapshot.outputs.sha }}
+          BLIZZARD_AUTOMATION_WRITES_APPROVED: ${{ vars.BLIZZARD_AUTOMATION_WRITES_APPROVED }}
+        run: node build-tools/commit-data.mjs
+      - name: Request Pages deployment
+        if: steps.commit.outputs.updated == 'true' && (github.event_name == 'schedule' || inputs.deploy_after == true)
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner, repo: context.repo.repo,
+              workflow_id: 'deploy.yml', ref: 'main'
+            });
+      - name: Retain forecast cost report
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: forecast-cost-${{ github.run_id }}-${{ github.run_attempt }}
+          path: logs/forecast-costs/*.json
+          if-no-files-found: ignore
+          retention-days: 90
+      - name: Retain validated data for recovery
+        if: success() || failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: forecast-data-${{ github.run_number }}
+          path: |
+            public/data/prediction.json
+            public/data/summary.json
+            public/data/outcomes.json
+          retention-days: 7

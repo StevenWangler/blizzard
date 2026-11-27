@@ -12,7 +12,7 @@
  *   node build-tools/sanitize-outcomes.mjs --dry-run
  */
 
-import { readFile, writeFile, access } from 'node:fs/promises'
+import { readJson, atomicJson, validateLedger, withDataLock } from './lib/data-integrity.mjs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -23,19 +23,9 @@ const dataDir = path.join(repoRoot, 'public', 'data')
 
 const dryRun = process.argv.includes('--dry-run')
 
-async function loadJsonIfExists(filePath) {
-  try {
-    await access(filePath)
-    const raw = await readFile(filePath, 'utf8')
-    return JSON.parse(raw)
-  } catch {
-    return null
-  }
-}
-
 async function main() {
   const outcomesPath = path.join(dataDir, 'outcomes.json')
-  const outcomes = await loadJsonIfExists(outcomesPath)
+  const outcomes = await readJson(outcomesPath)
   
   if (!outcomes || !Array.isArray(outcomes)) {
     console.error('Could not load outcomes.json')
@@ -45,7 +35,6 @@ async function main() {
   console.log(`Loaded ${outcomes.length} entries\n`)
   
   const issues = []
-  const sanitized = []
   const seenDates = new Map() // date -> best entry
   
   for (const entry of outcomes) {
@@ -113,8 +102,8 @@ async function main() {
     console.log('\nSanitized data:')
     console.log(JSON.stringify(final, null, 2))
   } else {
-    const json = JSON.stringify(final, null, 2)
-    await writeFile(outcomesPath, `${json}\n`, 'utf8')
+    validateLedger(final)
+    await atomicJson(outcomesPath, final)
     console.log('\n✓ Wrote sanitized outcomes.json')
   }
 }
@@ -158,7 +147,7 @@ function scoreEntry(entry) {
   return score
 }
 
-main().catch(error => {
+withDataLock(dataDir, main).catch(error => {
   console.error(error)
   process.exit(1)
 })

@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { CloudSnow, CalendarBlank, Clock, ArrowsClockwise } from '@phosphor-icons/react'
-import { fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { StudentPageHeading } from '@/components/StudentPageHeading'
+import { CloudSnow, Clock, ArrowsClockwise, CaretDown } from '@phosphor-icons/react'
+import { fetchOutcomeLedger, SnowDayOutcome, readOutcomeProbability } from '@/services/outcomes'
+import { schoolDateLabel } from '@/lib/forecastPresentation'
 
 interface HistoricalEvent {
   date: string
@@ -55,7 +54,7 @@ const generateEventName = (entry: SnowDayOutcome): string => {
   // Add T12:00:00 to avoid timezone issues with date-only strings
   const date = new Date(entry.date + 'T12:00:00')
   const monthName = date.toLocaleDateString('en-US', { month: 'long' })
-  const prob = normalizeProbability(entry.modelProbability)
+  const prob = readOutcomeProbability(entry.modelProbability)
   
   if (entry.actualSnowDay === true) {
     const confident = prob !== null && prob >= 70
@@ -91,7 +90,7 @@ const generateNotes = (entry: SnowDayOutcome): string => {
     return reasonDescriptions[entry.noSchoolReason || ''] || 'No school scheduled for this day.'
   }
 
-  const prob = normalizeProbability(entry.modelProbability)
+  const prob = readOutcomeProbability(entry.modelProbability)
   
   if (entry.actualSnowDay === true) {
     return prob !== null && prob >= 50
@@ -119,7 +118,7 @@ const toHistoricalEvents = (ledger: SnowDayOutcome[]): HistoricalEvent[] => {
     .map(entry => ({
       date: entry.date,
       eventName: generateEventName(entry),
-      modelPrediction: normalizeProbability(entry.modelProbability),
+      modelPrediction: readOutcomeProbability(entry.modelProbability),
       actualOutcome: entry.actualSnowDay ?? null,
       noSchoolScheduled: entry.noSchoolScheduled ?? false,
       noSchoolReason: entry.noSchoolReason,
@@ -155,9 +154,8 @@ const calculateBrierScore = (prediction: number | null, outcome: boolean | null,
 export function HistoryView() {
   const [searchTerm, setSearchTerm] = useState('')
   const [events, setEvents] = useState<HistoricalEvent[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const isMobile = useIsMobile()
 
   const loadHistory = useCallback(async () => {
     setLoading(true)
@@ -218,7 +216,7 @@ export function HistoryView() {
   }, [events])
 
   const filteredEvents = events.filter(event => {
-    const term = searchTerm.toLowerCase()
+    const term = searchTerm.trim().toLowerCase()
     if (!term) return true
     const dateText = new Date(event.date + 'T12:00:00').toLocaleDateString(undefined, { 
       weekday: 'long', 
@@ -229,186 +227,110 @@ export function HistoryView() {
     return (
       event.eventName.toLowerCase().includes(term) ||
       event.notes.toLowerCase().includes(term) ||
-      dateText.includes(term)
+      dateText.includes(term) ||
+      schoolDateLabel(event.date, true).toLowerCase().includes(term) ||
+      event.date.includes(term)
     )
   })
 
   return (
-    <div className="space-y-8 relative z-10">
+    <div className="student-page history-page space-y-6 sm:space-y-8 relative z-10">
+      <StudentPageHeading title="Past calls" description="See what we predicted and what actually happened." />
 
-      {seasonStats.totalEvents > 0 && (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5">
-          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
-            <CardContent className="p-5 text-center">
-              <div className="text-2xl font-bold text-primary">{seasonStats.totalEvents}</div>
-              <p className="text-sm text-muted-foreground">Total Events</p>
-              <p className="text-xs text-muted-foreground">{seasonStats.pendingSchoolDays} pending outcomes</p>
-            </CardContent>
-          </Card>
-          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
-            <CardContent className="p-5 text-center">
-              <div className="text-2xl font-bold text-destructive">{seasonStats.snowDays}</div>
-              <p className="text-sm text-muted-foreground">Snow Days</p>
-              {seasonStats.completedSchoolDays > 0 && (
-                <p className="text-xs text-muted-foreground">
-                  {Math.round((seasonStats.snowDays / seasonStats.completedSchoolDays) * 100)}% of completed school days
-                </p>
-              )}
-              {seasonStats.completedSchoolDays === 0 && (
-                <p className="text-xs text-muted-foreground">No verified outcomes yet</p>
-              )}
-            </CardContent>
-          </Card>
-          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
-            <CardContent className="p-5 text-center">
-              <div className="text-2xl font-bold text-muted-foreground">{seasonStats.noSchoolDays}</div>
-              <p className="text-sm text-muted-foreground">Holidays/Weekends</p>
-              <p className="text-xs text-muted-foreground">Excluded from stats</p>
-            </CardContent>
-          </Card>
-          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
-            <CardContent className="p-5 text-center">
-              <div className="text-2xl font-bold text-accent">
-                {seasonStats.modelAccuracy !== null ? `${seasonStats.modelAccuracy}%` : '—'}
-              </div>
-              <p className="text-sm text-muted-foreground">Model Accuracy</p>
-              <p className="text-xs text-muted-foreground">
-                {seasonStats.scorableEvents > 0 
-                  ? `Based on ${seasonStats.scorableEvents} scored predictions`
-                  : 'Need completed outcomes to score'}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="h-full rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 col-span-2 lg:col-span-1">
-            <CardContent className="p-5 text-center">
-              <div className="text-2xl font-bold text-muted-foreground">{seasonStats.realEvents}</div>
-              <p className="text-sm text-muted-foreground">Live Records</p>
-              <p className="text-xs text-muted-foreground">Demo data: {seasonStats.demoEvents}</p>
-            </CardContent>
-          </Card>
+      <section className="history-archive" aria-label="Forecast archive">
+        <div className="history-search">
+          <Input
+            type="search"
+            aria-label="Search past calls"
+            placeholder="Search a date or storm…"
+            value={searchTerm}
+            onChange={event => setSearchTerm(event.target.value)}
+          />
+          <Button variant="outline" size="icon" onClick={loadHistory} disabled={loading} aria-label="Refresh past calls">
+            <ArrowsClockwise size={18} className={loading ? 'animate-spin' : ''} aria-hidden="true" />
+          </Button>
         </div>
-      )}
-
-      <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5">
-        <CardHeader>
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <CalendarBlank size={20} className="text-primary" />
-              Event History
-            </CardTitle>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="w-full sm:w-64">
-                <Input
-                  placeholder="Search events..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+        {seasonStats.totalEvents > 0 && (
+          <div className="history-overview">
+            <p className="history-count" role="status">{filteredEvents.length} of {seasonStats.totalEvents} records</p>
+            <details className="page-disclosure history-stats">
+              <summary>Archive stats</summary>
+              <div className="page-disclosure-content">
+                <dl className="history-summary">
+                  <div><dt>Days logged</dt><dd>{seasonStats.totalEvents}</dd></div>
+                  <div><dt>Snow days</dt><dd>{seasonStats.snowDays}</dd></div>
+                  <div><dt>Correct calls</dt><dd>{seasonStats.modelAccuracy !== null ? `${seasonStats.modelAccuracy}%` : '—'}</dd></div>
+                </dl>
+                <p className="text-xs leading-5 text-muted-foreground">
+                  {seasonStats.scorableEvents} scored calls · {seasonStats.pendingSchoolDays} awaiting results.
+                  {' '}{seasonStats.noSchoolDays} holidays/weekends excluded from scoring.
+                  {seasonStats.demoEvents > 0 && ` Includes ${seasonStats.demoEvents} demo records; ${seasonStats.realEvents} non-demo records.`}
+                </p>
               </div>
-              <Button variant="ghost" size="icon" onClick={loadHistory} disabled={loading} title="Refresh history">
-                <ArrowsClockwise size={18} className={loading ? 'animate-spin' : ''} />
+            </details>
+          </div>
+        )}
+
+        {error ? (
+          <div role="alert" className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+            <Clock size={16} className="mt-0.5" />
+            <div className="flex-1">
+              <p>{error}</p>
+              <Button variant="link" className="px-0 text-destructive underline-offset-4" onClick={loadHistory}>
+                Try again
               </Button>
-              {seasonStats.totalEvents > 0 && (
-                <div className={`text-xs text-muted-foreground ${isMobile ? '' : 'sm:self-center'}`}>
-                  {filteredEvents.length} of {seasonStats.totalEvents} events
-                </div>
-              )}
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <div className="mb-4 flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-              <Clock size={16} className="mt-0.5" />
-              <div className="flex-1">
-                <p>{error}</p>
-                <Button variant="link" className="px-0 text-destructive underline-offset-4" onClick={loadHistory}>
-                  Try again
-                </Button>
-              </div>
-            </div>
-          )}
-          {loading && events.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <Clock size={32} className="mx-auto mb-3 animate-spin" />
-              <p className="text-sm">Loading history...</p>
-            </div>
-          ) : filteredEvents.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <CloudSnow size={40} className="mx-auto mb-3 opacity-50" />
-              <p className="text-sm">No matching events yet.</p>
-              <p className="text-xs">Record more outcomes to grow this view.</p>
-            </div>
-          ) : (
-            <div className="space-y-5">
+        ) : loading && events.length === 0 ? (
+          <div role="status" className="text-center py-12 text-muted-foreground">
+            <Clock size={32} className="mx-auto mb-3 animate-spin" />
+            <p className="text-sm">Loading history...</p>
+          </div>
+        ) : filteredEvents.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <CloudSnow size={40} className="mx-auto mb-3 opacity-50" />
+            <p className="text-sm">{searchTerm.trim() ? 'No matching records.' : 'No past calls yet.'}</p>
+          </div>
+        ) : (
+          <div className="history-listing">
+            <div className="history-listing-head" aria-hidden="true"><span>School date</span><span>Outcome / forecast</span></div>
+            <ul className="history-records">
               {filteredEvents.map(event => {
                 const badge = getAccuracyBadge(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
                 const brier = calculateBrierScore(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
+                const outcome = event.noSchoolScheduled ? 'No school scheduled' : event.actualOutcome === true ? 'Snow day' : event.actualOutcome === false ? 'School open' : 'Pending'
                 return (
-                  <Card key={`${event.date}-${event.recordedAt}`} className="rounded-xl border border-border/60 bg-card/80 p-5 sm:p-6 shadow-sm">
-                    <div className="space-y-5">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <h3 className="font-semibold text-lg flex items-center gap-2.5">
-                            <CloudSnow size={20} className={event.actualOutcome ? 'text-destructive' : 'text-muted-foreground'} />
-                            {event.eventName}
-                          </h3>
-                          <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
-                            <span>{new Date(event.date + 'T12:00:00').toLocaleDateString(undefined, { 
-                              weekday: 'long', 
-                              year: 'numeric', 
-                              month: 'long', 
-                              day: 'numeric' 
-                            })}</span>
-      
-                          </div>
-                        </div>
-                        <div className="sm:text-right">
-                          {event.noSchoolScheduled ? (
-                            <Badge variant="outline" className="bg-muted">
-                              No School
-                            </Badge>
-                          ) : (
-                            <Badge variant={event.actualOutcome === true ? 'destructive' : event.actualOutcome === false ? 'secondary' : 'outline'}>
-                              {event.actualOutcome === true ? 'Snow Day' : event.actualOutcome === false ? 'School Open' : 'Pending'}
-                            </Badge>
-                          )}
-                          {brier !== null && (
-                            <p className="text-xs text-muted-foreground mt-1.5">Brier {brier.toFixed(3)}</p>
-                          )}
+                  <li key={`${event.date}-${event.recordedAt}`}>
+                    <details className="history-record">
+                      <summary>
+                        <span className="history-record-date"><time dateTime={event.date}>{schoolDateLabel(event.date, true)}</time><span>{event.eventName}{event.source === 'seed' && ' · Demo'}</span></span>
+                        <span className="history-record-result">
+                          <span className={event.actualOutcome === true && !event.noSchoolScheduled ? 'history-snow-day' : undefined}>{outcome}</span>
+                          <span>{event.modelPrediction !== null ? `${event.modelPrediction}% forecast` : 'Forecast unavailable'}</span>
+                        </span>
+                        <CaretDown size={16} aria-hidden="true" />
+                      </summary>
+                      <div className="history-record-details">
+                        <dl>
+                          <div><dt>Confidence</dt><dd>{event.confidence?.replace(/_/g, ' ') || '—'}</dd></div>
+                          <div><dt>Accuracy</dt><dd><Badge variant={badge.variant}>{badge.text}</Badge></dd></div>
+                          {brier !== null && <div><dt>Brier score</dt><dd>{brier.toFixed(3)}</dd></div>}
+                        </dl>
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{event.notes}</p>
+                        <div className="text-xs text-muted-foreground flex flex-wrap gap-x-2 gap-y-1">
+                          {event.source === 'seed' && <Badge variant="outline">Demo record</Badge>}
+                          <span>Logged by <strong>{event.recordedBy}</strong></span>
+                          <span>at {new Date(event.recordedAt).toLocaleString()}</span>
                         </div>
                       </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-sm">
-                        <div>
-                          <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Model</p>
-                          <p className="font-medium">{event.modelPrediction !== null ? `${event.modelPrediction}%` : '—'}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Confidence</p>
-                          <p className="font-medium">{event.confidence || '—'}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground text-xs uppercase tracking-wide mb-1">Accuracy</p>
-                          <Badge variant={badge.variant}>{badge.text}</Badge>
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{event.notes}</p>
-
-                      <div className="text-xs text-muted-foreground flex flex-wrap gap-2 sm:gap-4">
-                        <span>Logged by <strong>{event.recordedBy}</strong></span>
-                        <span>at {new Date(event.recordedAt).toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </Card>
+                    </details>
+                  </li>
                 )
               })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </ul>
+          </div>
+        )}
+      </section>
     </div>
   )
 }

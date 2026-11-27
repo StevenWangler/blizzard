@@ -1,3 +1,4 @@
+import { forecastMetadata } from '@/lib/forecastPresentation'
 import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -5,18 +6,17 @@ import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { Target, Clock, CaretDown, Calendar } from '@phosphor-icons/react'
-import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome, normalizeProbability } from '@/services/outcomes'
+import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome, readOutcomeProbability } from '@/services/outcomes'
 import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { fetchData } from '@/lib/dataPath'
+import { StudentPageHeading } from '@/components/StudentPageHeading'
 
 interface PredictionMeta {
   date: string
   modelPrediction: number
   confidence?: string | null
 }
-
-const todayISO = () => new Date().toISOString().split('T')[0]
 
 export function AccuracyView() {
   const [outcomes, setOutcomes] = useState<SnowDayOutcome[]>([])
@@ -48,18 +48,9 @@ export function AccuracyView() {
       const hydrateFromSummary = async () => {
         try {
           const summary = await fetchData<Record<string, unknown>>('summary.json', { cache: 'no-store' })
-          // Use targetDate (the school day being predicted) instead of timestamp (when prediction was made)
-          const date = summary.targetDate 
-            ? String(summary.targetDate) 
-            : summary.timestamp 
-              ? String(summary.timestamp).split('T')[0] 
-              : todayISO()
-          const rawProb = summary.probability ?? (summary.final as Record<string, unknown>)?.snow_day_probability ?? 0
-          setPredictionMeta({
-            date,
-            modelPrediction: normalizeProbability(rawProb as number) ?? 0,
-            confidence: (summary.confidence ?? (summary.final as Record<string, unknown>)?.confidence_level ?? null) as string | null
-          })
+          const metadata = forecastMetadata(summary)
+          if (!metadata) return false
+          setPredictionMeta(metadata)
           return true
         } catch {
           return false
@@ -69,18 +60,8 @@ export function AccuracyView() {
       const hydrateFromPrediction = async () => {
         try {
           const prediction = await fetchData<Record<string, unknown>>('prediction.json', { cache: 'no-store' })
-          // Use targetDate (the school day being predicted) instead of timestamp (when prediction was made)
-          const date = prediction.targetDate 
-            ? String(prediction.targetDate) 
-            : prediction.timestamp 
-              ? String(prediction.timestamp).split('T')[0] 
-              : todayISO()
-          const rawProb = (prediction.final as Record<string, unknown>)?.snow_day_probability ?? 0
-          setPredictionMeta({
-            date,
-            modelPrediction: normalizeProbability(rawProb as number) ?? 0,
-            confidence: ((prediction.final as Record<string, unknown>)?.confidence_level ?? null) as string | null
-          })
+          const metadata = forecastMetadata(prediction)
+          if (metadata) setPredictionMeta(metadata)
         } catch {
           // No prediction data available
         }
@@ -107,7 +88,7 @@ export function AccuracyView() {
     const demoDataCount = outcomes.filter(entry => entry.source === 'seed').length
     const realDataCount = baseStats.totalRecords - demoDataCount
     return {
-      modelBrier: baseStats.avgBrierScore ?? 0,
+      modelBrier: baseStats.avgBrierScore,
       modelAccuracy: baseStats.directionalAccuracy,
       totalPredictions: baseStats.totalRecords + pendingRecords.length,
       completedPredictions: baseStats.totalRecords,
@@ -121,7 +102,7 @@ export function AccuracyView() {
   const calibrationData = useMemo(() => {
     if (!outcomes || outcomes.length === 0) return []
     const completed = outcomes.filter(entry => {
-      const prob = normalizeProbability(entry.modelProbability)
+      const prob = readOutcomeProbability(entry.modelProbability)
       return prob !== null && 
         entry.actualSnowDay !== null && 
         entry.actualSnowDay !== undefined
@@ -131,7 +112,7 @@ export function AccuracyView() {
     const buckets = Array(10).fill(0).map(() => ({ predictions: 0, outcomes: 0 }))
 
     completed.forEach(entry => {
-      const prob = normalizeProbability(entry.modelProbability) ?? 0
+      const prob = readOutcomeProbability(entry.modelProbability) ?? 0
       const bucket = Math.min(Math.floor(prob / 10), 9)
       buckets[bucket].predictions++
       buckets[bucket].outcomes += entry.actualSnowDay ? 1 : 0
@@ -150,7 +131,7 @@ export function AccuracyView() {
   const recentTrend = useMemo(() => {
     const trendSource = outcomes
       .filter(entry => {
-        const prob = normalizeProbability(entry.modelProbability)
+        const prob = readOutcomeProbability(entry.modelProbability)
         return prob !== null && 
           entry.actualSnowDay !== null && 
           entry.actualSnowDay !== undefined
@@ -159,7 +140,7 @@ export function AccuracyView() {
       .slice(-7)
 
     return trendSource.map(entry => {
-      const prob = normalizeProbability(entry.modelProbability) ?? 0
+      const prob = readOutcomeProbability(entry.modelProbability) ?? 0
       const actual = entry.actualSnowDay ? 1 : 0
       const brier = Math.pow(prob / 100 - actual, 2)
       return {
@@ -173,7 +154,7 @@ export function AccuracyView() {
 
   const completedOutcomes = useMemo(() => {
     return outcomes.map(entry => {
-      const prob = normalizeProbability(entry.modelProbability)
+      const prob = readOutcomeProbability(entry.modelProbability)
       const hasOutcome = entry.actualSnowDay !== null && entry.actualSnowDay !== undefined
       const brier = (prob !== null && hasOutcome) 
         ? Math.pow(prob / 100 - (entry.actualSnowDay ? 1 : 0), 2) 
@@ -189,7 +170,8 @@ export function AccuracyView() {
   }
 
   return (
-    <div className="space-y-8 relative z-10">
+    <div className="student-page accuracy-page space-y-6 sm:space-y-8 relative z-10">
+      <StudentPageHeading title="Accuracy" description="How our forecasts hold up against real school-day results." />
       {error && (
         <Card className="rounded-2xl border border-destructive/40 bg-destructive/5">
           <CardContent className="p-4 text-sm text-destructive">
@@ -199,6 +181,9 @@ export function AccuracyView() {
       )}
 
       {pendingRecords.length > 0 && (
+        <details className="page-disclosure">
+          <summary>Awaiting results ({pendingRecords.length})</summary>
+          <div className="page-disclosure-content">
         <Card className="rounded-2xl border border-amber-500/30 bg-background/80 backdrop-blur shadow-lg shadow-amber-500/5">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
@@ -234,7 +219,7 @@ export function AccuracyView() {
                             asChild
                           >
                             <a
-                              href="https://github.com/StevenWangler/snowday-forecast/actions/workflows/log-outcome.yml"
+                              href="https://github.com/StevenWangler/blizzard/actions/workflows/log-outcome.yml"
                               target="_blank"
                               rel="noreferrer"
                               className="text-xs"
@@ -245,7 +230,7 @@ export function AccuracyView() {
                         </div>
                       ) : (
                         <p className="text-xs text-muted-foreground">
-                          Outcome logging restricted to admins.
+                          We’ll score this call once the school-day result is recorded.
                         </p>
                       )}
                     </div>
@@ -255,6 +240,8 @@ export function AccuracyView() {
             </div>
           </CardContent>
         </Card>
+          </div>
+        </details>
       )}
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -269,15 +256,15 @@ export function AccuracyView() {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Brier Score</span>
-                <span className="font-bold">{stats.modelBrier.toFixed(3)}</span>
+                <span className="font-bold">{stats.modelBrier?.toFixed(3) ?? '—'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Directional Accuracy</span>
-                <span className="font-bold">{stats.modelAccuracy}%</span>
+                <span className="font-bold">{stats.modelBrier !== null ? `${stats.modelAccuracy}%` : '—'}</span>
               </div>
             </div>
-            <Badge variant={stats.modelBrier < 0.15 ? 'default' : 'secondary'} className="w-full justify-center">
-              {stats.modelBrier < 0.15 ? 'Excellent' : stats.modelBrier < 0.25 ? 'Good' : 'Needs Tuning'}
+            <Badge variant={stats.modelBrier !== null && stats.modelBrier < 0.15 ? 'default' : 'secondary'} className="w-full justify-center">
+              {stats.modelBrier === null ? 'Waiting for scored outcomes' : stats.modelBrier < 0.15 ? 'Excellent' : stats.modelBrier < 0.25 ? 'Good' : 'Needs Tuning'}
             </Badge>
           </CardContent>
         </Card>
@@ -346,7 +333,7 @@ export function AccuracyView() {
                         <Line
                           type="monotone"
                           dataKey="modelBrier"
-                          stroke="hsl(var(--primary))"
+                          stroke="var(--primary)"
                           strokeWidth={2}
                           dot={false}
                         />
@@ -373,7 +360,7 @@ export function AccuracyView() {
                     <Line
                       type="monotone"
                       dataKey="modelBrier"
-                      stroke="hsl(var(--primary))"
+                      stroke="var(--primary)"
                       strokeWidth={2}
                     />
                   </LineChart>
@@ -407,7 +394,7 @@ export function AccuracyView() {
                         <XAxis dataKey="range" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
                         <YAxis tick={{ fontSize: 10 }} domain={[0, 100]} />
                         <Tooltip formatter={(value: number) => [`${value}%`, 'Observed']} />
-                        <Bar dataKey="observed" fill="hsl(var(--primary))" />
+                        <Bar dataKey="observed" fill="var(--primary)" />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -421,7 +408,7 @@ export function AccuracyView() {
                     <XAxis dataKey="range" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
                     <Tooltip formatter={(value: number) => [`${value}%`, 'Observed']} />
-                    <Bar dataKey="observed" fill="hsl(var(--primary))" />
+                    <Bar dataKey="observed" fill="var(--primary)" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

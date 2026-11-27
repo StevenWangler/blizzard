@@ -93,35 +93,9 @@ export async function testWeatherAPI() {
   }
   console.log('')
 
-  // Test 4: Direct WeatherAPI Test (if configured)
+  // Test 4: Direct browser access is intentionally unavailable.
   console.log('🌐 Test 4: Direct WeatherAPI Test')
-  try {
-    const apiKey = import.meta.env.VITE_WEATHER_API_KEY
-    if (apiKey && apiKey !== 'your_weatherapi_key_here') {
-      const weatherAPI = new WeatherAPI()
-      const forecast = await weatherAPI.getForecast()
-      
-      console.log('✅ Direct API call successful')
-      console.log('Location:', forecast.location.name, ',', forecast.location.region)
-      console.log('Current conditions:', forecast.current.condition.text)
-      console.log('Temperature:', forecast.current.temp_f + '°F')
-      console.log('Forecast days:', forecast.forecast.forecastday.length)
-      
-      // Test data validation
-      const validation = WeatherDataValidator.validateApiResponse(forecast)
-      if (validation.isValid) {
-        console.log('✅ API response data is valid')
-      } else {
-        console.log('❌ API response validation issues:', validation.errors)
-      }
-      
-    } else {
-      console.log('⏭️ Skipping direct API test - API key not configured')
-    }
-  } catch (error) {
-    console.log('❌ Direct API test failed:', error)
-    WeatherErrorHandler.logError(error, 'Direct API Test')
-  }
+  console.log('⏭️ Skipped: public clients never receive WeatherAPI credentials')
   console.log('')
 
   // Test 5: Error Handling Test

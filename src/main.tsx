@@ -8,6 +8,10 @@ import { WeatherThemeProvider } from './hooks/useWeatherTheme.ts'
 import "./main.css"
 import "./styles/theme.css"
 import "./index.css"
+import "./styles/cable-weather.css"
+import "./styles/forecast-program.css"
+import "./styles/station.css"
+import "./styles/station-pages.css"
 
 createRoot(document.getElementById('root')!).render(
   <WeatherThemeProvider>

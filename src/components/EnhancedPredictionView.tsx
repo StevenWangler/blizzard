@@ -1,3 +1,5 @@
+import { ForecastBrief } from './ForecastBrief'
+import { getNextRefreshTime } from '@/lib/forecastSchedule'
 import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,10 +38,11 @@ import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { WeatherThemeIndicator } from '@/components/WeatherThemeIndicator'
 import { useNotifications } from '@/hooks/useNotifications'
 import { toast } from 'sonner'
-import { buildOutcomeStats, fetchOutcomeLedger, normalizeProbability } from '@/services/outcomes'
+import { buildOutcomeStats, fetchOutcomeLedger, normalizeProbability, readOutcomeProbability } from '@/services/outcomes'
 import { fetchData } from '@/lib/dataPath'
 import type { OutcomeStats, SnowDayOutcome } from '@/services/outcomes'
 import type { AgentPrediction } from '@/types/agentPrediction'
+import { getAnalysisError } from '@/lib/analysisError'
 
 
 // Fallback weather data interface for compatibility
@@ -51,30 +54,6 @@ interface WeatherData {
   alerts: string[]
   modelProbability: number
   lastUpdated: string
-}
-
-// GitHub Actions schedule: 9 AM, 1 PM, 6 PM EST
-const REFRESH_TIMES_UTC = [14, 18, 23] // 14:00, 18:00, 23:00 UTC
-
-function getNextRefreshTime(): Date {
-  const now = new Date()
-  const currentUTCHour = now.getUTCHours()
-  const currentUTCMinutes = now.getUTCMinutes()
-  
-  // Find the next scheduled refresh time
-  for (const hour of REFRESH_TIMES_UTC) {
-    if (currentUTCHour < hour || (currentUTCHour === hour && currentUTCMinutes === 0)) {
-      const next = new Date(now)
-      next.setUTCHours(hour, 0, 0, 0)
-      return next
-    }
-  }
-  
-  // If past all today's times, next refresh is tomorrow at first scheduled time
-  const tomorrow = new Date(now)
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
-  tomorrow.setUTCHours(REFRESH_TIMES_UTC[0], 0, 0, 0)
-  return tomorrow
 }
 
 function formatTimeUntil(targetDate: Date): string {
@@ -107,6 +86,8 @@ export function EnhancedPredictionView() {
   
   const { updateWeatherConditions, getCurrentTheme } = useWeatherTheme()
   const { checkAndNotify } = useNotifications()
+  const historyError = getAnalysisError(prediction?.history)
+  const safetyError = getAnalysisError(prediction?.safety)
 
   useEffect(() => {
     loadPredictionData()
@@ -177,12 +158,12 @@ export function EnhancedPredictionView() {
       if (ledger.length) {
         setOutcomeStats(buildOutcomeStats(ledger))
         const recent = ledger
-          .filter(entry => normalizeProbability(entry.modelProbability) !== null)
+          .filter(entry => readOutcomeProbability(entry.modelProbability) !== null)
           .slice(-7)
 
         if (recent.length) {
           const avg = Math.round(
-            recent.reduce((sum, entry) => sum + (normalizeProbability(entry.modelProbability) ?? 0), 0) / recent.length
+            recent.reduce((sum, entry) => sum + (readOutcomeProbability(entry.modelProbability) ?? 0), 0) / recent.length
           )
           setRecentAverage(avg)
         } else {
@@ -200,7 +181,8 @@ export function EnhancedPredictionView() {
     }
   }
 
-  const getSnowDayVerdict = (probability: number) => {
+  const getSnowDayVerdict = (probability: number | null) => {
+    if (probability === null) return { text: 'Chance unavailable', color: 'bg-muted' }
     if (probability >= 70) return { text: 'Very Likely', color: 'bg-destructive' }
     if (probability >= 50) return { text: 'Likely', color: 'bg-accent' }
     if (probability >= 30) return { text: 'Possible', color: 'bg-muted' }
@@ -276,7 +258,7 @@ export function EnhancedPredictionView() {
   }
 
   // Derive timeline + probability metadata up front so hooks stay stable
-  const rawProbability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability ?? 0
+  const rawProbability = prediction?.final?.snow_day_probability ?? fallbackWeather?.modelProbability
   const probability = normalizeProbability(rawProbability)
   const verdict = getSnowDayVerdict(probability)
   const lastUpdateInfo = useMemo(() => {
@@ -320,7 +302,11 @@ export function EnhancedPredictionView() {
     ?? fallbackWeather?.windSpeed 
     ?? 0
   const baselineProbability = recentAverage ?? outcomeStats?.avgProbability ?? null
-  const probabilityDelta = baselineProbability !== null ? probability - baselineProbability : null
+  const probabilityDelta = baselineProbability !== null && probability !== null ? probability - baselineProbability : null
+
+  if (prediction?.architecture === 'single-forecaster-v1') {
+    return <ForecastBrief prediction={prediction} fallback={null} nextRefresh={nextRefreshDisplay} />
+  }
 
   if (loading) {
     return (
@@ -372,7 +358,7 @@ export function EnhancedPredictionView() {
             {nextRefreshDisplay && (
               <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center gap-1">
                 <Clock size={12} />
-                Next update in {nextRefreshDisplay}
+                Scheduled check in {nextRefreshDisplay}
               </p>
             )}
           </>
@@ -401,7 +387,7 @@ export function EnhancedPredictionView() {
           </CardHeader>
         <CardContent className="space-y-6 sm:space-y-8">
           <div className="space-y-4 sm:space-y-5">
-            <AnimatedProbability value={probability} />
+            {probability === null ? <p className="text-center text-muted-foreground" role="status">Chance unavailable</p> : <AnimatedProbability value={probability} />}
             <div className="flex items-center justify-center gap-3">
               <Badge className={`${verdict.color} text-white text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2`}>
                 {verdict.text}
@@ -412,7 +398,7 @@ export function EnhancedPredictionView() {
                 </Badge>
               )}
             </div>
-            <Progress value={probability} className="h-2 sm:h-3" />
+            {probability !== null && <Progress value={probability} className="h-2 sm:h-3" />}
           </div>
 
           <Collapsible open={rationaleOpen} onOpenChange={setRationaleOpen} className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-lg text-left border border-primary/20 mt-6">
@@ -550,7 +536,7 @@ export function EnhancedPredictionView() {
                   <div className="flex items-center gap-3">
                     <div>
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">Today</p>
-                      <p className="text-3xl font-semibold">{probability}%</p>
+                      <p className="text-3xl font-semibold">{probability === null ? '—' : `${probability}%`}</p>
                     </div>
                     {baselineProbability !== null && (
                       <div>
@@ -571,7 +557,7 @@ export function EnhancedPredictionView() {
                       <span>0%</span>
                       <span>100%</span>
                     </div>
-                    <Progress value={probability} className="h-2" />
+                    {probability !== null && <Progress value={probability} className="h-2" />}
                     {baselineProbability !== null && (
                       <div className="text-xs text-muted-foreground flex items-center gap-2">
                         <span className="inline-flex h-2 w-2 rounded-full bg-primary" />
@@ -726,9 +712,9 @@ export function EnhancedPredictionView() {
               </TabsContent>
               
               <TabsContent value="history" className="space-y-4">
-                {prediction.history?.error ? (
+                {historyError ? (
                   <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-                    Historical analysis temporarily unavailable: {prediction.history.error}
+                    Historical analysis temporarily unavailable: {historyError}
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -768,9 +754,9 @@ export function EnhancedPredictionView() {
               </TabsContent>
               
               <TabsContent value="safety" className="space-y-4">
-                {prediction.safety?.error ? (
+                {safetyError ? (
                   <div className="text-sm text-muted-foreground p-4 bg-muted/50 rounded-lg">
-                    Safety analysis temporarily unavailable: {prediction.safety.error}
+                    Safety analysis temporarily unavailable: {safetyError}
                   </div>
                 ) : (
                   <>
@@ -858,7 +844,7 @@ export function EnhancedPredictionView() {
                     </div>
                   </div>
 
-                  {!prediction.safety?.error && (
+                  {!safetyError && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                       <div>
                         <h5 className="font-semibold mb-2">Morning Commute Impact</h5>

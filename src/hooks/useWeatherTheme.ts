@@ -830,7 +830,7 @@ const WeatherThemeContext = createContext<WeatherThemeContextValue | null>(null)
 
 function useProvideWeatherTheme(): WeatherThemeContextValue {
   const [weatherConditions, setWeatherConditions] = useSafeKV<{snowfall: number, windSpeed: number, visibility: number} | null>('weather-conditions', null)
-  const [isDarkMode, setIsDarkMode] = useSafeKV<boolean>('dark-mode', false)
+  const [isDarkMode, setIsDarkMode] = useSafeKV<boolean>('dark-mode', true)
   const [autoTheme, setAutoTheme] = useState<string>('clear')
   const [manualThemeKey, setManualThemeKey] = useSafeKV<string | null>('manual-weather-theme', null)
   const [isRotationEnabled, setRotationEnabled] = useSafeKV<boolean>('weather-theme-rotation', false)
@@ -905,10 +905,11 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
     if (theme) {
       const root = document.documentElement
       
-      // Core color variables
-      root.style.setProperty('--primary', theme.primary)
+      // Weather changes the atmosphere, while Rockford orange stays the brand accent.
+      const schoolPrimary = isDarkMode ? 'oklch(0.75 0.18 49)' : 'oklch(0.49 0.18 43)'
+      root.style.setProperty('--primary', schoolPrimary)
       root.style.setProperty('--secondary', theme.secondary)
-      root.style.setProperty('--accent', theme.accent)
+      root.style.setProperty('--accent', 'oklch(0.75 0.18 49)')
       root.style.setProperty('--background', theme.background)
       root.style.setProperty('--foreground', theme.foreground)
       root.style.setProperty('--card', theme.card)
@@ -928,6 +929,7 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
       
       // Theme name for CSS targeting
       root.setAttribute('data-weather-theme', themeKey)
+      root.setAttribute('data-weather-mode', isDarkMode ? 'night' : 'day')
       
       // Update class for dark mode detection
       if (isDarkMode) {

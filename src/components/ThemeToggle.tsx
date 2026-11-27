@@ -65,7 +65,7 @@ function ThemeMenuItems({
       <DropdownMenuSeparator />
       <DropdownMenuItem disabled className="text-xs text-muted-foreground justify-center">
         <Snowflake className="h-3 w-3 mr-1" />
-        Colors adapt to snow conditions
+        School colors stay; weather sets the mood.
       </DropdownMenuItem>
     </>
   )
@@ -113,7 +113,7 @@ export function ThemeToggle() {
           <DrawerHeader>
             <DrawerTitle>Theme Settings</DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-4 space-y-3">
+          <div className="min-h-0 overflow-y-auto overscroll-contain px-4 pb-4 space-y-3">
             <div className="text-xs text-muted-foreground">
               Current: {currentTheme?.name || 'Clear Skies'}
             </div>
@@ -149,7 +149,7 @@ export function ThemeToggle() {
             </Button>
             <Separator />
             <p className="text-xs text-muted-foreground text-center">
-              Colors adapt to snow conditions
+              School colors stay; weather sets the mood.
             </p>
           </div>
         </DrawerContent>

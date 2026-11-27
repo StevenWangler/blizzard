@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type ComponentType } from 'react'
-import { motion } from 'framer-motion'
+import { useMemo, useState, type ComponentType } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
@@ -24,8 +24,11 @@ import {
   Minus
 } from '@phosphor-icons/react'
 import type { IconProps } from '@phosphor-icons/react'
-import type { AgentPrediction, AgentCollaboration, CollaborationRound, DebatePosition } from '@/types/agentPrediction'
-import { fetchData } from '@/lib/dataPath'
+import type { AgentPrediction, AgentCollaboration } from '@/types/agentPrediction'
+import type { SavedForecast } from '@/hooks/useSavedForecast'
+import { forecastFreshness, forecastUpdateLabel, schoolDateLabel } from '@/lib/forecastPresentation'
+import { normalizeProbability, readOutcomeProbability } from '@/services/outcomes'
+import { StudentPageHeading } from '@/components/StudentPageHeading'
 
 const CONFIDENCE_LABELS: Record<AgentPrediction['final']['confidence_level'], string> = {
   very_low: 'Very Low',
@@ -40,13 +43,10 @@ type AgentId = 'meteorology' | 'history' | 'safety' | 'news' | 'infrastructure' 
 type AgentProfile = {
   id: AgentId
   name: string
-  title: string
   mission: string
   focusAreas: string[]
   tools: string[]
   deliverables: string[]
-  model: string
-  tone: string
   icon: ComponentType<IconProps>
   gradient: string
 }
@@ -68,104 +68,80 @@ const agentProfiles: AgentProfile[] = [
   {
     id: 'meteorology',
     name: 'Chief Meteorologist',
-    title: 'Atmospheric Signal Hunter',
-    mission: 'Blends live radar, model guidance, and alert feeds into a clean snapshot for the rest of the crew.',
+    mission: 'Reads the forecast for the school morning and estimates when snow, wind or poor visibility could affect travel.',
     focusAreas: ['Temperature structure', 'Precip type & timing', 'Wind + visibility'],
-    tools: ['get_weather_data', 'web_search'],
+    tools: ['Web search', 'Code interpreter'],
     deliverables: ['Quantitative weather analysis', 'Alert digest', 'Overnight vs. morning breakdowns'],
-    model: 'gpt-5.2',
-    tone: 'Technical + precise',
     icon: CloudSnow,
     gradient: 'from-sky-500/30 via-blue-400/15 to-transparent'
   },
   {
     id: 'history',
     name: 'Weather Pattern Historian',
-    title: 'Context Archivist',
-    mission: 'Finds the closest historical analogs, seasonal oddities, and local quirks that bend the odds.',
+    mission: 'Looks for similar storms and describes how well those comparisons fit Rockford.',
     focusAreas: ['Analog events', 'Seasonal norms', 'Microclimate flags'],
-    tools: ['web_search'],
-    deliverables: ['Historical hit rate', 'Seasonal adjustment', 'Confidence commentary'],
-    model: 'gpt-5.2',
-    tone: 'Story-driven + data-backed',
+    tools: ['Web search', 'Code interpreter'],
+    deliverables: ['Estimated closure rates for similar storms', 'Seasonal adjustment', 'Confidence commentary'],
     icon: Books,
     gradient: 'from-amber-500/30 via-orange-400/15 to-transparent'
   },
   {
     id: 'safety',
     name: 'Transportation Safety Analyst',
-    title: 'Mobility Risk Forecaster',
-    mission: 'Scores roads, sidewalks, and bus routes so the threat to travelers is crystal clear.',
+    mission: 'Estimates how freezing temperatures and precipitation could affect drivers, buses and students walking to school.',
     focusAreas: ['Road surface risk', 'Commute timing', 'Emergency access'],
-    tools: ['get_weather_data', 'web_search'],
+    tools: ['Web search', 'Code interpreter'],
     deliverables: ['Roadway scorecard', 'Safety recommendations', 'Impact timeline'],
-    model: 'gpt-5.2',
-    tone: 'Direct + pragmatic',
     icon: ShieldCheck,
     gradient: 'from-emerald-500/30 via-teal-400/15 to-transparent'
   },
   {
     id: 'news',
     name: 'Local News Intelligence',
-    title: 'Community Signal Scanner',
-    mission: 'Scours local news, social media, and community chatter for real-time signals that could tip the scales.',
+    mission: 'Looks for public district announcements, local news and reports from nearby communities.',
     focusAreas: ['Local news', 'Social signals', 'District announcements'],
-    tools: ['web_search'],
+    tools: ['Web search'],
     deliverables: ['News digest', 'Community sentiment', 'Neighboring district closures'],
-    model: 'gpt-5.2',
-    tone: 'Investigative + thorough',
     icon: Newspaper,
     gradient: 'from-rose-500/30 via-red-400/15 to-transparent'
   },
   {
     id: 'infrastructure',
     name: 'Regional Infrastructure Monitor',
-    title: 'Road Ops Ground Truth',
-    mission: 'Tracks real-time plow fleet status, MDOT conditions, and county road clearing progress to validate whether roads will actually be passable.',
+    mission: 'Looks for public road-maintenance reports and estimates which roads may be clear by the morning bus run. Local street observations can be scarce.',
     focusAreas: ['Plow operations', 'Road clearing timeline', 'Salt/sand resources'],
-    tools: ['web_search'],
+    tools: ['Web search'],
     deliverables: ['Road clearing status by type', 'Municipal response level', 'Hours-to-clear estimates'],
-    model: 'gpt-5.2',
-    tone: 'Operational + time-sensitive',
     icon: Truck,
     gradient: 'from-yellow-500/30 via-amber-400/15 to-transparent'
   },
   {
     id: 'powerGrid',
     name: 'Power Grid Analyst',
-    title: 'Utility Status Watchdog',
-    mission: 'Monitors power outages, grid stress, and utility restoration timelines that could force closures regardless of road conditions.',
+    mission: 'Looks for public outage and restoration reports that could affect schools.',
     focusAreas: ['Outage tracking', 'Grid stress', 'School facility power'],
-    tools: ['web_search'],
+    tools: ['Web search'],
     deliverables: ['Outage counts & trends', 'Restoration estimates', 'School-specific risk assessment'],
-    model: 'gpt-5.2',
-    tone: 'Alert-driven + risk-focused',
     icon: Lightning,
     gradient: 'from-cyan-500/30 via-blue-400/15 to-transparent'
   },
   {
     id: 'webWeatherVerifier',
     name: 'Web Weather Verifier',
-    title: 'Data Cross-Reference Specialist',
-    mission: 'Independently verifies Weather API data by searching web sources. Critical for validating "feels like" temperature below -20°F (automatic closure threshold).',
+    mission: 'Compares forecasts for the same morning. Blizzard uses a feels-like temperature of −20°F or colder as a risk signal when supported by the National Weather Service or two independent providers.',
     focusAreas: ['Feels like temperature verification', 'Multi-source comparison', 'Discrepancy detection'],
-    tools: ['get_weather_data', 'web_search'],
+    tools: ['Web search'],
     deliverables: ['Weather source comparison', 'Critical threshold alerts', 'API vs web analysis'],
-    model: 'gpt-5.2',
-    tone: 'Skeptical + thorough',
     icon: ArrowsClockwise,
     gradient: 'from-purple-500/30 via-pink-400/15 to-transparent'
   },
   {
     id: 'final',
     name: 'Decision Coordinator',
-    title: 'Consensus Builder',
-    mission: 'Synthesizes every specialist note into a confident call, recommendations, and next check-in time.',
+    mission: 'Reviews the seven briefs, can ask follow-up questions, and assigns the final snow-day probability and confidence level.',
     focusAreas: ['Probability modeling', 'Stakeholder guidance', 'Scenario planning'],
-    tools: ['Structured agent briefs'],
+    tools: ['Specialist follow-up questions', 'Cross-check between specialists'],
     deliverables: ['Snow day probability', 'Decision rationale', 'Next evaluation timing'],
-    model: 'gpt-5.2',
-    tone: 'Calm + actionable',
     icon: CirclesThreePlus,
     gradient: 'from-purple-500/30 via-fuchsia-400/15 to-transparent'
   }
@@ -173,115 +149,46 @@ const agentProfiles: AgentProfile[] = [
 
 const workflowSteps: WorkflowStep[] = [
   {
-    title: 'Scan & structure the atmosphere',
-    description: 'The Chief Meteorologist queries the weather API, parses alerts, and normalizes wind/precip timelines.',
-    handoff: 'Outputs a structured meteorology brief + alert digest.',
+    title: 'Choose the school date',
+    description: 'Blizzard skips weekends and recorded days off, then requests weather covering the target date.',
+    handoff: 'The forecast covers the target school day and the hours leading up to it.',
     icon: CloudSnow
   },
   {
-    title: 'Compare with living history',
-    description: 'The Historian combs through analog events and seasonal stats to nudge probabilities up or down.',
-    handoff: 'Shares probability adjustments + narrative context.',
+    title: 'Read the evidence',
+    description: 'One forecaster reads hourly temperatures, precipitation, wind and visibility through the morning bus run.',
+    handoff: 'When a local report could change the call, the forecaster can check a dated public source. Conditions on unreported roads stay unknown.',
     icon: Books
   },
   {
-    title: 'Stress-test travel safety',
-    description: 'The Safety Analyst scores roads, buses, and walking routes hour-by-hour.',
-    handoff: 'Publishes a risk tier plus actionable safety guidance.',
-    icon: ShieldCheck
-  },
-  {
-    title: 'Scour local intelligence',
-    description: 'The News Intelligence agent searches local news, social media, and community chatter for real-time signals.',
-    handoff: 'Delivers news digest, community sentiment, and neighboring district closure alerts.',
-    icon: Newspaper
-  },
-  {
-    title: 'Verify road clearing ops',
-    description: 'The Infrastructure Monitor checks MDOT, county road commissions, and plow fleet status for ground truth on road conditions.',
-    handoff: 'Reports actual clearing progress, resource levels, and hours-until-passable estimates.',
-    icon: Truck
-  },
-  {
-    title: 'Scan the power grid',
-    description: 'The Power Grid Analyst monitors utility outage maps and grid stress to catch infrastructure failures that could force closures.',
-    handoff: 'Flags outage counts, restoration timelines, and school facility power risks.',
-    icon: Lightning
-  },
-  {
-    title: 'Coordinate the final call',
-    description: 'The Decision Coordinator blends every brief into a single recommendation, timeline, and monitoring plan.',
-    handoff: 'Delivers probabilities, rationale, and who needs to do what next.',
+    title: 'Estimate the chance of closure',
+    description: 'The forecaster gives one probability and explains which conditions could change it.',
+    handoff: 'Blizzard checks the report before saving it. Rockford Public Schools makes the closure decision.',
     icon: CirclesThreePlus
   }
 ]
 
-function formatPercent(value?: number | null): string {
-  if (typeof value !== 'number') return '—'
-  // Normalize: if value is between 0 and 1 (exclusive), treat as decimal (e.g., 0.32 -> 32%)
-  const normalized = value > 0 && value <= 1 ? value * 100 : value
-  return `${Math.round(normalized)}%`
+function formatPercent(value: unknown): string {
+  const percent = readOutcomeProbability(value)
+  return percent === null ? 'Unavailable' : `${percent}%`
 }
 
-function formatDegrees(value?: number | null): string {
-  if (typeof value !== 'number') return '—'
-  return `${Math.round(value)}°F`
+function formatLabel(value?: string): string {
+  return value ? value.charAt(0).toUpperCase() + value.slice(1).replace(/_/g, ' ') : 'Not recorded'
 }
 
 function formatConfidence(value?: AgentPrediction['final']['confidence_level'] | null): string {
-  if (!value) return 'Awaiting update'
-  return CONFIDENCE_LABELS[value]
+  return value ? CONFIDENCE_LABELS[value] ?? 'Not recorded' : 'Not recorded'
 }
 
-function formatTimestamp(value?: string | null): string {
-  if (!value) return 'Waiting for next sync'
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
-  return date.toLocaleString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
-  })
-}
-
-export function AgentsView() {
-  const [prediction, setPrediction] = useState<AgentPrediction | null>(null)
-  const [loadingInsights, setLoadingInsights] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let active = true
-
-    const fetchPrediction = async () => {
-      try {
-        const data = await fetchData<AgentPrediction>('prediction.json')
-        if (!active) return
-        setPrediction(data)
-        setError(null)
-      } catch (err) {
-        if (!active) return
-        console.warn('[AgentsView] Unable to load latest agent output', err)
-        setError('Latest agent output is unavailable. Profiles below still summarize their roles.')
-      } finally {
-        if (active) {
-          setLoadingInsights(false)
-        }
-      }
-    }
-
-    fetchPrediction()
-
-    return () => {
-      active = false
-    }
-  }, [])
-
-  const insights = useMemo<Record<AgentId, AgentInsight | undefined>>(() => {
-    if (!prediction) return {}
+export function AgentsView({ forecast }: { forecast: SavedForecast }) {
+  const reduceMotion = useReducedMotion()
+  const { prediction, loading: loadingInsights, error } = forecast
+  const freshness = forecastFreshness(prediction?.timestamp, prediction?.targetDate)
+  const readProbability = freshness === 'current' ? normalizeProbability : readOutcomeProbability
+  const probability = readProbability(prediction?.final?.snow_day_probability)
+  const insights = useMemo<Partial<Record<AgentId, AgentInsight>>>(() => {
+    if (!prediction || prediction.architecture) return {}
 
     const result: Partial<Record<AgentId, AgentInsight>> = {}
 
@@ -293,18 +200,18 @@ export function AgentsView() {
 
     if (meteorology && !hasError(meteorology)) {
       result.meteorology = {
-        headline: `${formatPercent(meteorology.precipitation_analysis.snow_probability_morning)} chance for morning snow`,
+        headline: `${formatPercent(meteorology.precipitation_analysis?.snow_probability_morning)} chance for morning snow`,
         summary: meteorology.overall_conditions_summary,
         callouts: [
-          { label: 'Overnight Low', value: formatDegrees(meteorology.temperature_analysis.overnight_low_f) },
-          { label: 'Snowfall Potential', value: `${meteorology.precipitation_analysis.total_snowfall_inches.toFixed(1)}"` },
-          { label: 'Wind Gusts', value: `${Math.round(meteorology.wind_analysis.max_wind_speed_mph)} mph` }
+          { label: 'Overnight Low', value: typeof meteorology.temperature_analysis?.overnight_low_f === 'number' ? `${meteorology.temperature_analysis.overnight_low_f}°F` : 'Not recorded' },
+          { label: 'Snowfall Potential', value: typeof meteorology.precipitation_analysis?.total_snowfall_inches === 'number' ? `${meteorology.precipitation_analysis.total_snowfall_inches} in` : 'Not recorded' },
+          { label: 'Maximum wind', value: typeof meteorology.wind_analysis?.max_wind_speed_mph === 'number' ? `${meteorology.wind_analysis.max_wind_speed_mph} mph` : 'Not recorded' }
         ]
       }
     } else if (meteorology && hasError(meteorology)) {
       result.meteorology = {
-        headline: 'Data temporarily unavailable',
-        summary: 'The meteorology agent encountered an issue. Will retry on next run.',
+        headline: 'Analysis unavailable in this report',
+        summary: 'The meteorology agent encountered an issue.',
         callouts: []
       }
     }
@@ -314,38 +221,38 @@ export function AgentsView() {
       const seasonalAdjustment = history.seasonal_context?.seasonal_probability_adjustment
       result.history = {
         headline: primaryPattern
-          ? `${Math.round(primaryPattern.historical_snow_day_rate)}% snow days in similar setups`
+          ? `Estimated closure rate for similar storms: ${formatPercent(primaryPattern.historical_snow_day_rate)}`
           : 'No close analog located',
         summary: history.confidence_assessment,
         callouts: [
           {
             label: 'Closest Analog',
-            value: primaryPattern ? primaryPattern.pattern_description : 'Still searching'
+            value: primaryPattern ? primaryPattern.pattern_description : 'None recorded'
           },
           {
             label: 'Seasonal Adjustment',
             value:
               typeof seasonalAdjustment === 'number'
                 ? `${seasonalAdjustment > 0 ? '+' : ''}${seasonalAdjustment}%`
-                : 'Neutral'
+                : 'Not recorded'
           }
         ]
       }
     } else if (history && hasError(history)) {
       result.history = {
-        headline: 'Data temporarily unavailable',
-        summary: 'The history agent encountered an issue. Will retry on next run.',
+        headline: 'Analysis unavailable in this report',
+        summary: 'The history agent encountered an issue.',
         callouts: []
       }
     }
 
     if (safety && !hasError(safety)) {
       result.safety = {
-        headline: `Risk level: ${safety.risk_level.toUpperCase()}`,
-        summary: safety.safety_recommendations?.slice(0, 2).join(' ') || 'Assessing travel impacts... ',
+        headline: `Estimated travel risk: ${formatLabel(safety.risk_level)}`,
+        summary: safety.safety_recommendations?.slice(0, 2).join(' ') || 'No recommendation recorded.',
         callouts: [
           {
-            label: 'Primary Roads',
+            label: 'Estimated primary-road score (1–10)',
             value: safety.road_conditions?.primary_roads_score?.toString() ?? '—'
           },
           {
@@ -353,14 +260,14 @@ export function AgentsView() {
             value: safety.timing_analysis?.morning_commute_impact
               ? safety.timing_analysis.morning_commute_impact.charAt(0).toUpperCase() +
                 safety.timing_analysis.morning_commute_impact.slice(1)
-              : 'Pending'
+              : 'Not recorded'
           }
         ]
       }
     } else if (safety && hasError(safety)) {
       result.safety = {
-        headline: 'Data temporarily unavailable',
-        summary: 'The safety agent encountered an issue. Will retry on next run.',
+        headline: 'Analysis unavailable in this report',
+        summary: 'The safety agent encountered an issue.',
         callouts: []
       }
     }
@@ -372,121 +279,118 @@ export function AgentsView() {
         uncertain: '🟡 Uncertain',
         expecting_school: '🟢 Expecting school',
         no_buzz: '⚪ No buzz'
-      }[news.community_intel?.social_media_sentiment] || 'Scanning...'
+      }[news.community_intel?.social_media_sentiment] || 'No sentiment recorded'
       
-      const neighboringClosures = news.school_district_signals?.neighboring_district_closures?.length || 0
+      const neighboringClosures = news.school_district_signals?.neighboring_district_closures
       
       result.news = {
         headline: sentimentLabel,
         summary: news.key_findings_summary,
         callouts: [
           {
-            label: 'Neighboring Closures',
-            value: neighboringClosures > 0 ? `${neighboringClosures} district${neighboringClosures > 1 ? 's' : ''}` : 'None reported'
+            label: 'Nearby district reports',
+            value: Array.isArray(neighboringClosures) ? neighboringClosures.join(' · ') || 'None reported' : 'Not recorded'
           },
           {
             label: 'Power Outages',
-            value: news.community_intel?.power_outage_reports ? 'Reported' : 'None'
+            value: news.community_intel?.power_outage_reports === true ? 'Reported' : news.community_intel?.power_outage_reports === false ? 'None reported' : 'Not recorded'
           }
         ]
       }
     } else if (news && hasError(news)) {
       result.news = {
-        headline: 'Data temporarily unavailable',
-        summary: 'The news intelligence agent encountered an issue. Will retry on next run.',
+        headline: 'Analysis unavailable in this report',
+        summary: 'The news intelligence agent encountered an issue.',
         callouts: []
       }
     }
 
     const { infrastructure } = prediction
     if (infrastructure && !hasError(infrastructure)) {
-      const responseLevel = infrastructure.municipal_response_level?.charAt(0).toUpperCase() + 
-        infrastructure.municipal_response_level?.slice(1) || 'Unknown'
+      const responseLevel = formatLabel(infrastructure.municipal_response_level)
       
       result.infrastructure = {
         headline: `Municipal response: ${responseLevel}`,
         summary: infrastructure.overall_clearing_assessment,
         callouts: [
           {
-            label: 'County Roads',
+            label: 'County road estimate',
             value: infrastructure.road_clearing_status?.county_roads?.status?.replace('_', ' ') || 'Unknown'
           },
           {
-            label: 'Hours to Bus Routes',
+            label: 'Estimated hours until bus routes',
             value: typeof infrastructure.clearing_timeline?.hours_until_bus_routes === 'number' 
               ? `${infrastructure.clearing_timeline.hours_until_bus_routes.toFixed(1)} hrs`
-              : 'Calculating'
+              : 'Not recorded'
           },
           {
             label: 'Data Confidence',
-            value: infrastructure.data_confidence?.charAt(0).toUpperCase() + 
-              infrastructure.data_confidence?.slice(1) || 'Unknown'
+            value: formatLabel(infrastructure.data_confidence)
           }
         ]
       }
     } else if (infrastructure && hasError(infrastructure)) {
       result.infrastructure = {
-        headline: 'Data temporarily unavailable',
-        summary: 'The infrastructure monitor encountered an issue. Will retry on next run.',
+        headline: 'Analysis unavailable in this report',
+        summary: 'The infrastructure monitor encountered an issue.',
         callouts: []
       }
     }
 
     const { powerGrid } = prediction
     if (powerGrid && !hasError(powerGrid)) {
-      const gridStress = powerGrid.grid_stress_level?.charAt(0).toUpperCase() + 
-        powerGrid.grid_stress_level?.slice(1) || 'Unknown'
-      const riskLevel = powerGrid.school_facility_risk?.risk_level?.charAt(0).toUpperCase() +
-        powerGrid.school_facility_risk?.risk_level?.slice(1) || 'Unknown'
+      const gridStress = formatLabel(powerGrid.grid_stress_level)
+      const riskLevel = formatLabel(powerGrid.school_facility_risk?.risk_level)
       
       result.powerGrid = {
         headline: `Grid stress: ${gridStress}`,
         summary: powerGrid.overall_grid_assessment,
         callouts: [
           {
-            label: 'Customers Affected',
+            label: 'Customers affected in the report',
             value: typeof powerGrid.current_outages?.total_customers_affected === 'number'
               ? powerGrid.current_outages.total_customers_affected.toLocaleString()
               : 'Unknown'
           },
           {
-            label: 'School Risk',
+            label: 'Estimated school risk',
             value: riskLevel
           },
           {
             label: 'Outage Trend',
-            value: powerGrid.outage_trend?.charAt(0).toUpperCase() + 
-              powerGrid.outage_trend?.slice(1) || 'Unknown'
+            value: formatLabel(powerGrid.outage_trend)
           }
         ]
       }
     } else if (powerGrid && hasError(powerGrid)) {
       result.powerGrid = {
-        headline: 'Data temporarily unavailable',
-        summary: 'The power grid analyst encountered an issue. Will retry on next run.',
+        headline: 'Analysis unavailable in this report',
+        summary: 'The power grid analyst encountered an issue.',
         callouts: []
       }
     }
 
     const { webWeatherVerifier } = prediction
     if (webWeatherVerifier && !hasError(webWeatherVerifier)) {
-      const consensus = webWeatherVerifier.discrepancy_analysis?.consensus_level?.charAt(0).toUpperCase() + 
-        webWeatherVerifier.discrepancy_analysis?.consensus_level?.slice(1) || 'Unknown'
-      const recommendation = webWeatherVerifier.recommendation?.replace(/_/g, ' ').split(' ').map(w => 
-        w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Unknown'
-      const belowMinus20 = webWeatherVerifier.discrepancy_analysis?.feels_like_below_minus_20 ? 'YES ⚠️' : 'NO'
+      const consensus = formatLabel(webWeatherVerifier.discrepancy_analysis?.consensus_level)
+      const recommendation = formatLabel(webWeatherVerifier.recommendation)
+      const belowMinus20 = webWeatherVerifier.discrepancy_analysis?.feels_like_below_minus_20 === true ? 'Confirmed in report' : 'Unconfirmed'
       
       result.webWeatherVerifier = {
-        headline: `${webWeatherVerifier.weather_sources?.length || 0} sources checked - ${consensus} consensus`,
+        headline: `Agreement between weather sources: ${consensus}`,
         summary: webWeatherVerifier.verification_summary,
         callouts: [
           {
-            label: 'Feels Like < -20°F',
+            label: 'Feels like −20°F or colder',
             value: belowMinus20
           },
           {
-            label: 'Temp Difference',
-            value: `${Math.abs(webWeatherVerifier.api_comparison?.difference_f || 0).toFixed(1)}°F`
+            label: 'Sources listed',
+            value: webWeatherVerifier.weather_sources?.length?.toString() ?? 'Not recorded'
+          },
+          {
+            label: 'Feels-like difference',
+            value: typeof webWeatherVerifier.api_comparison?.difference_f === 'number' ? `${Math.abs(webWeatherVerifier.api_comparison.difference_f)}°F` : 'Not recorded'
           },
           {
             label: 'Recommendation',
@@ -494,59 +398,60 @@ export function AgentsView() {
           },
           {
             label: 'Critical Alerts',
-            value: String(webWeatherVerifier.critical_alerts?.length || 0)
+            value: webWeatherVerifier.critical_alerts?.length?.toString() ?? 'Not recorded'
           }
         ]
       }
     } else if (webWeatherVerifier && hasError(webWeatherVerifier)) {
       result.webWeatherVerifier = {
-        headline: 'Data temporarily unavailable',
-        summary: 'The web weather verifier encountered an issue. Will retry on next run.',
+        headline: 'Analysis unavailable in this report',
+        summary: 'The web weather verifier encountered an issue.',
         callouts: []
       }
     }
 
     if (final) {
       result.final = {
-        headline: `${formatPercent(final.snow_day_probability)} chance • ${formatConfidence(final.confidence_level)}`,
+        headline: `${formatPercent(probability)} chance • ${formatConfidence(final.confidence_level)}`,
         summary: final.decision_rationale,
         callouts: [
-          { label: 'Next Evaluation', value: final.next_evaluation_time || 'TBD' },
-          { label: 'Monitoring Needed', value: final.updates_needed ? 'Yes' : 'Not currently' }
+          { label: 'Suggested next evaluation', value: final.next_evaluation_time || 'TBD' },
+          { label: 'Monitoring Needed', value: final.updates_needed === true ? 'Yes' : final.updates_needed === false ? 'No' : 'Not recorded' }
         ]
       }
     }
 
     return result
-  }, [prediction])
+  }, [prediction, probability])
 
-  const probability = prediction?.final?.snow_day_probability ?? null
-  const location = prediction?.location ?? 'Awaiting latest run'
+  const location = prediction?.location ?? 'Not recorded'
   const confidence = prediction?.final?.confidence_level ?? null
-  const timestampLabel = formatTimestamp(prediction?.timestamp)
+  const timestampLabel = forecastUpdateLabel(prediction?.timestamp, true)
 
   return (
-    <div className="space-y-14 relative z-10">
+    <div className="student-page agents-page space-y-6 sm:space-y-8 relative z-10">
+      <StudentPageHeading title="How it works" description="See how Blizzard estimates the chance that Rockford Public Schools will close for weather." />
       <Card className="rounded-2xl border border-primary/20 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 gap-10">
         <CardHeader className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-primary">Meet the automation crew</p>
-            <CardTitle className="mt-2 text-2xl sm:text-3xl">Seven specialists, one crystal-clear call</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl">How Blizzard makes its call</CardTitle>
             <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-              Every forecast run is a round-table between meteorology, historical context, safety, local news intelligence, infrastructure monitoring, power grid analysis, and decision science.
+              One forecaster estimates how the weather will affect Rockford’s morning bus run and explains the chance of a districtwide closure.
             </p>
           </div>
           <div className="rounded-2xl border border-primary/40 bg-background/70 px-5 py-4 text-right">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Latest collaboration</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{freshness === 'archived' ? 'Archived snow-day chance' : freshness === 'current' ? 'Snow-day chance' : 'Saved snow-day chance'}</p>
             <p className="text-3xl font-semibold text-primary">
-              {probability !== null ? formatPercent(probability) : 'Pending'}
+              {loadingInsights ? 'Loading…' : probability === null ? 'Unavailable' : `${formatPercent(probability)} chance`}
             </p>
-            <p className="text-sm text-muted-foreground">{formatConfidence(confidence)}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{timestampLabel}</p>
+            <p className="text-sm text-muted-foreground">{prediction?.targetDate && schoolDateLabel(prediction.targetDate, true)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{prediction && `Saved ${timestampLabel}`}</p>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <details className="record-disclosure">
+            <summary>Report & run details</summary>
+          <div className="grid grid-cols-2 gap-4 pt-4 lg:grid-cols-4">
             <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
               <p className="text-xs text-muted-foreground uppercase">Location</p>
               <p className="text-lg font-semibold">{location}</p>
@@ -557,15 +462,23 @@ export function AgentsView() {
             </div>
             <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
               <p className="text-xs text-muted-foreground uppercase">Primary focus</p>
-              <p className="text-lg font-semibold">Snow day decision</p>
+              <p className="text-lg font-semibold">Districtwide weather closure</p>
             </div>
             <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
-              <p className="text-xs text-muted-foreground uppercase">Pipeline cadence</p>
-              <p className="text-lg font-semibold">Daily (or faster when storms brew)</p>
+              <p className="text-xs text-muted-foreground uppercase">Scheduled attempts</p>
+              <p className="text-lg font-semibold">9:17 a.m., 1:17 p.m. and 6:17 p.m. Eastern when active</p>
             </div>
           </div>
+          </details>
         </CardContent>
       </Card>
+
+      {prediction?.architecture === 'single-forecaster-v1' && (
+        <Card>
+          <CardHeader><CardTitle>What shaped this forecast</CardTitle></CardHeader>
+          <CardContent><Markdown content={prediction.final.decision_rationale} /></CardContent>
+        </Card>
+      )}
 
       {error && (
         <Alert variant="destructive">
@@ -574,7 +487,9 @@ export function AgentsView() {
         </Alert>
       )}
 
-      <div className="grid gap-8 lg:gap-10 lg:grid-cols-2">
+      {prediction && !prediction.architecture && <details className="page-disclosure">
+        <summary>Specialist reports from the earlier forecast system</summary>
+        <div className="grid gap-8 lg:gap-10 lg:grid-cols-2">
         {agentProfiles.map((agent) => {
           const insight = insights[agent.id]
           const Icon = agent.icon
@@ -582,7 +497,7 @@ export function AgentsView() {
           return (
             <motion.div
               key={agent.id}
-              whileHover={{ translateY: -4 }}
+              whileHover={reduceMotion ? undefined : { translateY: -4 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               className="h-full"
             >
@@ -594,18 +509,16 @@ export function AgentsView() {
                     </div>
                     <div>
                       <CardTitle className="text-xl">{agent.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{agent.title}</p>
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground">{agent.mission}</p>
-                  <div className="flex flex-wrap gap-2.5">
-                    <Badge variant="secondary">Model: {agent.model}</Badge>
-                    <Badge variant="outline">{agent.tone}</Badge>
-                  </div>
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col gap-8 pt-2">
+                <CardContent className="pt-0">
+                  <details className="record-disclosure">
+                    <summary>Saved analysis & tools</summary>
+                    <div className="flex flex-col gap-5 pt-4">
                   <div className="space-y-5">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Focus lanes</p>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Focus areas</p>
                     <div className="flex flex-wrap gap-3">
                       {agent.focusAreas.map((area) => (
                         <Badge key={area} variant="secondary" className="bg-secondary/50 text-secondary-foreground">
@@ -624,7 +537,7 @@ export function AgentsView() {
                   ) : insight ? (
                     <div className="rounded-2xl border border-border/70 bg-muted/30 p-6 space-y-6">
                       <div className="space-y-3">
-                        <p className="text-xs uppercase tracking-wide text-muted-foreground">Latest dispatch</p>
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">AI assessment from this report</p>
                         <p className="text-sm font-medium text-primary">{insight.headline}</p>
                         <Markdown content={insight.summary} className="text-sm text-muted-foreground" />
                       </div>
@@ -641,16 +554,16 @@ export function AgentsView() {
                     </div>
                   ) : (
                     <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 p-5 text-sm text-muted-foreground">
-                      This profile updates right after the next agent run.
+                      No analysis available for this role in the saved report.
                     </div>
                   )}
 
                   <Accordion type="single" collapsible className="pt-1">
                     <AccordionItem value="tools">
-                      <AccordionTrigger className="text-sm">Tool belt & deliverables</AccordionTrigger>
+                      <AccordionTrigger className="text-sm">Tools and report contents</AccordionTrigger>
                       <AccordionContent className="space-y-4">
                         <div className="space-y-2">
-                          <p className="text-xs uppercase text-muted-foreground">Tools they reach for</p>
+                          <p className="text-xs uppercase text-muted-foreground">Available tools</p>
                           <ul className="list-disc pl-5 text-sm space-y-1.5">
                             {agent.tools.map((tool) => (
                               <li key={tool}>{tool}</li>
@@ -668,21 +581,23 @@ export function AgentsView() {
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
+                    </div>
+                  </details>
                 </CardContent>
               </Card>
             </motion.div>
           )
         })}
-      </div>
+      </div></details>}
 
       <Card className="rounded-2xl border border-primary/10 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 gap-12">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Sparkle size={20} className="text-primary" />
-            <CardTitle>How their hand-offs work</CardTitle>
+            <CardTitle>From weather forecast to snow-day chance</CardTitle>
           </div>
           <p className="text-sm text-muted-foreground">
-            The crew runs like a miniature product team: collect signals, compare patterns, stress-test safety, then ship a single recommendation.
+            These are the steps used by the current forecast generator.
           </p>
         </CardHeader>
         <CardContent>
@@ -702,7 +617,7 @@ export function AgentsView() {
                   </div>
                   <p className="text-sm text-muted-foreground">{step.description}</p>
                   <div className="rounded-xl bg-background/70 p-4 text-sm space-y-1">
-                    <p className="text-xs uppercase text-muted-foreground">Handoff</p>
+                    <p className="text-xs uppercase text-muted-foreground">Result</p>
                     <p>{step.handoff}</p>
                   </div>
                 </div>
@@ -714,7 +629,12 @@ export function AgentsView() {
 
       {/* Deliberation Section - Shows collaboration data */}
       {prediction?.collaboration && (
+        <details className="page-disclosure">
+          <summary>Debate recorded for this forecast</summary>
+          <div className="page-disclosure-content">
         <DeliberationSection collaboration={prediction.collaboration} />
+          </div>
+        </details>
       )}
     </div>
   )
@@ -755,13 +675,11 @@ function DeliberationSection({ collaboration }: { collaboration: AgentCollaborat
     collaboration.rounds.length > 0 ? `round-${collaboration.rounds.length}` : undefined
   )
 
-  const averageProbability = collaboration.rounds.length > 0
-    ? Math.round(
-        collaboration.rounds[collaboration.rounds.length - 1].positions
-          .reduce((sum, p) => sum + p.probability, 0) / 
-        collaboration.rounds[collaboration.rounds.length - 1].positions.length
-      )
-    : 0
+  const lastRound = collaboration.rounds[collaboration.rounds.length - 1]
+  const positions = lastRound?.positions ?? []
+  const averageProbability = positions.length
+    ? Math.round(positions.reduce((sum, position) => sum + position.probability, 0) / positions.length)
+    : null
 
   return (
     <Card className="rounded-2xl border border-primary/20 bg-background/80 backdrop-blur shadow-lg shadow-primary/5 gap-10">
@@ -771,9 +689,9 @@ function DeliberationSection({ collaboration }: { collaboration: AgentCollaborat
             <ChatTeardropDots size={20} className="text-primary" />
             <p className="text-xs uppercase tracking-[0.3em] text-primary">Agent Deliberation</p>
           </div>
-          <CardTitle className="text-2xl sm:text-3xl">How the team reached consensus</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl">Recorded debate rounds</CardTitle>
           <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-            Watch how agents debated, challenged each other, and evolved their positions through {collaboration.totalRounds} round{collaboration.totalRounds !== 1 ? 's' : ''} of collaboration.
+            These positions come from the optional debate. The coordinator sets the published snow-day chance separately.
           </p>
         </div>
         <div className="rounded-2xl border border-primary/40 bg-background/70 px-5 py-4 text-right">
@@ -785,7 +703,7 @@ function DeliberationSection({ collaboration }: { collaboration: AgentCollaborat
               <WarningCircle size={24} weight="duotone" className="text-amber-500" />
             )}
             <p className="text-xl font-semibold">
-              {collaboration.finalConsensus ? 'Reached' : 'Partial'}
+              {collaboration.finalConsensus ? 'Reached' : 'Not reached'}
             </p>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -801,20 +719,20 @@ function DeliberationSection({ collaboration }: { collaboration: AgentCollaborat
         {/* Summary Stats */}
         <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
-            <p className="text-xs text-muted-foreground uppercase">Final Avg Probability</p>
-            <p className="text-2xl font-semibold text-primary">{averageProbability}%</p>
+            <p className="text-xs text-muted-foreground uppercase">Average final debate estimate</p>
+            <p className="text-2xl font-semibold text-primary">{formatPercent(averageProbability)}</p>
           </div>
           <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
-            <p className="text-xs text-muted-foreground uppercase">Final Spread</p>
+            <p className="text-xs text-muted-foreground uppercase">Final spread (highest minus lowest)</p>
             <p className="text-2xl font-semibold">
-              {collaboration.rounds.length > 0 
-                ? `±${Math.round(collaboration.rounds[collaboration.rounds.length - 1].probabilitySpread / 2)}%`
+              {lastRound && positions.length > 0
+                ? `${lastRound.probabilitySpread} points`
                 : '—'}
             </p>
           </div>
           <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
-            <p className="text-xs text-muted-foreground uppercase">Consensus Threshold</p>
-            <p className="text-2xl font-semibold">±{collaboration.consensusThreshold}%</p>
+            <p className="text-xs text-muted-foreground uppercase">Maximum spread for consensus</p>
+            <p className="text-2xl font-semibold">{2 * collaboration.consensusThreshold} points</p>
           </div>
           <div className="rounded-xl border border-border/60 bg-background/80 p-5 space-y-2">
             <p className="text-xs text-muted-foreground uppercase">Key Disagreements</p>
@@ -853,7 +771,7 @@ function DeliberationSection({ collaboration }: { collaboration: AgentCollaborat
                       <div className={`flex items-center gap-1 ${shiftColor}`}>
                         <ShiftIcon size={16} weight="bold" />
                         <span className="text-sm font-medium">
-                          {journey.totalShift > 0 ? '+' : ''}{journey.totalShift}%
+                          {journey.totalShift > 0 ? '+' : ''}{journey.totalShift} points
                         </span>
                       </div>
                     </div>
@@ -885,7 +803,7 @@ function DeliberationSection({ collaboration }: { collaboration: AgentCollaborat
                       Round {round.round}
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      Spread: {round.probabilitySpread.toFixed(0)}%
+                      Spread: {round.probabilitySpread} points
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -895,7 +813,7 @@ function DeliberationSection({ collaboration }: { collaboration: AgentCollaborat
                       </Badge>
                     ) : (
                       <Badge variant="secondary" className="bg-amber-500/20 text-amber-600">
-                        Continuing
+                        Threshold unmet
                       </Badge>
                     )}
                   </div>
