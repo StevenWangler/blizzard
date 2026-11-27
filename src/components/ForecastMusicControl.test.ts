@@ -8,7 +8,7 @@ vi.mock('@/lib/forecastMusicAsset', () => ({ forecastMusicUrl: '/test-only/licen
 
 describe('music control and attribution', () => {
   it('renders enabled but never claims playing before client playback succeeds', () => {
-    const html = renderToStaticMarkup(createElement(ForecastMusicControl, { navigationKey: 'home' }))
+    const html = renderToStaticMarkup(createElement(ForecastMusicControl))
     expect(html).toContain('aria-label="Start forecast music"')
     expect(html).toContain('PLAY')
     expect(html).toContain('aria-pressed="false"')

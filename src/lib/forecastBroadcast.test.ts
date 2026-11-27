@@ -14,6 +14,22 @@ const report = (overrides: Record<string, unknown> = {}) => ({
 } as unknown as AgentPrediction)
 
 describe('forecast broadcast truth and timing', () => {
+  it('matches illustrations to target-date bus hours and keeps conditional and unknown weather readable', () => {
+    const day = '2026-11-02'
+    const hour = (time: string, condition: string) => ({ time: `${day} ${time}:00`, condition: { text: condition }, temp_f: 0 })
+    const prediction = report({ raw_weather_data: { forecast: { forecastday: [
+      { date: '2026-11-01', hour: [hour('07', 'Heavy rain')] },
+      { date: day, hour: [hour('06', 'Chance of snow'), hour('07', 'Partly Sunny'), hour('08', 'Fog'), hour('18', 'Sunny')] },
+    ] } } })
+    const { slides } = buildForecastBroadcast(prediction, now)
+    expect(slides[0].hours).toMatchObject([{ time: '7 AM', symbol: 'partly' }])
+    expect(slides.find(s => s.id === 'timing')?.hours).toEqual([
+      { time: '6 AM', symbol: 'snow', condition: 'Chance of snow', temperature: 0 },
+      { time: '7 AM', symbol: 'partly', condition: 'Partly Sunny', temperature: 0 },
+      { time: '8 AM', symbol: undefined, condition: 'Fog', temperature: 0 },
+    ])
+    expect(buildForecastBroadcast(prediction, new Date('2026-11-03')).slides.every(s => !s.hours)).toBe(true)
+  })
   it('builds a 27-second current forecast with the actual target date, chance and structured facts', () => {
     const model = buildForecastBroadcast(report(), now)
     expect(model.slides.map(card => card.id)).toEqual(['opening', 'outlook', 'timing', 'reasons', 'closing'])

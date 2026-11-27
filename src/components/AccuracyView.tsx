@@ -7,7 +7,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { Target, Clock, CaretDown, Calendar } from '@phosphor-icons/react'
 import { buildOutcomeStats, fetchOutcomeLedger, SnowDayOutcome, readOutcomeProbability } from '@/services/outcomes'
-import { useAdminAccess } from '@/hooks/useAdminAccess'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { fetchData } from '@/lib/dataPath'
 import { StudentPageHeading } from '@/components/StudentPageHeading'
@@ -24,7 +23,6 @@ export function AccuracyView() {
   const [predictionMeta, setPredictionMeta] = useState<PredictionMeta | null>(null)
   const [trendChartOpen, setTrendChartOpen] = useState(false)
   const [calibrationChartOpen, setCalibrationChartOpen] = useState(false)
-  const { isAdmin } = useAdminAccess()
   const isMobile = useIsMobile()
 
   useEffect(() => {
@@ -163,12 +161,6 @@ export function AccuracyView() {
     })
   }, [outcomes])
 
-  const openRecorderTab = () => {
-    if (!isAdmin) return
-    const trigger = document.querySelector('[data-value="outcomes"]') as HTMLButtonElement | null
-    trigger?.click()
-  }
-
   return (
     <div className="student-page accuracy-page space-y-6 sm:space-y-8 relative z-10">
       <StudentPageHeading title="Accuracy" description="How our forecasts hold up against real school-day results." />
@@ -202,37 +194,9 @@ export function AccuracyView() {
                         <div className="font-medium">{new Date(record.date).toLocaleDateString()}</div>
                         <div className="text-muted-foreground">Model: {record.modelPrediction}%</div>
                       </div>
-                      {isAdmin ? (
-                        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={openRecorderTab}
-                            className="text-xs w-full sm:w-auto"
-                          >
-                            Open Recorder
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className="w-full sm:w-auto"
-                            asChild
-                          >
-                            <a
-                              href="https://github.com/StevenWangler/blizzard/actions/workflows/log-outcome.yml"
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-xs"
-                            >
-                              Workflow
-                            </a>
-                          </Button>
-                        </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground">
-                          We’ll score this call once the school-day result is recorded.
-                        </p>
-                      )}
+                      <p className="text-xs text-muted-foreground">
+                        We’ll score this call once the school-day result is recorded.
+                      </p>
                     </div>
                   ))}
                 </div>

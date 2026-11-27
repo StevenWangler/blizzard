@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { forecastFreshness, forecastReason, forecastUpdateLabel, schoolDateLabel } from '@/lib/forecastPresentation'
 import { normalizeProbability } from '@/services/outcomes'
 import type { AgentPrediction } from '@/types/agentPrediction'
@@ -6,12 +7,13 @@ import { WatchForecast } from '@/components/WatchForecast'
 interface TodayForecastProps {
   prediction: AgentPrediction | null
   onNavigateToDetails: () => void
+  children?: ReactNode
   onNavigateToHistory: () => void
 }
 
 const backdrop = `${import.meta.env.BASE_URL}images/broadcast/`
 
-export function TodayForecast({ prediction, onNavigateToDetails, onNavigateToHistory }: TodayForecastProps) {
+export function TodayForecast({ prediction, onNavigateToDetails, onNavigateToHistory, children }: TodayForecastProps) {
   const probability = normalizeProbability(prediction?.final?.snow_day_probability)
   const freshness = forecastFreshness(prediction?.timestamp, prediction?.targetDate)
   const current = freshness === 'current'
@@ -61,6 +63,7 @@ export function TodayForecast({ prediction, onNavigateToDetails, onNavigateToHis
             </button>
           )}
         </section>
+        {children}
         <section className="station-link-box station-archive-box">
           <h3>Forecast archive</h3>
           <button type="button" onClick={onNavigateToHistory} className="station-link">

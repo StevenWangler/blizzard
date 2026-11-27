@@ -56,6 +56,14 @@ export interface AgentCollaboration {
 }
 
 interface LegacyPrediction {
+  raw_weather_data?: {
+    forecast?: {
+      forecastday?: Array<{
+        date: string
+        hour?: Array<{ time: string; temp_f?: number; condition?: { text?: string }; is_day?: number }>
+      }>
+    }
+  }
   architecture?: undefined
   meteorology: {
     temperature_analysis: {
