@@ -1,7 +1,5 @@
 import { ComponentProps } from "react"
-import ChevronLeftIcon from "lucide-react/dist/esm/icons/chevron-left"
-import ChevronRightIcon from "lucide-react/dist/esm/icons/chevron-right"
-import MoreHorizontalIcon from "lucide-react/dist/esm/icons/more-horizontal"
+import { ChevronLeftIcon, ChevronRightIcon, EllipsisIcon } from "lucide-react"
 
 import { cn } from "@/utils/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -108,7 +106,7 @@ function PaginationEllipsis({
       className={cn("flex size-9 items-center justify-center", className)}
       {...props}
     >
-      <MoreHorizontalIcon className="size-4" />
+      <EllipsisIcon className="size-4" />
       <span className="sr-only">More pages</span>
     </span>
   )
