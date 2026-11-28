@@ -1,14 +1,8 @@
 /* The program guide uses the same title bars and printed surfaces as Today. */
-.station-workspace,
-.station-directory,
-.station-more-dropdown {
+:root {
   --station-blue-bar: linear-gradient(color-mix(in srgb, var(--station-sky) 70%, #5269b9), var(--station-sky) 49%, color-mix(in srgb, var(--station-sky) 65%, #13224d) 50%, #141e45);
-  --station-silver-bar: linear-gradient(#f6f7fa, #bbc4dc);
   --station-gold-bar: linear-gradient(#fff1a2, #ebbe50);
   --station-caption-font: 'Blizzard Broadcast', 'Courier New', monospace;
-}
-
-.station-workspace .station-shell .student-page {
   --report-paper: #eff1f6;
   --report-ink: #14284e;
   --report-muted: #425575;
@@ -16,12 +10,9 @@
   --report-inset: #e0e8f6;
   --report-rule: #8599ba;
   --report-link: #1c4285;
-  padding: clamp(9px, 2.3vw, 19px);
-  background: repeating-linear-gradient(0deg, #92a9d00d 0 1px, transparent 1px 4px), var(--report-paper);
-  color: var(--report-ink);
 }
 
-html[data-weather-mode="night"] .station-workspace .station-shell .student-page {
+html[data-weather-mode="night"] {
   --report-paper: #141f3e;
   --report-ink: #f3f6ff;
   --report-muted: #c1d1ec;
@@ -29,6 +20,12 @@ html[data-weather-mode="night"] .station-workspace .station-shell .student-page 
   --report-inset: #223966;
   --report-rule: #7896cb;
   --report-link: #ffdf65;
+}
+
+.station-workspace .station-shell .student-page {
+  padding: clamp(9px, 2.3vw, 19px);
+  background: repeating-linear-gradient(0deg, #92a9d00d 0 1px, transparent 1px 4px), var(--report-paper);
+  color: var(--report-ink);
 }
 
 .station-workspace .station-shell .student-page,
@@ -107,10 +104,10 @@ html[data-weather-mode="night"] .station-workspace .station-shell .student-page 
 .station-shell .student-page [data-slot="accordion-trigger"] { font-weight: 700; }
 .station-shell .student-page :is([data-slot="button"], [data-slot="collapsible-trigger"]) { border-radius: 0; }
 .station-shell .student-page [data-slot="collapsible-trigger"] {
-  background: var(--station-silver-bar);
-  color: #17367c;
+  background: var(--station-deck);
+  color: var(--station-control-ink);
 }
-.station-shell .student-page [data-slot="collapsible-trigger"]:hover { background: #eef3ff; }
+.station-shell .student-page [data-slot="collapsible-trigger"]:hover { background: var(--report-inset); }
 .station-shell .student-page .music-credits a { color: var(--report-link); }
 
 .station-shell .student-page .forecast-school-brief {
@@ -182,21 +179,54 @@ html[data-weather-mode="night"] .station-workspace .station-shell .student-page 
   font: 400 clamp(20px, 4vw, 25px)/1 var(--station-caption-font);
 }
 .history-listing .history-record-result > :last-child { font-variant-numeric: tabular-nums; }
+.history-count { scroll-margin-top: .75rem; }
+.history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .5rem;
+  border-top: 1px solid var(--report-rule);
+  background: var(--report-inset);
+  font-variant-numeric: tabular-nums;
+}
+.history-pagination button { min-height: 44px; }
 
-[data-slot="drawer-content"].station-directory {
-  background: #eff1f6;
-  border-top: 2px solid #8198c0;
-  color: #152747;
+/* These dialogs and menus are mounted under body, outside the station shell. */
+html .station-overlay[data-slot] {
+  --color-background: var(--report-panel);
+  --color-foreground: var(--report-ink);
+  --color-muted: var(--report-inset);
+  --color-muted-foreground: var(--report-muted);
+  --color-accent: var(--report-inset);
+  --color-accent-foreground: var(--report-ink);
+  --color-primary: var(--report-link);
+  --color-primary-foreground: var(--report-panel);
+  --color-input: var(--report-rule);
+  --color-ring: var(--report-link);
+  --color-border: var(--report-rule);
+  border-radius: 0;
+  border-color: var(--report-rule);
+  background: var(--report-panel);
+  color: var(--report-ink);
+  font-family: Verdana, Geneva, sans-serif;
 }
-.station-directory > [data-slot="drawer-header"] {
-  padding: 0 8px 0 12px;
-  border-block: 1px solid #8da6d4;
+.station-overlay :is([data-slot="drawer-header"], [data-slot="dropdown-menu-label"], [data-slot="dialog-title"]) {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--report-rule);
   background: var(--station-blue-bar);
+  color: #ffdf65;
+  font: 400 24px/1.1 var(--station-caption-font);
 }
-.station-directory > .bg-muted { margin-block: 6px; background: #8599ba; }
-.station-directory [data-slot="drawer-title"] { color: #ffdf65; }
-.station-directory [data-slot="drawer-close"] { border-radius: 0; color: #fff; }
-.station-directory [data-slot="drawer-close"]:hover { background: #ffffff21; color: #fff; }
+.station-overlay [data-slot="drawer-title"] { color: #ffdf65; }
+.station-overlay > .bg-muted { margin-block: 6px; background: var(--report-rule); }
+.station-overlay [data-slot="drawer-close"] { color: white; }
+.station-overlay [data-slot="button"] { border-radius: 0; }
+.station-overlay [data-slot="dropdown-menu-separator"] { background: var(--report-rule); }
+.station-overlay [data-slot="dropdown-menu-item"]:is(:focus, [data-highlighted]) {
+  background: var(--report-inset);
+  color: var(--report-ink);
+}
 .station-directory-links {
   min-height: 0;
   overflow-y: auto;
@@ -210,24 +240,21 @@ html[data-weather-mode="night"] .station-workspace .station-shell .student-page 
   width: 100%;
   min-height: 53px;
   padding: 7px 12px;
-  border-bottom: 1px solid #a8b6d0;
-  background: #fafaf3;
-  color: #17367c;
+  border-bottom: 1px solid var(--report-rule);
+  background: var(--report-panel);
+  color: var(--report-ink);
   text-align: left;
 }
 .station-directory-links :is(strong, small) { display: block; line-height: 1.3; }
 .station-directory-links strong { font-size: 15px; text-decoration: underline; }
-.station-directory-links small { margin-top: 1px; color: #425575; font-size: 13px; }
-.station-directory-links button:hover { background: #e4ecfe; }
-.station-directory-links button[aria-current="page"] { background: var(--station-gold-bar); }
-.station-directory-chevron { color: #a0370f; font-size: 20px; text-align: right; }
-[data-slot="dropdown-menu-content"].station-more-dropdown {
-  background: #fafaf3;
-  color: #17367c;
-  border-color: #879fc6;
-  box-shadow: 2px 3px #0b1649;
+.station-directory-links small { margin-top: 1px; color: var(--report-muted); font-size: 13px; }
+.station-directory-links button:hover { background: var(--report-inset); }
+.station-overlay [aria-current="page"] {
+  background: var(--station-gold-bar);
+  color: #142760;
 }
-.station-more-dropdown [data-slot="dropdown-menu-item"]:is(:focus, [data-highlighted]) { background: #e4ecfe; color: #17367c; }
+.station-directory-links [aria-current="page"] :is(small, .station-directory-chevron) { color: inherit; }
+.station-directory-chevron { color: var(--report-link); font-size: 20px; text-align: right; }
 
 @media (max-width: 767px) {
   .station-shell > [data-slot="tabs"] > [data-slot="tabs-content"]:has(> .student-page) {
@@ -282,19 +309,3 @@ html[data-weather-mode="night"] .station-workspace .station-shell .student-page 
 .faceoff-result-label { display: block; font: 12px/1.4 Verdana, sans-serif; color: var(--report-muted); }
 .faceoff-retry { min-height: 44px; text-decoration: underline; }
 .faceoff-analysis .page-disclosure-content > div + div { margin-top: 16px; }
-
-/* Portaled settings use the same palette as the station behind them. */
-html[data-weather-mode] .station-theme-menu {
-  background: var(--station-frame);
-  color: var(--station-control-ink);
-  --color-foreground: var(--station-control-ink);
-  --color-muted-foreground: var(--station-control-ink);
-}
-html[data-weather-mode] .station-theme-menu [data-slot="drawer-title"] {
-  color: var(--station-control-ink);
-}
-html[data-weather-mode] .station-theme-menu [data-slot="button"] {
-  background: var(--station-frame);
-  color: var(--station-control-ink);
-  border-color: #8295af;
-}

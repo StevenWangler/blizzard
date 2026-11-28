@@ -169,9 +169,9 @@ function App() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" data-section-active={morePages.some(page => page.id === activeTab)}>More</Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="station-more-dropdown">
+                <DropdownMenuContent align="start" className="station-overlay">
                   {morePages.map(({ id, label, icon: Icon }) => (
-                    <DropdownMenuItem key={id} onClick={() => setActiveTab(id)}>
+                    <DropdownMenuItem key={id} aria-current={activeTab === id ? 'page' : undefined} onClick={() => setActiveTab(id)}>
                       <Icon size={16} className="mr-2" aria-hidden="true" />
                       {label}
                     </DropdownMenuItem>
@@ -233,7 +233,7 @@ function App() {
                   <span>More</span>
                 </button>
               </DrawerTrigger>
-              <DrawerContent className="station-directory">
+              <DrawerContent className="station-overlay station-directory">
                 <DrawerHeader className="flex-row items-center justify-between">
                   <div>
                     <DrawerTitle>More</DrawerTitle>
@@ -259,7 +259,7 @@ function App() {
       </div>
 
       {isOffSeason && <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
-        <DialogContent>
+        <DialogContent className="station-overlay">
           <DialogHeader>
             <DialogTitle>Off-season preview</DialogTitle>
             <DialogDescription>View the forecast site on this device during the off-season.</DialogDescription>

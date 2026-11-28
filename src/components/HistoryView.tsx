@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -6,6 +6,8 @@ import { StudentPageHeading } from '@/components/StudentPageHeading'
 import { CloudSnow, Clock, ArrowsClockwise, CaretDown } from '@phosphor-icons/react'
 import { fetchOutcomeLedger, SnowDayOutcome, readOutcomeProbability } from '@/services/outcomes'
 import { schoolDateLabel } from '@/lib/forecastPresentation'
+
+const CALLS_PER_PAGE = 10
 
 interface HistoricalEvent {
   date: string
@@ -153,6 +155,8 @@ const calculateBrierScore = (prediction: number | null, outcome: boolean | null,
 
 export function HistoryView() {
   const [searchTerm, setSearchTerm] = useState('')
+  const [page, setPage] = useState(1)
+  const resultsCount = useRef<HTMLParagraphElement>(null)
   const [events, setEvents] = useState<HistoricalEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -232,6 +236,16 @@ export function HistoryView() {
       event.date.includes(term)
     )
   })
+  const pageCount = Math.ceil(filteredEvents.length / CALLS_PER_PAGE)
+  const currentPage = Math.min(page, Math.max(1, pageCount))
+  const start = (currentPage - 1) * CALLS_PER_PAGE
+  const visibleEvents = filteredEvents.slice(start, start + CALLS_PER_PAGE)
+
+  function changePage(nextPage: number) {
+    setPage(nextPage)
+    resultsCount.current?.focus({ preventScroll: true })
+    resultsCount.current?.scrollIntoView({ block: 'start' })
+  }
 
   return (
     <div className="student-page history-page space-y-6 sm:space-y-8 relative z-10">
@@ -244,7 +258,10 @@ export function HistoryView() {
             aria-label="Search past calls"
             placeholder="Search a date or storm…"
             value={searchTerm}
-            onChange={event => setSearchTerm(event.target.value)}
+            onChange={event => {
+              setSearchTerm(event.target.value)
+              setPage(1)
+            }}
           />
           <Button variant="outline" size="icon" onClick={loadHistory} disabled={loading} aria-label="Refresh past calls">
             <ArrowsClockwise size={18} className={loading ? 'animate-spin' : ''} aria-hidden="true" />
@@ -252,7 +269,10 @@ export function HistoryView() {
         </div>
         {seasonStats.totalEvents > 0 && (
           <div className="history-overview">
-            <p className="history-count" role="status">{filteredEvents.length} of {seasonStats.totalEvents} records</p>
+            <p ref={resultsCount} className="history-count" role="status" tabIndex={-1}>
+              {pageCount > 1 && `${start + 1}–${start + visibleEvents.length} of `}
+              {filteredEvents.length} {searchTerm.trim() && 'matching '}{filteredEvents.length === 1 ? 'record' : 'records'}
+            </p>
             <details className="page-disclosure history-stats">
               <summary>Archive stats</summary>
               <div className="page-disclosure-content">
@@ -295,7 +315,7 @@ export function HistoryView() {
           <div className="history-listing">
             <div className="history-listing-head" aria-hidden="true"><span>School date</span><span>Outcome / forecast</span></div>
             <ul className="history-records">
-              {filteredEvents.map(event => {
+              {visibleEvents.map(event => {
                 const badge = getAccuracyBadge(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
                 const brier = calculateBrierScore(event.modelPrediction, event.actualOutcome, event.noSchoolScheduled)
                 const outcome = event.noSchoolScheduled ? 'No school scheduled' : event.actualOutcome === true ? 'Snow day' : event.actualOutcome === false ? 'School open' : 'Pending'
@@ -328,6 +348,13 @@ export function HistoryView() {
                 )
               })}
             </ul>
+            {pageCount > 1 && (
+              <nav className="history-pagination" aria-label="Past calls pages">
+                <Button variant="outline" disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>Newer</Button>
+                <span>Page {currentPage} of {pageCount}</span>
+                <Button variant="outline" disabled={currentPage === pageCount} onClick={() => changePage(currentPage + 1)}>Older</Button>
+              </nav>
+            )}
           </div>
         )}
       </section>

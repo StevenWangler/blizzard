@@ -39,6 +39,7 @@ function NotificationContent({
           variant={preferences.enabled ? "default" : "outline"}
           size={isMobile ? "default" : "sm"}
           className={isMobile ? 'min-h-[44px] px-4' : undefined}
+          aria-pressed={preferences.enabled}
           onClick={toggleEnabled}
         >
           {preferences.enabled ? 'Enabled' : 'Disabled'}
@@ -115,7 +116,7 @@ export function NotificationSettings() {
         <DrawerTrigger asChild>
           {triggerButton}
         </DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent className="station-overlay">
           <DrawerHeader>
             <DrawerTitle>Smart Notifications</DrawerTitle>
           </DrawerHeader>
@@ -137,7 +138,7 @@ export function NotificationSettings() {
       <DropdownMenuTrigger asChild>
         {triggerButton}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80">
+      <DropdownMenuContent align="end" className="station-overlay w-80">
         <DropdownMenuLabel>Smart Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <NotificationContent 
