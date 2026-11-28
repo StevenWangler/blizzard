@@ -1,6 +1,6 @@
 # Local forecast broadcast and ticker
 
-The optional **Watch forecast** control leaves Today’s chance/day/why readable. A current report with supported period and weather facts produces a 27–29 second broadcast: Rockford opening (4s), outlook (7s), overnight/morning (6s, or 8s for hourly readings), reasons (6s), closing (4s). Missing sections are omitted; a missing or stale report gets an explicit 20-second no-current-forecast sequence. Playback stops at the closing card and offers Replay.
+The optional **Watch forecast** control leaves Today’s chance/day/why readable. A current report with supported period and weather facts produces a 27–29 second broadcast: Rockford opening (4s), outlook (7s), overnight/morning (6s, or 8s for hourly readings), reasons (6s), closing (4s). Missing sections are omitted; a missing or stale report gets an explicit 20-second no-current-forecast sequence. After the closing card finishes, timed playback closes the dialog and returns focus to Watch forecast. Opening it again starts at the first card.
 
 Pause, Previous/Next, left/right keyboard arrows and horizontal pointer swipes work without starting another player. Manual navigation pauses the cycle. Read all provides a static scrollable alternative; reduced motion opens that view by default and disables timed playback. Background/pagehide pauses, and return does not resume automatically. The dialog has 44px controls, Escape dismissal, retained focus, bounded scrolling and dynamic viewport sizing. No card changes are live-announced.
 

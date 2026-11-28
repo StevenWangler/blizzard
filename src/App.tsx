@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { CompetitionScoreboard } from '@/components/CompetitionScoreboard'
 import { useCompetitionStandings } from '@/hooks/useCompetitionStandings'
 import { HeroView } from '@/components/HeroView'
+import { WeatherThemeProvider } from '@/hooks/useWeatherTheme'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { NotificationSettings } from '@/components/NotificationSettings'
 import { EnhancedHeader } from '@/components/EnhancedHeader'
@@ -125,6 +126,7 @@ function App() {
     : 'bg-[#071625]'
 
   return (
+    <WeatherThemeProvider prediction={forecast.prediction}>
     <div className={`min-h-screen ${pageBackground} transition-colors relative overflow-hidden`}>
       <div className={`${shouldRenderBlizzard ? 'blizzard-shell station-shell' : 'min-h-screen'} relative z-10`}>
         <div
@@ -271,6 +273,7 @@ function App() {
 
       <Toaster position="top-right" />
     </div>
+    </WeatherThemeProvider>
   )
 }
 

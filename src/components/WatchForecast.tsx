@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Pause, Play, ArrowCounterClockwise } from '@phosphor-icons/react'
+import { ArrowLeft, ArrowRight, Pause, Play } from '@phosphor-icons/react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { buildForecastBroadcast, broadcastStep, type BroadcastSlide } from '@/lib/forecastBroadcast'
 import type { AgentPrediction } from '@/types/agentPrediction'
@@ -35,7 +35,6 @@ export function WatchForecast({ prediction }: { prediction: AgentPrediction | nu
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(false)
-  const [finished, setFinished] = useState(false)
   const [readAll, setReadAll] = useState(false)
   const pointer = useRef<{ x: number; y: number } | null>(null)
   const readButton = useRef<HTMLButtonElement>(null)
@@ -47,7 +46,7 @@ export function WatchForecast({ prediction }: { prediction: AgentPrediction | nu
   const changeOpen = (next: boolean) => {
     setOpen(next)
     setPlaying(next && !reducedMotion)
-    if (next) { setIndex(0); setFinished(false); setReadAll(!!reducedMotion) }
+    if (next) { setIndex(0); setReadAll(!!reducedMotion) }
   }
   useEffect(() => {
     if (reducedMotion) { setPlaying(false); setReadAll(true) }
@@ -55,7 +54,7 @@ export function WatchForecast({ prediction }: { prediction: AgentPrediction | nu
   useEffect(() => {
     if (!open || !playing || reducedMotion || readAll) return
     const timer = window.setTimeout(() => {
-      if (index >= model.slides.length - 1) { setPlaying(false); setFinished(true) }
+      if (index >= model.slides.length - 1) { setPlaying(false); setOpen(false) }
       else setIndex(value => broadcastStep(value, 1, model.slides.length))
     }, slide.duration)
     return () => window.clearTimeout(timer)
@@ -68,7 +67,7 @@ export function WatchForecast({ prediction }: { prediction: AgentPrediction | nu
     window.addEventListener('pagehide', leave)
     return () => { document.removeEventListener('visibilitychange', pause); window.removeEventListener('pagehide', leave) }
   }, [open])
-  const move = (direction: number) => { setPlaying(false); setFinished(false); setIndex(value => broadcastStep(Math.min(value, model.slides.length - 1), direction, model.slides.length)) }
+  const move = (direction: number) => { setPlaying(false); setIndex(value => broadcastStep(Math.min(value, model.slides.length - 1), direction, model.slides.length)) }
   return <Dialog open={open} onOpenChange={changeOpen}>
     <DialogTrigger asChild><button type="button" className="watch-forecast-button"><Play size={18} weight="fill" aria-hidden="true" /><span>Watch forecast</span><small>~{Math.round(model.slides.reduce((sum, card) => sum + card.duration, 0) / 1000)} sec</small></button></DialogTrigger>
     <DialogContent className="forecast-program" aria-describedby="forecast-program-description" onOpenAutoFocus={event => { event.preventDefault(); readButton.current?.focus() }} onKeyDown={event => {
@@ -89,7 +88,10 @@ export function WatchForecast({ prediction }: { prediction: AgentPrediction | nu
         <div className="program-position" aria-live="off"><span>{readAll ? 'All cards' : `${position + 1} / ${model.slides.length}`}</span><button ref={readButton} type="button" onClick={() => { setReadAll(value => !value); setPlaying(false) }}>{readAll ? 'One card at a time' : 'Read all'}</button></div>
         {!readAll && <div className="program-transport">
           <button type="button" onClick={() => move(-1)} disabled={position === 0} aria-label="Previous forecast card"><ArrowLeft size={20} aria-hidden="true" /></button>
-          <button type="button" disabled={!!reducedMotion} onClick={() => { if (finished) { setIndex(0); setFinished(false) }; setPlaying(value => !value) }} aria-label={finished ? 'Replay forecast broadcast' : playing ? 'Pause forecast broadcast' : 'Play forecast broadcast'}>{finished ? <ArrowCounterClockwise size={18} aria-hidden="true" /> : playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}<span>{finished ? 'Replay' : playing ? 'Pause' : 'Play'}</span></button>
+          <button type="button" disabled={!!reducedMotion} onClick={() => setPlaying(value => !value)} aria-label={playing ? 'Pause forecast broadcast' : 'Play forecast broadcast'}>
+            {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
+            <span>{playing ? 'Pause' : 'Play'}</span>
+          </button>
           <button type="button" onClick={() => move(1)} disabled={position === model.slides.length - 1} aria-label="Next forecast card"><ArrowRight size={20} aria-hidden="true" /></button>
         </div>}
       </footer>

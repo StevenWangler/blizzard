@@ -1,3 +1,18 @@
+/* Broadcast text stays light on its tinted photo in both viewing modes. */
+:root {
+  --station-weather-color: #3767ac;
+  --station-sky: color-mix(in srgb, var(--station-weather-color) 68%, #284993);
+  --station-frame: #eff1f6;
+  --station-deck: linear-gradient(#f6f7fa, #bbc4dc);
+  --station-control-ink: #142760;
+}
+html[data-weather-mode="night"] {
+  --station-sky: color-mix(in srgb, var(--station-weather-color) 38%, #081632);
+  --station-frame: #121e38;
+  --station-deck: linear-gradient(#30456a, #182941);
+  --station-control-ink: #edf4ff;
+}
+
 /* The station shell and Today bulletin share the early-web palette. */
 .station-workspace {
   background: radial-gradient(ellipse at 50% 0, #23437e, #09183e 72%);
@@ -21,7 +36,7 @@ html[data-weather-mode="night"] .station-workspace {
   background:
     radial-gradient(ellipse at 85% 118%, #6484cc 0%, transparent 55%),
     repeating-linear-gradient(130deg, #bbcaff12 0 1px, transparent 1px 8px),
-    linear-gradient(90deg, #0c1748, #243eab 57%, #172566);
+    linear-gradient(90deg, #0c1748, var(--station-sky) 57%, #172566);
 }
 .station-masthead .broadcast-mark {
   width: 39px;
@@ -70,7 +85,7 @@ html[data-weather-mode="night"] .station-workspace {
   border-block: 1px solid #fff;
   border-bottom-color: #566888;
   border-radius: 0;
-  background: var(--station-silver-bar);
+  background: var(--station-deck);
 }
 .station-nav > button {
   flex: 0 1 auto;
@@ -82,7 +97,7 @@ html[data-weather-mode="night"] .station-workspace {
   border-left: 1px solid #fff;
   border-radius: 0;
   background: transparent;
-  color: #142760;
+  color: var(--station-control-ink);
   font: 700 12px/1.2 Verdana, Geneva, sans-serif;
   text-decoration: underline;
   white-space: nowrap;
@@ -113,7 +128,7 @@ html[data-weather-mode="night"] .station-workspace {
   padding: clamp(10px, 2.5vw, 24px);
   padding-right: max(clamp(10px, 2.5vw, 24px), env(safe-area-inset-right, 0px));
   padding-left: max(clamp(10px, 2.5vw, 24px), env(safe-area-inset-left, 0px));
-  background: repeating-linear-gradient(0deg, #d4d9e443 0 1px, transparent 1px 4px), #eff1f6;
+  background: repeating-linear-gradient(0deg, #d4d9e443 0 1px, transparent 1px 4px), var(--station-frame);
   color: #101c49;
 }
 .local-broadcast {
@@ -156,7 +171,7 @@ html[data-weather-mode="night"] .station-workspace {
   z-index: -1;
   inset: 0;
   overflow: hidden;
-  background: #3751b0;
+  background: var(--station-sky);
 }
 .local-broadcast-art img {
   position: absolute;
@@ -174,7 +189,8 @@ html[data-weather-mode="night"] .station-workspace {
   inset: 0;
   background:
     repeating-linear-gradient(0deg, #0a1d5220 0 1px, transparent 1px 4px),
-    linear-gradient(180deg, #182976ed, #172e87a8 46%, #1c2e876e 76%, #09194bb0);
+    linear-gradient(180deg, color-mix(in srgb, var(--station-sky) 94%, transparent),
+      color-mix(in srgb, var(--station-sky) 70%, transparent) 50%, #09194b96);
 }
 .local-broadcast-copy {
   align-self: center;
@@ -294,7 +310,7 @@ html[data-weather-mode="night"] .station-workspace {
     padding-bottom: env(safe-area-inset-bottom, 0px);
     border-top: 2px solid #8da5ce;
     border-bottom: 0;
-    background: linear-gradient(#eef3fc, #c7d2e8);
+    background: var(--station-deck);
   }
   .station-nav-mobile > button {
     display: flex;

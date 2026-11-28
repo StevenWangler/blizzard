@@ -15,13 +15,13 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from '@/components/ui/drawer'
-import { Separator } from '@/components/ui/separator'
 import { Sun, Moon, CloudSnow, Snowflake } from '@phosphor-icons/react'
 import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { useIsMobile } from '@/hooks/use-mobile'
 
 interface ThemeMenuItemsProps {
   isDarkMode: boolean
+  followingForecast: boolean
   currentThemeName: string
   isRotationEnabled: boolean
   onToggleDarkMode: () => void
@@ -32,6 +32,7 @@ interface ThemeMenuItemsProps {
 function ThemeMenuItems({
   isDarkMode,
   currentThemeName,
+  followingForecast,
   isRotationEnabled,
   onToggleDarkMode,
   onToggleRotation,
@@ -58,14 +59,9 @@ function ThemeMenuItems({
         {isRotationEnabled ? 'Pause winter rotation' : 'Rotate winter moods'}
         <span className="ml-auto text-xs">{isRotationEnabled ? 'On' : 'Off'}</span>
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={onSetLiveTheme} className="flex items-center gap-2 min-h-[44px]">
+      <DropdownMenuItem disabled={followingForecast} onClick={onSetLiveTheme} className="flex items-center gap-2 min-h-[44px]">
         <CloudSnow className="h-4 w-4" />
-        Return to live weather
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem disabled className="text-xs text-muted-foreground justify-center">
-        <Snowflake className="h-3 w-3 mr-1" />
-        School colors stay; weather sets the mood.
+        {followingForecast ? 'Following forecast weather' : 'Use forecast weather'}
       </DropdownMenuItem>
     </>
   )
@@ -78,11 +74,14 @@ export function ThemeToggle() {
     getCurrentTheme,
     isRotationEnabled,
     toggleRotation,
+    manualThemeKey,
     setManualTheme
   } = useWeatherTheme()
   const isMobile = useIsMobile()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const currentTheme = getCurrentTheme()
+
+  const followingForecast = !isRotationEnabled && !manualThemeKey
 
   const closeAndRun = (action: () => void) => {
     action()
@@ -109,7 +108,7 @@ export function ThemeToggle() {
     return (
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent className="station-theme-menu">
           <DrawerHeader>
             <DrawerTitle>Theme Settings</DrawerTitle>
           </DrawerHeader>
@@ -141,16 +140,13 @@ export function ThemeToggle() {
             </Button>
             <Button
               variant="outline"
+              disabled={followingForecast}
               onClick={() => closeAndRun(() => setManualTheme(null))}
               className="w-full justify-start min-h-[44px]"
             >
               <CloudSnow className="h-4 w-4 mr-2" />
-              Return to live weather
+              {followingForecast ? 'Following forecast weather' : 'Use forecast weather'}
             </Button>
-            <Separator />
-            <p className="text-xs text-muted-foreground text-center">
-              School colors stay; weather sets the mood.
-            </p>
           </div>
         </DrawerContent>
       </Drawer>
@@ -160,8 +156,9 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{triggerButton}</DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="station-theme-menu w-56">
         <ThemeMenuItems
+          followingForecast={followingForecast}
           isDarkMode={isDarkMode}
           currentThemeName={currentTheme?.name || 'Clear Skies'}
           isRotationEnabled={isRotationEnabled}
