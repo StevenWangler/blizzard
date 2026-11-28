@@ -42,18 +42,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     
     <script>
-      // Immediately apply dark mode to prevent flash of light mode
-      (function() {
-        const stored = localStorage.getItem('theme-preference');
-        const theme = stored ? JSON.parse(stored) : 'dark';
-        if (theme === 'system') {
-          document.documentElement.classList.add(
-            window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-          );
-        } else {
-          document.documentElement.classList.add(theme || 'dark');
-        }
-      })();
+      // Match the saved display mode before the station paints.
+      let dark = true;
+      try { dark = localStorage.getItem('spark_kv_dark-mode') !== 'false'; } catch {}
+      document.documentElement.classList.toggle('dark', dark);
+      document.documentElement.dataset.weatherMode = dark ? 'night' : 'day';
     </script>
     <link rel="preload" href="/fonts/vt323-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link href="/src/main.css" rel="stylesheet" />

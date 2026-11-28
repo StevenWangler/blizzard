@@ -106,13 +106,6 @@ export function DetailsView({ onBack }: DetailsViewProps) {
         const data = await fetchData<AgentPrediction>('prediction.json')
         setPrediction(data)
           
-        if (data.meteorology) {
-          updateWeatherConditions(
-            data.meteorology.precipitation_analysis.total_snowfall_inches,
-            data.meteorology.wind_analysis.max_wind_speed_mph,
-            data.meteorology.visibility_analysis.minimum_visibility_miles
-          )
-        }
         return
       } catch (error) {
         console.log('Agent prediction not available, falling back to legacy weather service')

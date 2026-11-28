@@ -2,7 +2,7 @@
 .station-workspace,
 .station-directory,
 .station-more-dropdown {
-  --station-blue-bar: linear-gradient(#485bc4, #293a9d 50%, #243081 50%, #141e63);
+  --station-blue-bar: linear-gradient(color-mix(in srgb, var(--station-sky) 70%, #5269b9), var(--station-sky) 49%, color-mix(in srgb, var(--station-sky) 65%, #13224d) 50%, #141e45);
   --station-silver-bar: linear-gradient(#f6f7fa, #bbc4dc);
   --station-gold-bar: linear-gradient(#fff1a2, #ebbe50);
   --station-caption-font: 'Blizzard Broadcast', 'Courier New', monospace;
@@ -282,3 +282,19 @@ html[data-weather-mode="night"] .station-workspace .station-shell .student-page 
 .faceoff-result-label { display: block; font: 12px/1.4 Verdana, sans-serif; color: var(--report-muted); }
 .faceoff-retry { min-height: 44px; text-decoration: underline; }
 .faceoff-analysis .page-disclosure-content > div + div { margin-top: 16px; }
+
+/* Portaled settings use the same palette as the station behind them. */
+html[data-weather-mode] .station-theme-menu {
+  background: var(--station-frame);
+  color: var(--station-control-ink);
+  --color-foreground: var(--station-control-ink);
+  --color-muted-foreground: var(--station-control-ink);
+}
+html[data-weather-mode] .station-theme-menu [data-slot="drawer-title"] {
+  color: var(--station-control-ink);
+}
+html[data-weather-mode] .station-theme-menu [data-slot="button"] {
+  background: var(--station-frame);
+  color: var(--station-control-ink);
+  border-color: #8295af;
+}

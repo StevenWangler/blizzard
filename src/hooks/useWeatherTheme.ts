@@ -1,23 +1,17 @@
+import type { AgentPrediction } from '@/types/agentPrediction'
+import { forecastFreshness, reportWeather } from '@/lib/forecastPresentation'
 import { createContext, createElement, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 
 // Safe wrapper for useKV that falls back to useState when Spark KV is unavailable
 function useSafeKV<T>(key: string, defaultValue: T): [T, (value: T | ((prev: T) => T)) => void] {
-  const [state, setState] = useState<T>(defaultValue)
-  const [initialized, setInitialized] = useState(false)
-
-  // Try to load from localStorage on mount as fallback
-  useEffect(() => {
-    if (initialized) return
+  const [state, setState] = useState<T>(() => {
     try {
       const stored = localStorage.getItem(`spark_kv_${key}`)
-      if (stored) {
-        setState(JSON.parse(stored))
-      }
+      return stored === null ? defaultValue : JSON.parse(stored) ?? defaultValue
     } catch {
-      // Ignore localStorage errors
+      return defaultValue
     }
-    setInitialized(true)
-  }, [key, initialized])
+  })
 
   const setValue = useCallback((value: T | ((prev: T) => T)) => {
     setState(prev => {
@@ -813,6 +807,37 @@ export function getWeatherThemeFromConditions(snowfall: number, windSpeed: numbe
   return 'clear'
 }
 
+export function forecastThemeKey(prediction: AgentPrediction, dark: boolean): string | null {
+  if (forecastFreshness(prediction.timestamp, prediction.targetDate) !== 'current') return null
+  const weather = reportWeather(prediction)
+  if (weather?.iceType) return weather.iceType
+  const snow = weather?.snowInches
+  const wind = weather?.maxWindMph
+  const visibility = weather?.minVisibilityMiles
+  if (typeof snow === 'number' && typeof wind === 'number' && typeof visibility === 'number') {
+    return getWeatherThemeFromConditions(snow, wind, visibility, dark)
+  }
+  if (typeof snow === 'number' && snow >= 2) return 'heavy_snow'
+  const hours = prediction.raw_weather_data?.forecast?.forecastday?.find(day => day.date === prediction.targetDate)?.hour
+  for (const hour of ['07', '06', '08']) {
+    const text = hours?.find(item => item.time === `${prediction.targetDate} ${hour}:00`)?.condition?.text
+    if (!text) continue
+    if (/blizzard/i.test(text)) return 'blizzard'
+    if (/freezing (rain|drizzle)/i.test(text)) return 'freezing_rain'
+    if (/sleet|ice pellets|wintry mix/i.test(text)) return 'sleet'
+    if (/snow|flurr/i.test(text)) return 'light_snow'
+    if (/partly|mostly sunny/i.test(text)) return 'partly_cloudy'
+    if (/cloud|overcast|fog|rain|drizzle/i.test(text)) return 'overcast'
+    if (/sunny|clear/i.test(text)) return 'clear'
+  }
+  return typeof snow === 'number' && snow >= 0.5 ? 'light_snow' : null
+}
+
+function nextWinterMood(current: string | null) {
+  const index = winterRotationThemes.findIndex(theme => theme === current)
+  return winterRotationThemes[(index + 1) % winterRotationThemes.length]
+}
+
 interface WeatherThemeContextValue {
   currentTheme: string
   getCurrentTheme: () => WeatherTheme | undefined
@@ -828,25 +853,14 @@ interface WeatherThemeContextValue {
 
 const WeatherThemeContext = createContext<WeatherThemeContextValue | null>(null)
 
-function useProvideWeatherTheme(): WeatherThemeContextValue {
+function useProvideWeatherTheme(prediction: AgentPrediction | null): WeatherThemeContextValue {
   const [weatherConditions, setWeatherConditions] = useSafeKV<{snowfall: number, windSpeed: number, visibility: number} | null>('weather-conditions', null)
   const [isDarkMode, setIsDarkMode] = useSafeKV<boolean>('dark-mode', true)
-  const [autoTheme, setAutoTheme] = useState<string>('clear')
   const [manualThemeKey, setManualThemeKey] = useSafeKV<string | null>('manual-weather-theme', null)
   const [isRotationEnabled, setRotationEnabled] = useSafeKV<boolean>('weather-theme-rotation', false)
 
-  useEffect(() => {
-    if (weatherConditions) {
-      const themeKey = getWeatherThemeFromConditions(
-        weatherConditions.snowfall,
-        weatherConditions.windSpeed, 
-        weatherConditions.visibility,
-        isDarkMode
-      )
-      setAutoTheme(themeKey)
-    }
-  }, [weatherConditions, isDarkMode])
-
+  const autoTheme = prediction ? forecastThemeKey(prediction, isDarkMode) :
+    weatherConditions && getWeatherThemeFromConditions(weatherConditions.snowfall, weatherConditions.windSpeed, weatherConditions.visibility, isDarkMode)
   const updateWeatherConditions = (snowfall: number, windSpeed: number, visibility: number) => {
     setWeatherConditions({ snowfall, windSpeed, visibility })
   }
@@ -861,37 +875,17 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
   }
 
   const toggleRotation = () => {
-    setRotationEnabled(prev => {
-      const next = !prev
-      if (!next) {
-        setManualThemeKey(null)
-      }
-      return next
-    })
+    if (!isRotationEnabled) setManualThemeKey(nextWinterMood(manualThemeKey ?? autoTheme))
+    setRotationEnabled(!isRotationEnabled)
   }
 
-  // Automatically cycle through curated winter themes when enabled
   useEffect(() => {
     if (!isRotationEnabled) return
+    const timer = window.setInterval(() => setManualThemeKey(nextWinterMood), 180000)
+    return () => window.clearInterval(timer)
+  }, [isRotationEnabled, setManualThemeKey])
 
-    const sequence = winterRotationThemes.map(String)
-    if (!sequence.length) return
-
-    let index = manualThemeKey ? sequence.indexOf(manualThemeKey) : Math.floor(Math.random() * sequence.length)
-    if (index < 0) index = 0
-
-    const advanceTheme = () => {
-      const nextTheme = sequence[index % sequence.length]
-      setManualThemeKey(nextTheme)
-      index = (index + 1) % sequence.length
-    }
-
-    advanceTheme()
-    const interval = window.setInterval(advanceTheme, 180000)
-    return () => window.clearInterval(interval)
-  }, [isRotationEnabled, manualThemeKey, setManualThemeKey])
-
-  const activeTheme = manualThemeKey ?? autoTheme
+  const activeTheme = manualThemeKey && Object.prototype.hasOwnProperty.call(weatherThemes, manualThemeKey) ? manualThemeKey : autoTheme ?? 'clear'
 
   const applyTheme = (themeKey: string) => {
     const themes = isDarkMode ? darkWeatherThemes : weatherThemes
@@ -917,6 +911,7 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
       root.style.setProperty('--muted', theme.muted)
       
       // Enhanced atmospheric variables
+      root.style.setProperty('--station-weather-color', theme.primary)
       root.style.setProperty('--weather-gradient', theme.gradient || 'none')
       root.style.setProperty('--weather-glow', theme.glowColor || 'transparent')
       root.style.setProperty('--weather-particle-color', theme.particleColor || 'rgba(255,255,255,0.5)')
@@ -964,8 +959,8 @@ function useProvideWeatherTheme(): WeatherThemeContextValue {
   }
 }
 
-export function WeatherThemeProvider({ children }: { children: ReactNode }) {
-  const value = useProvideWeatherTheme()
+export function WeatherThemeProvider({ children, prediction }: { children: ReactNode; prediction: AgentPrediction | null }) {
+  const value = useProvideWeatherTheme(prediction)
   return createElement(WeatherThemeContext.Provider, { value }, children)
 }
 

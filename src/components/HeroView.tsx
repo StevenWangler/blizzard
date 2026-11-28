@@ -6,7 +6,6 @@ import {
   Snowflake, 
   Warning
 } from '@phosphor-icons/react'
-import { useWeatherTheme } from '@/hooks/useWeatherTheme'
 import { useNotifications } from '@/hooks/useNotifications'
 import type { SavedForecast } from '@/hooks/useSavedForecast'
 import { forecastFreshness } from '@/lib/forecastPresentation'
@@ -23,7 +22,6 @@ export function HeroView({ onNavigateToDetails, onNavigateToHistory, forecast, c
   const reduceMotion = useReducedMotion()
   const { prediction, loading, error, reload } = forecast
   
-  const { updateWeatherConditions } = useWeatherTheme()
   const { checkAndNotify } = useNotifications()
   const processed = useRef<typeof prediction>(null)
 
@@ -31,20 +29,11 @@ export function HeroView({ onNavigateToDetails, onNavigateToHistory, forecast, c
       const data = prediction
       if (!data || processed.current === data) return
       processed.current = data
-      // Update weather theme
-      if (data.meteorology?.precipitation_analysis && data.meteorology.wind_analysis && data.meteorology.visibility_analysis) {
-        updateWeatherConditions(
-          data.meteorology.precipitation_analysis.total_snowfall_inches,
-          data.meteorology.wind_analysis.max_wind_speed_mph,
-          data.meteorology.visibility_analysis.minimum_visibility_miles
-        )
-      }
-      
       // Check notifications
       if (data.final?.snow_day_probability && forecastFreshness(data.timestamp, data.targetDate) === 'current') {
         checkAndNotify(data.final.snow_day_probability, data.location)
       }
-  }, [prediction, updateWeatherConditions, checkAndNotify])
+  }, [prediction, checkAndNotify])
 
   if (loading) {
     return (
