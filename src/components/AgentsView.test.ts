@@ -30,23 +30,24 @@ describe('How it works saved report', () => {
     })
     expect(html).toContain('Monday, Nov 30, 2026')
     expect(html).toContain('1% chance')
-    expect(html).toContain('0.5% chance for morning snow')
-    expect(html).not.toContain('100%')
+    expect(html).toContain('high confidence')
+    expect(html).not.toContain('0.5% chance of a snow day')
+    expect(html).not.toContain('100% chance of a snow day')
     expect(html).not.toContain('Debate recorded for this forecast')
   })
 
-  it('preserves a fractional archived call and labels an empty debate accurately', () => {
+  it('preserves a fractional archived call and keeps the retired workflow out of the guide', () => {
     const html = render({
       timestamp: '2026-01-21T23:00:00Z', targetDate: '2026-01-22',
       final: { snow_day_probability: 0.5 },
       collaboration: { rounds: [], totalRounds: 0, maxRoundsAllowed: 1, finalConsensus: false,
         consensusThreshold: 10, exitReason: 'error', keyDisagreements: [], confidenceJourney: [] },
     })
-    expect(html).toContain('Archived snow-day chance')
+    expect(html).toContain('An archived call')
     expect(html).toContain('0.5% chance')
-    expect(html).toContain('Not reached')
+    expect(html).not.toContain('consensusThreshold')
     expect(html).not.toContain('>0%</p>')
-    expect(html).toContain('20 points')
+    expect(html).not.toContain('Latest collaboration')
   })
 
   it('shows the single forecaster rationale without the retired specialist roster', () => {
@@ -59,8 +60,10 @@ describe('How it works saved report', () => {
 
   it('keeps the workflow readable when the forecast is missing', () => {
     const html = render(null)
-    expect(html).toContain('Unavailable')
-    expect(html).toContain('One forecaster reads hourly temperatures')
+    expect(html).not.toContain('The latest call')
+    expect(html).toContain('6 to 8 a.m.')
+    expect(html).toContain('href="#competition"')
+    expect(html).toContain('href="#past-calls"')
     expect(html).not.toContain('Latest collaboration')
   })
 })

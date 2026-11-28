@@ -236,22 +236,23 @@ html[data-weather-mode="night"] .station-workspace {
 
 .station-today-rail { display: grid; align-content: start; gap: 9px; }
 .station-link-box {
-  border: 1px solid #8897bc;
-  background: #fafaf2;
-  box-shadow: 1px 1px #bfc8da;
+  border: 1px solid var(--report-rule);
+  background: var(--report-panel);
+  box-shadow: 1px 1px #0b164933;
 }
 .station-link-box h3 {
   padding: 5px 8px;
-  border-bottom: 1px solid #8a98b4;
-  background: linear-gradient(#e1eaff, #b6c6e6);
-  color: #152a67;
+  border-bottom: 1px solid var(--report-rule);
+  background: var(--station-deck);
+  color: var(--station-control-ink);
   font: 700 11px/1.2 Verdana, Geneva, sans-serif;
   text-transform: uppercase;
   letter-spacing: .025em;
 }
 .station-link-box:first-child h3 {
   border-color: #b09144;
-  background: linear-gradient(#ffea93, #f2ce6b);
+  background: var(--station-gold-bar);
+  color: #142760;
 }
 .station-link-box :is(.station-link, .watch-forecast-button) {
   display: grid;
@@ -262,14 +263,14 @@ html[data-weather-mode="night"] .station-workspace {
   width: 100%;
   min-height: 44px;
   padding: 6px 8px;
-  color: #17367c;
+  color: var(--report-link);
   font: 700 12px/1.4 Verdana, Geneva, sans-serif;
   text-align: left;
 }
-.station-link-box button + button { border-top: 1px dotted #a9b3c9; }
-.station-link-box button:hover { background: #e4ecfe; }
+.station-link-box button + button { border-top: 1px dotted var(--report-rule); }
+.station-link-box button:hover { background: var(--report-inset); }
 .station-link-box button span:nth-child(2) { text-decoration: underline; }
-.station-link-box button > :first-child { color: #a0370f; }
+.station-link-box button > :first-child { color: var(--report-link); }
 .station-link-box .watch-forecast-button svg {
   align-self: center;
   width: 11px;
@@ -278,7 +279,7 @@ html[data-weather-mode="night"] .station-workspace {
 .station-link-box button small {
   grid-column: 2;
   margin: 0;
-  color: #364568;
+  color: var(--report-muted);
   font: 400 11px/1.35 Verdana, Geneva, sans-serif;
 }
 
@@ -360,13 +361,13 @@ html[data-weather-mode="night"] .station-workspace {
   .station-link-box .watch-forecast-button {
     grid-template-columns: 16px minmax(0, 1fr) auto;
     align-items: center;
-    background: linear-gradient(#fff0a6, #edc658);
+    background: var(--station-gold-bar);
     color: #162553;
   }
   .station-link-box .watch-forecast-button:hover { background: #ffe489; }
-  .station-link-box .watch-forecast-button small { grid-column: 3; }
+  .station-link-box .watch-forecast-button small { grid-column: 3; color: inherit; }
   .station-link-box button small { font-size: 12px; }
-  .station-link-box .watch-forecast-button svg { width: 13px; height: 13px; }
+  .station-link-box .watch-forecast-button svg { color: inherit; width: 13px; height: 13px; }
 
   .station-home .forecast-status { min-height: 50svh; }
 }

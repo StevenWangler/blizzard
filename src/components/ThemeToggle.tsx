@@ -44,9 +44,9 @@ function ThemeMenuItems({
         <CloudSnow className="h-4 w-4" />
         Weather Theme
       </DropdownMenuLabel>
-      <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+      <div className="px-2 py-1.5 text-xs text-muted-foreground">
         Current: {currentThemeName}
-      </DropdownMenuItem>
+      </div>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={onToggleDarkMode} className="flex items-center gap-2 min-h-[44px]">
         {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -108,7 +108,7 @@ export function ThemeToggle() {
     return (
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
-        <DrawerContent className="station-theme-menu">
+        <DrawerContent className="station-overlay">
           <DrawerHeader>
             <DrawerTitle>Theme Settings</DrawerTitle>
           </DrawerHeader>
@@ -156,7 +156,7 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{triggerButton}</DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="station-theme-menu w-56">
+      <DropdownMenuContent align="end" className="station-overlay w-56">
         <ThemeMenuItems
           followingForecast={followingForecast}
           isDarkMode={isDarkMode}
